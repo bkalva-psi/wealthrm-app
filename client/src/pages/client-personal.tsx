@@ -133,23 +133,25 @@ export default function ClientPersonalPage() {
                   </div>
                   <h2 className="text-xl font-medium text-center">{client.fullName}</h2>
                   <Badge className="mx-auto block w-fit" variant="outline">{client.tier.toUpperCase()} Tier Client</Badge>
-                  <div className="flex justify-center gap-3 flex-wrap">
-                    <div className="bg-white border rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                      <Clock className="h-4 w-4 text-slate-500" />
-                      <div>
-                        <div className="text-xs whitespace-nowrap">Status</div>
-                        <span className="whitespace-nowrap font-medium">
-                          KYC {client.kycStatus || "Unknown"}
-                        </span>
+                  <div className="flex justify-center items-center mt-4">
+                    <div className="inline-flex items-center justify-center">
+                      <div className="bg-white border rounded-l-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <Clock className="h-4 w-4 text-slate-500" />
+                        <div>
+                          <div className="text-xs whitespace-nowrap">Status</div>
+                          <span className="whitespace-nowrap font-medium">
+                            KYC {client.kycStatus || "Unknown"}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="bg-orange-500 text-white rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                      <Wallet className="h-4 w-4" />
-                      <div>
-                        <div className="text-xs whitespace-nowrap">AUM</div>
-                        <span className="whitespace-nowrap font-medium">
-                          {client.aum}
-                        </span>
+                      <div className="bg-orange-500 text-white rounded-r-full px-4 py-2 flex items-center gap-2 shadow-sm -ml-1">
+                        <Wallet className="h-4 w-4" />
+                        <div>
+                          <div className="text-xs whitespace-nowrap">AUM</div>
+                          <span className="whitespace-nowrap font-medium">
+                            {client.aum}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
