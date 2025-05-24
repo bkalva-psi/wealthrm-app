@@ -77,6 +77,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
           <div className="border-r border-slate-200 pr-3">
             <div className="text-xs text-slate-500 mb-1">AUM</div>
             <div className="text-sm font-medium text-slate-700">{client.aum}</div>
+            <div className="text-xs text-emerald-600 mt-1">1Y +12.5%</div>
           </div>
           <div>
             <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
@@ -84,10 +85,16 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
             </div>
           </div>
-          <div className="col-span-2">
+          <div>
             <div className="text-xs text-slate-500 mb-1">Last Contact</div>
             <div className="text-sm text-slate-500">
               {formatRelativeDate(client.lastContactDate)}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-500 mb-1">Last Transaction</div>
+            <div className="text-sm text-slate-500">
+              {Math.floor(Math.random() * 30) + 1} days ago
             </div>
           </div>
         </div>
