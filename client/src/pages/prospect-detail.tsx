@@ -107,7 +107,7 @@ export default function ProspectDetail() {
         <CardHeader className="pb-3">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
-              {prospect.initials || prospect.fullName.substring(0, 2).toUpperCase()}
+              {prospect.initials || (prospect.fullName ? prospect.fullName.substring(0, 2).toUpperCase() : 'PR')}
             </div>
             <div>
               <CardTitle className="text-xl">{prospect.fullName}</CardTitle>
