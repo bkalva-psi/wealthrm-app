@@ -208,14 +208,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid client ID" });
       }
       
-      // Fetch client data directly from the database to include all fields
+      // Fetch all client data from the database (including all new fields)
       const result = await pool.query(`
         SELECT 
           id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
           email, phone, last_contact_date as "lastContactDate", 
           last_transaction_date as "lastTransactionDate", 
           risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
-          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo"
+          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo",
+          -- Personal Information
+          date_of_birth as "dateOfBirth", marital_status as "maritalStatus", anniversary_date as "anniversaryDate",
+          
+          -- Address Information
+          home_address as "homeAddress", home_city as "homeCity", home_state as "homeState", 
+          home_pincode as "homePincode", work_address as "workAddress", work_city as "workCity", 
+          work_state as "workState", work_pincode as "workPincode",
+          
+          -- Professional Information
+          profession, sector_of_employment as "sectorOfEmployment", designation, company_name as "companyName",
+          annual_income as "annualIncome", work_experience as "workExperience",
+          
+          -- KYC & Compliance Information
+          kyc_date as "kycDate", kyc_status as "kycStatus", identity_proof_type as "identityProofType",
+          identity_proof_number as "identityProofNumber", address_proof_type as "addressProofType",
+          pan_number as "panNumber", tax_residency_status as "taxResidencyStatus", 
+          fatca_status as "fatcaStatus", risk_assessment_score as "riskAssessmentScore",
+          
+          -- Family Information
+          spouse_name as "spouseName", dependents_count as "dependentsCount", 
+          children_details as "childrenDetails", nominee_details as "nomineeDetails",
+          family_financial_goals as "familyFinancialGoals",
+          
+          -- Investment Profile
+          investment_horizon as "investmentHorizon", investment_objectives as "investmentObjectives",
+          preferred_products as "preferredProducts", source_of_wealth as "sourceOfWealth",
+          
+          -- Communication & Relationship
+          preferred_contact_method as "preferredContactMethod", preferred_contact_time as "preferredContactTime",
+          communication_frequency as "communicationFrequency", client_since as "clientSince",
+          client_acquisition_source as "clientAcquisitionSource",
+          
+          -- Transaction Information
+          total_transaction_count as "totalTransactionCount", 
+          average_transaction_value as "averageTransactionValue",
+          recurring_investments as "recurringInvestments",
+          
+          -- Additional Wealth Management Fields
+          tax_planning_preferences as "taxPlanningPreferences", insurance_coverage as "insuranceCoverage",
+          retirement_goals as "retirementGoals", major_life_events as "majorLifeEvents",
+          financial_interests as "financialInterests", net_worth as "netWorth",
+          liquidity_requirements as "liquidityRequirements", foreign_investments as "foreignInvestments"
         FROM clients
         WHERE id = $1
       `, [id]);
