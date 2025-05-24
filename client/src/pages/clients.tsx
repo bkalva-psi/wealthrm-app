@@ -186,23 +186,31 @@ export default function Clients() {
     setActiveFilters(count);
   };
   
-  // Filter clients based on search and filter options
+  // Filter clients based on search and filter options, then sort by alert count
   const filteredClients = clients
-    ? clients.filter((client: Client) => {
-        // Apply search filter
-        const matchesSearch = !searchQuery || 
-          client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          (client.phone && client.phone.includes(searchQuery));
-        
-        // Apply additional filters
-        const matchesTier = filterOptions.includedTiers.includes(client.tier);
-        const matchesRiskProfile = client.riskProfile ? filterOptions.riskProfiles.includes(client.riskProfile) : true;
-        const matchesAum = client.aumValue >= filterOptions.minAum && 
-                          client.aumValue <= filterOptions.maxAum;
-        
-        return matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
-      })
+    ? clients
+        .filter((client: Client) => {
+          // Apply search filter
+          const matchesSearch = !searchQuery || 
+            client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (client.phone && client.phone.includes(searchQuery));
+          
+          // Apply additional filters
+          const matchesTier = filterOptions.includedTiers.includes(client.tier);
+          const matchesRiskProfile = client.riskProfile ? filterOptions.riskProfiles.includes(client.riskProfile) : true;
+          const matchesAum = client.aumValue >= filterOptions.minAum && 
+                            client.aumValue <= filterOptions.maxAum;
+          
+          return matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
+        })
+        // Sort by alert count (descending)
+        .sort((a, b) => {
+          // Put clients with alerts first, sorted by most alerts
+          const aAlertCount = a.alertCount || 0;
+          const bAlertCount = b.alertCount || 0;
+          return bAlertCount - aAlertCount;
+        })
     : [];
   
   // Reset filters function
