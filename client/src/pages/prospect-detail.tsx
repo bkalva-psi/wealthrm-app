@@ -26,6 +26,14 @@ export default function ProspectDetail() {
   // Fetch prospect data
   const { data: prospect, isLoading, error } = useQuery({
     queryKey: ['/api/prospects', prospectId],
+    queryFn: async () => {
+      if (!prospectId) throw new Error("No prospect ID provided");
+      const response = await fetch(`/api/prospects/${prospectId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch prospect details");
+      }
+      return response.json();
+    },
     enabled: prospectId !== null,
   });
 
