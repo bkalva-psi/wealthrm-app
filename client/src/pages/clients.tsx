@@ -45,8 +45,6 @@ interface ClientCardProps {
 
 function ClientCard({ client, onClick }: ClientCardProps) {
   const tierColors = getTierColor(client.tier);
-  // Generate a random number of alerts between 0 and 3
-  const alertCount = Math.floor(Math.random() * 4);
   
   // Generate initials if not available
   const getInitials = (name: string) => {
@@ -54,6 +52,30 @@ function ClientCard({ client, onClick }: ClientCardProps) {
       .map(part => part.charAt(0))
       .join('')
       .toUpperCase();
+  };
+  
+  // Format performance value with sign and color
+  const formatPerformance = (performance: number | null | undefined) => {
+    if (performance === null || performance === undefined) {
+      return <span className="text-xs text-emerald-600 mt-1">1Y +8.5%</span>;
+    }
+    
+    const sign = performance >= 0 ? '+' : '';
+    const colorClass = performance >= 0 ? 'text-emerald-600' : 'text-red-600';
+    
+    return <span className={`text-xs ${colorClass} mt-1`}>1Y {sign}{performance.toFixed(1)}%</span>;
+  };
+  
+  // Calculate days since last transaction
+  const getDaysSinceTransaction = (date: Date | null | undefined) => {
+    if (!date) return "N/A";
+    
+    const transactionDate = new Date(date);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - transactionDate.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return `${diffDays} days ago`;
   };
   
   return (
@@ -64,16 +86,16 @@ function ClientCard({ client, onClick }: ClientCardProps) {
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
-            {getInitials(client.fullName)}
+            {client.initials || getInitials(client.fullName)}
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-slate-800">{client.fullName}</h3>
-              {alertCount > 0 && (
-                <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center">
+              {client.alertCount > 0 && (
+                <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center relative">
                   <Bell className="h-3 w-3 text-white" />
                   <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-                    {alertCount}
+                    {client.alertCount}
                   </span>
                 </div>
               )}
@@ -93,7 +115,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
           <div className="border-r border-slate-200 pr-3">
             <div className="text-xs text-slate-500 mb-1">AUM</div>
             <div className="text-sm font-medium text-slate-700">{client.aum}</div>
-            <div className="text-xs text-emerald-600 mt-1">1Y +12.5%</div>
+            {formatPerformance(client.yearlyPerformance)}
           </div>
           <div>
             <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
@@ -110,7 +132,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
           <div>
             <div className="text-xs text-slate-500 mb-1">Last Txn</div>
             <div className="text-sm text-slate-500">
-              {Math.floor(Math.random() * 30) + 1} days ago
+              {getDaysSinceTransaction(client.lastTransactionDate)}
             </div>
           </div>
         </div>

@@ -30,7 +30,10 @@ export const clients = pgTable("clients", {
   email: text("email"),
   phone: text("phone"),
   lastContactDate: timestamp("last_contact_date"),
+  lastTransactionDate: timestamp("last_transaction_date"),
   riskProfile: text("risk_profile").default("moderate"), // conservative, moderate, aggressive
+  yearlyPerformance: real("yearly_performance"), // Performance as percentage
+  alertCount: integer("alert_count").default(0), // Number of active alerts
   createdAt: timestamp("created_at").defaultNow(),
   assignedTo: integer("assigned_to").references(() => users.id),
 });
