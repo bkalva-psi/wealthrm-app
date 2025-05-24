@@ -71,7 +71,9 @@ function ProspectCard({ prospect, onClick }: ProspectCardProps) {
   return (
     <div 
       className="bg-white p-3 rounded-md shadow-sm mb-2 cursor-pointer border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all"
-      onClick={() => onClick(prospect.id)}
+      onClick={() => {
+        window.location.hash = `/prospect-detail/${prospect.id}`;
+      }}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">

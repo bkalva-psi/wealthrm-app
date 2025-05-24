@@ -395,6 +395,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={readOnly || isSubmitting}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -435,6 +436,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                           max="100"
                           {...field}
                           onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                          disabled={readOnly || isSubmitting}
                         />
                       </FormControl>
                       <FormMessage />
@@ -456,6 +458,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={readOnly || isSubmitting}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -526,6 +529,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                         placeholder="Add any additional information about the prospect"
                         className="min-h-[100px]"
                         {...field}
+                        disabled={readOnly || isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
