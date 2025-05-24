@@ -153,7 +153,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/clients", authMiddleware, async (req, res) => {
     try {
       const assignedTo = req.session.userId;
-      const clients = await storage.getClients(assignedTo);
       
       // Fetch all client data directly from the database to ensure all fields are returned
       const result = await pool.query(`
