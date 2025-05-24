@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, date, doublePrecision } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -73,7 +73,24 @@ export const clients = pgTable("clients", {
   aumValue: real("aum_value").notNull(), // Numeric value for sorting
   riskProfile: text("risk_profile").default("moderate"), // conservative, moderate, aggressive
   investmentHorizon: text("investment_horizon"), // Short-term, Medium-term, Long-term
-  yearlyPerformance: real("yearly_performance"), // Performance as percentage
+  
+  // Portfolio Information
+  totalInvestedAmount: integer("total_invested_amount"),
+  currentValue: integer("current_value"),
+  unrealizedGains: integer("unrealized_gains"),
+  unrealizedGainsPercent: doublePrecision("unrealized_gains_percent"),
+  oneYearReturn: doublePrecision("one_year_return"),
+  threeYearReturn: doublePrecision("three_year_return"),
+  fiveYearReturn: doublePrecision("five_year_return"),
+  portfolioStartDate: date("portfolio_start_date"),
+  lastValuationDate: date("last_valuation_date"),
+  riskScore: integer("risk_score"),
+  esgScore: integer("esg_score"),
+  volatility: doublePrecision("volatility"),
+  sharpeRatio: doublePrecision("sharpe_ratio"),
+  assetAllocation: jsonb("asset_allocation"), // {equity: 60, fixedIncome: 30, cash: 5, alternative: 5}
+  sectorExposure: jsonb("sector_exposure"), // {financial: 30, technology: 25, ...}
+  geographicExposure: jsonb("geographic_exposure"), // {india: 80, us: 15, ...}
   investmentObjectives: text("investment_objectives"), // Comma-separated or JSON
   preferredProducts: text("preferred_products"), // Comma-separated or JSON
   sourceOfWealth: text("source_of_wealth"),
