@@ -56,7 +56,12 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             {client.initials}
           </div>
           <div className="flex-1">
-            <h3 className="font-medium text-slate-800">{client.fullName}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-slate-800">{client.fullName}</h3>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500" onClick={(e) => e.stopPropagation()}>
+                <Mail className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="text-xs text-slate-500">{client.phone}</div>
             <div className="text-xs text-slate-500">{client.email}</div>
           </div>
@@ -64,8 +69,12 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             {client.tier.charAt(0).toUpperCase() + client.tier.slice(1)}
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          <div>
+        
+        {/* Horizontal line below contact info */}
+        <div className="h-px bg-slate-200 my-3"></div>
+        
+        <div className="grid grid-cols-2 gap-3 mt-2">
+          <div className="border-r border-slate-200 pr-3">
             <div className="text-xs text-slate-500 mb-1">AUM</div>
             <div className="text-sm font-medium text-slate-700">{client.aum}</div>
           </div>
@@ -75,21 +84,10 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
             </div>
           </div>
-          <div>
+          <div className="col-span-2">
             <div className="text-xs text-slate-500 mb-1">Last Contact</div>
             <div className="text-sm text-slate-500">
               {formatRelativeDate(client.lastContactDate)}
-            </div>
-          </div>
-          <div>
-            <div className="text-xs text-slate-500 mb-1">Contact</div>
-            <div className="flex space-x-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500" onClick={(e) => e.stopPropagation()}>
-                <Phone className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500" onClick={(e) => e.stopPropagation()}>
-                <Mail className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </div>
