@@ -2,6 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Accessibility styles */
+.high-contrast {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 240 100% 20%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 24 100% 50%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 95%;
+  --muted-foreground: 0 0% 0%;
+  --accent: 0 0% 90%;
+  --accent-foreground: 0 0% 0%;
+  --border: 0 0% 0%;
+  --input: 0 0% 80%;
+  --ring: 240 100% 20%;
+}
+
+.high-contrast .border {
+  border-width: 2px !important;
+}
+
+.high-contrast .text-muted-foreground {
+  color: #000000 !important;
+}
+
+.high-contrast .card,
+.high-contrast .button,
+.high-contrast .input,
+.high-contrast .select {
+  border: 2px solid #000000 !important;
+}
+
+.high-contrast :focus {
+  outline: 3px solid #FF8000 !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader optimizations */
+.screen-reader-optimized .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.screen-reader-optimized .visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulse 2s infinite;
+}
+
+/* Mobile bottom spacing to accommodate the bottom navigation bar */
+.pb-mobile-nav {
+  padding-bottom: 5rem;
+}
+
 :root {
       /* Ujjivan Small Finance Bank Theme Colors */
       --background: 0 0% 100%;
