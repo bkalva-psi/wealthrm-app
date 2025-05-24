@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { pool } from "./db";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { z } from "zod";
@@ -153,7 +154,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const assignedTo = req.session.userId;
       const clients = await storage.getClients(assignedTo);
-      res.json(clients);
+      
+      // Fetch all client data directly from the database to ensure all fields are returned
+      const result = await pool.query(`
+        SELECT 
+          id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
+          email, phone, last_contact_date as "lastContactDate", 
+          last_transaction_date as "lastTransactionDate", 
+          risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
+          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo"
+        FROM clients
+        WHERE assigned_to = $1
+      `, [assignedTo]);
+      
+      res.json(result.rows);
     } catch (error) {
       console.error("Get clients error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -164,8 +178,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const assignedTo = req.session.userId;
       const limit = Number(req.query.limit) || 4;
-      const clients = await storage.getRecentClients(limit, assignedTo);
-      res.json(clients);
+      
+      // Fetch clients data directly from the database to include all fields
+      const result = await pool.query(`
+        SELECT 
+          id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
+          email, phone, last_contact_date as "lastContactDate", 
+          last_transaction_date as "lastTransactionDate", 
+          risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
+          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo"
+        FROM clients
+        WHERE assigned_to = $1
+        ORDER BY created_at DESC
+        LIMIT $2
+      `, [assignedTo, limit]);
+      
+      res.json(result.rows);
     } catch (error) {
       console.error("Get recent clients error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -180,13 +208,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid client ID" });
       }
       
-      const client = await storage.getClient(id);
+      // Fetch client data directly from the database to include all fields
+      const result = await pool.query(`
+        SELECT 
+          id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
+          email, phone, last_contact_date as "lastContactDate", 
+          last_transaction_date as "lastTransactionDate", 
+          risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
+          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo"
+        FROM clients
+        WHERE id = $1
+      `, [id]);
       
-      if (!client) {
+      if (result.rows.length === 0) {
         return res.status(404).json({ message: "Client not found" });
       }
       
-      res.json(client);
+      res.json(result.rows[0]);
     } catch (error) {
       console.error("Get client error:", error);
       res.status(500).json({ message: "Internal server error" });
