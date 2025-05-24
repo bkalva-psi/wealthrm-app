@@ -53,6 +53,14 @@ interface Prospect {
   notes: string;
 }
 
+interface FilterOptions {
+  minPotentialAum: number;
+  maxPotentialAum: number;
+  minProbabilityScore: number;
+  maxProbabilityScore: number;
+  includedStages: string[];
+}
+
 interface ProspectCardProps {
   prospect: Prospect;
   onClick: (id: number) => void;
@@ -169,6 +177,17 @@ export default function Prospects() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeProspects, setActiveProspects] = useState<Prospect[]>([]);
   const [draggedItem, setDraggedItem] = useState<Prospect | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState(0);
+  
+  // Filter options state
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    minPotentialAum: 0,
+    maxPotentialAum: 10000000,
+    minProbabilityScore: 0,
+    maxProbabilityScore: 100,
+    includedStages: ['new', 'qualified', 'proposal', 'won', 'lost']
+  });
   
   // Set page title
   useEffect(() => {
@@ -179,13 +198,109 @@ export default function Prospects() {
     queryKey: ['/api/prospects']
   });
   
+  // Define the stages for the pipeline and filters
+  const stages = [
+    { id: 'discovery', title: 'Discovery' },
+    { id: 'qualified', title: 'Qualified' },
+    { id: 'proposal', title: 'Proposal' },
+    { id: 'negotiation', title: 'Negotiation' },
+    { id: 'won', title: 'Won' },
+    { id: 'lost', title: 'Lost' }
+  ];
+  
   // Update active prospects when data is loaded
   useEffect(() => {
     if (prospects) {
       console.log("Prospects data loaded:", prospects);
       setActiveProspects(prospects);
+      
+      // Reset active filters count when prospects data changes
+      calculateActiveFilters();
     }
   }, [prospects]);
+  
+  // Calculate number of active filters
+  const calculateActiveFilters = () => {
+    let count = 0;
+    
+    if (filterOptions.minPotentialAum > 0) count++;
+    if (filterOptions.maxPotentialAum < 10000000) count++;
+    if (filterOptions.minProbabilityScore > 0) count++;
+    if (filterOptions.maxProbabilityScore < 100) count++;
+    if (filterOptions.includedStages.length < 5) count++;
+    
+    setActiveFilters(count);
+  };
+  
+  // Reset filters to default values
+  const resetFilters = () => {
+    setFilterOptions({
+      minPotentialAum: 0,
+      maxPotentialAum: 10000000,
+      minProbabilityScore: 0,
+      maxProbabilityScore: 100,
+      includedStages: ['new', 'qualified', 'proposal', 'won', 'lost']
+    });
+    setActiveFilters(0);
+  };
+  
+  // Export prospects to CSV
+  const exportProspects = () => {
+    if (!prospects || prospects.length === 0) return;
+    
+    // Filter prospects based on current filters
+    const filteredProspects = prospects.filter(prospect => {
+      // Apply filters
+      const potentialAumInRange = 
+        prospect.potentialAumValue >= filterOptions.minPotentialAum && 
+        prospect.potentialAumValue <= filterOptions.maxPotentialAum;
+      
+      const probabilityInRange = 
+        prospect.probabilityScore >= filterOptions.minProbabilityScore && 
+        prospect.probabilityScore <= filterOptions.maxProbabilityScore;
+      
+      const stageIncluded = filterOptions.includedStages.includes(prospect.stage);
+      
+      // Apply search query
+      const matchesSearch = searchQuery === "" || 
+        prospect.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prospect.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prospect.phone.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return potentialAumInRange && probabilityInRange && stageIncluded && matchesSearch;
+    });
+    
+    // Create CSV content
+    const headers = ['Name', 'Email', 'Phone', 'Potential AUM', 'Probability Score', 'Stage', 'Last Contact', 'Products of Interest', 'Notes'];
+    const rows = filteredProspects.map(p => [
+      p.fullName,
+      p.email,
+      p.phone,
+      p.potentialAum,
+      `${p.probabilityScore}%`,
+      p.stage,
+      p.lastContactDate,
+      p.productsOfInterest,
+      p.notes
+    ]);
+    
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `prospects_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -231,14 +346,7 @@ export default function Prospects() {
     window.location.hash = `/prospects/${id}`;
   };
   
-  // Pipeline stages configuration
-  const stages = [
-    { id: 'new', title: 'New Leads' },
-    { id: 'qualified', title: 'Qualified' },
-    { id: 'proposal', title: 'Proposal' },
-    { id: 'won', title: 'Won' },
-    { id: 'lost', title: 'Lost' }
-  ];
+  // Using the stages defined above
   
   return (
     <div>
