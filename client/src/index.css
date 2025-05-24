@@ -56,5 +56,61 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  
+  /* Responsive and mobile utilities */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-500;
+  }
+  
+  /* Ujjivan-specific styling */
+  .bg-ujjivan-primary {
+    @apply bg-primary-600;
+  }
+  
+  .text-ujjivan-primary {
+    @apply text-primary-600;
+  }
+  
+  .bg-ujjivan-secondary {
+    @apply bg-secondary-500;
+  }
+  
+  .text-ujjivan-secondary {
+    @apply text-secondary-500;
+  }
+  
+  /* Mobile-specific optimizations */
+  @media (max-width: 640px) {
+    .text-sm-mobile {
+      font-size: 0.813rem;
+    }
+    
+    .text-xs-mobile {
+      font-size: 0.75rem;
+    }
+    
+    .p-mobile {
+      padding: 0.5rem;
+    }
   }
 }
