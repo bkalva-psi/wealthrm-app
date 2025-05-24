@@ -13,19 +13,8 @@ import {
   Filter,
   ChevronDown
 } from "lucide-react";
-
-interface Client {
-  id: number;
-  fullName: string;
-  initials: string;
-  tier: string;
-  aum: string;
-  aumValue: number;
-  email: string;
-  phone: string;
-  lastContactDate: string;
-  riskProfile: string;
-}
+import { clientApi } from "@/lib/api";
+import { Client } from "@shared/schema";
 
 export default function Clients() {
   const [, navigate] = useLocation();
@@ -37,15 +26,17 @@ export default function Clients() {
     document.title = "Clients | Wealth RM";
   }, []);
   
+  // Use the clientApi service to fetch clients data
   const { data: clients, isLoading } = useQuery({
-    queryKey: ['/api/clients'],
+    queryKey: ['clients'],
+    queryFn: () => clientApi.getClients(),
   });
   
   const filteredClients = clients && searchQuery 
     ? clients.filter((client: Client) => 
         client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        client.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        client.phone?.includes(searchQuery)
+        (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (client.phone && client.phone.includes(searchQuery))
       )
     : clients;
   
