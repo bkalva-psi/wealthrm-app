@@ -8,6 +8,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -592,27 +593,51 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Products of Interest</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={readOnly || isSubmitting}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select products" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Mutual Funds">Mutual Funds</SelectItem>
-                          <SelectItem value="Fixed Deposits">Fixed Deposits</SelectItem>
-                          <SelectItem value="Equities">Equities</SelectItem>
-                          <SelectItem value="Bonds">Bonds</SelectItem>
-                          <SelectItem value="Insurance">Insurance</SelectItem>
-                          <SelectItem value="Tax Planning">Tax Planning</SelectItem>
-                          <SelectItem value="Retirement Planning">Retirement Planning</SelectItem>
-                          <SelectItem value="Estate Planning">Estate Planning</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="border rounded-md p-4 space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {[
+                            { id: "mutual-funds", label: "Mutual Funds" },
+                            { id: "fixed-deposits", label: "Fixed Deposits" },
+                            { id: "equities", label: "Equities" },
+                            { id: "bonds", label: "Bonds" },
+                            { id: "insurance", label: "Insurance" },
+                            { id: "tax-planning", label: "Tax Planning" },
+                            { id: "retirement-planning", label: "Retirement Planning" },
+                            { id: "estate-planning", label: "Estate Planning" }
+                          ].map(product => (
+                            <div key={product.id} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={product.id}
+                                checked={
+                                  Array.isArray(field.value) 
+                                    ? field.value.includes(product.label) 
+                                    : field.value === product.label
+                                }
+                                onCheckedChange={(checked) => {
+                                  const currentValue = Array.isArray(field.value) 
+                                    ? field.value 
+                                    : field.value 
+                                      ? [field.value] 
+                                      : [];
+                                  
+                                  const newValue = checked
+                                    ? [...currentValue, product.label]
+                                    : currentValue.filter(v => v !== product.label);
+                                  
+                                  field.onChange(newValue.length > 0 ? newValue : null);
+                                }}
+                                disabled={readOnly || isSubmitting}
+                              />
+                              <label 
+                                htmlFor={product.id}
+                                className="text-sm cursor-pointer"
+                              >
+                                {product.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -683,7 +708,62 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                   {readOnly ? "Back" : "Cancel"}
                 </Button>
                 {!readOnly && (
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      
+                      // For existing prospects, handle updates directly
+                      if (prospectId) {
+                        setIsSubmitting(true);
+                        const formData = form.getValues();
+                        
+                        // Direct API call to update the prospect
+                        fetch(`/api/prospects/${prospectId}`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(formData),
+                          credentials: "include"
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                          setIsSubmitting(false);
+                          
+                          if (data.error) {
+                            toast({
+                              title: "Error",
+                              description: data.error || "Failed to update prospect",
+                              variant: "destructive"
+                            });
+                          } else {
+                            // Success - invalidate queries and navigate
+                            queryClient.invalidateQueries({ queryKey: ['/api/prospects'] });
+                            queryClient.invalidateQueries({ queryKey: ['/api/prospects/stage'] });
+                            
+                            toast({
+                              title: "Success",
+                              description: "Prospect updated successfully"
+                            });
+                            
+                            // Navigate back to prospect detail view
+                            window.location.hash = `/prospect-detail/${prospectId}`;
+                          }
+                        })
+                        .catch(error => {
+                          setIsSubmitting(false);
+                          toast({
+                            title: "Error",
+                            description: "Failed to update prospect",
+                            variant: "destructive"
+                          });
+                        });
+                      } else {
+                        // For new prospects, use the normal form submission
+                        form.handleSubmit(onSubmit)();
+                      }
+                    }}
+                  >
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {prospectId ? "Update Prospect" : "Add Prospect"}
                   </Button>
