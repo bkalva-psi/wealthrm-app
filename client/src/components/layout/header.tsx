@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
+import ujjivanLogo from "../../assets/ujjivan-logo.png";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -38,20 +39,28 @@ export function Header() {
     <header className="bg-white shadow-sm z-10">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Mobile Menu Button */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden text-slate-500 hover:text-slate-600">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0">
-            <Sidebar />
-          </SheetContent>
-        </Sheet>
+        <div className="flex items-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden text-slate-500 hover:text-slate-600">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0">
+              <Sidebar />
+            </SheetContent>
+          </Sheet>
+          
+          {/* Ujjivan Logo (visible on mobile) */}
+          <div className="flex items-center md:hidden ml-2">
+            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-8 w-auto" />
+            <h1 className="text-primary-700 text-sm font-bold ml-2">Wealth RM</h1>
+          </div>
+        </div>
         
         {/* Search Bar */}
-        <div className="flex-1 max-w-lg mx-4">
+        <div className="flex-1 max-w-lg mx-4 hidden sm:block">
           <form onSubmit={handleSearch}>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

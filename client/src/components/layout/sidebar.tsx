@@ -11,6 +11,7 @@ import {
   Package,
   Settings,
 } from "lucide-react";
+import ujjivanLogo from "../../assets/ujjivan-logo.png";
 
 const navigationItems = [
   { name: "Dashboard", href: "/", icon: Home },
@@ -30,8 +31,11 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex md:flex-shrink-0">
       <div className="flex flex-col w-64 border-r border-slate-200 bg-white">
-        <div className="flex items-center justify-center h-16 bg-primary-600">
-          <h1 className="text-white text-xl font-bold">Wealth RM</h1>
+        <div className="flex items-center justify-center h-16 bg-white border-b border-slate-200">
+          <div className="flex items-center space-x-2">
+            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+            <h1 className="text-primary-700 text-lg font-bold">Wealth RM</h1>
+          </div>
         </div>
         
         {/* User Profile Summary */}
