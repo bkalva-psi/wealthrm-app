@@ -100,18 +100,6 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3 py-1">
-          {/* Client Avatar */}
-          <div 
-            className="cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'personal')}
-            title="View client personal information"
-          >
-            <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
-              <AvatarImage src={svgToDataURL(generateAvatar(client.fullName, client.tier))} alt={client.fullName} />
-              <AvatarFallback>{client.initials}</AvatarFallback>
-            </Avatar>
-          </div>
-
           {/* Alert section - navigates to actions page */}
           {(client.alertCount ?? 0) > 0 && (
             <div 

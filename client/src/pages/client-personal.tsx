@@ -11,7 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { clientApi } from "@/lib/api";
+import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
 
 export default function ClientPersonalPage() {
   const [clientId, setClientId] = useState<number | null>(null);
@@ -119,8 +121,15 @@ export default function ClientPersonalPage() {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="w-full md:w-1/3 space-y-4">
-                  <div className="h-40 w-40 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 mx-auto">
-                    <User className="h-20 w-20" />
+                  <div className="h-40 w-40 mx-auto">
+                    <Avatar className="h-40 w-40 border-4 border-white shadow-md">
+                      <AvatarImage 
+                        src={svgToDataURL(generateAvatar(client.fullName, client.tier))} 
+                        alt={client.fullName} 
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="text-4xl">{client.initials}</AvatarFallback>
+                    </Avatar>
                   </div>
                   <h2 className="text-xl font-medium text-center">{client.fullName}</h2>
                   <Badge className="mx-auto block w-fit" variant="outline">{client.tier.toUpperCase()} Tier Client</Badge>
