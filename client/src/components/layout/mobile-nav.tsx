@@ -1,4 +1,4 @@
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { cn } from "@/lib/utils";
 import {
   Home,
@@ -33,16 +33,10 @@ export function MobileNav() {
         {navigationItems.map((item) => {
           const isActive = item.href === "#" ? false : location === item.href;
           
-          return (
+          return item.href === "#" ? (
             <button
               key={item.name}
-              onClick={(e) => {
-                if (item.href === "#") {
-                  handleMoreClick(e);
-                } else {
-                  navigate(item.href);
-                }
-              }}
+              onClick={handleMoreClick}
               className={cn(
                 "flex flex-col items-center justify-center space-y-1 p-1",
                 isActive ? "text-primary-600" : "text-slate-500"
@@ -54,6 +48,21 @@ export function MobileNav() {
               )} />
               <span className="text-[10px] sm:text-xs">{item.name}</span>
             </button>
+          ) : (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "flex flex-col items-center justify-center space-y-1 p-1",
+                isActive ? "text-primary-600" : "text-slate-500"
+              )}
+            >
+              <item.icon className={cn(
+                "h-5 w-5 sm:h-6 sm:w-6",
+                isActive ? "text-primary-600" : "text-slate-500"
+              )} />
+              <span className="text-[10px] sm:text-xs">{item.name}</span>
+            </Link>
           );
         })}
       </div>

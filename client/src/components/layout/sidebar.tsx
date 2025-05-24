@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
 
 const navigationItems = [
   { name: "Dashboard", href: "/", icon: Home },
@@ -26,16 +27,7 @@ const navigationItems = [
 
 export function Sidebar({ mobile = false }: { mobile?: boolean }) {
   const { user } = useAuth();
-  const [currentPath, setCurrentPath] = useState(window.location.hash.replace(/^#/, '') || '/');
-  
-  useEffect(() => {
-    const updatePath = () => {
-      setCurrentPath(window.location.hash.replace(/^#/, '') || '/');
-    };
-    
-    window.addEventListener('hashchange', updatePath);
-    return () => window.removeEventListener('hashchange', updatePath);
-  }, []);
+  const [location] = useLocation();
   
   const sidebarContent = (
     <div className={cn("flex flex-col w-full md:w-64 border-r border-slate-200 bg-white h-full")}>
@@ -58,9 +50,9 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
           const isActive = location === item.href;
           
           return (
-            <a
+            <Link
               key={item.name}
-              href={`#${item.href}`}
+              href={item.href}
               className={cn(
                 "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                 isActive
@@ -75,7 +67,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
                 )}
               />
               {item.name}
-            </a>
+            </Link>
           );
         })}
       </nav>
