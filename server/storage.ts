@@ -9,6 +9,8 @@ import {
   aumTrends, AumTrend, InsertAumTrend,
   salesPipeline, SalesPipeline, InsertSalesPipeline
 } from "@shared/schema";
+import { eq, desc, and, gte, lt, lte } from "drizzle-orm";
+import { db } from "./db";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -787,12 +789,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteClient(id: number): Promise<boolean> {
-    const result = await db.delete(clients).where(eq(clients.id, id));
-    return true;
+    const result = await db.delete(clients)
+      .where(eq(clients.id, id))
+      .returning({ id: clients.id });
+    return result.length > 0;
   }
 
   async getRecentClients(limit: number, assignedTo?: number): Promise<Client[]> {
-    let query = db.select().from(clients).orderBy(clients.createdAt);
+    let query = db.select().from(clients).orderBy(desc(clients.createdAt));
     
     if (assignedTo) {
       query = query.where(eq(clients.assignedTo, assignedTo));
