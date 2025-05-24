@@ -22,20 +22,93 @@ export const insertUserSchema = createInsertSchema(users).omit({
 // Client model
 export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
+  // Basic Personal Information
   fullName: text("full_name").notNull(),
   initials: text("initials"),
+  email: text("email"),
+  phone: text("phone"),
+  dateOfBirth: timestamp("date_of_birth"),
+  maritalStatus: text("marital_status"), // Single, Married, Divorced, Widowed
+  anniversaryDate: timestamp("anniversary_date"),
+  
+  // Address Information
+  homeAddress: text("home_address"),
+  homeCity: text("home_city"),
+  homeState: text("home_state"),
+  homePincode: text("home_pincode"),
+  workAddress: text("work_address"),
+  workCity: text("work_city"),
+  workState: text("work_state"),
+  workPincode: text("work_pincode"),
+  
+  // Professional Information
+  profession: text("profession"),
+  sectorOfEmployment: text("sector_of_employment"),
+  designation: text("designation"),
+  companyName: text("company_name"),
+  annualIncome: text("annual_income"),
+  workExperience: integer("work_experience"), // in years
+  
+  // KYC & Compliance Information
+  kycDate: timestamp("kyc_date"),
+  kycStatus: text("kyc_status"), // Verified, Pending, Expired
+  identityProofType: text("identity_proof_type"), // Aadhaar, PAN, Passport
+  identityProofNumber: text("identity_proof_number"),
+  addressProofType: text("address_proof_type"),
+  panNumber: text("pan_number"),
+  taxResidencyStatus: text("tax_residency_status"),
+  fatcaStatus: text("fatca_status"),
+  riskAssessmentScore: integer("risk_assessment_score"),
+  
+  // Family Information
+  spouseName: text("spouse_name"),
+  dependentsCount: integer("dependents_count"),
+  childrenDetails: text("children_details"), // Stored as JSON text
+  nomineeDetails: text("nominee_details"),
+  familyFinancialGoals: text("family_financial_goals"),
+  
+  // Investment Profile
   tier: text("tier").notNull().default("silver"), // silver, gold, platinum
   aum: text("aum").notNull(), // Assets Under Management
   aumValue: real("aum_value").notNull(), // Numeric value for sorting
-  email: text("email"),
-  phone: text("phone"),
-  lastContactDate: timestamp("last_contact_date"),
-  lastTransactionDate: timestamp("last_transaction_date"),
   riskProfile: text("risk_profile").default("moderate"), // conservative, moderate, aggressive
+  investmentHorizon: text("investment_horizon"), // Short-term, Medium-term, Long-term
   yearlyPerformance: real("yearly_performance"), // Performance as percentage
+  investmentObjectives: text("investment_objectives"), // Comma-separated or JSON
+  preferredProducts: text("preferred_products"), // Comma-separated or JSON
+  sourceOfWealth: text("source_of_wealth"),
+  
+  // Communication & Relationship
+  lastContactDate: timestamp("last_contact_date"),
+  preferredContactMethod: text("preferred_contact_method"), // Email, Phone, In-person
+  preferredContactTime: text("preferred_contact_time"), // Morning, Afternoon, Evening
+  communicationFrequency: text("communication_frequency"), // Weekly, Monthly, Quarterly
+  clientSince: timestamp("client_since"),
+  clientAcquisitionSource: text("client_acquisition_source"),
+  
+  // Transaction Information
+  lastTransactionDate: timestamp("last_transaction_date"),
+  totalTransactionCount: integer("total_transaction_count"),
+  averageTransactionValue: real("average_transaction_value"),
+  recurringInvestments: text("recurring_investments"), // JSON text
+  
+  // Additional Wealth Management Fields
+  taxPlanningPreferences: text("tax_planning_preferences"),
+  insuranceCoverage: text("insurance_coverage"), // JSON text
+  retirementGoals: text("retirement_goals"),
+  majorLifeEvents: text("major_life_events"), // JSON text
+  financialInterests: text("financial_interests"), // Comma-separated
+  netWorth: text("net_worth"),
+  liquidityRequirements: text("liquidity_requirements"),
+  foreignInvestments: text("foreign_investments"),
+  
+  // System Fields
   alertCount: integer("alert_count").default(0), // Number of active alerts
   createdAt: timestamp("created_at").defaultNow(),
   assignedTo: integer("assigned_to").references(() => users.id),
+  
+  // Document references could be added here or in a separate table
+  // For now, we'll assume documents are stored in a separate table
 });
 
 export const insertClientSchema = createInsertSchema(clients).omit({
