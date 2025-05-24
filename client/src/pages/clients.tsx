@@ -227,6 +227,9 @@ export default function Clients() {
     setActiveFilters(count);
   };
   
+  // Add debugging for clients
+  console.log('Clients data received:', clients);
+  
   // Filter clients based on search and filter options, then sort by alert count
   const filteredClients = clients
     ? clients
@@ -237,13 +240,22 @@ export default function Clients() {
             (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
             (client.phone && client.phone.includes(searchQuery));
           
-          // Apply additional filters
-          const matchesTier = filterOptions.includedTiers.includes(client.tier);
-          const matchesRiskProfile = client.riskProfile ? filterOptions.riskProfiles.includes(client.riskProfile) : true;
-          const matchesAum = client.aumValue >= filterOptions.minAum && 
-                            client.aumValue <= filterOptions.maxAum;
+          // Apply additional filters with safer checks
+          const matchesTier = client.tier && filterOptions.includedTiers.includes(client.tier);
+          const matchesRiskProfile = !client.riskProfile || filterOptions.riskProfiles.includes(client.riskProfile.toLowerCase());
           
-          return matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
+          // Check if aumValue exists and is a number before comparison
+          const aumValue = typeof client.aumValue === 'number' ? client.aumValue : 0;
+          const matchesAum = aumValue >= filterOptions.minAum && aumValue <= filterOptions.maxAum;
+          
+          // Check filter results
+          const result = matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
+          if (!result) {
+            console.log('Filtered out client:', client.id, client.fullName);
+            console.log('  - Tier match:', matchesTier, 'Risk match:', matchesRiskProfile, 'AUM match:', matchesAum);
+          }
+          
+          return result;
         })
         // Sort by alert count (descending)
         .sort((a, b) => {
