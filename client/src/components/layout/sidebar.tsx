@@ -1,4 +1,4 @@
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
 import {
@@ -49,7 +49,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
           const isActive = location === item.href;
           
           return (
-            <a
+            <Link
               key={item.name}
               href={item.href}
               className={cn(
@@ -66,7 +66,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
                 )}
               />
               {item.name}
-            </a>
+            </Link>
           );
         })}
       </nav>
