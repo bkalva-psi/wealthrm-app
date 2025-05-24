@@ -271,13 +271,6 @@ export default function Clients() {
     <div className="p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
         <h1 className="text-2xl font-bold mb-2 sm:mb-0">Clients</h1>
-        <Button 
-          onClick={handleAddProspectClick}
-          className="flex items-center gap-2"
-        >
-          <UserPlus className="h-4 w-4" />
-          Add Prospect
-        </Button>
       </div>
       
       <Card className="mb-6">
