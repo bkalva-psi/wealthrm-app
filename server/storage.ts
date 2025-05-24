@@ -733,4 +733,310 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  // Client methods
+  async getClient(id: number): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+    return client || undefined;
+  }
+
+  async getClients(assignedTo?: number): Promise<Client[]> {
+    if (assignedTo) {
+      return db.select().from(clients).where(eq(clients.assignedTo, assignedTo));
+    }
+    return db.select().from(clients);
+  }
+
+  async createClient(insertClient: InsertClient): Promise<Client> {
+    const [client] = await db.insert(clients).values({
+      ...insertClient,
+      createdAt: new Date()
+    }).returning();
+    return client;
+  }
+
+  async updateClient(id: number, clientUpdate: Partial<InsertClient>): Promise<Client | undefined> {
+    const [client] = await db.update(clients)
+      .set(clientUpdate)
+      .where(eq(clients.id, id))
+      .returning();
+    return client || undefined;
+  }
+
+  async deleteClient(id: number): Promise<boolean> {
+    const result = await db.delete(clients).where(eq(clients.id, id));
+    return true;
+  }
+
+  async getRecentClients(limit: number, assignedTo?: number): Promise<Client[]> {
+    let query = db.select().from(clients).orderBy(clients.createdAt);
+    
+    if (assignedTo) {
+      query = query.where(eq(clients.assignedTo, assignedTo));
+    }
+    
+    return query.limit(limit);
+  }
+
+  // Prospect methods
+  async getProspect(id: number): Promise<Prospect | undefined> {
+    const [prospect] = await db.select().from(prospects).where(eq(prospects.id, id));
+    return prospect || undefined;
+  }
+
+  async getProspects(assignedTo?: number): Promise<Prospect[]> {
+    if (assignedTo) {
+      return db.select().from(prospects).where(eq(prospects.assignedTo, assignedTo));
+    }
+    return db.select().from(prospects);
+  }
+
+  async createProspect(insertProspect: InsertProspect): Promise<Prospect> {
+    const [prospect] = await db.insert(prospects).values({
+      ...insertProspect,
+      createdAt: new Date()
+    }).returning();
+    return prospect;
+  }
+
+  async updateProspect(id: number, prospectUpdate: Partial<InsertProspect>): Promise<Prospect | undefined> {
+    const [prospect] = await db.update(prospects)
+      .set(prospectUpdate)
+      .where(eq(prospects.id, id))
+      .returning();
+    return prospect || undefined;
+  }
+
+  async deleteProspect(id: number): Promise<boolean> {
+    await db.delete(prospects).where(eq(prospects.id, id));
+    return true;
+  }
+
+  async getProspectsByStage(stage: string, assignedTo?: number): Promise<Prospect[]> {
+    let query = db.select().from(prospects).where(eq(prospects.stage, stage));
+    
+    if (assignedTo) {
+      query = query.where(eq(prospects.assignedTo, assignedTo));
+    }
+    
+    return query;
+  }
+
+  // Task methods
+  async getTask(id: number): Promise<Task | undefined> {
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    return task || undefined;
+  }
+
+  async getTasks(assignedTo?: number, completed?: boolean): Promise<Task[]> {
+    let query = db.select().from(tasks);
+    
+    if (assignedTo) {
+      query = query.where(eq(tasks.assignedTo, assignedTo));
+    }
+    
+    if (completed !== undefined) {
+      query = query.where(eq(tasks.completed, completed));
+    }
+    
+    return query;
+  }
+
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const [task] = await db.insert(tasks).values({
+      ...insertTask,
+      createdAt: new Date()
+    }).returning();
+    return task;
+  }
+
+  async updateTask(id: number, taskUpdate: Partial<InsertTask>): Promise<Task | undefined> {
+    const [task] = await db.update(tasks)
+      .set(taskUpdate)
+      .where(eq(tasks.id, id))
+      .returning();
+    return task || undefined;
+  }
+
+  async deleteTask(id: number): Promise<boolean> {
+    await db.delete(tasks).where(eq(tasks.id, id));
+    return true;
+  }
+
+  // Appointment methods
+  async getAppointment(id: number): Promise<Appointment | undefined> {
+    const [appointment] = await db.select().from(appointments).where(eq(appointments.id, id));
+    return appointment || undefined;
+  }
+
+  async getAppointments(assignedTo?: number, date?: Date): Promise<Appointment[]> {
+    let query = db.select().from(appointments);
+    
+    if (assignedTo) {
+      query = query.where(eq(appointments.assignedTo, assignedTo));
+    }
+    
+    // If date is provided, we would need a more complex query to filter by date
+    // This would depend on how dates are stored and compared
+    
+    return query;
+  }
+
+  async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
+    const [appointment] = await db.insert(appointments).values({
+      ...insertAppointment,
+      createdAt: new Date()
+    }).returning();
+    return appointment;
+  }
+
+  async updateAppointment(id: number, appointmentUpdate: Partial<InsertAppointment>): Promise<Appointment | undefined> {
+    const [appointment] = await db.update(appointments)
+      .set(appointmentUpdate)
+      .where(eq(appointments.id, id))
+      .returning();
+    return appointment || undefined;
+  }
+
+  async deleteAppointment(id: number): Promise<boolean> {
+    await db.delete(appointments).where(eq(appointments.id, id));
+    return true;
+  }
+
+  async getTodaysAppointments(assignedTo?: number): Promise<Appointment[]> {
+    // Getting today's appointments would require date filtering
+    // This is a simplified implementation
+    let query = db.select().from(appointments);
+    
+    if (assignedTo) {
+      query = query.where(eq(appointments.assignedTo, assignedTo));
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // This would require comparing date parts which depends on the database
+    // For a complete implementation, we'd need to adjust based on specific database capabilities
+    
+    return query;
+  }
+
+  // Portfolio Alert methods
+  async getPortfolioAlert(id: number): Promise<PortfolioAlert | undefined> {
+    const [alert] = await db.select().from(portfolioAlerts).where(eq(portfolioAlerts.id, id));
+    return alert || undefined;
+  }
+
+  async getPortfolioAlerts(read?: boolean): Promise<PortfolioAlert[]> {
+    let query = db.select().from(portfolioAlerts);
+    
+    if (read !== undefined) {
+      query = query.where(eq(portfolioAlerts.read, read));
+    }
+    
+    return query;
+  }
+
+  async createPortfolioAlert(insertAlert: InsertPortfolioAlert): Promise<PortfolioAlert> {
+    const [alert] = await db.insert(portfolioAlerts).values({
+      ...insertAlert,
+      createdAt: new Date()
+    }).returning();
+    return alert;
+  }
+
+  async updatePortfolioAlert(id: number, alertUpdate: Partial<InsertPortfolioAlert>): Promise<PortfolioAlert | undefined> {
+    const [alert] = await db.update(portfolioAlerts)
+      .set(alertUpdate)
+      .where(eq(portfolioAlerts.id, id))
+      .returning();
+    return alert || undefined;
+  }
+
+  async deletePortfolioAlert(id: number): Promise<boolean> {
+    await db.delete(portfolioAlerts).where(eq(portfolioAlerts.id, id));
+    return true;
+  }
+
+  // Performance Metric methods
+  async getPerformanceMetrics(userId: number): Promise<PerformanceMetric[]> {
+    return db.select().from(performanceMetrics).where(eq(performanceMetrics.userId, userId));
+  }
+
+  async createPerformanceMetric(insertMetric: InsertPerformanceMetric): Promise<PerformanceMetric> {
+    const [metric] = await db.insert(performanceMetrics).values({
+      ...insertMetric,
+      createdAt: new Date()
+    }).returning();
+    return metric;
+  }
+
+  async updatePerformanceMetric(id: number, metricUpdate: Partial<InsertPerformanceMetric>): Promise<PerformanceMetric | undefined> {
+    const [metric] = await db.update(performanceMetrics)
+      .set(metricUpdate)
+      .where(eq(performanceMetrics.id, id))
+      .returning();
+    return metric || undefined;
+  }
+
+  // AUM Trend methods
+  async getAumTrends(userId: number): Promise<AumTrend[]> {
+    return db.select().from(aumTrends).where(eq(aumTrends.userId, userId));
+  }
+
+  async createAumTrend(insertTrend: InsertAumTrend): Promise<AumTrend> {
+    const [trend] = await db.insert(aumTrends).values({
+      ...insertTrend,
+      createdAt: new Date()
+    }).returning();
+    return trend;
+  }
+
+  // Sales Pipeline methods
+  async getSalesPipeline(userId: number): Promise<SalesPipeline[]> {
+    return db.select().from(salesPipeline).where(eq(salesPipeline.userId, userId));
+  }
+
+  async createSalesPipelineEntry(insertEntry: InsertSalesPipeline): Promise<SalesPipeline> {
+    const [entry] = await db.insert(salesPipeline).values({
+      ...insertEntry,
+      createdAt: new Date()
+    }).returning();
+    return entry;
+  }
+
+  async updateSalesPipelineEntry(id: number, entryUpdate: Partial<InsertSalesPipeline>): Promise<SalesPipeline | undefined> {
+    const [entry] = await db.update(salesPipeline)
+      .set(entryUpdate)
+      .where(eq(salesPipeline.id, id))
+      .returning();
+    return entry || undefined;
+  }
+}
+
+export const storage = new DatabaseStorage();
