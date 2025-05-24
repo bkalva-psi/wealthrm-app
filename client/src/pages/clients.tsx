@@ -101,7 +101,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
             </div>
           </div>
-          <div>
+          <div className="border-r border-slate-200 pr-3">
             <div className="text-xs text-slate-500 mb-1">Last Contact</div>
             <div className="text-sm text-slate-500">
               {formatRelativeDate(client.lastContactDate)}
