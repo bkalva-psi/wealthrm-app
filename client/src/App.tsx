@@ -19,6 +19,11 @@ import Analytics from "@/pages/analytics";
 import Products from "@/pages/products";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
+import ClientActions from "@/pages/client-actions";
+import ClientPersonal from "@/pages/client-personal";
+import ClientPortfolio from "@/pages/client-portfolio";
+import ClientInteractions from "@/pages/client-interactions";
+import ClientTransactions from "@/pages/client-transactions";
 import { Loader2 } from "lucide-react";
 
 // Custom router implementation using hash-based routing
@@ -71,6 +76,19 @@ function AuthenticatedApp() {
       case /^\/prospect-edit\/\d+$/.test(currentRoute):
         const editProspectId = parseInt(currentRoute.split('/')[2]);
         return <AddProspect prospectId={editProspectId} readOnly={false} />;
+        
+      // Client detail pages
+      case /^\/clients\/\d+\/actions$/.test(currentRoute):
+        return <ClientActions />;
+      case /^\/clients\/\d+\/personal$/.test(currentRoute):
+        return <ClientPersonal />;
+      case /^\/clients\/\d+\/portfolio$/.test(currentRoute):
+        return <ClientPortfolio />;
+      case /^\/clients\/\d+\/interactions$/.test(currentRoute):
+        return <ClientInteractions />;
+      case /^\/clients\/\d+\/transactions$/.test(currentRoute):
+        return <ClientTransactions />;
+      
       case currentRoute === '/calendar':
         return <Calendar />;
       case currentRoute === '/tasks':

@@ -83,16 +83,28 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     return tier.charAt(0).toUpperCase() + tier.slice(1);
   };
   
+  // Handle section click with preventing event propagation
+  const handleSectionClick = (e: React.MouseEvent, section: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // Navigate based on section clicked
+    window.location.hash = `/clients/${client.id}/${section}`;
+  };
+  
   return (
     <Card 
-      className={`overflow-hidden hover:shadow-md cursor-pointer transition-shadow mb-4 border-l-4 ${tierColors.border}`}
-      onClick={() => onClick(client.id)}
+      className={`overflow-hidden hover:shadow-md transition-shadow mb-4 border-l-4 ${tierColors.border}`}
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3 py-1">
-          {/* Just show bell icon if there are alerts */}
+          {/* Alert section - navigates to actions page */}
           {(client.alertCount ?? 0) > 0 && (
-            <div className="mt-1 relative">
+            <div 
+              className="mt-1 relative cursor-pointer" 
+              onClick={(e) => handleSectionClick(e, 'actions')}
+              title="View client alerts and actions"
+            >
               <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center">
                 <Bell className="h-3.5 w-3.5 text-white" />
               </div>
@@ -101,7 +113,13 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               </span>
             </div>
           )}
-          <div className="flex-1 overflow-hidden">
+          
+          {/* Personal details section - navigates to personal info page */}
+          <div 
+            className="flex-1 overflow-hidden cursor-pointer" 
+            onClick={(e) => handleSectionClick(e, 'personal')}
+            title="View client personal information"
+          >
             <div className="flex items-center">
               <h3 className="font-medium text-slate-800 truncate">{client.fullName}</h3>
             </div>
@@ -114,24 +132,47 @@ function ClientCard({ client, onClick }: ClientCardProps) {
         <div className="h-px bg-slate-200 my-3"></div>
         
         <div className="grid grid-cols-2 gap-3 mt-2">
-          <div className="border-r border-slate-200 pr-3">
+          {/* AUM section - navigates to portfolio page */}
+          <div 
+            className="border-r border-slate-200 pr-3 cursor-pointer" 
+            onClick={(e) => handleSectionClick(e, 'portfolio')}
+            title="View client portfolio"
+          >
             <div className="text-xs text-slate-500 mb-1">AUM</div>
             <div className="text-sm font-medium text-slate-700">{client.aum}</div>
             {formatPerformance(client.yearlyPerformance)}
           </div>
-          <div>
+          
+          {/* Risk profile - navigates to portfolio page */}
+          <div 
+            className="cursor-pointer" 
+            onClick={(e) => handleSectionClick(e, 'portfolio')}
+            title="View client portfolio"
+          >
             <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
             <div className="text-sm text-slate-700">
               {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
             </div>
           </div>
-          <div className="border-r border-slate-200 pr-3">
+          
+          {/* Last contact - navigates to interactions page */}
+          <div 
+            className="border-r border-slate-200 pr-3 cursor-pointer" 
+            onClick={(e) => handleSectionClick(e, 'interactions')}
+            title="View client interactions"
+          >
             <div className="text-xs text-slate-500 mb-1">Last Contact</div>
             <div className="text-sm text-slate-500">
               {formatRelativeDate(client.lastContactDate)}
             </div>
           </div>
-          <div>
+          
+          {/* Last transaction - navigates to transactions page */}
+          <div 
+            className="cursor-pointer" 
+            onClick={(e) => handleSectionClick(e, 'transactions')}
+            title="View client transactions"
+          >
             <div className="text-xs text-slate-500 mb-1">Last Txn</div>
             <div className="text-sm text-slate-500">
               {getDaysSinceTransaction(client.lastTransactionDate)}
