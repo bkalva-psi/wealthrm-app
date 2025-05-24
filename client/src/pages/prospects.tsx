@@ -152,7 +152,7 @@ export default function Prospects() {
   };
   
   const handleProspectClick = (id: number) => {
-    navigate(`/prospects/${id}`);
+    window.location.hash = `/prospects/${id}`;
   };
   
   return (
@@ -163,7 +163,9 @@ export default function Prospects() {
           <p className="text-sm text-slate-600">Manage your sales opportunities</p>
         </div>
         <Button
-          onClick={() => navigate("/prospects/new")}
+          onClick={() => {
+            window.location.hash = "/prospects/new";
+          }}
           className="flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />

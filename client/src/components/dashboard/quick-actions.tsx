@@ -47,7 +47,9 @@ export function QuickActions() {
       id: "add-prospect",
       icon: UserPlus,
       label: "Add Prospect",
-      action: () => navigate("/prospects/new"),
+      action: () => {
+        window.location.hash = "/prospects/new";
+      },
     },
     {
       id: "schedule",
@@ -77,7 +79,9 @@ export function QuickActions() {
       id: "new-task",
       icon: FolderPlus,
       label: "New Task",
-      action: () => navigate("/tasks/new"),
+      action: () => {
+        window.location.hash = "/tasks/new";
+      },
     },
   ];
   
