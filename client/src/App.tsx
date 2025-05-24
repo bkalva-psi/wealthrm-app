@@ -55,24 +55,26 @@ function AuthenticatedApp() {
   const renderComponent = () => {
     console.log('Rendering component for route:', currentRoute);
     
-    switch(currentRoute) {
-      case '/':
+    switch(true) {
+      case currentRoute === '/':
         return <Dashboard />;
-      case '/clients':
+      case currentRoute === '/clients':
         return <Clients />;
-      case '/prospects':
+      case currentRoute === '/prospects':
         return <Prospects />;
-      case '/prospects/new':
+      case currentRoute === '/prospects/new':
         return <AddProspect />;
-      case '/calendar':
+      case /^\/prospects\/\d+$/.test(currentRoute):
+        return <ProspectDetail />;
+      case currentRoute === '/calendar':
         return <Calendar />;
-      case '/tasks':
+      case currentRoute === '/tasks':
         return <Tasks />;
-      case '/analytics':
+      case currentRoute === '/analytics':
         return <Analytics />;
-      case '/products':
+      case currentRoute === '/products':
         return <Products />;
-      case '/settings':
+      case currentRoute === '/settings':
         return <Settings />;
       default:
         return <NotFound />;
