@@ -90,25 +90,25 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <div className={`h-12 w-12 rounded-full ${tierColors.bg} border ${tierColors.border} flex items-center justify-center ${tierColors.text} font-medium text-lg`}>
-            {client.initials || getInitials(client.fullName)}
+          {/* Alert icon instead of initials */}
+          <div className={`h-12 w-12 rounded-full ${tierColors.bg} border ${tierColors.border} flex items-center justify-center ${tierColors.text} font-medium text-lg relative`}>
+            {(client.alertCount ?? 0) > 0 ? (
+              <>
+                <Bell className="h-5 w-5 text-white" />
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                  {client.alertCount}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm">{formatTier(client.tier)}</span>
+            )}
           </div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <h3 className="font-medium text-slate-800">{client.fullName}</h3>
-              </div>
-              {(client.alertCount ?? 0) > 0 && (
-                <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center relative">
-                  <Bell className="h-3 w-3 text-white" />
-                  <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-                    {client.alertCount}
-                  </span>
-                </div>
-              )}
+          <div className="flex-1 overflow-hidden">
+            <div className="flex items-center">
+              <h3 className="font-medium text-slate-800 truncate">{client.fullName}</h3>
             </div>
             <div className="text-xs text-slate-500">{client.phone}</div>
-            <div className="text-xs text-slate-500">{client.email}</div>
+            <div className="text-xs text-slate-500 truncate">{client.email}</div>
           </div>
         </div>
         
