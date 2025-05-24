@@ -828,39 +828,51 @@ export class DatabaseStorage implements IStorage {
 
   async updateProspect(id: number, prospectUpdate: Partial<InsertProspect>): Promise<Prospect | undefined> {
     try {
-      // Special handling for productsOfInterest field
-      let updateData = {...prospectUpdate};
+      // Get the current prospect for safe updates
+      const currentProspect = await this.getProspect(id);
+      if (!currentProspect) return undefined;
       
-      // Make sure date fields are properly handled
-      if (updateData.lastContactDate && !(updateData.lastContactDate instanceof Date)) {
-        if (typeof updateData.lastContactDate === 'string') {
-          updateData.lastContactDate = new Date(updateData.lastContactDate);
-        } else {
-          // If it's neither a Date nor a string, just remove it
-          delete updateData.lastContactDate;
+      // Create a clean update object with only the fields we want to update
+      const updateData: Record<string, any> = {};
+      
+      // Copy non-date fields directly
+      if (prospectUpdate.fullName !== undefined) updateData.fullName = prospectUpdate.fullName;
+      if (prospectUpdate.initials !== undefined) updateData.initials = prospectUpdate.initials;
+      if (prospectUpdate.potentialAum !== undefined) updateData.potentialAum = prospectUpdate.potentialAum;
+      if (prospectUpdate.potentialAumValue !== undefined) updateData.potentialAumValue = prospectUpdate.potentialAumValue;
+      if (prospectUpdate.email !== undefined) updateData.email = prospectUpdate.email;
+      if (prospectUpdate.phone !== undefined) updateData.phone = prospectUpdate.phone;
+      if (prospectUpdate.stage !== undefined) updateData.stage = prospectUpdate.stage;
+      if (prospectUpdate.probabilityScore !== undefined) updateData.probabilityScore = prospectUpdate.probabilityScore;
+      if (prospectUpdate.notes !== undefined) updateData.notes = prospectUpdate.notes;
+      if (prospectUpdate.assignedTo !== undefined) updateData.assignedTo = prospectUpdate.assignedTo;
+      
+      // Skip lastContactDate to avoid date conversion issues
+      
+      // Handle productsOfInterest specially
+      if (prospectUpdate.productsOfInterest !== undefined) {
+        if (prospectUpdate.productsOfInterest === null) {
+          updateData.productsOfInterest = null;
+        } else if (typeof prospectUpdate.productsOfInterest === 'string') {
+          updateData.productsOfInterest = [prospectUpdate.productsOfInterest];
+        } else if (Array.isArray(prospectUpdate.productsOfInterest)) {
+          updateData.productsOfInterest = prospectUpdate.productsOfInterest;
         }
       }
       
-      // Handle the productsOfInterest field format
-      if (updateData.productsOfInterest !== undefined) {
-        // Ensure it's an array or null
-        if (updateData.productsOfInterest === null) {
-          // Keep as null
-        } else if (typeof updateData.productsOfInterest === 'string') {
-          updateData.productsOfInterest = [updateData.productsOfInterest];
-        } else if (!Array.isArray(updateData.productsOfInterest)) {
-          updateData.productsOfInterest = [String(updateData.productsOfInterest)];
-        }
-      }
+      console.log("Clean database update with data:", updateData);
       
-      console.log("Database update with data:", updateData);
+      // Only perform the update if we have fields to update
+      if (Object.keys(updateData).length === 0) {
+        return currentProspect; // Nothing to update
+      }
       
       const [prospect] = await db.update(prospects)
         .set(updateData)
         .where(eq(prospects.id, id))
         .returning();
       
-      return prospect || undefined;
+      return prospect || currentProspect; // Return updated prospect or current if update failed
     } catch (error) {
       console.error("Database error updating prospect:", error);
       return undefined;
