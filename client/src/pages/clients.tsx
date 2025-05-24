@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
@@ -58,6 +57,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
           </div>
           <div className="flex-1">
             <h3 className="font-medium text-slate-800">{client.fullName}</h3>
+            <div className="text-xs text-slate-500">{client.phone}</div>
             <div className="text-xs text-slate-500">{client.email}</div>
           </div>
           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${tierColors.bg} ${tierColors.text}`}>
@@ -101,7 +101,6 @@ function ClientCard({ client, onClick }: ClientCardProps) {
 export default function Clients() {
   // State
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(0);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -151,16 +150,13 @@ export default function Clients() {
           (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
           (client.phone && client.phone.includes(searchQuery));
         
-        // Apply tier filter from tabs
-        const matchesTierTab = activeTab === "all" || client.tier === activeTab;
-        
         // Apply additional filters
         const matchesTier = filterOptions.includedTiers.includes(client.tier);
         const matchesRiskProfile = filterOptions.riskProfiles.includes(client.riskProfile);
         const matchesAum = client.aumValue >= filterOptions.minAum && 
                           client.aumValue <= filterOptions.maxAum;
         
-        return matchesSearch && matchesTierTab && matchesTier && matchesRiskProfile && matchesAum;
+        return matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
       })
     : [];
   
@@ -381,15 +377,6 @@ export default function Clients() {
           </div>
         </CardContent>
       </Card>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
-        <TabsList>
-          <TabsTrigger value="all">All Clients</TabsTrigger>
-          <TabsTrigger value="platinum">Platinum</TabsTrigger>
-          <TabsTrigger value="gold">Gold</TabsTrigger>
-          <TabsTrigger value="silver">Silver</TabsTrigger>
-        </TabsList>
-      </Tabs>
       
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
