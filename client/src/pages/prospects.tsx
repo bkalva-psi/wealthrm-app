@@ -15,9 +15,27 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { UserPlus, Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
-import { formatRelativeDate, getStageColor } from "@/lib/utils";
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { 
+  UserPlus, 
+  Search, 
+  Filter as FilterIcon, 
+  ChevronDown, 
+  ChevronUp, 
+  Download, 
+  X,
+  Check
+} from "lucide-react";
+import { formatCurrency, formatRelativeDate, getStageColor } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Prospect {
@@ -253,12 +271,135 @@ export default function Prospects() {
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filter
-                <ChevronDown className="h-4 w-4" />
+              <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 relative">
+                    <FilterIcon className="h-4 w-4" />
+                    Filter
+                    {activeFilters > 0 && (
+                      <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-white text-xs flex items-center justify-center">
+                        {activeFilters}
+                      </span>
+                    )}
+                    <ChevronDown className="h-4 w-4 ml-1" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-4" align="end">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold">Filter Prospects</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={resetFilters}
+                      className="text-xs h-8 px-2"
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* Potential AUM Range */}
+                    <div>
+                      <Label className="text-sm mb-2 block">Potential AUM Range</Label>
+                      <div className="mt-6 px-2">
+                        <Slider 
+                          defaultValue={[filterOptions.minPotentialAum, filterOptions.maxPotentialAum]}
+                          max={10000000}
+                          step={100000}
+                          onValueChange={(values) => {
+                            setFilterOptions(prev => ({
+                              ...prev,
+                              minPotentialAum: values[0],
+                              maxPotentialAum: values[1]
+                            }));
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-2 text-xs text-slate-500">
+                        <span>{formatCurrency(filterOptions.minPotentialAum)}</span>
+                        <span>{formatCurrency(filterOptions.maxPotentialAum)}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Probability Score Range */}
+                    <div>
+                      <Label className="text-sm mb-2 block">Probability Score Range</Label>
+                      <div className="mt-6 px-2">
+                        <Slider 
+                          defaultValue={[filterOptions.minProbabilityScore, filterOptions.maxProbabilityScore]}
+                          max={100}
+                          step={5}
+                          onValueChange={(values) => {
+                            setFilterOptions(prev => ({
+                              ...prev,
+                              minProbabilityScore: values[0],
+                              maxProbabilityScore: values[1]
+                            }));
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-2 text-xs text-slate-500">
+                        <span>{filterOptions.minProbabilityScore}%</span>
+                        <span>{filterOptions.maxProbabilityScore}%</span>
+                      </div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    {/* Stages */}
+                    <div>
+                      <Label className="text-sm mb-2 block">Stages</Label>
+                      <div className="space-y-2 mt-2">
+                        {stages.map(stage => (
+                          <div className="flex items-center space-x-2" key={stage.id}>
+                            <Checkbox 
+                              id={`stage-${stage.id}`} 
+                              checked={filterOptions.includedStages.includes(stage.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setFilterOptions(prev => ({
+                                    ...prev,
+                                    includedStages: [...prev.includedStages, stage.id]
+                                  }));
+                                } else {
+                                  setFilterOptions(prev => ({
+                                    ...prev,
+                                    includedStages: prev.includedStages.filter(s => s !== stage.id)
+                                  }));
+                                }
+                              }}
+                            />
+                            <Label 
+                              htmlFor={`stage-${stage.id}`}
+                              className="text-sm font-normal cursor-pointer"
+                            >
+                              {stage.title}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end mt-4">
+                    <Button 
+                      onClick={() => setIsFilterOpen(false)}
+                      className="w-full"
+                    >
+                      Apply Filters
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              
+              <Button 
+                variant="outline" 
+                onClick={exportProspects}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Export
               </Button>
-              <Button variant="outline">Export</Button>
             </div>
           </div>
         </CardContent>
