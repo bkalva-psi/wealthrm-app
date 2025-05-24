@@ -60,7 +60,7 @@ export default function AddProspect() {
       phone: "",
       potentialAum: "",
       potentialAumValue: 0,
-      stage: "new",
+      stage: "discovery", // Changed from "new" to "discovery" to match the stage names in Prospects page
       probabilityScore: 20,
       source: "referral",
       notes: "",
@@ -349,7 +349,7 @@ export default function AddProspect() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="new">New Lead</SelectItem>
+                          <SelectItem value="discovery">Discovery</SelectItem>
                           <SelectItem value="qualified">Qualified</SelectItem>
                           <SelectItem value="proposal">Proposal</SelectItem>
                           <SelectItem value="negotiation">Negotiation</SelectItem>
@@ -400,12 +400,26 @@ export default function AddProspect() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Products of Interest</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Mutual funds, Fixed deposits, etc."
-                          {...field}
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select products" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Mutual Funds">Mutual Funds</SelectItem>
+                          <SelectItem value="Fixed Deposits">Fixed Deposits</SelectItem>
+                          <SelectItem value="Equities">Equities</SelectItem>
+                          <SelectItem value="Bonds">Bonds</SelectItem>
+                          <SelectItem value="Insurance">Insurance</SelectItem>
+                          <SelectItem value="Tax Planning">Tax Planning</SelectItem>
+                          <SelectItem value="Retirement Planning">Retirement Planning</SelectItem>
+                          <SelectItem value="Estate Planning">Estate Planning</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -380,7 +380,7 @@ export default function Prospects() {
   
   // Handle add prospect click
   const handleAddProspectClick = () => {
-    window.location.hash = "/add-prospect";
+    window.location.hash = "/prospects/new";
   };
   
   if (isLoading) {
