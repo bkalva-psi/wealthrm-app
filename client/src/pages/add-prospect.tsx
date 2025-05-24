@@ -283,7 +283,11 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                         Full Name <span className="text-red-500 ml-1">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter full name" {...field} />
+                        <Input 
+                          placeholder="Enter full name" 
+                          {...field} 
+                          disabled={readOnly || isSubmitting}
+                        />
                       </FormControl>
                       <FormMessage />
                       {getServerErrorsForField("fullName").map((error, i) => (
@@ -304,7 +308,12 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                         Email <span className="text-red-500 ml-1">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="example@company.com" type="email" {...field} />
+                        <Input 
+                          placeholder="example@company.com" 
+                          type="email" 
+                          {...field} 
+                          disabled={readOnly || isSubmitting}
+                        />
                       </FormControl>
                       <FormMessage />
                       {getServerErrorsForField("email").map((error, i) => (
@@ -325,7 +334,11 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                         Phone <span className="text-red-500 ml-1">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="+91 98765 43210" {...field} />
+                        <Input 
+                          placeholder="+91 98765 43210" 
+                          {...field} 
+                          disabled={readOnly || isSubmitting}
+                        />
                       </FormControl>
                       <FormDescription>
                         Format: Country code and number (e.g., +91 98765 43210)
@@ -353,6 +366,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                           placeholder="₹0"
                           {...field}
                           onChange={handleAumChange}
+                          disabled={readOnly || isSubmitting}
                         />
                       </FormControl>
                       <FormMessage />
