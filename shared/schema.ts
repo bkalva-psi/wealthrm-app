@@ -58,9 +58,25 @@ export const prospects = pgTable("prospects", {
   assignedTo: integer("assigned_to").references(() => users.id),
 });
 
-export const insertProspectSchema = createInsertSchema(prospects).omit({
+// Base prospect schema
+const baseProspectSchema = createInsertSchema(prospects).omit({
   id: true,
   createdAt: true,
+});
+
+// Enhanced prospect schema with better validation and error messages
+export const insertProspectSchema = baseProspectSchema.extend({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits").regex(/^[+]?[0-9\s-()]+$/, "Invalid phone number format"),
+  potentialAum: z.string().min(1, "Potential AUM is required"),
+  potentialAumValue: z.number().min(0, "Potential AUM value cannot be negative"),
+  stage: z.string().min(1, "Stage is required"),
+  probabilityScore: z.number().min(0, "Probability must be at least 0%").max(100, "Probability cannot exceed 100%"),
+  initials: z.string().optional(),
+  lastContactDate: z.date().optional().nullable(),
+  productsOfInterest: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 // Task model

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -24,35 +25,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 
-// Extend the schema with validation rules
-const prospectFormSchema = insertProspectSchema.extend({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(10, "Please enter a valid phone number"),
-  potentialAum: z.string().min(1, "Potential AUM is required"),
-  potentialAumValue: z.number().positive("Potential AUM value must be positive"),
-  stage: z.string().min(1, "Stage is required"),
-  probability: z.number().min(0).max(100, "Probability must be between 0 and 100"),
-  source: z.string().min(1, "Source is required"),
-  notes: z.string().optional(),
-});
+type ServerValidationError = {
+  message: string;
+  errors: Record<string, { _errors: string[] }>;
+};
 
-type ProspectFormValues = z.infer<typeof prospectFormSchema>;
+type ProspectFormValues = z.infer<typeof insertProspectSchema>;
 
 export default function AddProspect() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
+
+  // Set page title
+  useEffect(() => {
+    document.title = "Add Prospect | Wealth RM";
+  }, []);
 
   // Set up form with default values
   const form = useForm<ProspectFormValues>({
-    resolver: zodResolver(prospectFormSchema),
+    resolver: zodResolver(insertProspectSchema),
     defaultValues: {
       fullName: "",
       initials: "",
@@ -61,27 +62,38 @@ export default function AddProspect() {
       potentialAum: "",
       potentialAumValue: 0,
       stage: "new",
-      probability: 20,
-      source: "",
+      probabilityScore: 20,
+      source: "referral",
       notes: "",
+      productsOfInterest: "",
     },
+    mode: "onChange", // Validate on change for immediate feedback
   });
 
   // Calculate initials when full name changes
   const watchFullName = form.watch("fullName");
-  if (watchFullName && !form.getValues("initials")) {
-    const initials = watchFullName
-      .split(" ")
-      .map((name) => name[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-    form.setValue("initials", initials);
-  }
+  useEffect(() => {
+    if (watchFullName && !form.getValues("initials")) {
+      const words = watchFullName.trim().split(/\s+/);
+      const initials = words
+        .map((name) => name[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2);
+      
+      if (initials) {
+        form.setValue("initials", initials);
+      }
+    }
+  }, [watchFullName, form]);
 
   // Create prospect mutation
   const createProspect = useMutation({
     mutationFn: async (prospectData: ProspectFormValues) => {
+      // Clear previous errors
+      setServerErrors({});
+      setGeneralError(null);
+
       // Assign the current user as the RM
       const prospectWithRM = {
         ...prospectData,
@@ -97,12 +109,46 @@ export default function AddProspect() {
         credentials: "include",
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to create prospect");
+        // Handle validation errors from the server
+        if (response.status === 400 && data.errors) {
+          const validationErrors: ServerValidationError = data;
+          
+          // Format errors for display
+          const formattedErrors: Record<string, string[]> = {};
+          
+          Object.entries(validationErrors.errors).forEach(([field, error]) => {
+            if (field !== "_errors" && error._errors && error._errors.length > 0) {
+              formattedErrors[field] = error._errors;
+              
+              // Also set the error in the form state
+              if (field in form.formState.dirtyFields) {
+                form.setError(field as any, {
+                  type: "server",
+                  message: error._errors[0]
+                });
+              }
+            }
+          });
+          
+          setServerErrors(formattedErrors);
+          
+          // Set general error if there's a top-level error
+          if (validationErrors.errors._errors && validationErrors.errors._errors.length > 0) {
+            setGeneralError(validationErrors.errors._errors[0]);
+          } else {
+            setGeneralError(data.message || "Please correct the errors in the form");
+          }
+          
+          throw new Error("Validation failed");
+        }
+        
+        throw new Error(data.message || "Failed to create prospect");
       }
 
-      return response.json();
+      return data;
     },
     onSuccess: () => {
       // Invalidate prospects cache
@@ -112,18 +158,22 @@ export default function AddProspect() {
       // Show success message
       toast({
         title: "Prospect Created",
-        description: "The prospect has been successfully added.",
+        description: "The prospect has been successfully added to your pipeline.",
       });
       
       // Navigate back to prospects page
       navigate("/prospects");
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    onError: (error: Error) => {
+      if (error.message !== "Validation failed") {
+        // Only show the toast for non-validation errors
+        // (validation errors are shown inline)
+        toast({
+          title: "Error Creating Prospect",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
       setIsSubmitting(false);
     },
   });
@@ -147,6 +197,11 @@ export default function AddProspect() {
     }
   };
 
+  // Help display server errors for nested fields
+  const getServerErrorsForField = (fieldName: string) => {
+    return serverErrors[fieldName] || [];
+  };
+
   return (
     <div>
       <div className="flex items-center mb-6">
@@ -165,8 +220,19 @@ export default function AddProspect() {
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-xl">Prospect Information</CardTitle>
+          <CardDescription>
+            Add a new prospect to your sales pipeline. Fields marked with * are required.
+          </CardDescription>
         </CardHeader>
         <CardContent>
+          {generalError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{generalError}</AlertDescription>
+            </Alert>
+          )}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,11 +241,18 @@ export default function AddProspect() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="flex">
+                        Full Name <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter full name" {...field} />
                       </FormControl>
                       <FormMessage />
+                      {getServerErrorsForField("fullName").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
                     </FormItem>
                   )}
                 />
@@ -189,11 +262,18 @@ export default function AddProspect() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="flex">
+                        Email <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter email address" type="email" {...field} />
+                        <Input placeholder="example@company.com" type="email" {...field} />
                       </FormControl>
                       <FormMessage />
+                      {getServerErrorsForField("email").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
                     </FormItem>
                   )}
                 />
@@ -203,11 +283,21 @@ export default function AddProspect() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel className="flex">
+                        Phone <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter phone number" {...field} />
+                        <Input placeholder="+91 98765 43210" {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Format: Country code and number (e.g., +91 98765 43210)
+                      </FormDescription>
                       <FormMessage />
+                      {getServerErrorsForField("phone").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
                     </FormItem>
                   )}
                 />
@@ -217,7 +307,9 @@ export default function AddProspect() {
                   name="potentialAum"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Potential AUM</FormLabel>
+                      <FormLabel className="flex">
+                        Potential AUM <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="₹0"
@@ -226,6 +318,16 @@ export default function AddProspect() {
                         />
                       </FormControl>
                       <FormMessage />
+                      {getServerErrorsForField("potentialAum").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
+                      {getServerErrorsForField("potentialAumValue").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
                     </FormItem>
                   )}
                 />
@@ -235,7 +337,9 @@ export default function AddProspect() {
                   name="stage"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Stage</FormLabel>
+                      <FormLabel className="flex">
+                        Stage <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -255,16 +359,23 @@ export default function AddProspect() {
                         </SelectContent>
                       </Select>
                       <FormMessage />
+                      {getServerErrorsForField("stage").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
                     </FormItem>
                   )}
                 />
 
                 <FormField
                   control={form.control}
-                  name="probability"
+                  name="probabilityScore"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Probability (%)</FormLabel>
+                      <FormLabel className="flex">
+                        Probability (%) <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -272,6 +383,28 @@ export default function AddProspect() {
                           max="100"
                           {...field}
                           onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      {getServerErrorsForField("probabilityScore").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="productsOfInterest"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Products of Interest</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Mutual funds, Fixed deposits, etc."
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -284,7 +417,9 @@ export default function AddProspect() {
                   name="source"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Source</FormLabel>
+                      <FormLabel className="flex">
+                        Source <span className="text-red-500 ml-1">*</span>
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -304,6 +439,11 @@ export default function AddProspect() {
                         </SelectContent>
                       </Select>
                       <FormMessage />
+                      {getServerErrorsForField("source").map((error, i) => (
+                        <p key={i} className="text-sm font-medium text-destructive">
+                          {error}
+                        </p>
+                      ))}
                     </FormItem>
                   )}
                 />

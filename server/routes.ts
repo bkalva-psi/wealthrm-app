@@ -327,7 +327,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const parseResult = insertProspectSchema.safeParse(req.body);
       
       if (!parseResult.success) {
-        return res.status(400).json({ message: "Invalid prospect data", errors: parseResult.error.format() });
+        const formattedErrors = parseResult.error.format();
+        const errorMessages: Record<string, string[]> = {};
+        
+        // Format error messages to be more user-friendly
+        Object.entries(formattedErrors).forEach(([field, error]) => {
+          if (field !== "_errors" && error._errors && error._errors.length > 0) {
+            errorMessages[field] = error._errors;
+          }
+        });
+        
+        // Get specific error details for better client-side handling
+        let errorMessage = "Please correct the errors in the form";
+        
+        // Check for common validation errors and provide specific messages
+        if (formattedErrors.email?._errors?.includes("Please enter a valid email address")) {
+          errorMessage = "The email address format is invalid";
+        } else if (formattedErrors.phone?._errors?.includes("Invalid phone number format")) {
+          errorMessage = "The phone number format is invalid";
+        } else if (Object.keys(errorMessages).length === 1) {
+          // If only one field has an error, use that field's error message
+          const field = Object.keys(errorMessages)[0];
+          errorMessage = `Error in ${field}: ${errorMessages[field][0]}`;
+        } else if (Object.keys(errorMessages).length > 1) {
+          // If multiple fields have errors, create a summary
+          errorMessage = `Multiple validation errors found: ${Object.keys(errorMessages).join(", ")}`;
+        }
+        
+        return res.status(400).json({ 
+          message: errorMessage, 
+          errors: formattedErrors 
+        });
       }
       
       const prospectData = parseResult.data;
@@ -339,7 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(prospect);
     } catch (error) {
       console.error("Create prospect error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Failed to create prospect. Please try again later." });
     }
   });
   
