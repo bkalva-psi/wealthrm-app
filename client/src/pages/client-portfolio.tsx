@@ -160,7 +160,7 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
               </span>
               <span className="font-medium">{value}%</span>
             </div>
-            <Progress value={value} className="h-1.5" indicatorClassName={`bg-current`} style={{ color: colors[index % colors.length] }} />
+            <Progress value={value} className={`h-1.5 bg-current`} style={{ color: colors[index % colors.length] }} />
           </div>
         ))}
       </div>
@@ -519,7 +519,10 @@ export default function ClientPortfolioPage() {
               <HoldingsTable holdings={mockHoldings.slice(0, 5)} />
             </CardContent>
             <CardFooter className="pt-0">
-              <Button variant="link" className="ml-auto" onClick={() => document.querySelector('[data-value="holdings"]')?.click()}>
+              <Button variant="link" className="ml-auto" onClick={() => {
+                  const element = document.querySelector('[data-value="holdings"]') as HTMLElement;
+                  if (element) element.click();
+                }}>
                 View All Holdings
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>

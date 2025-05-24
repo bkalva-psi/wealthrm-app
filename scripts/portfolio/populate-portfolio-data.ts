@@ -174,6 +174,10 @@ async function generateClientPortfolio(clientId: number, riskProfile: string) {
   const volatility = faker.number.float({ min: 5, max: 25, fractionDigits: 1 });
   const sharpeRatio = faker.number.float({ min: 0.5, max: 2.5, fractionDigits: 2 });
   
+  // Convert dates to strings to avoid type issues
+  const portfolioStartDate = faker.date.past({ years: 5 }).toISOString();
+  const lastValuationDate = faker.date.recent({ days: 5 }).toISOString();
+
   // Update client with portfolio data
   await db.update(clients)
     .set({
@@ -190,8 +194,8 @@ async function generateClientPortfolio(clientId: number, riskProfile: string) {
       assetAllocation: assetAllocation as any,
       sectorExposure: sectorExposure as any,
       geographicExposure: geographicExposure as any,
-      portfolioStartDate: faker.date.past({ years: 5 }),
-      lastValuationDate: faker.date.recent({ days: 5 }),
+      portfolioStartDate,
+      lastValuationDate,
     })
     .where(eq(clients.id, clientId));
     
