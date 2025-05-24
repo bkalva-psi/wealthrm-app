@@ -66,7 +66,7 @@ function ProspectCard({ prospect, onClick }: ProspectCardProps) {
         </div>
       )}
       <div className="flex justify-between items-center mt-2 text-xs text-slate-500">
-        <span>Last contact: {formatRelativeDate(prospect.lastContactDate)}</span>
+        <span>Last contact: {prospect.lastContactDate ? formatRelativeDate(prospect.lastContactDate) : 'Not available'}</span>
       </div>
     </div>
   );
@@ -267,6 +267,11 @@ export default function Prospects() {
                     <span className="font-medium">Potential: </span>
                     <span>{draggedItem.potentialAum}</span>
                   </div>
+                  {draggedItem.lastContactDate && (
+                    <div className="text-xs text-slate-500 mt-1">
+                      Last contact: {formatRelativeDate(draggedItem.lastContactDate)}
+                    </div>
+                  )}
                 </div>
               ) : null}
             </DragOverlay>
