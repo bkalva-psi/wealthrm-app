@@ -719,11 +719,22 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                         setIsSubmitting(true);
                         const formData = form.getValues();
                         
-                        // Direct API call to update the prospect
+                        // Process products of interest to ensure it works with the schema
+                        const processedFormData = {
+                          ...formData,
+                          // Make sure productsOfInterest is handled correctly
+                          productsOfInterest: Array.isArray(formData.productsOfInterest) 
+                            ? formData.productsOfInterest 
+                            : formData.productsOfInterest ? [formData.productsOfInterest] : []
+                        };
+                        
+                        console.log("Sending update with data:", processedFormData);
+                        
+                        // Direct API call to update the prospect with credentials
                         fetch(`/api/prospects/${prospectId}`, {
                           method: "PUT",
                           headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(formData),
+                          body: JSON.stringify(processedFormData),
                           credentials: "include"
                         })
                         .then(response => response.json())
