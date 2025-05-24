@@ -15,8 +15,10 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UserPlus, Search, Filter, ChevronDown } from "lucide-react";
-import { formatRelativeDate } from "@/lib/utils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { UserPlus, Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import { formatRelativeDate, getStageColor } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Prospect {
   id: number;
@@ -72,12 +74,53 @@ function ProspectCard({ prospect, onClick }: ProspectCardProps) {
   );
 }
 
-function PipelineColumn({ title, prospects, stage, onProspectClick }: { 
-  title: string, 
-  prospects: Prospect[],
-  stage: string,
-  onProspectClick: (id: number) => void
-}) {
+interface PipelineColumnProps {
+  title: string;
+  prospects: Prospect[];
+  stage: string;
+  onProspectClick: (id: number) => void;
+  isMobile?: boolean;
+}
+
+function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = false }: PipelineColumnProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const stageColors = getStageColor(stage);
+  
+  if (isMobile) {
+    return (
+      <Collapsible 
+        open={isOpen} 
+        onOpenChange={setIsOpen}
+        className="w-full mb-4 border border-slate-200 rounded-md overflow-hidden"
+      >
+        <CollapsibleTrigger className="w-full flex items-center justify-between p-3 bg-white">
+          <div className="flex items-center">
+            <h3 className="font-medium text-sm text-slate-700">{title}</h3>
+            <span className="ml-2 bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded-full">
+              {prospects.length}
+            </span>
+          </div>
+          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className={`p-3 ${stageColors.bg} max-h-[400px] overflow-y-auto`}>
+            {prospects.length > 0 ? prospects.map((prospect) => (
+              <ProspectCard 
+                key={prospect.id} 
+                prospect={prospect} 
+                onClick={() => onProspectClick(prospect.id)} 
+              />
+            )) : (
+              <div className="text-center p-4 text-slate-400 text-sm">
+                No prospects in this stage
+              </div>
+            )}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  }
+  
   return (
     <div className="flex-1 min-w-[250px]">
       <div className="flex items-center justify-between mb-2">
@@ -86,10 +129,18 @@ function PipelineColumn({ title, prospects, stage, onProspectClick }: {
           {prospects.length}
         </span>
       </div>
-      <div className="bg-slate-50 p-2 rounded-md min-h-[300px]">
-        {prospects.map((prospect) => (
-          <ProspectCard key={prospect.id} prospect={prospect} onClick={onProspectClick} />
-        ))}
+      <div className={`${stageColors.bg} p-3 rounded-md min-h-[400px] max-h-[500px] overflow-y-auto`}>
+        {prospects.length > 0 ? prospects.map((prospect) => (
+          <ProspectCard 
+            key={prospect.id} 
+            prospect={prospect} 
+            onClick={() => onProspectClick(prospect.id)} 
+          />
+        )) : (
+          <div className="text-center p-4 text-slate-400 text-sm">
+            No prospects in this stage
+          </div>
+        )}
       </div>
     </div>
   );
@@ -143,6 +194,8 @@ export default function Prospects() {
     }
   };
   
+  const isMobile = useIsMobile();
+  
   const filteredProspects = activeProspects && searchQuery 
     ? activeProspects.filter(prospect => 
         prospect.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -153,14 +206,21 @@ export default function Prospects() {
   
   const getProspectsByStage = (stage: string) => {
     if (!filteredProspects) return [];
-    console.log("Filtered prospects:", filteredProspects);
-    console.log(`Prospects with stage '${stage}':`, filteredProspects.filter(prospect => prospect.stage === stage));
     return filteredProspects.filter(prospect => prospect.stage === stage);
   };
   
   const handleProspectClick = (id: number) => {
     window.location.hash = `/prospects/${id}`;
   };
+  
+  // Pipeline stages configuration
+  const stages = [
+    { id: 'new', title: 'New Leads' },
+    { id: 'qualified', title: 'Qualified' },
+    { id: 'proposal', title: 'Proposal' },
+    { id: 'won', title: 'Won' },
+    { id: 'lost', title: 'Lost' }
+  ];
   
   return (
     <div>
@@ -209,45 +269,41 @@ export default function Prospects() {
           <p className="text-slate-500">Loading prospect pipeline...</p>
         </div>
       ) : (
-        <div className="bg-white p-4 rounded-lg shadow-sm overflow-x-auto">
+        <div className="bg-white p-4 rounded-lg shadow-sm">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="flex gap-4 min-w-[1000px]">
-              <PipelineColumn 
-                title="New Leads" 
-                prospects={getProspectsByStage('new')} 
-                stage="new"
-                onProspectClick={handleProspectClick}
-              />
-              <PipelineColumn 
-                title="Qualified" 
-                prospects={getProspectsByStage('qualified')} 
-                stage="qualified"
-                onProspectClick={handleProspectClick}
-              />
-              <PipelineColumn 
-                title="Proposal" 
-                prospects={getProspectsByStage('proposal')} 
-                stage="proposal"
-                onProspectClick={handleProspectClick}
-              />
-              <PipelineColumn 
-                title="Won" 
-                prospects={getProspectsByStage('won')} 
-                stage="won"
-                onProspectClick={handleProspectClick}
-              />
-              <PipelineColumn 
-                title="Lost" 
-                prospects={getProspectsByStage('lost')} 
-                stage="lost"
-                onProspectClick={handleProspectClick}
-              />
-            </div>
+            {isMobile ? (
+              // Mobile view with expandable vertical sections
+              <div className="flex flex-col w-full">
+                {stages.map(stage => (
+                  <PipelineColumn
+                    key={stage.id}
+                    title={stage.title}
+                    prospects={getProspectsByStage(stage.id)}
+                    stage={stage.id}
+                    onProspectClick={handleProspectClick}
+                    isMobile={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              // Desktop view with horizontal columns
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {stages.map(stage => (
+                  <PipelineColumn
+                    key={stage.id}
+                    title={stage.title}
+                    prospects={getProspectsByStage(stage.id)}
+                    stage={stage.id}
+                    onProspectClick={handleProspectClick}
+                  />
+                ))}
+              </div>
+            )}
             
             <DragOverlay>
               {draggedItem ? (
