@@ -91,7 +91,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-slate-800">{client.fullName}</h3>
-              {client.alertCount > 0 && (
+              {(client.alertCount ?? 0) > 0 && (
                 <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center relative">
                   <Bell className="h-3 w-3 text-white" />
                   <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
@@ -120,7 +120,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
           <div>
             <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
             <div className="text-sm text-slate-700">
-              {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
+              {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
             </div>
           </div>
           <div className="border-r border-slate-200 pr-3">

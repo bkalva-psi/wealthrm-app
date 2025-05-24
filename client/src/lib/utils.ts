@@ -39,7 +39,9 @@ export function getInitials(name: string): string {
     .substring(0, 2);
 }
 
-export function formatRelativeDate(date: Date | string): string {
+export function formatRelativeDate(date: Date | string | null | undefined): string {
+  if (!date) return "N/A";
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   
   if (isToday(dateObj)) {
