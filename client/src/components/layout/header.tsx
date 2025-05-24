@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
-import ujjivanLogo from "../../assets/ujjivan-logo.png";
+import ujjivanLogo from "../../assets/ujjivan_logo.png";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -54,8 +54,11 @@ export function Header() {
           
           {/* Ujjivan Logo (visible on mobile) */}
           <div className="flex items-center md:hidden ml-2">
-            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-8 w-auto" />
-            <h1 className="text-primary-700 text-sm font-bold ml-2">Wealth RM</h1>
+            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+            <div className="ml-2 flex flex-col">
+              <h1 className="text-ujjivan-primary text-sm font-bold leading-tight">Ujjivan SFB</h1>
+              <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM</span>
+            </div>
           </div>
         </div>
         
