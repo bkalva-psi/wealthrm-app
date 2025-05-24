@@ -78,18 +78,9 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     return `${diffDays} days ago`;
   };
   
-  // Get tier symbol (icon) based on client's tier
-  const getTierSymbol = (tier: string) => {
-    switch (tier.toLowerCase()) {
-      case 'platinum':
-        return '★★★'; // Triple star for platinum
-      case 'gold':
-        return '★★'; // Double star for gold
-      case 'silver':
-        return '★'; // Single star for silver
-      default:
-        return '•';
-    }
+  // Capitalize the first letter of tier
+  const formatTier = (tier: string) => {
+    return tier.charAt(0).toUpperCase() + tier.slice(1);
   };
   
   return (
@@ -106,9 +97,6 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <h3 className="font-medium text-slate-800">{client.fullName}</h3>
-                <div className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${tierColors.icon} text-white`}>
-                  {getTierSymbol(client.tier)}
-                </div>
               </div>
               {(client.alertCount ?? 0) > 0 && (
                 <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center relative">
