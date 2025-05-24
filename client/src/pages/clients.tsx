@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Popover, 
   PopoverContent, 
@@ -28,6 +29,7 @@ import {
 import { clientApi } from "@/lib/api";
 import { Client } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
 
 // Filter options type definition
 interface FilterOptions {
@@ -98,6 +100,18 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3 py-1">
+          {/* Client Avatar */}
+          <div 
+            className="cursor-pointer" 
+            onClick={(e) => handleSectionClick(e, 'personal')}
+            title="View client personal information"
+          >
+            <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+              <AvatarImage src={svgToDataURL(generateAvatar(client.fullName, client.tier))} alt={client.fullName} />
+              <AvatarFallback>{client.initials}</AvatarFallback>
+            </Avatar>
+          </div>
+
           {/* Alert section - navigates to actions page */}
           {(client.alertCount ?? 0) > 0 && (
             <div 
@@ -240,13 +254,18 @@ export default function Clients() {
             (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
             (client.phone && client.phone.includes(searchQuery));
           
-          // Apply additional filters with safer checks
-          const matchesTier = client.tier && filterOptions.includedTiers.includes(client.tier);
-          const matchesRiskProfile = !client.riskProfile || filterOptions.riskProfiles.includes(client.riskProfile.toLowerCase());
+          // Apply additional filters with safer checks - default to true if value doesn't exist
+          const matchesTier = client.tier ? filterOptions.includedTiers.includes(client.tier) : true;
           
-          // Check if aumValue exists and is a number before comparison
+          // Check risk profile with case insensitive comparison - default to true if missing
+          const riskProfile = client.riskProfile ? client.riskProfile.toLowerCase() : '';
+          const matchesRiskProfile = !riskProfile || filterOptions.riskProfiles.includes(riskProfile);
+          
+          // Set a maximum AUM value to avoid filtering out high-value clients
+          const MAX_AUM = 100000000; // 10 Cr
           const aumValue = typeof client.aumValue === 'number' ? client.aumValue : 0;
-          const matchesAum = aumValue >= filterOptions.minAum && aumValue <= filterOptions.maxAum;
+          const matchesAum = aumValue >= filterOptions.minAum && 
+                            (aumValue <= filterOptions.maxAum || filterOptions.maxAum >= MAX_AUM);
           
           // Check filter results
           const result = matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
