@@ -475,7 +475,7 @@ export default function ClientPortfolioPage() {
                   
                   <div>
                     <h4 className="text-sm font-medium mb-2">Returns by Period</h4>
-                    <PerformanceChart periods={performancePeriods} />
+                    <LocalPerformanceChart periods={performancePeriods} />
                   </div>
                 </div>
               </CardContent>
