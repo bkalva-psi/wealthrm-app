@@ -41,24 +41,7 @@ export function Sidebar() {
           </div>
         </div>
         
-        {/* User Profile Summary */}
-        <div className="flex items-center px-4 py-3 border-b border-slate-200">
-          {user?.avatarUrl ? (
-            <img 
-              className="h-10 w-10 rounded-full" 
-              src={user.avatarUrl} 
-              alt={`${user.fullName} profile`} 
-            />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm">
-              {user?.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-            </div>
-          )}
-          <div className="ml-3">
-            <p className="text-sm font-medium text-slate-900">{user?.fullName}</p>
-            <p className="text-xs text-slate-500">{user?.jobTitle}</p>
-          </div>
-        </div>
+
         
         {/* Navigation Links */}
         <nav className="flex-1 px-2 py-4 bg-white space-y-1 overflow-y-auto">
