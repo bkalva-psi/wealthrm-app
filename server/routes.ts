@@ -391,9 +391,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Not authorized to update this prospect" });
       }
       
-      const parseResult = insertProspectSchema.partial().safeParse(req.body);
+      // Process the data to ensure productsOfInterest is handled correctly
+      let processedData = { ...req.body };
+      
+      // Ensure productsOfInterest is always an array when provided
+      if (processedData.productsOfInterest) {
+        // If it's a string, convert to array
+        if (typeof processedData.productsOfInterest === 'string') {
+          processedData.productsOfInterest = [processedData.productsOfInterest];
+        }
+        // If it's not an array (and not null), make it an array
+        else if (!Array.isArray(processedData.productsOfInterest) && processedData.productsOfInterest !== null) {
+          processedData.productsOfInterest = [processedData.productsOfInterest];
+        }
+      }
+      
+      console.log("Processed prospect data:", processedData);
+      
+      const parseResult = insertProspectSchema.partial().safeParse(processedData);
       
       if (!parseResult.success) {
+        console.error("Validation error:", parseResult.error.format());
         return res.status(400).json({ message: "Invalid prospect data", errors: parseResult.error.format() });
       }
       
