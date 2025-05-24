@@ -1,4 +1,3 @@
-import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,6 +6,7 @@ import { useAuth } from "@/context/auth-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { useState, useEffect } from "react";
 
 import Dashboard from "@/pages/dashboard";
 import Clients from "@/pages/clients";
@@ -20,25 +20,72 @@ import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 
+// Custom router implementation using hash-based routing
+function useHashRouter() {
+  const [currentRoute, setCurrentRoute] = useState(
+    window.location.hash.replace(/^#/, '') || '/'
+  );
+  
+  useEffect(() => {
+    // Set initial hash if it's empty
+    if (!window.location.hash) {
+      window.location.hash = '/';
+    }
+    
+    const handleHashChange = () => {
+      const path = window.location.hash.replace(/^#/, '') || '/';
+      console.log('Hash changed to:', path);
+      setCurrentRoute(path);
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+  
+  return currentRoute;
+}
+
 function AuthenticatedApp() {
+  const currentRoute = useHashRouter();
+  
+  // Log current route for debugging
+  console.log('Current route:', currentRoute);
+  
+  // Function to render the appropriate component based on the route
+  const renderComponent = () => {
+    console.log('Rendering component for route:', currentRoute);
+    
+    switch(currentRoute) {
+      case '/':
+        return <Dashboard />;
+      case '/clients':
+        return <Clients />;
+      case '/prospects':
+        return <Prospects />;
+      case '/prospects/new':
+        return <AddProspect />;
+      case '/calendar':
+        return <Calendar />;
+      case '/tasks':
+        return <Tasks />;
+      case '/analytics':
+        return <Analytics />;
+      case '/products':
+        return <Products />;
+      case '/settings':
+        return <Settings />;
+      default:
+        return <NotFound />;
+    }
+  };
+  
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6">
-          <Switch>
-            <Route path="/" component={Dashboard} />
-            <Route path="/clients" component={Clients} />
-            <Route path="/prospects" component={Prospects} />
-            <Route path="/prospects/new" component={AddProspect} />
-            <Route path="/calendar" component={Calendar} />
-            <Route path="/tasks" component={Tasks} />
-            <Route path="/analytics" component={Analytics} />
-            <Route path="/products" component={Products} />
-            <Route path="/settings" component={Settings} />
-            <Route component={NotFound} />
-          </Switch>
+          {renderComponent()}
         </main>
         <MobileNav />
       </div>
