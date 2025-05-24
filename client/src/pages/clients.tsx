@@ -22,7 +22,8 @@ import {
   X,
   Check,
   Phone,
-  Mail
+  Mail,
+  Bell
 } from "lucide-react";
 import { clientApi } from "@/lib/api";
 import { Client } from "@shared/schema";
@@ -44,6 +45,8 @@ interface ClientCardProps {
 
 function ClientCard({ client, onClick }: ClientCardProps) {
   const tierColors = getTierColor(client.tier);
+  // Generate a random number of alerts between 0 and 3
+  const alertCount = Math.floor(Math.random() * 4);
   
   return (
     <Card 
@@ -52,8 +55,18 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
-            {client.initials}
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
+              {client.initials}
+            </div>
+            {alertCount > 0 && (
+              <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 flex items-center justify-center">
+                <Bell className="h-3 w-3 text-white" />
+                <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                  {alertCount}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between">
@@ -92,7 +105,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             </div>
           </div>
           <div>
-            <div className="text-xs text-slate-500 mb-1">Last Transaction</div>
+            <div className="text-xs text-slate-500 mb-1">Txn</div>
             <div className="text-sm text-slate-500">
               {Math.floor(Math.random() * 30) + 1} days ago
             </div>
