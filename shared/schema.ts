@@ -52,7 +52,7 @@ export const prospects = pgTable("prospects", {
   stage: text("stage").notNull().default("new"), // new, qualified, proposal, won, lost
   lastContactDate: timestamp("last_contact_date"),
   probabilityScore: integer("probability_score").default(50), // 0-100
-  productsOfInterest: text("products_of_interest"),
+  productsOfInterest: text("products_of_interest").array(),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   assignedTo: integer("assigned_to").references(() => users.id),
