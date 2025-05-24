@@ -1,6 +1,6 @@
 // A simpler script to create test data
-const { Pool } = require('@neondatabase/serverless');
-const ws = require('ws');
+import { Pool } from '@neondatabase/serverless';
+import ws from 'ws';
 
 // Configure database connection
 if (!process.env.DATABASE_URL) {
