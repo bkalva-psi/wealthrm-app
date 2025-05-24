@@ -1,25 +1,117 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
 import { getTierColor, formatRelativeDate } from "@/lib/utils";
 import { 
   Search,
   UserPlus,
-  Filter,
-  ChevronDown
+  Filter as FilterIcon,
+  ChevronDown,
+  Download,
+  X,
+  Check,
+  Phone,
+  Mail
 } from "lucide-react";
 import { clientApi } from "@/lib/api";
 import { Client } from "@shared/schema";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+// Filter options type definition
+interface FilterOptions {
+  minAum: number;
+  maxAum: number;
+  includedTiers: string[];
+  riskProfiles: string[];
+}
+
+// Client Card component
+interface ClientCardProps {
+  client: Client;
+  onClick: (id: number) => void;
+}
+
+function ClientCard({ client, onClick }: ClientCardProps) {
+  const tierColors = getTierColor(client.tier);
+  
+  return (
+    <Card 
+      className="overflow-hidden hover:shadow-md cursor-pointer transition-shadow mb-4"
+      onClick={() => onClick(client.id)}
+    >
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
+            {client.initials}
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-slate-800">{client.fullName}</h3>
+            <div className="text-xs text-slate-500">{client.email}</div>
+          </div>
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${tierColors.bg} ${tierColors.text}`}>
+            {client.tier.charAt(0).toUpperCase() + client.tier.slice(1)}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <div>
+            <div className="text-xs text-slate-500 mb-1">AUM</div>
+            <div className="text-sm font-medium text-slate-700">{client.aum}</div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
+            <div className="text-sm text-slate-700">
+              {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-500 mb-1">Last Contact</div>
+            <div className="text-sm text-slate-500">
+              {formatRelativeDate(client.lastContactDate)}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-500 mb-1">Contact</div>
+            <div className="flex space-x-2">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500" onClick={(e) => e.stopPropagation()}>
+                <Phone className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500" onClick={(e) => e.stopPropagation()}>
+                <Mail className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Clients() {
-  const [, navigate] = useLocation();
+  // State
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState(0);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    minAum: 0,
+    maxAum: 10000000,
+    includedTiers: ['platinum', 'gold', 'silver'],
+    riskProfiles: ['conservative', 'moderate', 'aggressive']
+  });
+  
+  const isMobile = useIsMobile();
   
   // Set page title
   useEffect(() => {
@@ -32,31 +124,106 @@ export default function Clients() {
     queryFn: () => clientApi.getClients(),
   });
   
-  const filteredClients = clients && searchQuery 
-    ? clients.filter((client: Client) => 
-        client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (client.phone && client.phone.includes(searchQuery))
-      )
-    : clients;
+  // Calculate active filters
+  useEffect(() => {
+    if (clients) {
+      calculateActiveFilters();
+    }
+  }, [filterOptions, clients]);
   
-  const filteredByTier = filteredClients && activeTab !== "all"
-    ? filteredClients.filter((client: Client) => client.tier === activeTab)
-    : filteredClients;
+  const calculateActiveFilters = () => {
+    let count = 0;
+    
+    if (filterOptions.minAum > 0) count++;
+    if (filterOptions.maxAum < 10000000) count++;
+    if (filterOptions.includedTiers.length < 3) count++;
+    if (filterOptions.riskProfiles.length < 3) count++;
+    
+    setActiveFilters(count);
+  };
   
+  // Filter clients based on search and filter options
+  const filteredClients = clients
+    ? clients.filter((client: Client) => {
+        // Apply search filter
+        const matchesSearch = !searchQuery || 
+          client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          (client.phone && client.phone.includes(searchQuery));
+        
+        // Apply tier filter from tabs
+        const matchesTierTab = activeTab === "all" || client.tier === activeTab;
+        
+        // Apply additional filters
+        const matchesTier = filterOptions.includedTiers.includes(client.tier);
+        const matchesRiskProfile = filterOptions.riskProfiles.includes(client.riskProfile);
+        const matchesAum = client.aumValue >= filterOptions.minAum && 
+                          client.aumValue <= filterOptions.maxAum;
+        
+        return matchesSearch && matchesTierTab && matchesTier && matchesRiskProfile && matchesAum;
+      })
+    : [];
+  
+  // Reset filters function
+  const resetFilters = () => {
+    setFilterOptions({
+      minAum: 0,
+      maxAum: 10000000,
+      includedTiers: ['platinum', 'gold', 'silver'],
+      riskProfiles: ['conservative', 'moderate', 'aggressive']
+    });
+  };
+  
+  // Export clients to CSV
+  const exportClients = () => {
+    if (!filteredClients || filteredClients.length === 0) return;
+    
+    // Create CSV content
+    const headers = ['Name', 'Email', 'Phone', 'AUM', 'Tier', 'Risk Profile', 'Last Contact'];
+    const rows = filteredClients.map(c => [
+      c.fullName,
+      c.email || '',
+      c.phone || '',
+      c.aum,
+      c.tier,
+      c.riskProfile,
+      c.lastContactDate ? new Date(c.lastContactDate).toLocaleDateString() : ''
+    ]);
+    
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `clients_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  // Handle client click
   const handleClientClick = (clientId: number) => {
-    navigate(`/clients/${clientId}`);
+    window.location.hash = `/clients/${clientId}`;
+  };
+  
+  // Handle add prospect click
+  const handleAddProspectClick = () => {
+    window.location.hash = "/add-prospect";
   };
   
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Clients</h1>
-          <p className="text-sm text-slate-600">Manage your client relationships</p>
-        </div>
-        <Button
-          onClick={() => navigate("/prospects/new")}
+    <div className="p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold mb-2 sm:mb-0">Clients</h1>
+        <Button 
+          onClick={handleAddProspectClick}
           className="flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
@@ -66,270 +233,229 @@ export default function Clients() {
       
       <Card className="mb-6">
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search clients by name, email, or phone..."
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <Input 
+                placeholder="Search clients..." 
+                className="pl-10" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filter
-                <ChevronDown className="h-4 w-4" />
+              <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 relative">
+                    <FilterIcon className="h-4 w-4" />
+                    Filter
+                    {activeFilters > 0 && (
+                      <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-white text-xs flex items-center justify-center">
+                        {activeFilters}
+                      </span>
+                    )}
+                    <ChevronDown className="h-4 w-4 ml-1" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-4" align="end">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold">Filter Clients</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={resetFilters}
+                      className="text-xs h-8 px-2"
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* AUM Range */}
+                    <div>
+                      <Label className="text-sm mb-2 block">AUM Range</Label>
+                      <div className="mt-6 px-2">
+                        <Slider 
+                          defaultValue={[filterOptions.minAum, filterOptions.maxAum]}
+                          max={10000000}
+                          step={100000}
+                          onValueChange={(values) => {
+                            setFilterOptions(prev => ({
+                              ...prev,
+                              minAum: values[0],
+                              maxAum: values[1]
+                            }));
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-2">
+                        <span className="text-xs text-slate-500">₹{(filterOptions.minAum / 100000).toFixed(1)}L</span>
+                        <span className="text-xs text-slate-500">₹{(filterOptions.maxAum / 100000).toFixed(0)}L</span>
+                      </div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    {/* Tier Filter */}
+                    <div>
+                      <Label className="text-sm mb-2 block">Client Tier</Label>
+                      <div className="space-y-2 mt-2">
+                        {['platinum', 'gold', 'silver'].map(tier => (
+                          <div key={tier} className="flex items-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="p-0 h-8 w-8 mr-2"
+                              onClick={() => {
+                                setFilterOptions(prev => {
+                                  const isIncluded = prev.includedTiers.includes(tier);
+                                  return {
+                                    ...prev,
+                                    includedTiers: isIncluded
+                                      ? prev.includedTiers.filter(t => t !== tier)
+                                      : [...prev.includedTiers, tier]
+                                  };
+                                });
+                              }}
+                            >
+                              <div className="h-5 w-5 rounded-sm border border-slate-300 flex items-center justify-center">
+                                {filterOptions.includedTiers.includes(tier) && (
+                                  <Check className="h-3.5 w-3.5 text-primary-600" />
+                                )}
+                              </div>
+                            </Button>
+                            <span className="text-sm capitalize">{tier}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    {/* Risk Profile Filter */}
+                    <div>
+                      <Label className="text-sm mb-2 block">Risk Profile</Label>
+                      <div className="space-y-2 mt-2">
+                        {['conservative', 'moderate', 'aggressive'].map(profile => (
+                          <div key={profile} className="flex items-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="p-0 h-8 w-8 mr-2"
+                              onClick={() => {
+                                setFilterOptions(prev => {
+                                  const isIncluded = prev.riskProfiles.includes(profile);
+                                  return {
+                                    ...prev,
+                                    riskProfiles: isIncluded
+                                      ? prev.riskProfiles.filter(p => p !== profile)
+                                      : [...prev.riskProfiles, profile]
+                                  };
+                                });
+                              }}
+                            >
+                              <div className="h-5 w-5 rounded-sm border border-slate-300 flex items-center justify-center">
+                                {filterOptions.riskProfiles.includes(profile) && (
+                                  <Check className="h-3.5 w-3.5 text-primary-600" />
+                                )}
+                              </div>
+                            </Button>
+                            <span className="text-sm capitalize">{profile}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Button 
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={exportClients}
+                disabled={!filteredClients || filteredClients.length === 0}
+              >
+                <Download className="h-4 w-4" />
+                Export
               </Button>
-              <Button variant="outline">Export</Button>
             </div>
           </div>
         </CardContent>
       </Card>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
+        <TabsList>
           <TabsTrigger value="all">All Clients</TabsTrigger>
           <TabsTrigger value="platinum">Platinum</TabsTrigger>
           <TabsTrigger value="gold">Gold</TabsTrigger>
           <TabsTrigger value="silver">Silver</TabsTrigger>
         </TabsList>
-        
-        <TabsContent value={activeTab}>
-          {/* Responsive table for larger screens */}
-          <div className="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Client Name
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Tier
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      AUM
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Risk Profile
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Last Contact
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                      Contact
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-200">
-                  {isLoading ? (
-                    Array(5).fill(0).map((_, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <Skeleton className="h-10 w-10 rounded-full" />
-                            <div className="ml-4">
-                              <Skeleton className="h-4 w-24" />
-                              <Skeleton className="h-3 w-32 mt-1" />
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Skeleton className="h-6 w-16" />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Skeleton className="h-4 w-16" />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Skeleton className="h-4 w-20" />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Skeleton className="h-4 w-24" />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex space-x-2">
-                            <Skeleton className="h-8 w-8 rounded" />
-                            <Skeleton className="h-8 w-8 rounded" />
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : filteredByTier && filteredByTier.length > 0 ? (
-                    filteredByTier.map((client: Client) => {
-                      const tierColors = getTierColor(client.tier);
-                      
-                      return (
-                        <tr 
-                          key={`desktop-${client.id}`} 
-                          className="hover:bg-slate-50 cursor-pointer"
-                          onClick={() => handleClientClick(client.id)}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium">
-                                {client.initials}
-                              </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-slate-800">{client.fullName}</div>
-                                <div className="text-xs text-slate-500">{client.email}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tierColors.bg} ${tierColors.text}`}>
-                              {client.tier.charAt(0).toUpperCase() + client.tier.slice(1)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
-                            {client.aum}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-slate-700">
-                              {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                            {formatRelativeDate(client.lastContactDate)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex space-x-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">
-                        {searchQuery ? "No clients match your search criteria" : "No clients found"}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-          {/* Card layout for mobile screens */}
-          <div className="md:hidden space-y-4">
-            {isLoading ? (
-              Array(3).fill(0).map((_, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-12 w-12 rounded-full" />
-                      <div className="flex-1">
-                        <Skeleton className="h-5 w-32 mb-1" />
-                        <Skeleton className="h-4 w-24" />
-                      </div>
-                      <Skeleton className="h-8 w-20 rounded" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 mt-4">
-                      <div>
-                        <div className="text-xs text-slate-500 mb-1">AUM</div>
-                        <Skeleton className="h-4 w-16" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
-                        <Skeleton className="h-4 w-20" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-500 mb-1">Last Contact</div>
-                        <Skeleton className="h-4 w-24" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-500 mb-1">Contact</div>
-                        <div className="flex space-x-2">
-                          <Skeleton className="h-8 w-8 rounded" />
-                          <Skeleton className="h-8 w-8 rounded" />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : filteredByTier && filteredByTier.length > 0 ? (
-              filteredByTier.map((client: Client) => {
-                const tierColors = getTierColor(client.tier);
-                
-                return (
-                  <Card 
-                    key={`mobile-${client.id}`} 
-                    className="overflow-hidden hover:shadow-md cursor-pointer transition-shadow"
-                    onClick={() => handleClientClick(client.id)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
-                          {client.initials}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-slate-800">{client.fullName}</h3>
-                          <div className="text-xs text-slate-500">{client.email}</div>
-                        </div>
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${tierColors.bg} ${tierColors.text}`}>
-                          {client.tier.charAt(0).toUpperCase() + client.tier.slice(1)}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 mt-4">
-                        <div>
-                          <div className="text-xs text-slate-500 mb-1">AUM</div>
-                          <div className="text-sm font-medium text-slate-700">{client.aum}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
-                          <div className="text-sm text-slate-700">
-                            {client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1)}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-slate-500 mb-1">Last Contact</div>
-                          <div className="text-sm text-slate-500">
-                            {formatRelativeDate(client.lastContactDate)}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-slate-500 mb-1">Contact</div>
-                          <div className="flex space-x-2">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                              </svg>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                              </svg>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center text-sm text-slate-500">
-                  {searchQuery ? "No clients match your search criteria" : "No clients found"}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
       </Tabs>
+      
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array(6).fill(0).map((_, index) => (
+            <Card key={index} className="overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="flex-1">
+                    <Skeleton className="h-5 w-32 mb-1" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <Skeleton className="h-8 w-20 rounded" />
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div>
+                    <div className="text-xs text-slate-500 mb-1">AUM</div>
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500 mb-1">Last Contact</div>
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500 mb-1">Contact</div>
+                    <div className="flex space-x-2">
+                      <Skeleton className="h-8 w-8 rounded" />
+                      <Skeleton className="h-8 w-8 rounded" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : filteredClients && filteredClients.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredClients.map((client: Client) => (
+            <ClientCard 
+              key={client.id} 
+              client={client} 
+              onClick={handleClientClick} 
+            />
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <div className="py-8">
+              <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                <X className="h-6 w-6 text-slate-400" />
+              </div>
+              <h3 className="text-lg font-medium text-slate-900 mb-1">No clients found</h3>
+              <p className="text-sm text-slate-500 max-w-md mx-auto">
+                {searchQuery || activeFilters > 0 
+                  ? "Try adjusting your search or filters to find what you're looking for."
+                  : "Add new clients by converting prospects."}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
