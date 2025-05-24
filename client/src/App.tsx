@@ -11,6 +11,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import Dashboard from "@/pages/dashboard";
 import Clients from "@/pages/clients";
 import Prospects from "@/pages/prospects";
+import AddProspect from "@/pages/add-prospect";
 import Calendar from "@/pages/calendar";
 import Tasks from "@/pages/tasks";
 import Analytics from "@/pages/analytics";
@@ -30,6 +31,7 @@ function AuthenticatedApp() {
             <Route path="/" component={Dashboard} />
             <Route path="/clients" component={Clients} />
             <Route path="/prospects" component={Prospects} />
+            <Route path="/prospects/new" component={AddProspect} />
             <Route path="/calendar" component={Calendar} />
             <Route path="/tasks" component={Tasks} />
             <Route path="/analytics" component={Analytics} />

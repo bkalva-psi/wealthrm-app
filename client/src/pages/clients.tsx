@@ -56,11 +56,11 @@ export default function Clients() {
           <p className="text-sm text-slate-600">Manage your client relationships</p>
         </div>
         <Button
-          onClick={() => navigate("/clients/new")}
+          onClick={() => navigate("/prospects/new")}
           className="flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
-          Add Client
+          Add Prospect
         </Button>
       </div>
       
