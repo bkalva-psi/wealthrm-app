@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "wouter";
 
 const navigationItems = [
   { name: "Dashboard", href: "/", icon: Home },
@@ -27,7 +26,22 @@ const navigationItems = [
 
 export function Sidebar({ mobile = false }: { mobile?: boolean }) {
   const { user } = useAuth();
-  const [location] = useLocation();
+  const [currentPath, setCurrentPath] = useState(window.location.hash.replace(/^#/, '') || '/');
+  
+  // Update currentPath when hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPath(window.location.hash.replace(/^#/, '') || '/');
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+  
+  const handleNavigation = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.location.hash = path;
+  };
   
   const sidebarContent = (
     <div className={cn("flex flex-col w-full md:w-64 border-r border-slate-200 bg-white h-full")}>
@@ -47,12 +61,13 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
       {/* Navigation Links */}
       <nav className="flex-1 px-2 py-4 bg-white space-y-1 overflow-y-auto">
         {navigationItems.map((item) => {
-          const isActive = location === item.href;
+          const isActive = currentPath === item.href;
           
           return (
-            <Link
+            <a
               key={item.name}
-              href={item.href}
+              href={`#${item.href}`}
+              onClick={handleNavigation(item.href)}
               className={cn(
                 "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                 isActive
@@ -67,7 +82,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
                 )}
               />
               {item.name}
-            </Link>
+            </a>
           );
         })}
       </nav>

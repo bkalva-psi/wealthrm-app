@@ -1,4 +1,3 @@
-import { useLocation, Link } from "wouter";
 import { cn } from "@/lib/utils";
 import {
   Home,
@@ -8,6 +7,7 @@ import {
   Menu,
 } from "lucide-react";
 import ujjivanLogo from "../../assets/ujjivan-logo.png";
+import { useEffect, useState } from "react";
 
 const navigationItems = [
   { name: "Home", href: "/", icon: Home },
@@ -18,13 +18,23 @@ const navigationItems = [
 ];
 
 export function MobileNav() {
-  const [location, navigate] = useLocation();
+  const [currentPath, setCurrentPath] = useState(window.location.hash.replace(/^#/, '') || '/');
+  
+  // Update currentPath when hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPath(window.location.hash.replace(/^#/, '') || '/');
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const handleMoreClick = (e: React.MouseEvent) => {
     e.preventDefault();
     // This could open a drawer with more menu items
     // For now, navigate to settings
-    navigate("/settings");
+    window.location.hash = "/settings";
   };
 
   return (
@@ -49,9 +59,13 @@ export function MobileNav() {
               <span className="text-[10px] sm:text-xs">{item.name}</span>
             </button>
           ) : (
-            <Link
+            <a
               key={item.name}
-              href={item.href}
+              href={`#${item.href}`}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.hash = item.href;
+              }}
               className={cn(
                 "flex flex-col items-center justify-center space-y-1 p-1",
                 isActive ? "text-primary-600" : "text-slate-500"
@@ -62,7 +76,7 @@ export function MobileNav() {
                 isActive ? "text-primary-600" : "text-slate-500"
               )} />
               <span className="text-[10px] sm:text-xs">{item.name}</span>
-            </Link>
+            </a>
           );
         })}
       </div>
