@@ -28,22 +28,22 @@ export default function Dashboard() {
       {/* Quick Actions Strip */}
       <QuickActions />
       
-      {/* Grid Layout for Dashboard Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Grid Layout for Dashboard Content - Responsive for all device sizes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Column 1: Today's Agenda and Tasks */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <AgendaCard />
           <TasksCard />
         </div>
         
         {/* Column 2: Portfolio Alerts & Recent Clients */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <PortfolioAlerts />
           <RecentClients />
         </div>
         
         {/* Column 3: Performance Metrics & Pipeline */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 md:col-span-2 lg:col-span-1">
           <PerformanceMetrics />
           <SalesPipeline />
         </div>

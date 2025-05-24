@@ -14,10 +14,23 @@
       --card-foreground: 20 14.3% 4.1%;
       --border: 214 32% 91%;
       --input: 214 32% 91%;
-      --primary: 212 96% 31%; /* Ujjivan Dark Blue */
+      
+      /* Ujjivan Brand Colors */
+      --primary: 212 96% 31%; /* Ujjivan Dark Blue - #0A3B80 */
       --primary-foreground: 0 0% 100%;
-      --secondary: 24 100% 50%; /* Ujjivan Orange */
+      --primary-light: 210 72% 45%; /* Lighter version - #1B6ABF */
+      --primary-dark: 214 100% 20%; /* Darker version - #002966 */
+      
+      --secondary: 24 100% 50%; /* Ujjivan Orange - #FF8000 */
       --secondary-foreground: 0 0% 100%;
+      --secondary-light: 24 100% 65%; /* Lighter version - #FFA64D */
+      --secondary-dark: 24 100% 35%; /* Darker version - #B35A00 */
+      
+      /* Supporting Colors */
+      --success: 142 69% 35%; /* Green - #2A9D49 */
+      --warning: 38 92% 50%; /* Amber - #F9BA00 */
+      --danger: 0 84% 60%; /* Red - #F53D3D */
+      
       --accent: 220 14.3% 95.9%;
       --accent-foreground: 212 96% 31%;
       --destructive: 0 84.2% 60.2%;
@@ -25,6 +38,7 @@
       --ring: 212 96% 31%;
       --radius: 0.5rem;
   }
+  
   .dark {
       /* Ujjivan Small Finance Bank Dark Theme */
       --background: 215 28% 17%;
@@ -37,15 +51,28 @@
       --card-foreground: 210 40% 98%;
       --border: 215 27% 25%;
       --input: 215 27% 25%;
-      --primary: 212 96% 35%; /* Ujjivan Dark Blue - Lighter for dark mode */
+      
+      /* Ujjivan Brand Colors for Dark Mode */
+      --primary: 212 96% 42%; /* Ujjivan Dark Blue - Lighter for dark mode - #1266C4 */
       --primary-foreground: 0 0% 100%;
-      --secondary: 24 100% 50%; /* Ujjivan Orange */
+      --primary-light: 210 72% 55%; /* Lighter version - #3B8ADF */
+      --primary-dark: 214 85% 30%; /* Darker version - #0B4899 */
+      
+      --secondary: 24 100% 60%; /* Ujjivan Orange - Brighter for dark mode - #FF9933 */
       --secondary-foreground: 0 0% 100%;
+      --secondary-light: 24 100% 75%; /* Lighter version - #FFBF80 */
+      --secondary-dark: 24 100% 45%; /* Darker version - #CC6600 */
+      
+      /* Supporting Colors for Dark Mode */
+      --success: 142 69% 45%; /* Green - #34C45B */
+      --warning: 38 92% 60%; /* Amber - #FACC4D */
+      --danger: 0 84% 70%; /* Red - #FF6666 */
+      
       --accent: 215 27% 25%;
       --accent-foreground: 210 40% 98%;
       --destructive: 0 62.8% 30.6%;
       --destructive-foreground: 0 0% 98%;
-      --ring: 212 96% 35%;
+      --ring: 212 96% 42%;
       --radius: 0.5rem;
   }
 
@@ -82,21 +109,78 @@
     @apply bg-slate-400 dark:bg-slate-500;
   }
   
-  /* Ujjivan-specific styling */
+  /* Ujjivan-specific styling utility classes */
   .bg-ujjivan-primary {
-    @apply bg-primary-600;
+    background-color: hsl(var(--primary));
+  }
+  
+  .bg-ujjivan-primary-light {
+    background-color: hsl(var(--primary-light));
+  }
+  
+  .bg-ujjivan-primary-dark {
+    background-color: hsl(var(--primary-dark));
   }
   
   .text-ujjivan-primary {
-    @apply text-primary-600;
+    color: hsl(var(--primary));
+  }
+  
+  .text-ujjivan-primary-light {
+    color: hsl(var(--primary-light));
+  }
+  
+  .text-ujjivan-primary-dark {
+    color: hsl(var(--primary-dark));
   }
   
   .bg-ujjivan-secondary {
-    @apply bg-secondary-500;
+    background-color: hsl(var(--secondary));
+  }
+  
+  .bg-ujjivan-secondary-light {
+    background-color: hsl(var(--secondary-light));
+  }
+  
+  .bg-ujjivan-secondary-dark {
+    background-color: hsl(var(--secondary-dark));
   }
   
   .text-ujjivan-secondary {
-    @apply text-secondary-500;
+    color: hsl(var(--secondary));
+  }
+  
+  .text-ujjivan-secondary-light {
+    color: hsl(var(--secondary-light));
+  }
+  
+  .text-ujjivan-secondary-dark {
+    color: hsl(var(--secondary-dark));
+  }
+  
+  /* Status colors */
+  .bg-ujjivan-success {
+    background-color: hsl(var(--success));
+  }
+  
+  .bg-ujjivan-warning {
+    background-color: hsl(var(--warning));
+  }
+  
+  .bg-ujjivan-danger {
+    background-color: hsl(var(--danger));
+  }
+  
+  .text-ujjivan-success {
+    color: hsl(var(--success));
+  }
+  
+  .text-ujjivan-warning {
+    color: hsl(var(--warning));
+  }
+  
+  .text-ujjivan-danger {
+    color: hsl(var(--danger));
   }
   
   /* Mobile-specific optimizations */
