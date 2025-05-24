@@ -78,19 +78,38 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     return `${diffDays} days ago`;
   };
   
+  // Get tier symbol (icon) based on client's tier
+  const getTierSymbol = (tier: string) => {
+    switch (tier.toLowerCase()) {
+      case 'platinum':
+        return '★★★'; // Triple star for platinum
+      case 'gold':
+        return '★★'; // Double star for gold
+      case 'silver':
+        return '★'; // Single star for silver
+      default:
+        return '•';
+    }
+  };
+  
   return (
     <Card 
-      className="overflow-hidden hover:shadow-md cursor-pointer transition-shadow mb-4"
+      className={`overflow-hidden hover:shadow-md cursor-pointer transition-shadow mb-4 border-l-4 ${tierColors.border}`}
       onClick={() => onClick(client.id)}
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-lg">
+          <div className={`h-12 w-12 rounded-full ${tierColors.bg} border ${tierColors.border} flex items-center justify-center ${tierColors.text} font-medium text-lg`}>
             {client.initials || getInitials(client.fullName)}
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-slate-800">{client.fullName}</h3>
+              <div className="flex items-center">
+                <h3 className="font-medium text-slate-800">{client.fullName}</h3>
+                <div className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${tierColors.icon} text-white`}>
+                  {getTierSymbol(client.tier)}
+                </div>
+              </div>
               {(client.alertCount ?? 0) > 0 && (
                 <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center relative">
                   <Bell className="h-3 w-3 text-white" />
@@ -103,9 +122,6 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             <div className="text-xs text-slate-500">{client.phone}</div>
             <div className="text-xs text-slate-500">{client.email}</div>
           </div>
-          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${tierColors.bg} ${tierColors.text}`}>
-            {client.tier.charAt(0).toUpperCase() + client.tier.slice(1)}
-          </span>
         </div>
         
         {/* Horizontal line below contact info */}

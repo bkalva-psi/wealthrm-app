@@ -17,16 +17,36 @@ export function formatCurrency(value: number): string {
   return `₹${value}`;
 }
 
-export function getTierColor(tier: string): { bg: string, text: string } {
+export function getTierColor(tier: string): { bg: string, text: string, border: string, icon: string } {
   switch (tier.toLowerCase()) {
     case 'platinum':
-      return { bg: 'bg-green-100', text: 'text-green-800' };
+      return { 
+        bg: 'bg-emerald-50', 
+        text: 'text-emerald-800',
+        border: 'border-emerald-300',
+        icon: 'bg-emerald-500'
+      };
     case 'gold':
-      return { bg: 'bg-amber-100', text: 'text-amber-800' };
+      return { 
+        bg: 'bg-amber-50', 
+        text: 'text-amber-800',
+        border: 'border-amber-300',
+        icon: 'bg-amber-500'
+      };
     case 'silver':
-      return { bg: 'bg-slate-100', text: 'text-slate-800' };
+      return { 
+        bg: 'bg-slate-50', 
+        text: 'text-slate-800',
+        border: 'border-slate-300',
+        icon: 'bg-slate-400'
+      };
     default:
-      return { bg: 'bg-slate-100', text: 'text-slate-800' };
+      return { 
+        bg: 'bg-slate-50', 
+        text: 'text-slate-800',
+        border: 'border-slate-300',
+        icon: 'bg-slate-400'
+      };
   }
 }
 
