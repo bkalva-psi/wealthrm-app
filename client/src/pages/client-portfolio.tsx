@@ -171,15 +171,30 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
 // Performance chart component (simplified for now)
 function PerformanceChart({ periods }: { periods: { label: string, value: number }[] }) {
   return (
-    <div className="flex flex-wrap gap-3 mt-4">
-      {periods.map((period) => (
-        <div key={period.label} className="flex flex-col items-center">
-          <span className={`text-sm font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-          </span>
-          <span className="text-xs text-slate-500">{period.label}</span>
-        </div>
-      ))}
+    <div className="mt-4">
+      {/* Desktop view */}
+      <div className="hidden md:flex flex-wrap gap-3">
+        {periods.map((period) => (
+          <div key={period.label} className="flex flex-col items-center">
+            <span className={`text-sm font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+            </span>
+            <span className="text-xs text-slate-500">{period.label}</span>
+          </div>
+        ))}
+      </div>
+      
+      {/* Mobile view - grid layout */}
+      <div className="md:hidden grid grid-cols-4 gap-2">
+        {periods.map((period) => (
+          <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
+            <span className={`text-sm font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+            </span>
+            <span className="text-xs text-slate-500">{period.label}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -187,33 +202,61 @@ function PerformanceChart({ periods }: { periods: { label: string, value: number
 // Holdings table component
 function HoldingsTable({ holdings }: { holdings: any[] }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-slate-200">
-            <th className="px-4 py-3 text-left font-medium text-slate-500">Security</th>
-            <th className="px-4 py-3 text-left font-medium text-slate-500">Type</th>
-            <th className="px-4 py-3 text-right font-medium text-slate-500">Value</th>
-            <th className="px-4 py-3 text-right font-medium text-slate-500">Allocation</th>
-            <th className="px-4 py-3 text-right font-medium text-slate-500">Gain/Loss</th>
-          </tr>
-        </thead>
-        <tbody>
-          {holdings.map((holding, index) => (
-            <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
-              <td className="px-4 py-3 font-medium">{holding.name}</td>
-              <td className="px-4 py-3 text-slate-600">{holding.type}</td>
-              <td className="px-4 py-3 text-right">
-                ₹{(holding.value / 100000).toFixed(2)} L
-              </td>
-              <td className="px-4 py-3 text-right">{holding.allocation}%</td>
-              <td className={`px-4 py-3 text-right ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {holding.gain > 0 ? '+' : ''}{holding.gain}%
-              </td>
+    <div>
+      {/* Table for desktop/tablet */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="px-4 py-3 text-left font-medium text-slate-500">Security</th>
+              <th className="px-4 py-3 text-left font-medium text-slate-500">Type</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">Value</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">Allocation</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">Gain/Loss</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {holdings.map((holding, index) => (
+              <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
+                <td className="px-4 py-3 font-medium">{holding.name}</td>
+                <td className="px-4 py-3 text-slate-600">{holding.type}</td>
+                <td className="px-4 py-3 text-right">
+                  ₹{(holding.value / 100000).toFixed(2)} L
+                </td>
+                <td className="px-4 py-3 text-right">{holding.allocation}%</td>
+                <td className={`px-4 py-3 text-right ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {holding.gain > 0 ? '+' : ''}{holding.gain}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Card view for mobile */}
+      <div className="md:hidden space-y-4">
+        {holdings.map((holding, index) => (
+          <div key={index} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="font-medium text-sm">{holding.name}</h4>
+              <span className={`text-sm font-medium ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {holding.gain > 0 ? '+' : ''}{holding.gain}%
+              </span>
+            </div>
+            <div className="text-xs text-slate-500 mb-3">{holding.type}</div>
+            <div className="flex justify-between border-t border-slate-100 pt-2">
+              <div>
+                <div className="text-xs text-slate-500">Value</div>
+                <div className="font-medium">₹{(holding.value / 100000).toFixed(2)} L</div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500">Allocation</div>
+                <div className="font-medium text-right">{holding.allocation}%</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -714,38 +757,66 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">Your Portfolio</div>
-                      <div className="text-xs text-slate-500">1 Year Return</div>
+                  {/* Desktop view */}
+                  <div className="hidden md:block space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-medium">Your Portfolio</div>
+                        <div className="text-xs text-slate-500">1 Year Return</div>
+                      </div>
+                      <div className="text-green-600 font-medium">+{client?.yearlyPerformance || 14.5}%</div>
                     </div>
-                    <div className="text-green-600 font-medium">+{client?.yearlyPerformance || 14.5}%</div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-medium">Nifty 50</div>
+                        <div className="text-xs text-slate-500">Benchmark</div>
+                      </div>
+                      <div className="text-green-600 font-medium">+12.8%</div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-medium">Category Average</div>
+                        <div className="text-xs text-slate-500">Moderate Allocation</div>
+                      </div>
+                      <div className="text-green-600 font-medium">+11.2%</div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-medium">Alpha</div>
+                        <div className="text-xs text-slate-500">Excess Return vs Benchmark</div>
+                      </div>
+                      <div className="text-green-600 font-medium">+1.7%</div>
+                    </div>
                   </div>
                   
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">Nifty 50</div>
-                      <div className="text-xs text-slate-500">Benchmark</div>
+                  {/* Mobile view - card grid */}
+                  <div className="md:hidden space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <div className="text-sm text-slate-500">Your Portfolio</div>
+                        <div className="text-lg font-medium text-green-600">+{client?.yearlyPerformance || 14.5}%</div>
+                      </div>
+                      
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <div className="text-sm text-slate-500">Nifty 50</div>
+                        <div className="text-lg font-medium text-green-600">+12.8%</div>
+                      </div>
+                      
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <div className="text-sm text-slate-500">Category Avg</div>
+                        <div className="text-lg font-medium text-green-600">+11.2%</div>
+                      </div>
+                      
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <div className="text-sm text-slate-500">Alpha</div>
+                        <div className="text-lg font-medium text-green-600">+1.7%</div>
+                      </div>
                     </div>
-                    <div className="text-green-600 font-medium">+12.8%</div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">Category Average</div>
-                      <div className="text-xs text-slate-500">Moderate Allocation</div>
-                    </div>
-                    <div className="text-green-600 font-medium">+11.2%</div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">Alpha</div>
-                      <div className="text-xs text-slate-500">Excess Return vs Benchmark</div>
-                    </div>
-                    <div className="text-green-600 font-medium">+1.7%</div>
                   </div>
                 </div>
               </CardContent>
