@@ -1,4 +1,4 @@
-import { useLocation, Link } from "wouter";
+import { useLocation } from "wouter";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
 import {
@@ -25,7 +25,7 @@ const navigationItems = [
 ];
 
 export function Sidebar({ mobile = false }: { mobile?: boolean }) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { user } = useAuth();
   
   const sidebarContent = (
@@ -49,9 +49,13 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
           const isActive = location === item.href;
           
           return (
-            <Link
+            <a
               key={item.name}
               href={item.href}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(item.href);
+              }}
               className={cn(
                 "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                 isActive
@@ -66,7 +70,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
                 )}
               />
               {item.name}
-            </Link>
+            </a>
           );
         })}
       </nav>
