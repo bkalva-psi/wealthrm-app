@@ -1,4 +1,3 @@
-import { useLocation } from "wouter";
 import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
 import {
@@ -12,6 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
+import { useEffect, useState } from "react";
 
 const navigationItems = [
   { name: "Dashboard", href: "/", icon: Home },
@@ -25,8 +25,17 @@ const navigationItems = [
 ];
 
 export function Sidebar({ mobile = false }: { mobile?: boolean }) {
-  const [location, navigate] = useLocation();
   const { user } = useAuth();
+  const [currentPath, setCurrentPath] = useState(window.location.hash.replace(/^#/, '') || '/');
+  
+  useEffect(() => {
+    const updatePath = () => {
+      setCurrentPath(window.location.hash.replace(/^#/, '') || '/');
+    };
+    
+    window.addEventListener('hashchange', updatePath);
+    return () => window.removeEventListener('hashchange', updatePath);
+  }, []);
   
   const sidebarContent = (
     <div className={cn("flex flex-col w-full md:w-64 border-r border-slate-200 bg-white h-full")}>
@@ -51,11 +60,7 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
           return (
             <a
               key={item.name}
-              href={item.href}
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(item.href);
-              }}
+              href={`#${item.href}`}
               className={cn(
                 "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                 isActive
