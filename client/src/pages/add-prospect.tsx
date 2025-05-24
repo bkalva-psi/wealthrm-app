@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -39,7 +38,7 @@ type ServerValidationError = {
 type ProspectFormValues = z.infer<typeof insertProspectSchema>;
 
 export default function AddProspect() {
-  const [, navigate] = useLocation();
+  // Using hash-based navigation
   const { toast } = useToast();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -162,7 +161,7 @@ export default function AddProspect() {
       });
       
       // Navigate back to prospects page
-      navigate("/prospects");
+      window.location.hash = "/prospects";
     },
     onError: (error: Error) => {
       if (error.message !== "Validation failed") {
@@ -209,7 +208,7 @@ export default function AddProspect() {
           variant="ghost"
           size="sm"
           className="mr-2"
-          onClick={() => navigate("/prospects")}
+          onClick={() => window.location.hash = "/prospects"}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back
@@ -471,7 +470,7 @@ export default function AddProspect() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/prospects")}
+                  onClick={() => window.location.hash = "/prospects"}
                 >
                   Cancel
                 </Button>
