@@ -223,7 +223,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
       }
 
       const response = await fetch(`/api/prospects/${prospectId}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
