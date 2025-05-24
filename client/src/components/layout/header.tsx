@@ -47,8 +47,15 @@ export function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0">
-              <Sidebar />
+            <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px]">
+              <div className="flex items-center h-16 px-4 border-b border-slate-200">
+                <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+                <div className="ml-2 flex flex-col">
+                  <h1 className="text-ujjivan-primary text-sm font-bold leading-tight">Ujjivan SFB</h1>
+                  <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM</span>
+                </div>
+              </div>
+              <Sidebar mobile={true} />
             </SheetContent>
           </Sheet>
           

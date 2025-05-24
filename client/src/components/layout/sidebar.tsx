@@ -24,13 +24,14 @@ const navigationItems = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({ mobile = false }: { mobile?: boolean }) {
   const [location] = useLocation();
   const { user } = useAuth();
-
-  return (
-    <aside className="hidden md:flex md:flex-shrink-0">
-      <div className="flex flex-col w-64 border-r border-slate-200 bg-white">
+  
+  const sidebarContent = (
+    <div className={cn("flex flex-col w-full md:w-64 border-r border-slate-200 bg-white h-full")}>
+      {/* Only show logo in the sidebar when it's not mobile view, as mobile view already has logo in the Sheet header */}
+      {!mobile && (
         <div className="flex items-center justify-center h-16 bg-white border-b border-slate-200">
           <div className="flex items-center space-x-2">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto" />
@@ -40,37 +41,47 @@ export function Sidebar() {
             </div>
           </div>
         </div>
-        
-
-        
-        {/* Navigation Links */}
-        <nav className="flex-1 px-2 py-4 bg-white space-y-1 overflow-y-auto">
-          {navigationItems.map((item) => {
-            const isActive = location === item.href;
-            
-            return (
-              <a
-                key={item.name}
-                href={item.href}
+      )}
+      
+      {/* Navigation Links */}
+      <nav className="flex-1 px-2 py-4 bg-white space-y-1 overflow-y-auto">
+        {navigationItems.map((item) => {
+          const isActive = location === item.href;
+          
+          return (
+            <a
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                isActive
+                  ? "bg-ujjivan-primary-light text-ujjivan-primary"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              )}
+            >
+              <item.icon
                 className={cn(
-                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
-                  isActive
-                    ? "bg-primary-50 text-primary-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  "mr-3 h-5 w-5",
+                  isActive ? "text-ujjivan-primary" : "text-slate-400 group-hover:text-slate-500"
                 )}
-              >
-                <item.icon
-                  className={cn(
-                    "mr-3 h-5 w-5",
-                    isActive ? "text-primary-600" : "text-slate-400 group-hover:text-slate-500"
-                  )}
-                />
-                {item.name}
-              </a>
-            );
-          })}
-        </nav>
-      </div>
+              />
+              {item.name}
+            </a>
+          );
+        })}
+      </nav>
+    </div>
+  );
+  
+  // If it's for mobile, just return the content
+  if (mobile) {
+    return sidebarContent;
+  }
+  
+  // For desktop, wrap it in the aside element with the appropriate classes
+  return (
+    <aside className="hidden md:flex md:flex-shrink-0">
+      {sidebarContent}
     </aside>
   );
 }
