@@ -211,10 +211,106 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
     },
   });
 
+  // Update prospect mutation
+  const updateProspect = useMutation({
+    mutationFn: async (prospectData: ProspectFormValues) => {
+      // Clear previous errors
+      setServerErrors({});
+      setGeneralError(null);
+
+      if (!prospectId) {
+        throw new Error("Missing prospect ID");
+      }
+
+      const response = await fetch(`/api/prospects/${prospectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(prospectData),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle validation errors from the server
+        if (response.status === 400 && data.errors) {
+          const validationErrors: ServerValidationError = data;
+          
+          // Format errors for display
+          const formattedErrors: Record<string, string[]> = {};
+          
+          Object.entries(validationErrors.errors).forEach(([field, error]) => {
+            if (field !== "_errors" && error._errors && error._errors.length > 0) {
+              formattedErrors[field] = error._errors;
+              
+              // Also set the error in the form state
+              if (field in form.formState.dirtyFields) {
+                form.setError(field as any, {
+                  type: "server",
+                  message: error._errors[0]
+                });
+              }
+            }
+          });
+          
+          setServerErrors(formattedErrors);
+          
+          // Set general error if there's a top-level error
+          if (validationErrors.errors._errors && validationErrors.errors._errors.length > 0) {
+            setGeneralError(validationErrors.errors._errors[0]);
+          } else {
+            setGeneralError(data.message || "Please correct the errors in the form");
+          }
+          
+          throw new Error("Validation failed");
+        }
+        
+        throw new Error(data.message || "Failed to update prospect");
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      // Invalidate prospects cache
+      queryClient.invalidateQueries({ queryKey: ['/api/prospects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/prospects/stage'] });
+      
+      // Show success message
+      toast({
+        title: "Prospect Updated",
+        description: "The prospect has been successfully updated.",
+      });
+      
+      // Navigate back to prospect detail page
+      window.location.hash = `/prospect-detail/${prospectId}`;
+    },
+    onError: (error: Error) => {
+      if (error.message !== "Validation failed") {
+        // Only show the toast for non-validation errors
+        // (validation errors are shown inline)
+        toast({
+          title: "Error Updating Prospect",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      setIsSubmitting(false);
+    },
+  });
+
   // Handle form submission
   const onSubmit = async (data: ProspectFormValues) => {
     setIsSubmitting(true);
-    createProspect.mutate(data);
+    
+    if (prospectId && !readOnly) {
+      // Update existing prospect
+      updateProspect.mutate(data);
+    } else {
+      // Create new prospect
+      createProspect.mutate(data);
+    }
   };
 
   // Format potential AUM as currency when input changes
@@ -548,14 +644,14 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                 {!readOnly && (
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Add Prospect
+                    {prospectId ? "Update Prospect" : "Add Prospect"}
                   </Button>
                 )}
                 {readOnly && (
                   <Button 
                     type="button" 
                     onClick={() => {
-                      alert("Edit functionality would be implemented here");
+                      window.location.hash = `/prospect-edit/${prospectId}`;
                     }}
                   >
                     Edit Prospect

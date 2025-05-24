@@ -68,6 +68,9 @@ function AuthenticatedApp() {
       case /^\/prospect-detail\/\d+$/.test(currentRoute):
         const prospectId = parseInt(currentRoute.split('/')[2]);
         return <AddProspect prospectId={prospectId} readOnly={true} />;
+      case /^\/prospect-edit\/\d+$/.test(currentRoute):
+        const editProspectId = parseInt(currentRoute.split('/')[2]);
+        return <AddProspect prospectId={editProspectId} readOnly={false} />;
       case currentRoute === '/calendar':
         return <Calendar />;
       case currentRoute === '/tasks':
