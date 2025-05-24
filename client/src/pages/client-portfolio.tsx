@@ -32,6 +32,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 
+// Import custom chart components
+import AssetAllocationChart from "../components/charts/AssetAllocationChart";
+import PerformanceChart from "../components/charts/PerformanceChart";
+import BarChartComponent from "../components/charts/BarChart";
+
 // Mock data for portfolio holdings
 const mockHoldings = [
   { name: "HDFC Top 100 Fund", type: "Mutual Fund - Equity", value: 1250000, allocation: 25, gain: 15.4 },
@@ -168,8 +173,8 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
   );
 }
 
-// Performance chart component (simplified for now)
-function PerformanceChart({ periods }: { periods: { label: string, value: number }[] }) {
+// Local performance chart component (simplified for now)
+function LocalPerformanceChart({ periods }: { periods: { label: string, value: number }[] }) {
   return (
     <div className="mt-4">
       {/* Desktop view */}
@@ -421,10 +426,12 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="h-64 flex items-center justify-center bg-slate-50 rounded-lg">
-                    <div className="text-center">
-                      <PieChart className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                      <p className="text-sm text-slate-500">Asset allocation chart</p>
+                  <div className="flex flex-col">
+                    <h3 className="text-sm font-medium mb-2">Asset Allocation</h3>
+                    <div className="flex-1">
+                      <AssetAllocationChart 
+                        data={client?.assetAllocation || mockAssetAllocation} 
+                      />
                     </div>
                   </div>
                   <AllocationChart 

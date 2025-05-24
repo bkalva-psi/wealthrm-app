@@ -115,7 +115,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   };
   
   // Calculate the min and max values for better Y-axis scaling
-  const allValues = filteredData.flatMap(d => [d.value, d.benchmark].filter(Boolean) as number);
+  const allValues = filteredData.flatMap(d => [d.value, d.benchmark || 0]);
   const minValue = Math.floor(Math.min(...allValues) - 2);
   const maxValue = Math.ceil(Math.max(...allValues) + 2);
   
