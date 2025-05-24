@@ -44,10 +44,10 @@ export function QuickActions() {
   
   const quickActions = [
     {
-      id: "add-client",
+      id: "add-prospect",
       icon: UserPlus,
-      label: "Add Client",
-      action: () => navigate("/clients/new"),
+      label: "Add Prospect",
+      action: () => navigate("/prospects/new"),
     },
     {
       id: "schedule",
