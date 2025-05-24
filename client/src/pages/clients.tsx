@@ -89,20 +89,18 @@ function ClientCard({ client, onClick }: ClientCardProps) {
       onClick={() => onClick(client.id)}
     >
       <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          {/* Alert icon instead of initials */}
-          <div className={`h-12 w-12 rounded-full ${tierColors.bg} border ${tierColors.border} flex items-center justify-center ${tierColors.text} font-medium text-lg relative`}>
-            {(client.alertCount ?? 0) > 0 ? (
-              <>
-                <Bell className="h-5 w-5 text-white" />
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-                  {client.alertCount}
-                </span>
-              </>
-            ) : (
-              <span className="text-sm">{formatTier(client.tier)}</span>
-            )}
-          </div>
+        <div className="flex items-start gap-3 py-1">
+          {/* Just show bell icon if there are alerts */}
+          {(client.alertCount ?? 0) > 0 && (
+            <div className="mt-1 relative">
+              <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center">
+                <Bell className="h-3.5 w-3.5 text-white" />
+              </div>
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+                {client.alertCount}
+              </span>
+            </div>
+          )}
           <div className="flex-1 overflow-hidden">
             <div className="flex items-center">
               <h3 className="font-medium text-slate-800 truncate">{client.fullName}</h3>
