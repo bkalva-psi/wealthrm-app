@@ -19,12 +19,8 @@ import {
 
 // Basic auth middleware
 const authMiddleware = (req: Request, res: Response, next: Function) => {
-  // For testing purposes - create automatic authentication if not authenticated
   if (!req.session.userId) {
-    // This is a development-only authentication bypass
-    // We set the userId to 1 (the test user) for all requests
-    req.session.userId = 1;
-    req.session.userRole = "admin";
+    return res.status(401).json({ message: "Unauthorized" });
   }
   next();
 };
