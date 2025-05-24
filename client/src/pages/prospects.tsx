@@ -107,11 +107,16 @@ export default function Prospects() {
   }, []);
   
   const { data: prospects, isLoading } = useQuery({
-    queryKey: ['/api/prospects'],
-    onSuccess: (data) => {
-      setActiveProspects(data);
-    }
+    queryKey: ['/api/prospects']
   });
+  
+  // Update active prospects when data is loaded
+  useEffect(() => {
+    if (prospects) {
+      console.log("Prospects data loaded:", prospects);
+      setActiveProspects(prospects);
+    }
+  }, [prospects]);
   
   const sensors = useSensors(
     useSensor(PointerSensor),
