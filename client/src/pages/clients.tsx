@@ -195,7 +195,7 @@ export default function Clients() {
         
         // Apply additional filters
         const matchesTier = filterOptions.includedTiers.includes(client.tier);
-        const matchesRiskProfile = filterOptions.riskProfiles.includes(client.riskProfile);
+        const matchesRiskProfile = client.riskProfile ? filterOptions.riskProfiles.includes(client.riskProfile) : true;
         const matchesAum = client.aumValue >= filterOptions.minAum && 
                           client.aumValue <= filterOptions.maxAum;
         

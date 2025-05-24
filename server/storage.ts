@@ -169,7 +169,10 @@ export class MemStorage implements IStorage {
       email: "rahul.joshi@example.com",
       phone: "+91 9876543203",
       lastContactDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      lastTransactionDate: new Date(new Date().setDate(new Date().getDate() - 5)),
       riskProfile: "aggressive",
+      yearlyPerformance: 11.2,
+      alertCount: 2,
       assignedTo: 1
     });
     
@@ -182,7 +185,10 @@ export class MemStorage implements IStorage {
       email: "priya.malhotra@example.com",
       phone: "+91 9876543204",
       lastContactDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
+      lastTransactionDate: new Date(new Date().setDate(new Date().getDate() - 12)),
       riskProfile: "moderate",
+      yearlyPerformance: 5.8,
+      alertCount: 0,
       assignedTo: 1
     });
     
