@@ -55,14 +55,14 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
               className={cn(
                 "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                 isActive
-                  ? "bg-ujjivan-primary-light text-ujjivan-primary"
+                  ? "bg-ujjivan-primary text-white font-semibold"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
               <item.icon
                 className={cn(
                   "mr-3 h-5 w-5",
-                  isActive ? "text-ujjivan-primary" : "text-slate-400 group-hover:text-slate-500"
+                  isActive ? "text-white" : "text-slate-400 group-hover:text-slate-500"
                 )}
               />
               {item.name}
