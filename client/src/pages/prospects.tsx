@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
 import { 
   DndContext, 
   DragOverlay,
@@ -97,7 +96,7 @@ function PipelineColumn({ title, prospects, stage, onProspectClick }: {
 }
 
 export default function Prospects() {
-  const [, navigate] = useLocation();
+  // Using hash-based navigation
   const [searchQuery, setSearchQuery] = useState("");
   const [activeProspects, setActiveProspects] = useState<Prospect[]>([]);
   const [draggedItem, setDraggedItem] = useState<Prospect | null>(null);
