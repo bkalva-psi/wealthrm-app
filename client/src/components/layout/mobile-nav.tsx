@@ -41,7 +41,7 @@ export function MobileNav() {
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-10 safe-area-bottom">
       <div className="grid grid-cols-5 h-16">
         {navigationItems.map((item) => {
-          const isActive = item.href === "#" ? false : location === item.href;
+          const isActive = item.href === "#" ? false : currentPath === item.href;
           
           return item.href === "#" ? (
             <button
