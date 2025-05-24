@@ -1,0 +1,736 @@
+import {
+  users, User, InsertUser,
+  clients, Client, InsertClient,
+  prospects, Prospect, InsertProspect,
+  tasks, Task, InsertTask,
+  appointments, Appointment, InsertAppointment,
+  portfolioAlerts, PortfolioAlert, InsertPortfolioAlert,
+  performanceMetrics, PerformanceMetric, InsertPerformanceMetric,
+  aumTrends, AumTrend, InsertAumTrend,
+  salesPipeline, SalesPipeline, InsertSalesPipeline
+} from "@shared/schema";
+
+// modify the interface with any CRUD methods
+// you might need
+export interface IStorage {
+  // User methods
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  getUsers(): Promise<User[]>;
+
+  // Client methods
+  getClient(id: number): Promise<Client | undefined>;
+  getClients(assignedTo?: number): Promise<Client[]>;
+  createClient(client: InsertClient): Promise<Client>;
+  updateClient(id: number, client: Partial<InsertClient>): Promise<Client | undefined>;
+  deleteClient(id: number): Promise<boolean>;
+  getRecentClients(limit: number, assignedTo?: number): Promise<Client[]>;
+
+  // Prospect methods
+  getProspect(id: number): Promise<Prospect | undefined>;
+  getProspects(assignedTo?: number): Promise<Prospect[]>;
+  createProspect(prospect: InsertProspect): Promise<Prospect>;
+  updateProspect(id: number, prospect: Partial<InsertProspect>): Promise<Prospect | undefined>;
+  deleteProspect(id: number): Promise<boolean>;
+  getProspectsByStage(stage: string, assignedTo?: number): Promise<Prospect[]>;
+
+  // Task methods
+  getTask(id: number): Promise<Task | undefined>;
+  getTasks(assignedTo?: number, completed?: boolean): Promise<Task[]>;
+  createTask(task: InsertTask): Promise<Task>;
+  updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined>;
+  deleteTask(id: number): Promise<boolean>;
+
+  // Appointment methods
+  getAppointment(id: number): Promise<Appointment | undefined>;
+  getAppointments(assignedTo?: number, date?: Date): Promise<Appointment[]>;
+  createAppointment(appointment: InsertAppointment): Promise<Appointment>;
+  updateAppointment(id: number, appointment: Partial<InsertAppointment>): Promise<Appointment | undefined>;
+  deleteAppointment(id: number): Promise<boolean>;
+  getTodaysAppointments(assignedTo?: number): Promise<Appointment[]>;
+
+  // Portfolio Alert methods
+  getPortfolioAlert(id: number): Promise<PortfolioAlert | undefined>;
+  getPortfolioAlerts(read?: boolean): Promise<PortfolioAlert[]>;
+  createPortfolioAlert(alert: InsertPortfolioAlert): Promise<PortfolioAlert>;
+  updatePortfolioAlert(id: number, alert: Partial<InsertPortfolioAlert>): Promise<PortfolioAlert | undefined>;
+  deletePortfolioAlert(id: number): Promise<boolean>;
+
+  // Performance Metric methods
+  getPerformanceMetrics(userId: number): Promise<PerformanceMetric[]>;
+  createPerformanceMetric(metric: InsertPerformanceMetric): Promise<PerformanceMetric>;
+  updatePerformanceMetric(id: number, metric: Partial<InsertPerformanceMetric>): Promise<PerformanceMetric | undefined>;
+  
+  // AUM Trend methods
+  getAumTrends(userId: number): Promise<AumTrend[]>;
+  createAumTrend(trend: InsertAumTrend): Promise<AumTrend>;
+  
+  // Sales Pipeline methods
+  getSalesPipeline(userId: number): Promise<SalesPipeline[]>;
+  createSalesPipelineEntry(entry: InsertSalesPipeline): Promise<SalesPipeline>;
+  updateSalesPipelineEntry(id: number, entry: Partial<InsertSalesPipeline>): Promise<SalesPipeline | undefined>;
+}
+
+export class MemStorage implements IStorage {
+  private users: Map<number, User>;
+  private clients: Map<number, Client>;
+  private prospects: Map<number, Prospect>;
+  private tasks: Map<number, Task>;
+  private appointments: Map<number, Appointment>;
+  private portfolioAlerts: Map<number, PortfolioAlert>;
+  private performanceMetrics: Map<number, PerformanceMetric>;
+  private aumTrends: Map<number, AumTrend>;
+  private salesPipeline: Map<number, SalesPipeline>;
+  
+  userCurrentId: number;
+  clientCurrentId: number;
+  prospectCurrentId: number;
+  taskCurrentId: number;
+  appointmentCurrentId: number;
+  portfolioAlertCurrentId: number;
+  performanceMetricCurrentId: number;
+  aumTrendCurrentId: number;
+  salesPipelineCurrentId: number;
+
+  constructor() {
+    this.users = new Map();
+    this.clients = new Map();
+    this.prospects = new Map();
+    this.tasks = new Map();
+    this.appointments = new Map();
+    this.portfolioAlerts = new Map();
+    this.performanceMetrics = new Map();
+    this.aumTrends = new Map();
+    this.salesPipeline = new Map();
+    
+    this.userCurrentId = 1;
+    this.clientCurrentId = 1;
+    this.prospectCurrentId = 1;
+    this.taskCurrentId = 1;
+    this.appointmentCurrentId = 1;
+    this.portfolioAlertCurrentId = 1;
+    this.performanceMetricCurrentId = 1;
+    this.aumTrendCurrentId = 1;
+    this.salesPipelineCurrentId = 1;
+    
+    // Seed with a default user
+    this.createUser({
+      username: "rahul.sharma",
+      password: "password123",
+      fullName: "Rahul Sharma",
+      role: "relationship_manager",
+      jobTitle: "Senior Relationship Manager",
+      email: "rahul.sharma@bank.com",
+      phone: "+91 9876543210"
+    });
+    
+    // Seed with some sample clients
+    this.createClient({
+      fullName: "Anand Patel",
+      initials: "AP",
+      tier: "platinum",
+      aum: "₹1.8 Cr",
+      aumValue: 18000000,
+      email: "anand.patel@example.com",
+      phone: "+91 9876543201",
+      lastContactDate: new Date(),
+      riskProfile: "moderate",
+      assignedTo: 1
+    });
+    
+    this.createClient({
+      fullName: "Sonia Mehta",
+      initials: "SM",
+      tier: "gold",
+      aum: "₹75 L",
+      aumValue: 7500000,
+      email: "sonia.mehta@example.com",
+      phone: "+91 9876543202",
+      lastContactDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // yesterday
+      riskProfile: "conservative",
+      assignedTo: 1
+    });
+    
+    this.createClient({
+      fullName: "Rahul Joshi",
+      initials: "RJ",
+      tier: "platinum",
+      aum: "₹2.3 Cr",
+      aumValue: 23000000,
+      email: "rahul.joshi@example.com",
+      phone: "+91 9876543203",
+      lastContactDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      riskProfile: "aggressive",
+      assignedTo: 1
+    });
+    
+    this.createClient({
+      fullName: "Priya Malhotra",
+      initials: "PM",
+      tier: "silver",
+      aum: "₹55 L",
+      aumValue: 5500000,
+      email: "priya.malhotra@example.com",
+      phone: "+91 9876543204",
+      lastContactDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
+      riskProfile: "moderate",
+      assignedTo: 1
+    });
+    
+    // Seed tasks
+    this.createTask({
+      title: "Prepare portfolio proposal for Sharma family",
+      description: "Create a comprehensive investment proposal for the Sharma family's ₹1.2 Cr portfolio",
+      dueDate: new Date(),
+      completed: false,
+      assignedTo: 1
+    });
+    
+    this.createTask({
+      title: "Follow up on Mehra account documentation",
+      description: "Call Mr. Mehra to remind about pending KYC documents",
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // tomorrow
+      completed: false,
+      assignedTo: 1
+    });
+    
+    this.createTask({
+      title: "Send market update newsletter",
+      description: "Send the monthly market update newsletter to all platinum clients",
+      dueDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // yesterday
+      completed: true,
+      assignedTo: 1
+    });
+    
+    this.createTask({
+      title: "Update risk profile for Joshi portfolio",
+      description: "Review and update the risk profile for Rahul Joshi's portfolio",
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // in 2 days
+      completed: false,
+      clientId: 3,
+      assignedTo: 1
+    });
+    
+    // Seed appointments
+    this.createAppointment({
+      title: "Meeting with Anand Patel",
+      description: "Portfolio Review",
+      startTime: new Date(new Date().setHours(10, 30, 0, 0)),
+      endTime: new Date(new Date().setHours(11, 30, 0, 0)),
+      location: "Office",
+      clientId: 1,
+      assignedTo: 1,
+      priority: "high",
+      type: "meeting"
+    });
+    
+    this.createAppointment({
+      title: "Call with Priya Mehta",
+      description: "Insurance Discussion",
+      startTime: new Date(new Date().setHours(13, 0, 0, 0)),
+      endTime: new Date(new Date().setHours(13, 30, 0, 0)),
+      location: "Phone",
+      clientId: 4,
+      assignedTo: 1,
+      priority: "medium",
+      type: "call"
+    });
+    
+    this.createAppointment({
+      title: "Client Review - Vikram Singh",
+      description: "Quarterly Review",
+      startTime: new Date(new Date().setHours(15, 30, 0, 0)),
+      endTime: new Date(new Date().setHours(16, 30, 0, 0)),
+      location: "Client Office",
+      assignedTo: 1,
+      priority: "medium",
+      type: "meeting"
+    });
+    
+    // Seed portfolio alerts
+    this.createPortfolioAlert({
+      title: "Portfolio Deviation - Gupta Family",
+      description: "Equity allocation exceeds target by 8.5%",
+      clientId: 1,
+      severity: "critical",
+      read: false,
+      actionRequired: true
+    });
+    
+    this.createPortfolioAlert({
+      title: "Risk Profile Update - Sanjay Kapoor",
+      description: "Changed from Moderate to Conservative",
+      clientId: 2,
+      severity: "warning",
+      read: false,
+      actionRequired: true
+    });
+    
+    this.createPortfolioAlert({
+      title: "Bond Maturity - Kumar Holdings",
+      description: "Corporate bonds maturing in 14 days",
+      clientId: 3,
+      severity: "info",
+      read: false,
+      actionRequired: true
+    });
+    
+    // Seed performance metrics
+    this.createPerformanceMetric({
+      userId: 1,
+      metricType: "new_aum",
+      currentValue: 12000000, // 1.2 Cr
+      targetValue: 20000000,  // 2 Cr
+      percentageChange: 18,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear()
+    });
+    
+    this.createPerformanceMetric({
+      userId: 1,
+      metricType: "new_clients",
+      currentValue: 12,
+      targetValue: 15,
+      percentageChange: 8,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear()
+    });
+    
+    this.createPerformanceMetric({
+      userId: 1,
+      metricType: "revenue",
+      currentValue: 1850000, // 18.5 L
+      targetValue: 4000000,  // 40 L
+      percentageChange: -5,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear()
+    });
+    
+    this.createPerformanceMetric({
+      userId: 1,
+      metricType: "retention",
+      currentValue: 96,
+      targetValue: 90,
+      percentageChange: 2,
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear()
+    });
+    
+    // Seed AUM trends
+    const months = [1, 2, 3, 4, 5, 6];
+    const currentValues = [50, 70, 65, 80, 90, 60];
+    const previousValues = [60, 65, 50, 75, 60, 40];
+    
+    months.forEach((month, index) => {
+      this.createAumTrend({
+        userId: 1,
+        month,
+        year: new Date().getFullYear(),
+        currentValue: currentValues[index],
+        previousValue: previousValues[index]
+      });
+    });
+    
+    // Seed sales pipeline
+    this.createSalesPipelineEntry({
+      userId: 1,
+      stage: "new_leads",
+      count: 18,
+      value: 32000000 // 3.2 Cr
+    });
+    
+    this.createSalesPipelineEntry({
+      userId: 1,
+      stage: "qualified",
+      count: 12,
+      value: 25000000 // 2.5 Cr
+    });
+    
+    this.createSalesPipelineEntry({
+      userId: 1,
+      stage: "proposal",
+      count: 7,
+      value: 18000000 // 1.8 Cr
+    });
+    
+    this.createSalesPipelineEntry({
+      userId: 1,
+      stage: "closed",
+      count: 4,
+      value: 12000000 // 1.2 Cr
+    });
+    
+    // Seed prospects
+    this.createProspect({
+      fullName: "Amit Sharma",
+      initials: "AS",
+      potentialAum: "₹50L",
+      potentialAumValue: 5000000,
+      email: "amit.sharma@example.com",
+      phone: "+91 9876543205",
+      stage: "proposal",
+      lastContactDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      probabilityScore: 95,
+      productsOfInterest: "Mutual Funds",
+      assignedTo: 1
+    });
+    
+    this.createProspect({
+      fullName: "Neha Verma",
+      initials: "NV",
+      potentialAum: "₹75L",
+      potentialAumValue: 7500000,
+      email: "neha.verma@example.com",
+      phone: "+91 9876543206",
+      stage: "proposal",
+      lastContactDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      probabilityScore: 80,
+      productsOfInterest: "Wealth Management",
+      assignedTo: 1
+    });
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.username === username
+    );
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.userCurrentId++;
+    const user: User = { ...insertUser, id };
+    this.users.set(id, user);
+    return user;
+  }
+  
+  async getUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  // Client methods
+  async getClient(id: number): Promise<Client | undefined> {
+    return this.clients.get(id);
+  }
+  
+  async getClients(assignedTo?: number): Promise<Client[]> {
+    let clients = Array.from(this.clients.values());
+    
+    if (assignedTo) {
+      clients = clients.filter(client => client.assignedTo === assignedTo);
+    }
+    
+    return clients.sort((a, b) => b.aumValue - a.aumValue);
+  }
+  
+  async createClient(insertClient: InsertClient): Promise<Client> {
+    const id = this.clientCurrentId++;
+    const client: Client = { ...insertClient, id, createdAt: new Date() };
+    this.clients.set(id, client);
+    return client;
+  }
+  
+  async updateClient(id: number, clientUpdate: Partial<InsertClient>): Promise<Client | undefined> {
+    const client = this.clients.get(id);
+    
+    if (!client) {
+      return undefined;
+    }
+    
+    const updatedClient = { ...client, ...clientUpdate };
+    this.clients.set(id, updatedClient);
+    return updatedClient;
+  }
+  
+  async deleteClient(id: number): Promise<boolean> {
+    return this.clients.delete(id);
+  }
+  
+  async getRecentClients(limit: number, assignedTo?: number): Promise<Client[]> {
+    let clients = Array.from(this.clients.values());
+    
+    if (assignedTo) {
+      clients = clients.filter(client => client.assignedTo === assignedTo);
+    }
+    
+    // Sort by last contact date, most recent first
+    return clients
+      .sort((a, b) => {
+        if (!a.lastContactDate) return 1;
+        if (!b.lastContactDate) return -1;
+        return b.lastContactDate.getTime() - a.lastContactDate.getTime();
+      })
+      .slice(0, limit);
+  }
+
+  // Prospect methods
+  async getProspect(id: number): Promise<Prospect | undefined> {
+    return this.prospects.get(id);
+  }
+  
+  async getProspects(assignedTo?: number): Promise<Prospect[]> {
+    let prospects = Array.from(this.prospects.values());
+    
+    if (assignedTo) {
+      prospects = prospects.filter(prospect => prospect.assignedTo === assignedTo);
+    }
+    
+    return prospects.sort((a, b) => {
+      if (!a.potentialAumValue) return 1;
+      if (!b.potentialAumValue) return -1;
+      return b.potentialAumValue - a.potentialAumValue;
+    });
+  }
+  
+  async createProspect(insertProspect: InsertProspect): Promise<Prospect> {
+    const id = this.prospectCurrentId++;
+    const prospect: Prospect = { ...insertProspect, id, createdAt: new Date() };
+    this.prospects.set(id, prospect);
+    return prospect;
+  }
+  
+  async updateProspect(id: number, prospectUpdate: Partial<InsertProspect>): Promise<Prospect | undefined> {
+    const prospect = this.prospects.get(id);
+    
+    if (!prospect) {
+      return undefined;
+    }
+    
+    const updatedProspect = { ...prospect, ...prospectUpdate };
+    this.prospects.set(id, updatedProspect);
+    return updatedProspect;
+  }
+  
+  async deleteProspect(id: number): Promise<boolean> {
+    return this.prospects.delete(id);
+  }
+  
+  async getProspectsByStage(stage: string, assignedTo?: number): Promise<Prospect[]> {
+    let prospects = Array.from(this.prospects.values()).filter(prospect => prospect.stage === stage);
+    
+    if (assignedTo) {
+      prospects = prospects.filter(prospect => prospect.assignedTo === assignedTo);
+    }
+    
+    return prospects;
+  }
+
+  // Task methods
+  async getTask(id: number): Promise<Task | undefined> {
+    return this.tasks.get(id);
+  }
+  
+  async getTasks(assignedTo?: number, completed?: boolean): Promise<Task[]> {
+    let tasks = Array.from(this.tasks.values());
+    
+    if (assignedTo !== undefined) {
+      tasks = tasks.filter(task => task.assignedTo === assignedTo);
+    }
+    
+    if (completed !== undefined) {
+      tasks = tasks.filter(task => task.completed === completed);
+    }
+    
+    return tasks.sort((a, b) => {
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return a.dueDate.getTime() - b.dueDate.getTime();
+    });
+  }
+  
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const id = this.taskCurrentId++;
+    const task: Task = { ...insertTask, id, createdAt: new Date() };
+    this.tasks.set(id, task);
+    return task;
+  }
+  
+  async updateTask(id: number, taskUpdate: Partial<InsertTask>): Promise<Task | undefined> {
+    const task = this.tasks.get(id);
+    
+    if (!task) {
+      return undefined;
+    }
+    
+    const updatedTask = { ...task, ...taskUpdate };
+    this.tasks.set(id, updatedTask);
+    return updatedTask;
+  }
+  
+  async deleteTask(id: number): Promise<boolean> {
+    return this.tasks.delete(id);
+  }
+
+  // Appointment methods
+  async getAppointment(id: number): Promise<Appointment | undefined> {
+    return this.appointments.get(id);
+  }
+  
+  async getAppointments(assignedTo?: number, date?: Date): Promise<Appointment[]> {
+    let appointments = Array.from(this.appointments.values());
+    
+    if (assignedTo) {
+      appointments = appointments.filter(appointment => appointment.assignedTo === assignedTo);
+    }
+    
+    if (date) {
+      appointments = appointments.filter(appointment => {
+        const appointmentDate = new Date(appointment.startTime);
+        return appointmentDate.getDate() === date.getDate() &&
+               appointmentDate.getMonth() === date.getMonth() &&
+               appointmentDate.getFullYear() === date.getFullYear();
+      });
+    }
+    
+    return appointments.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+  }
+  
+  async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
+    const id = this.appointmentCurrentId++;
+    const appointment: Appointment = { ...insertAppointment, id, createdAt: new Date() };
+    this.appointments.set(id, appointment);
+    return appointment;
+  }
+  
+  async updateAppointment(id: number, appointmentUpdate: Partial<InsertAppointment>): Promise<Appointment | undefined> {
+    const appointment = this.appointments.get(id);
+    
+    if (!appointment) {
+      return undefined;
+    }
+    
+    const updatedAppointment = { ...appointment, ...appointmentUpdate };
+    this.appointments.set(id, updatedAppointment);
+    return updatedAppointment;
+  }
+  
+  async deleteAppointment(id: number): Promise<boolean> {
+    return this.appointments.delete(id);
+  }
+  
+  async getTodaysAppointments(assignedTo?: number): Promise<Appointment[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let appointments = Array.from(this.appointments.values()).filter(appointment => {
+      const appointmentDate = new Date(appointment.startTime);
+      appointmentDate.setHours(0, 0, 0, 0);
+      return appointmentDate.getTime() === today.getTime();
+    });
+    
+    if (assignedTo) {
+      appointments = appointments.filter(appointment => appointment.assignedTo === assignedTo);
+    }
+    
+    return appointments.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+  }
+
+  // Portfolio Alert methods
+  async getPortfolioAlert(id: number): Promise<PortfolioAlert | undefined> {
+    return this.portfolioAlerts.get(id);
+  }
+  
+  async getPortfolioAlerts(read?: boolean): Promise<PortfolioAlert[]> {
+    let alerts = Array.from(this.portfolioAlerts.values());
+    
+    if (read !== undefined) {
+      alerts = alerts.filter(alert => alert.read === read);
+    }
+    
+    return alerts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+  
+  async createPortfolioAlert(insertAlert: InsertPortfolioAlert): Promise<PortfolioAlert> {
+    const id = this.portfolioAlertCurrentId++;
+    const alert: PortfolioAlert = { ...insertAlert, id, createdAt: new Date() };
+    this.portfolioAlerts.set(id, alert);
+    return alert;
+  }
+  
+  async updatePortfolioAlert(id: number, alertUpdate: Partial<InsertPortfolioAlert>): Promise<PortfolioAlert | undefined> {
+    const alert = this.portfolioAlerts.get(id);
+    
+    if (!alert) {
+      return undefined;
+    }
+    
+    const updatedAlert = { ...alert, ...alertUpdate };
+    this.portfolioAlerts.set(id, updatedAlert);
+    return updatedAlert;
+  }
+  
+  async deletePortfolioAlert(id: number): Promise<boolean> {
+    return this.portfolioAlerts.delete(id);
+  }
+
+  // Performance Metric methods
+  async getPerformanceMetrics(userId: number): Promise<PerformanceMetric[]> {
+    return Array.from(this.performanceMetrics.values())
+      .filter(metric => metric.userId === userId);
+  }
+  
+  async createPerformanceMetric(insertMetric: InsertPerformanceMetric): Promise<PerformanceMetric> {
+    const id = this.performanceMetricCurrentId++;
+    const metric: PerformanceMetric = { ...insertMetric, id, createdAt: new Date() };
+    this.performanceMetrics.set(id, metric);
+    return metric;
+  }
+  
+  async updatePerformanceMetric(id: number, metricUpdate: Partial<InsertPerformanceMetric>): Promise<PerformanceMetric | undefined> {
+    const metric = this.performanceMetrics.get(id);
+    
+    if (!metric) {
+      return undefined;
+    }
+    
+    const updatedMetric = { ...metric, ...metricUpdate };
+    this.performanceMetrics.set(id, updatedMetric);
+    return updatedMetric;
+  }
+
+  // AUM Trend methods
+  async getAumTrends(userId: number): Promise<AumTrend[]> {
+    return Array.from(this.aumTrends.values())
+      .filter(trend => trend.userId === userId)
+      .sort((a, b) => a.month - b.month);
+  }
+  
+  async createAumTrend(insertTrend: InsertAumTrend): Promise<AumTrend> {
+    const id = this.aumTrendCurrentId++;
+    const trend: AumTrend = { ...insertTrend, id, createdAt: new Date() };
+    this.aumTrends.set(id, trend);
+    return trend;
+  }
+
+  // Sales Pipeline methods
+  async getSalesPipeline(userId: number): Promise<SalesPipeline[]> {
+    return Array.from(this.salesPipeline.values())
+      .filter(entry => entry.userId === userId);
+  }
+  
+  async createSalesPipelineEntry(insertEntry: InsertSalesPipeline): Promise<SalesPipeline> {
+    const id = this.salesPipelineCurrentId++;
+    const entry: SalesPipeline = { ...insertEntry, id, createdAt: new Date() };
+    this.salesPipeline.set(id, entry);
+    return entry;
+  }
+  
+  async updateSalesPipelineEntry(id: number, entryUpdate: Partial<InsertSalesPipeline>): Promise<SalesPipeline | undefined> {
+    const entry = this.salesPipeline.get(id);
+    
+    if (!entry) {
+      return undefined;
+    }
+    
+    const updatedEntry = { ...entry, ...entryUpdate };
+    this.salesPipeline.set(id, updatedEntry);
+    return updatedEntry;
+  }
+}
+
+export const storage = new MemStorage();

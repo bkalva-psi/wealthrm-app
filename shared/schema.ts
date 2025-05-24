@@ -1,0 +1,197 @@
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, date } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+// User model
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  fullName: text("full_name").notNull(),
+  role: text("role").notNull().default("relationship_manager"),
+  avatarUrl: text("avatar_url"),
+  jobTitle: text("job_title"),
+  email: text("email"),
+  phone: text("phone"),
+});
+
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+});
+
+// Client model
+export const clients = pgTable("clients", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  initials: text("initials"),
+  tier: text("tier").notNull().default("silver"), // silver, gold, platinum
+  aum: text("aum").notNull(), // Assets Under Management
+  aumValue: real("aum_value").notNull(), // Numeric value for sorting
+  email: text("email"),
+  phone: text("phone"),
+  lastContactDate: timestamp("last_contact_date"),
+  riskProfile: text("risk_profile").default("moderate"), // conservative, moderate, aggressive
+  createdAt: timestamp("created_at").defaultNow(),
+  assignedTo: integer("assigned_to").references(() => users.id),
+});
+
+export const insertClientSchema = createInsertSchema(clients).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Prospect model (leads in pipeline)
+export const prospects = pgTable("prospects", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  initials: text("initials"),
+  potentialAum: text("potential_aum"),
+  potentialAumValue: real("potential_aum_value"),
+  email: text("email"),
+  phone: text("phone"),
+  stage: text("stage").notNull().default("new"), // new, qualified, proposal, won, lost
+  lastContactDate: timestamp("last_contact_date"),
+  probabilityScore: integer("probability_score").default(50), // 0-100
+  productsOfInterest: text("products_of_interest"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  assignedTo: integer("assigned_to").references(() => users.id),
+});
+
+export const insertProspectSchema = createInsertSchema(prospects).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Task model
+export const tasks = pgTable("tasks", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  dueDate: timestamp("due_date"),
+  completed: boolean("completed").default(false),
+  clientId: integer("client_id").references(() => clients.id),
+  prospectId: integer("prospect_id").references(() => prospects.id),
+  assignedTo: integer("assigned_to").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTaskSchema = createInsertSchema(tasks).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Meeting/Appointment model
+export const appointments = pgTable("appointments", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time").notNull(),
+  location: text("location"),
+  clientId: integer("client_id").references(() => clients.id),
+  prospectId: integer("prospect_id").references(() => prospects.id),
+  assignedTo: integer("assigned_to").references(() => users.id),
+  priority: text("priority").default("medium"), // low, medium, high
+  type: text("type").notNull(), // meeting, call, email, other
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAppointmentSchema = createInsertSchema(appointments).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Portfolio Alert model
+export const portfolioAlerts = pgTable("portfolio_alerts", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  clientId: integer("client_id").references(() => clients.id),
+  severity: text("severity").notNull(), // info, warning, critical
+  read: boolean("read").default(false),
+  actionRequired: boolean("action_required").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPortfolioAlertSchema = createInsertSchema(portfolioAlerts).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Performance Metrics model
+export const performanceMetrics = pgTable("performance_metrics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  metricType: text("metric_type").notNull(), // new_aum, new_clients, revenue, retention
+  currentValue: real("current_value").notNull(),
+  targetValue: real("target_value").notNull(),
+  percentageChange: real("percentage_change"),
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPerformanceMetricSchema = createInsertSchema(performanceMetrics).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Monthly AUM Trend model
+export const aumTrends = pgTable("aum_trends", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  currentValue: real("current_value").notNull(),
+  previousValue: real("previous_value").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAumTrendSchema = createInsertSchema(aumTrends).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Sales Pipeline model
+export const salesPipeline = pgTable("sales_pipeline", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  stage: text("stage").notNull(), // new_leads, qualified, proposal, closed
+  count: integer("count").notNull().default(0),
+  value: real("value").notNull().default(0), // value in the pipeline
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSalesPipelineSchema = createInsertSchema(salesPipeline).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Export types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type Client = typeof clients.$inferSelect;
+export type InsertClient = z.infer<typeof insertClientSchema>;
+
+export type Prospect = typeof prospects.$inferSelect;
+export type InsertProspect = z.infer<typeof insertProspectSchema>;
+
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = z.infer<typeof insertTaskSchema>;
+
+export type Appointment = typeof appointments.$inferSelect;
+export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
+
+export type PortfolioAlert = typeof portfolioAlerts.$inferSelect;
+export type InsertPortfolioAlert = z.infer<typeof insertPortfolioAlertSchema>;
+
+export type PerformanceMetric = typeof performanceMetrics.$inferSelect;
+export type InsertPerformanceMetric = z.infer<typeof insertPerformanceMetricSchema>;
+
+export type AumTrend = typeof aumTrends.$inferSelect;
+export type InsertAumTrend = z.infer<typeof insertAumTrendSchema>;
+
+export type SalesPipeline = typeof salesPipeline.$inferSelect;
+export type InsertSalesPipeline = z.infer<typeof insertSalesPipelineSchema>;

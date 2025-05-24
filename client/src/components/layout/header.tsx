@@ -1,0 +1,153 @@
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/context/auth-context";
+import { Search, Bell, MessageSquare, HelpCircle, Menu } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sidebar } from "./sidebar";
+
+export function Header() {
+  const { user, logout } = useAuth();
+  const [, navigate] = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Get unread portfolio alerts count
+  const { data: portfolioAlerts } = useQuery({
+    queryKey: ['/api/portfolio-alerts?read=false'],
+    staleTime: 60000, // 1 minute
+  });
+  
+  const unreadAlertsCount = portfolioAlerts?.length || 0;
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement search functionality
+    console.log("Search query:", searchQuery);
+  };
+  
+  return (
+    <header className="bg-white shadow-sm z-10">
+      <div className="flex items-center justify-between px-4 py-3">
+        {/* Mobile Menu Button */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden text-slate-500 hover:text-slate-600">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0">
+            <Sidebar />
+          </SheetContent>
+        </Sheet>
+        
+        {/* Search Bar */}
+        <div className="flex-1 max-w-lg mx-4">
+          <form onSubmit={handleSearch}>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-slate-400" />
+              </div>
+              <input 
+                className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-md leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
+                placeholder="Search clients, prospects, or tasks..." 
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </form>
+        </div>
+        
+        {/* Right Navigation Items */}
+        <div className="flex items-center space-x-4">
+          {/* Notification Bell */}
+          <div className="relative">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative p-1 text-slate-500 rounded-full hover:bg-slate-100 focus:outline-none">
+                  <Bell className="h-6 w-6" />
+                  {unreadAlertsCount > 0 && (
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-error pulse-animation"></span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {unreadAlertsCount > 0 ? (
+                  <>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <div className="flex flex-col space-y-1">
+                        <span className="font-medium">Portfolio Deviation - Gupta Family</span>
+                        <span className="text-xs text-slate-500">1 hour ago</span>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer">
+                      <div className="flex flex-col space-y-1">
+                        <span className="font-medium">Risk Profile Update - Sanjay Kapoor</span>
+                        <span className="text-xs text-slate-500">3 hours ago</span>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="cursor-pointer text-primary-600"
+                      onClick={() => navigate("/alerts")}
+                    >
+                      View all notifications
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <div className="py-2 px-4 text-center text-sm text-slate-500">
+                    No new notifications
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          
+          {/* Messages Icon */}
+          <Button variant="ghost" size="icon" className="p-1 text-slate-500 rounded-full hover:bg-slate-100 focus:outline-none">
+            <MessageSquare className="h-6 w-6" />
+          </Button>
+          
+          {/* Help Icon */}
+          <Button variant="ghost" size="icon" className="p-1 text-slate-500 rounded-full hover:bg-slate-100 focus:outline-none">
+            <HelpCircle className="h-6 w-6" />
+          </Button>
+          
+          {/* Profile Dropdown */}
+          <div className="relative">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center focus:outline-none">
+                  <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
+                  <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm">
+                    {user?.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
