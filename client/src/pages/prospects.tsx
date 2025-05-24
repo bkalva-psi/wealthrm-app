@@ -147,7 +147,10 @@ export default function Prospects() {
     : activeProspects;
   
   const getProspectsByStage = (stage: string) => {
-    return filteredProspects ? filteredProspects.filter(prospect => prospect.stage === stage) : [];
+    if (!filteredProspects) return [];
+    console.log("Filtered prospects:", filteredProspects);
+    console.log(`Prospects with stage '${stage}':`, filteredProspects.filter(prospect => prospect.stage === stage));
+    return filteredProspects.filter(prospect => prospect.stage === stage);
   };
   
   const handleProspectClick = (id: number) => {
