@@ -3,10 +3,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
+import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import BottomNavigation from "@/components/mobile/BottomNavigation";
+import SwipeableView from "@/components/mobile/SwipeableView";
 import { useState, useEffect } from "react";
+import { isOnline, saveToCache, getFromCache, CACHE_KEYS } from "@/lib/offlineCache";
 
 import Dashboard from "@/pages/dashboard";
 import Clients from "@/pages/clients";
@@ -53,9 +57,79 @@ function useHashRouter() {
 
 function AuthenticatedApp() {
   const currentRoute = useHashRouter();
+  const [isOffline, setIsOffline] = useState(!isOnline());
   
   // Log current route for debugging
   console.log('Current route:', currentRoute);
+  
+  // Setup offline detection
+  useEffect(() => {
+    const handleOnlineStatus = () => {
+      setIsOffline(!navigator.onLine);
+    };
+    
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOnlineStatus);
+    
+    return () => {
+      window.removeEventListener('online', handleOnlineStatus);
+      window.removeEventListener('offline', handleOnlineStatus);
+    };
+  }, []);
+  
+  // Cache critical client data for offline use
+  useEffect(() => {
+    // Only cache data when online
+    if (!isOffline) {
+      // Set up automatic caching of critical data
+      const cacheClients = async () => {
+        try {
+          const response = await fetch('/api/clients');
+          if (response.ok) {
+            const clients = await response.json();
+            saveToCache(clients, { key: CACHE_KEYS.CLIENTS, expiryInMinutes: 120 });
+          }
+        } catch (error) {
+          console.error('Failed to cache clients:', error);
+        }
+      };
+      
+      cacheClients();
+    }
+  }, [isOffline]);
+  
+  // Function to handle swipe navigation
+  const handleSwipeLeft = () => {
+    // Determine next route based on current route
+    switch (true) {
+      case currentRoute === '/':
+        window.location.hash = '/clients';
+        break;
+      case currentRoute === '/clients':
+        window.location.hash = '/prospects';
+        break;
+      case currentRoute === '/prospects':
+        window.location.hash = '/calendar';
+        break;
+      // Add more cases as needed
+    }
+  };
+  
+  const handleSwipeRight = () => {
+    // Determine previous route based on current route
+    switch (true) {
+      case currentRoute === '/clients':
+        window.location.hash = '/';
+        break;
+      case currentRoute === '/prospects':
+        window.location.hash = '/clients';
+        break;
+      case currentRoute === '/calendar':
+        window.location.hash = '/prospects';
+        break;
+      // Add more cases as needed
+    }
+  };
   
   // Function to render the appropriate component based on the route
   const renderComponent = () => {
@@ -112,10 +186,25 @@ function AuthenticatedApp() {
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6">
-          {renderComponent()}
-        </main>
-        <MobileNav />
+        
+        {/* Offline indicator */}
+        {isOffline && (
+          <div className="bg-amber-500 text-white p-2 text-center text-sm font-medium">
+            You are currently offline. Some features may be limited.
+          </div>
+        )}
+        
+        <SwipeableView 
+          onSwipeLeft={handleSwipeLeft}
+          onSwipeRight={handleSwipeRight}
+          className="flex-1 overflow-hidden"
+        >
+          <main className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6 pb-mobile-nav">
+            {renderComponent()}
+          </main>
+        </SwipeableView>
+        
+        <BottomNavigation />
       </div>
     </div>
   );
@@ -220,8 +309,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        {user ? <AuthenticatedApp /> : <LoginPage />}
+        <AccessibilityProvider>
+          <Toaster />
+          {user ? <AuthenticatedApp /> : <LoginPage />}
+        </AccessibilityProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

@@ -1,71 +1,99 @@
-import React from 'react';
-import { useLocation, Link } from 'wouter';
-import { 
-  Home, 
-  Users, 
-  UserPlus, 
-  BarChart2, 
-  CalendarDays,
-  Menu 
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Home, Users, Phone, Calendar, Menu } from 'lucide-react';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
-interface NavItem {
-  icon: React.ReactNode;
-  label: string;
-  href: string;
+interface BottomNavigationProps {
+  className?: string;
 }
 
-const BottomNavigation: React.FC = () => {
-  const [location] = useLocation();
+const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) => {
+  const [currentPath, setCurrentPath] = useState<string>('');
+  const isMobile = useMediaQuery('(max-width: 768px)');
   
-  const navItems: NavItem[] = [
-    {
-      icon: <Home size={20} />,
-      label: 'Home',
-      href: '/'
-    },
-    {
-      icon: <Users size={20} />,
-      label: 'Clients',
-      href: '/clients'
-    },
-    {
-      icon: <UserPlus size={20} />,
-      label: 'Prospects',
-      href: '/prospects'
-    },
-    {
-      icon: <BarChart2 size={20} />,
-      label: 'Analytics',
-      href: '/analytics'
-    },
-    {
-      icon: <Menu size={20} />,
-      label: 'More',
-      href: '#more'
-    }
-  ];
+  useEffect(() => {
+    // Initialize with current hash path
+    const hash = window.location.hash.replace(/^#/, '') || '/';
+    setCurrentPath(hash);
+    
+    // Listen for hash changes
+    const handleHashChange = () => {
+      const path = window.location.hash.replace(/^#/, '') || '/';
+      setCurrentPath(path);
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
   
-  const isActive = (href: string): boolean => {
-    return location === href || location.startsWith(`${href}/`);
+  const isActive = (path: string): boolean => {
+    if (path === '/' && currentPath === '/') return true;
+    if (path === '/clients' && (currentPath === '/clients' || currentPath.startsWith('/clients/'))) return true;
+    if (path === '/prospects' && (currentPath === '/prospects' || currentPath.startsWith('/prospect'))) return true;
+    if (path === '/calendar' && currentPath === '/calendar') return true;
+    if (path === '/menu' && (
+      currentPath === '/settings' || 
+      currentPath === '/tasks' || 
+      currentPath === '/analytics' || 
+      currentPath === '/products'
+    )) return true;
+    
+    return false;
   };
-
+  
+  const navigateTo = (path: string) => {
+    window.location.hash = path;
+  };
+  
+  if (!isMobile) {
+    return null; // Don't render on non-mobile screens
+  }
+  
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow">
-      <div className="flex justify-around items-center h-16">
-        {navItems.map((item, index) => (
-          <Link key={index} href={item.href}>
-            <a className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              isActive(item.href) 
-                ? 'text-primary' 
-                : 'text-gray-500 hover:text-primary'
-            }`}>
-              {item.icon}
-              <span className="text-xs mt-1">{item.label}</span>
-            </a>
-          </Link>
-        ))}
-      </div>
+    <div className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-50 ${className}`}>
+      <button 
+        onClick={() => navigateTo('/')}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/') ? 'text-primary' : 'text-gray-500'}`}
+        aria-label="Home"
+      >
+        <Home size={24} />
+        <span className="text-xs mt-1">Home</span>
+      </button>
+      
+      <button 
+        onClick={() => navigateTo('/clients')}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/clients') ? 'text-primary' : 'text-gray-500'}`}
+        aria-label="Clients"
+      >
+        <Users size={24} />
+        <span className="text-xs mt-1">Clients</span>
+      </button>
+      
+      <button 
+        onClick={() => navigateTo('/prospects')}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/prospects') ? 'text-primary' : 'text-gray-500'}`}
+        aria-label="Prospects"
+      >
+        <Phone size={24} />
+        <span className="text-xs mt-1">Prospects</span>
+      </button>
+      
+      <button 
+        onClick={() => navigateTo('/calendar')}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/calendar') ? 'text-primary' : 'text-gray-500'}`}
+        aria-label="Calendar"
+      >
+        <Calendar size={24} />
+        <span className="text-xs mt-1">Calendar</span>
+      </button>
+      
+      <button 
+        onClick={() => navigateTo('/settings')}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/menu') ? 'text-primary' : 'text-gray-500'}`}
+        aria-label="More"
+      >
+        <Menu size={24} />
+        <span className="text-xs mt-1">More</span>
+      </button>
     </div>
   );
 };
