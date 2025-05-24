@@ -827,11 +827,44 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProspect(id: number, prospectUpdate: Partial<InsertProspect>): Promise<Prospect | undefined> {
-    const [prospect] = await db.update(prospects)
-      .set(prospectUpdate)
-      .where(eq(prospects.id, id))
-      .returning();
-    return prospect || undefined;
+    try {
+      // Special handling for productsOfInterest field
+      let updateData = {...prospectUpdate};
+      
+      // Make sure date fields are properly handled
+      if (updateData.lastContactDate && !(updateData.lastContactDate instanceof Date)) {
+        if (typeof updateData.lastContactDate === 'string') {
+          updateData.lastContactDate = new Date(updateData.lastContactDate);
+        } else {
+          // If it's neither a Date nor a string, just remove it
+          delete updateData.lastContactDate;
+        }
+      }
+      
+      // Handle the productsOfInterest field format
+      if (updateData.productsOfInterest !== undefined) {
+        // Ensure it's an array or null
+        if (updateData.productsOfInterest === null) {
+          // Keep as null
+        } else if (typeof updateData.productsOfInterest === 'string') {
+          updateData.productsOfInterest = [updateData.productsOfInterest];
+        } else if (!Array.isArray(updateData.productsOfInterest)) {
+          updateData.productsOfInterest = [String(updateData.productsOfInterest)];
+        }
+      }
+      
+      console.log("Database update with data:", updateData);
+      
+      const [prospect] = await db.update(prospects)
+        .set(updateData)
+        .where(eq(prospects.id, id))
+        .returning();
+      
+      return prospect || undefined;
+    } catch (error) {
+      console.error("Database error updating prospect:", error);
+      return undefined;
+    }
   }
 
   async deleteProspect(id: number): Promise<boolean> {

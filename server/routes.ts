@@ -395,9 +395,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Deep copy the request body
       let updateData = { ...req.body };
       
-      // Handle date conversion for lastContactDate if it's provided as string
-      if (updateData.lastContactDate && typeof updateData.lastContactDate === 'string') {
-        updateData.lastContactDate = new Date(updateData.lastContactDate);
+      // Ensure lastContactDate is properly formatted for the database
+      if (updateData.lastContactDate) {
+        if (typeof updateData.lastContactDate === 'string') {
+          updateData.lastContactDate = new Date(updateData.lastContactDate);
+        } else if (!(updateData.lastContactDate instanceof Date) && typeof updateData.lastContactDate === 'object') {
+          // Handle case when it's an object with date information but not a Date instance
+          delete updateData.lastContactDate;
+        }
       }
       
       // Handle productsOfInterest as a string[] for the database
