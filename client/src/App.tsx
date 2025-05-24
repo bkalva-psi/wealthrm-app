@@ -78,6 +78,9 @@ function AuthenticatedApp() {
         return <AddProspect prospectId={editProspectId} readOnly={false} />;
         
       // Client detail pages
+      case /^\/clients\/\d+$/.test(currentRoute):
+        // When clicking a client, default to personal info page
+        return <ClientPersonal />;
       case /^\/clients\/\d+\/actions$/.test(currentRoute):
         return <ClientActions />;
       case /^\/clients\/\d+\/personal$/.test(currentRoute):

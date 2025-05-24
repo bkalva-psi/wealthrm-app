@@ -20,9 +20,15 @@ export default function ClientPersonalPage() {
   useEffect(() => {
     document.title = "Client Information | Wealth RM";
     
-    // Get client ID from URL
+    // Get client ID from URL - handle both direct client click and section click
     const hash = window.location.hash;
-    const match = hash.match(/\/clients\/(\d+)\/personal/);
+    let match = hash.match(/\/clients\/(\d+)\/personal/);
+    
+    // If not found with /personal, try just /clients/id
+    if (!match) {
+      match = hash.match(/\/clients\/(\d+)/);
+    }
+    
     if (match && match[1]) {
       setClientId(Number(match[1]));
     }
