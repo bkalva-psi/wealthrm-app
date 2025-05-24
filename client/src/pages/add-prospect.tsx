@@ -303,13 +303,54 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
   // Handle form submission
   const onSubmit = async (data: ProspectFormValues) => {
     setIsSubmitting(true);
+    console.log("Form submitted", { data, prospectId, readOnly });
     
-    if (prospectId && !readOnly) {
-      // Update existing prospect
-      updateProspect.mutate(data);
-    } else {
-      // Create new prospect
-      createProspect.mutate(data);
+    try {
+      if (prospectId && !readOnly) {
+        // Update existing prospect directly using fetch to bypass react-query issues
+        console.log("Updating prospect", prospectId);
+        
+        const response = await fetch(`/api/prospects/${prospectId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+          credentials: "include",
+        });
+        
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(responseData.message || "Failed to update prospect");
+        }
+        
+        // Invalidate queries
+        queryClient.invalidateQueries({ queryKey: ['/api/prospects'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/prospects/stage'] });
+        
+        // Show success message
+        toast({
+          title: "Prospect Updated",
+          description: "The prospect has been successfully updated.",
+        });
+        
+        // Navigate back to prospect detail page
+        window.location.hash = `/prospect-detail/${prospectId}`;
+      } else {
+        // Create new prospect
+        console.log("Creating new prospect");
+        await createProspect.mutateAsync(data);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
