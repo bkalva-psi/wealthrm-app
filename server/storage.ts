@@ -9,7 +9,7 @@ import {
   aumTrends, AumTrend, InsertAumTrend,
   salesPipeline, SalesPipeline, InsertSalesPipeline
 } from "@shared/schema";
-import { eq, desc, and, gte, lt, lte } from "drizzle-orm";
+import { eq, and, gte, lt, lte, desc } from "drizzle-orm";
 import { db } from "./db";
 
 // modify the interface with any CRUD methods

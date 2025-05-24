@@ -1,5 +1,5 @@
 import { Client } from "@shared/schema";
-import { apiRequest } from "../queryClient";
+import { queryClient } from "../queryClient";
 
 /**
  * Client API service
@@ -21,41 +21,56 @@ export interface ClientApiService {
  */
 export class DefaultClientApiService implements ClientApiService {
   async getClients(): Promise<Client[]> {
-    return apiRequest('/api/clients');
+    const response = await fetch('/api/clients', {
+      credentials: 'include'
+    });
+    return response.json();
   }
 
   async getClient(id: number): Promise<Client | undefined> {
-    return apiRequest(`/api/clients/${id}`);
+    const response = await fetch(`/api/clients/${id}`, {
+      credentials: 'include'
+    });
+    return response.json();
   }
 
   async getRecentClients(limit: number): Promise<Client[]> {
-    return apiRequest(`/api/clients/recent?limit=${limit}`);
+    const response = await fetch(`/api/clients/recent?limit=${limit}`, {
+      credentials: 'include'
+    });
+    return response.json();
   }
 
   async createClient(clientData: Omit<Client, "id" | "createdAt">): Promise<Client> {
-    return apiRequest('/api/clients', {
+    const response = await fetch('/api/clients', {
       method: 'POST',
       body: JSON.stringify(clientData),
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include'
     });
+    return response.json();
   }
 
   async updateClient(id: number, clientData: Partial<Omit<Client, "id" | "createdAt">>): Promise<Client> {
-    return apiRequest(`/api/clients/${id}`, {
+    const response = await fetch(`/api/clients/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(clientData),
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include'
     });
+    return response.json();
   }
 
   async deleteClient(id: number): Promise<boolean> {
-    return apiRequest(`/api/clients/${id}`, {
-      method: 'DELETE'
+    const response = await fetch(`/api/clients/${id}`, {
+      method: 'DELETE',
+      credentials: 'include'
     });
+    return response.ok;
   }
 }
 

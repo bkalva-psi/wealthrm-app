@@ -1,5 +1,5 @@
 import { Prospect } from "@shared/schema";
-import { apiRequest } from "../queryClient";
+import { queryClient } from "../queryClient";
 
 /**
  * Prospect API service
@@ -21,41 +21,56 @@ export interface ProspectApiService {
  */
 export class DefaultProspectApiService implements ProspectApiService {
   async getProspects(): Promise<Prospect[]> {
-    return apiRequest('/api/prospects');
+    const response = await fetch('/api/prospects', {
+      credentials: 'include'
+    });
+    return response.json();
   }
 
   async getProspect(id: number): Promise<Prospect | undefined> {
-    return apiRequest(`/api/prospects/${id}`);
+    const response = await fetch(`/api/prospects/${id}`, {
+      credentials: 'include'
+    });
+    return response.json();
   }
 
   async getProspectsByStage(stage: string): Promise<Prospect[]> {
-    return apiRequest(`/api/prospects/stage/${stage}`);
+    const response = await fetch(`/api/prospects/stage/${stage}`, {
+      credentials: 'include'
+    });
+    return response.json();
   }
 
   async createProspect(prospectData: Omit<Prospect, "id" | "createdAt">): Promise<Prospect> {
-    return apiRequest('/api/prospects', {
+    const response = await fetch('/api/prospects', {
       method: 'POST',
       body: JSON.stringify(prospectData),
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include'
     });
+    return response.json();
   }
 
   async updateProspect(id: number, prospectData: Partial<Omit<Prospect, "id" | "createdAt">>): Promise<Prospect> {
-    return apiRequest(`/api/prospects/${id}`, {
+    const response = await fetch(`/api/prospects/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(prospectData),
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include'
     });
+    return response.json();
   }
 
   async deleteProspect(id: number): Promise<boolean> {
-    return apiRequest(`/api/prospects/${id}`, {
-      method: 'DELETE'
+    const response = await fetch(`/api/prospects/${id}`, {
+      method: 'DELETE',
+      credentials: 'include'
     });
+    return response.ok;
   }
 }
 
