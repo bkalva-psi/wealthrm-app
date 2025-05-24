@@ -37,18 +37,52 @@ type ServerValidationError = {
 
 type ProspectFormValues = z.infer<typeof insertProspectSchema>;
 
-export default function AddProspect() {
+// This component can be used for both adding and viewing prospects
+export default function AddProspect({ prospectId, readOnly = false }: { prospectId?: number; readOnly?: boolean }) {
   // Using hash-based navigation
   const { toast } = useToast();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverErrors, setServerErrors] = useState<Record<string, string[]>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(prospectId ? true : false);
 
   // Set page title
   useEffect(() => {
-    document.title = "Add Prospect | Wealth RM";
-  }, []);
+    document.title = readOnly ? "Prospect Details | Wealth RM" : "Add Prospect | Wealth RM";
+  }, [readOnly]);
+  
+  // Fetch prospect data if in view/edit mode
+  useEffect(() => {
+    const fetchProspectData = async () => {
+      if (prospectId) {
+        setIsLoading(true);
+        try {
+          const response = await fetch(`/api/prospects/${prospectId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch prospect details");
+          }
+          const prospectData = await response.json();
+          
+          // Set form values
+          form.reset(prospectData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching prospect:", error);
+          toast({
+            title: "Error",
+            description: "Could not load prospect details. Please try again.",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    if (prospectId) {
+      fetchProspectData();
+    }
+  }, [prospectId, toast]);
 
   // Set up form with default values
   const form = useForm<ProspectFormValues>({
@@ -213,14 +247,19 @@ export default function AddProspect() {
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back
         </Button>
-        <h1 className="text-2xl font-semibold text-slate-800">Add New Prospect</h1>
+        <h1 className="text-2xl font-semibold text-slate-800">
+          {readOnly ? "Prospect Details" : "Add New Prospect"}
+        </h1>
       </div>
 
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-xl">Prospect Information</CardTitle>
           <CardDescription>
-            Add a new prospect to your sales pipeline. Fields marked with * are required.
+            {readOnly 
+              ? "View detailed information about this prospect."
+              : "Add a new prospect to your sales pipeline. Fields marked with * are required."
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -486,12 +525,24 @@ export default function AddProspect() {
                   variant="outline"
                   onClick={() => window.location.hash = "/prospects"}
                 >
-                  Cancel
+                  {readOnly ? "Back" : "Cancel"}
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Add Prospect
-                </Button>
+                {!readOnly && (
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Add Prospect
+                  </Button>
+                )}
+                {readOnly && (
+                  <Button 
+                    type="button" 
+                    onClick={() => {
+                      alert("Edit functionality would be implemented here");
+                    }}
+                  >
+                    Edit Prospect
+                  </Button>
+                )}
               </div>
             </form>
           </Form>
