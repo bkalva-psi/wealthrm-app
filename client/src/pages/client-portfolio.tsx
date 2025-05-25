@@ -338,7 +338,7 @@ export default function ClientPortfolioPage() {
   const aumValue = getAumValue(client?.aum);
   
   return (
-    <div className="p-6 h-full overflow-y-auto">
+    <div className="p-6 h-full overflow-y-auto flex flex-col" style={{ minHeight: '100%' }}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={handleBackClick}>
@@ -407,8 +407,8 @@ export default function ClientPortfolioPage() {
       </div>
       
       {/* Tabs for different portfolio views */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
+      <Tabs defaultValue="overview" className="space-y-4 flex-grow">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full sticky top-0 z-10 bg-white">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="holdings">Holdings</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
