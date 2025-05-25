@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 
 interface PerformancePeriod {
@@ -47,6 +47,13 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
     }
   };
 
+  // Determine height based on timeframe and data length
+  const getChartHeight = () => {
+    const baseHeight = 70; // Base height per item
+    const itemCount = data.length;
+    return Math.max(itemCount * baseHeight, timeframe === 'overall' ? 120 : 180);
+  };
+
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -70,23 +77,27 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
   return (
     <div className="w-full h-full">
       <h3 className="text-sm font-medium text-slate-500 mb-3">{getChartTitle()}</h3>
-      <ResponsiveContainer width="100%" height={timeframe === 'overall' ? 160 : 240}>
+      <ResponsiveContainer width="100%" height={getChartHeight()}>
         <BarChart
           data={chartData}
-          margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-          barGap={0}
-          barCategoryGap={timeframe === 'overall' ? 30 : 15}
+          layout="vertical"
+          margin={{ top: 5, right: 40, left: 50, bottom: 5 }}
+          barGap={2}
+          barSize={10} // Thinner bars
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
           <XAxis 
-            dataKey="name" 
-            tick={{ fontSize: 12 }} 
+            type="number"
+            tickFormatter={(value) => `${value}%`}
+            domain={['dataMin - 1', 'dataMax + 1']}
+            tick={{ fontSize: 11 }}
             axisLine={{ stroke: '#e2e8f0' }}
             tickLine={false}
           />
           <YAxis 
-            tickFormatter={(value) => `${value}%`}
-            tick={{ fontSize: 11 }}
+            type="category"
+            dataKey="name"
+            tick={{ fontSize: 12 }}
             axisLine={{ stroke: '#e2e8f0' }}
             tickLine={false}
           />
@@ -95,13 +106,13 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
             iconType="circle"
             wrapperStyle={{ fontSize: 12, paddingTop: 10 }}
           />
-          <ReferenceLine y={0} stroke="#cbd5e1" />
-          <Bar dataKey="Portfolio" fill={colors.portfolio} name="Portfolio" radius={[2, 2, 0, 0]} />
-          <Bar dataKey="Benchmark" fill={colors.benchmark} name="Benchmark" radius={[2, 2, 0, 0]} />
+          <ReferenceLine x={0} stroke="#cbd5e1" />
+          <Bar dataKey="Portfolio" fill={colors.portfolio} name="Portfolio" radius={[0, 2, 2, 0]} />
+          <Bar dataKey="Benchmark" fill={colors.benchmark} name="Benchmark" radius={[0, 2, 2, 0]} />
           <Bar 
             dataKey="Alpha" 
             name="Alpha (Excess Return)" 
-            radius={[2, 2, 0, 0]}
+            radius={[0, 2, 2, 0]}
           >
             {chartData.map((entry, index) => (
               <Cell 

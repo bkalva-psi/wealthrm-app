@@ -1027,9 +1027,9 @@ export default function ClientPortfolioPage() {
                 <CardDescription>Portfolio vs Benchmark comparison across timeframes</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Monthly Performance Chart */}
-                  <div className="border rounded-lg p-4 bg-white">
+                  <div className="border rounded-lg p-3 bg-white">
                     <PerformanceComparisonChart 
                       data={performancePeriods.filter(p => ['1M', '3M', '6M'].includes(p.label))} 
                       timeframe="monthly"
@@ -1037,7 +1037,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   
                   {/* Yearly Performance Chart */}
-                  <div className="border rounded-lg p-4 bg-white">
+                  <div className="border rounded-lg p-3 bg-white">
                     <PerformanceComparisonChart 
                       data={performancePeriods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label))} 
                       timeframe="yearly"
@@ -1045,7 +1045,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   
                   {/* Overall Performance Chart */}
-                  <div className="border rounded-lg p-4 bg-white">
+                  <div className="border rounded-lg p-3 bg-white">
                     <PerformanceComparisonChart 
                       data={performancePeriods.filter(p => ['YTD', 'Since Inception'].includes(p.label))} 
                       timeframe="overall"
