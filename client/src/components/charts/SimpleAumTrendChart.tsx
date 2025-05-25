@@ -178,8 +178,8 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
                 <polyline 
                   points={pointsString}
                   fill="none"
-                  stroke="var(--color-primary)"
-                  strokeWidth="2"
+                  stroke="#1e40af" /* Deep blue color that should be clearly visible */
+                  strokeWidth="2.5"
                   strokeLinejoin="round"
                   strokeLinecap="round"
                 />
@@ -189,8 +189,10 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
                   <circle 
                     cx={tooltipInfo.x} 
                     cy={tooltipInfo.y} 
-                    r="3" 
-                    fill="var(--color-primary)" 
+                    r="4" 
+                    fill="#1e40af"
+                    stroke="#ffffff" 
+                    strokeWidth="1.5"
                   />
                 )}
               </svg>
