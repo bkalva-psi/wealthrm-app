@@ -124,14 +124,14 @@ const mockHoldings = [
 
 // Mock data for performance periods
 const performancePeriods = [
-  { label: "1M", value: 2.8 },
-  { label: "3M", value: 5.4 },
-  { label: "6M", value: 8.7 },
-  { label: "YTD", value: 11.2 },
-  { label: "1Y", value: 14.5 },
-  { label: "3Y", value: 12.3 },
-  { label: "5Y", value: 11.8 },
-  { label: "Since Inception", value: 13.2 },
+  { label: "1M", value: 2.8, benchmark: 2.3, alpha: 0.5 },
+  { label: "3M", value: 5.4, benchmark: 4.6, alpha: 0.8 },
+  { label: "6M", value: 8.7, benchmark: 7.5, alpha: 1.2 },
+  { label: "YTD", value: 11.2, benchmark: 9.8, alpha: 1.4 },
+  { label: "1Y", value: 14.5, benchmark: 12.1, alpha: 2.4 },
+  { label: "3Y", value: 12.3, benchmark: 10.5, alpha: 1.8 },
+  { label: "5Y", value: 11.8, benchmark: 10.2, alpha: 1.6 },
+  { label: "Since Inception", value: 13.2, benchmark: 11.4, alpha: 1.8 },
 ];
 
 // Mock asset allocation data
@@ -1031,11 +1031,28 @@ export default function ClientPortfolioPage() {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Monthly Performance</h3>
                     <div className="grid grid-cols-3 gap-3">
                       {performancePeriods.filter(p => ['1M', '3M', '6M'].includes(p.label)).map((period) => (
-                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg text-center">
-                          <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg">
+                          <div className="text-sm font-medium text-center mb-2">{period.label}</div>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Portfolio:</span>
+                              <span className={`font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Benchmark:</span>
+                              <span className={`font-medium ${period.benchmark >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.benchmark > 0 ? '+' : ''}{period.benchmark.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between border-t border-slate-200 pt-1 mt-1">
+                              <span className="text-slate-600">Alpha:</span>
+                              <span className={`font-medium ${period.alpha >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.alpha > 0 ? '+' : ''}{period.alpha.toFixed(1)}%
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-sm text-slate-500">{period.label}</div>
                         </div>
                       ))}
                     </div>
@@ -1046,11 +1063,28 @@ export default function ClientPortfolioPage() {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Yearly Performance</h3>
                     <div className="grid grid-cols-3 gap-3">
                       {performancePeriods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label)).map((period) => (
-                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg text-center">
-                          <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg">
+                          <div className="text-sm font-medium text-center mb-2">{period.label}</div>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Portfolio:</span>
+                              <span className={`font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Benchmark:</span>
+                              <span className={`font-medium ${period.benchmark >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.benchmark > 0 ? '+' : ''}{period.benchmark.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between border-t border-slate-200 pt-1 mt-1">
+                              <span className="text-slate-600">Alpha:</span>
+                              <span className={`font-medium ${period.alpha >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.alpha > 0 ? '+' : ''}{period.alpha.toFixed(1)}%
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-sm text-slate-500">{period.label}</div>
                         </div>
                       ))}
                     </div>
@@ -1061,11 +1095,28 @@ export default function ClientPortfolioPage() {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Overall Performance</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {performancePeriods.filter(p => ['YTD', 'Since Inception'].includes(p.label)).map((period) => (
-                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg text-center">
-                          <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg">
+                          <div className="text-sm font-medium text-center mb-2">{period.label}</div>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Portfolio:</span>
+                              <span className={`font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Benchmark:</span>
+                              <span className={`font-medium ${period.benchmark >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.benchmark > 0 ? '+' : ''}{period.benchmark.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between border-t border-slate-200 pt-1 mt-1">
+                              <span className="text-slate-600">Alpha:</span>
+                              <span className={`font-medium ${period.alpha >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {period.alpha > 0 ? '+' : ''}{period.alpha.toFixed(1)}%
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-sm text-slate-500">{period.label}</div>
                         </div>
                       ))}
                     </div>
