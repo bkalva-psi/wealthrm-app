@@ -481,14 +481,13 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Asset Allocation</CardTitle>
-                <CardDescription>Current distribution across asset classes</CardDescription>
+                <CardTitle className="text-lg">Portfolio Overview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium mb-2">Asset Allocation</h3>
-                    <div className="flex-1">
+                    <div className="flex-1 h-52">
                       <AssetAllocationChart 
                         data={client?.assetAllocation || mockAssetAllocation} 
                       />
@@ -496,7 +495,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
-                    <div className="flex-1 border rounded-md p-4">
+                    <div className="flex-1 border rounded-md p-4 h-52">
                       <SimpleAumTrendChart aumValue={aumValue} />
                     </div>
                   </div>
