@@ -20,7 +20,7 @@ export default function Dashboard() {
   return (
     <div>
       {/* Page Header */}
-      <div className="mb-6">
+      <div className="mb-6 px-4 md:px-0">
         <h1 className="text-2xl font-semibold text-slate-800">Welcome back, {user?.fullName.split(' ')[0]}</h1>
         <p className="text-sm text-slate-600">Here's what's happening with your clients today</p>
       </div>
