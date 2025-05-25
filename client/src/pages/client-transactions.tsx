@@ -946,8 +946,8 @@ export default function ClientTransactions() {
                           </Badge>
                         </TableCell>
                       </TableRow>
-                        );
-                      })
+                      );
+                    })
                     </TableBody>
                 </Table>
               </div>
@@ -1086,7 +1086,6 @@ export default function ClientTransactions() {
                           </TableRow>
                         );
                       })
-                    }
                     </TableBody>
                   </Table>
                 </div>
