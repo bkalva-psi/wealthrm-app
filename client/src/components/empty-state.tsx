@@ -1,35 +1,31 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface EmptyStateProps {
-  icon?: React.ReactNode;
   title: string;
-  description: string;
+  description?: string;
+  icon?: React.ReactNode;
   action?: React.ReactNode;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = <AlertCircle className="h-10 w-10 text-muted-foreground" />,
-  title,
-  description,
-  action
-}) => {
+export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center text-center p-8 space-y-4">
-      <div className="text-muted-foreground">
-        {icon}
-      </div>
-      <h3 className="font-medium text-lg">{title}</h3>
-      <p className="text-muted-foreground max-w-md">
-        {description}
-      </p>
-      {action && (
-        <div className="mt-4">
-          {action}
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      {icon && (
+        <div className="mb-4">
+          {icon}
         </div>
       )}
+      <h3 className="text-lg font-medium mb-2">{title}</h3>
+      {description && (
+        <p className="text-slate-500 mb-6 max-w-md">
+          {description}
+        </p>
+      )}
+      {action && <div>{action}</div>}
     </div>
   );
-};
+}
 
+// Also export as default
 export default EmptyState;

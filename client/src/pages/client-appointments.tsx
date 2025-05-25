@@ -24,7 +24,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { EmptyState } from '@/components/empty-state';
+// Import the EmptyState component
+import EmptyState from '@/components/empty-state';
 
 interface Appointment {
   id: number;
