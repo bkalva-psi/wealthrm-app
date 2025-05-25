@@ -39,6 +39,7 @@ import BarChartComponent from "../components/charts/BarChart";
 import SimpleAumTrendChart from "../components/charts/SimpleAumTrendChart";
 import AumTrendChart from "../components/charts/AumTrendChart";
 import BenchmarkComparisonChart from "../components/charts/BenchmarkComparisonChart";
+import PortfolioEfficiencyChart from "../components/charts/PortfolioEfficiencyChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -883,17 +884,31 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Benchmark Comparison</CardTitle>
-                <CardDescription>Portfolio vs Market Index (Base 100)</CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <div className="h-full">
-                  <BenchmarkComparisonChart aumValue={client?.aumValue || 5000000} />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Benchmark Comparison</CardTitle>
+                  <CardDescription>Portfolio vs Market Index (Base 100)</CardDescription>
+                </CardHeader>
+                <CardContent className="h-80">
+                  <div className="h-full">
+                    <BenchmarkComparisonChart aumValue={client?.aumValue || 5000000} />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Portfolio Efficiency Analysis</CardTitle>
+                  <CardDescription>Risk vs. Return with Efficient Frontier</CardDescription>
+                </CardHeader>
+                <CardContent className="h-80">
+                  <div className="h-full">
+                    <PortfolioEfficiencyChart holdings={mockHoldings} />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
