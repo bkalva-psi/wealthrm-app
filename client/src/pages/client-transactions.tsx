@@ -129,6 +129,7 @@ export default function ClientTransactions() {
   
   // Quick date filter handler
   const handleQuickDateFilter = (period: '1w' | '1m' | '3m') => {
+    console.log(`Applying quick filter: ${period}`);
     const end = new Date();
     let start: Date;
     
@@ -147,6 +148,11 @@ export default function ClientTransactions() {
     
     setStartDate(start);
     setEndDate(end);
+    
+    // Force refresh
+    setTimeout(() => {
+      window.location.hash = window.location.hash;
+    }, 100);
   };
   
   // Get client data
@@ -156,10 +162,12 @@ export default function ClientTransactions() {
   });
   
   // Get transaction data
+  const formattedStartDate = format(startDate, 'yyyy-MM-dd');
+  const formattedEndDate = format(endDate, 'yyyy-MM-dd');
+  
   const { data: transactions, isLoading: isTransactionsLoading } = useApiQuery<Transaction[]>({
     queryKey: [
-      `/api/clients/${clientId}/transactions`,
-      { startDate: format(startDate, 'yyyy-MM-dd'), endDate: format(endDate, 'yyyy-MM-dd') }
+      `/api/clients/${clientId}/transactions?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
     ],
     enabled: !!clientId
   });
