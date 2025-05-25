@@ -756,7 +756,7 @@ export default function ClientPortfolioPage() {
         
         <MetricCard 
           title="Invested Amount"
-          value={`₹${(((client?.aumValue || defaultAumValue) * 0.85) / 100000).toFixed(2)} L`}
+          value={`₹${((aumValue * 0.85) / 100000).toFixed(2)} L`}
           icon={<DollarSign className="h-5 w-5" />}
           description="Principal investment"
           color="indigo"
@@ -765,7 +765,7 @@ export default function ClientPortfolioPage() {
         
         <MetricCard 
           title="Unrealized Gains"
-          value={`₹${(((client?.aumValue || defaultAumValue) * 0.15) / 100000).toFixed(2)} L`}
+          value={`₹${((aumValue * 0.15) / 100000).toFixed(2)} L`}
           icon={<TrendingUp className="h-5 w-5" />}
           description="Growth in portfolio value"
           color="green"
