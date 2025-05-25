@@ -262,15 +262,16 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
   return (
     <div className="w-full h-full">
       <div className="flex flex-col h-full">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex space-x-1">
-            <span className="text-xs text-muted-foreground">
-              Start: ₹{(dataPoints[0].value / 100000).toFixed(1)}L
-            </span>
-            <span className="mx-1 text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground">
-              Current: ₹{(dataPoints[dataPoints.length-1].value / 100000).toFixed(1)}L
-            </span>
+        <div className="flex justify-between items-start mb-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground font-medium">Start</span>
+              <span className="text-xs">₹{(dataPoints[0].value / 100000).toFixed(1)}L</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground font-medium">Current</span>
+              <span className="text-xs">₹{(dataPoints[dataPoints.length-1].value / 100000).toFixed(1)}L</span>
+            </div>
           </div>
           
           <div className="flex text-xs rounded-md overflow-hidden border">
