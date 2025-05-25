@@ -304,4 +304,28 @@
       padding: 0.5rem;
     }
   }
+  
+  /* Global spacing improvements */
+  h1, h2, h3, h4, h5, h6, .page-title, .card-title {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Chart container padding */
+  .recharts-wrapper {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  /* Dashboard welcome header */
+  .welcome-header {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  
+  /* Card header content spacing */
+  .card-header-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
