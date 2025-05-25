@@ -120,13 +120,26 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
   const xScale = (risk: number) => (risk - minRisk) / (maxRisk - minRisk) * width;
   const yScale = (ret: number) => height - (ret - minReturn) / (maxReturn - minReturn) * height;
   
-  // Color function based on asset type
-  const getColor = (type: string) => {
-    if (type.includes('Equity')) return '#3b82f6'; // blue
-    if (type.includes('Debt') || type.includes('Fixed Income')) return '#10b981'; // green
+  // Color function based on individual security name with some common mappings
+  const getColor = (name: string, type: string) => {
+    // First try to match by specific security name if name is provided
+    if (name) {
+      if (name.includes('HDFC')) return '#3b82f6'; // blue
+      if (name.includes('SBI')) return '#8b5cf6'; // purple
+      if (name.includes('ICICI')) return '#10b981'; // green
+      if (name.includes('Reliance')) return '#f59e0b'; // amber
+      if (name.includes('Gold')) return '#f59e0b'; // amber
+      if (name.includes('Savings')) return '#6b7280'; // gray
+    }
+    
+    // Fall back to asset type
+    if (type.includes('Equity')) return '#ef4444'; // red
+    if (type.includes('Debt') || type.includes('Fixed Income')) return '#84cc16'; // lime
     if (type.includes('Gold')) return '#f59e0b'; // amber
     if (type.includes('Cash')) return '#6b7280'; // gray
-    return '#8b5cf6'; // purple (default)
+    
+    // Default color
+    return '#8b5cf6'; // purple
   };
   
   // Handle mouse events
@@ -161,6 +174,7 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
           height="100%" 
           viewBox={`0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`}
           className="overflow-visible"
+          style={{ maxHeight: "calc(100% - 24px)" }} // Prevent overflow
         >
           <g transform={`translate(${margin.left}, ${margin.top})`}>
             {/* X and Y axis */}
@@ -238,7 +252,7 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
                 cx={xScale(point.risk)}
                 cy={yScale(point.return)}
                 r={Math.max(3, Math.sqrt(point.size) * 1.5)}
-                fill={getColor(point.type)}
+                fill={getColor(point.name, point.type)}
                 opacity="0.8"
                 stroke="#ffffff"
                 strokeWidth="1"
@@ -308,30 +322,24 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
         )}
       </div>
       
-      <div className="mt-2 flex flex-wrap gap-3 justify-center">
-        <div className="flex items-center text-xs">
-          <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-          <span>Equity</span>
-        </div>
-        <div className="flex items-center text-xs">
-          <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
-          <span>Debt</span>
-        </div>
-        <div className="flex items-center text-xs">
-          <div className="w-3 h-3 rounded-full bg-amber-500 mr-1"></div>
-          <span>Gold</span>
-        </div>
-        <div className="flex items-center text-xs">
-          <div className="w-3 h-3 rounded-full bg-gray-500 mr-1"></div>
-          <span>Cash</span>
-        </div>
-        <div className="flex items-center text-xs">
-          <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
+      <div className="mt-1 flex flex-wrap gap-2 justify-center text-[10px]">
+        {/* Show actual securities in legend */}
+        {dataPoints.map((point, i) => (
+          <div key={`legend-${i}`} className="flex items-center">
+            <div 
+              className="w-2 h-2 rounded-full mr-1" 
+              style={{ backgroundColor: getColor(point.name, point.type) }}
+            ></div>
+            <span className="truncate max-w-[80px]">{point.name.split(' ')[0]}</span>
+          </div>
+        ))}
+        <div className="flex items-center">
+          <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
           <span>Portfolio</span>
         </div>
-        <div className="flex items-center text-xs">
-          <div className="w-4 h-0 border-t-2 border-dashed border-purple-500 mr-1"></div>
-          <span>Efficient Frontier</span>
+        <div className="flex items-center">
+          <div className="w-3 h-0 border-t-2 border-dashed border-purple-500 mr-1"></div>
+          <span>Efficient</span>
         </div>
       </div>
     </div>
