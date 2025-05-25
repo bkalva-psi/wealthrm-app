@@ -14,7 +14,12 @@ import {
   insertPortfolioAlertSchema,
   insertPerformanceMetricSchema,
   insertAumTrendSchema,
-  insertSalesPipelineSchema
+  insertSalesPipelineSchema,
+  insertCommunicationSchema,
+  insertCommunicationActionItemSchema,
+  insertCommunicationAttachmentSchema,
+  insertClientCommunicationPreferenceSchema,
+  insertCommunicationTemplateSchema
 } from "@shared/schema";
 
 // Basic auth middleware
@@ -1066,6 +1071,447 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(pipeline);
     } catch (error) {
       console.error("Get sales pipeline error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Communication routes
+  app.get("/api/clients/:clientId/communications", authMiddleware, async (req, res) => {
+    try {
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      const communications = await storage.getClientCommunications(clientId);
+      res.json(communications);
+    } catch (error) {
+      console.error("Get client communications error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.get("/api/communications/recent", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      
+      if (isNaN(limit) || limit <= 0) {
+        return res.status(400).json({ message: "Invalid limit parameter" });
+      }
+      
+      const communications = await storage.getRecentCommunications(userId, limit);
+      res.json(communications);
+    } catch (error) {
+      console.error("Get recent communications error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.get("/api/communications/:id", authMiddleware, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid communication ID" });
+      }
+      
+      const communication = await storage.getCommunication(id);
+      
+      if (!communication) {
+        return res.status(404).json({ message: "Communication not found" });
+      }
+      
+      res.json(communication);
+    } catch (error) {
+      console.error("Get communication error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.post("/api/communications", authMiddleware, async (req, res) => {
+    try {
+      const parseResult = insertCommunicationSchema.safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid communication data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      // Ensure initiatedBy is set to current user if not specified
+      const data = parseResult.data;
+      if (!data.initiatedBy) {
+        data.initiatedBy = req.session.userId;
+      }
+      
+      const communication = await storage.createCommunication(data);
+      res.status(201).json(communication);
+    } catch (error) {
+      console.error("Create communication error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.put("/api/communications/:id", authMiddleware, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid communication ID" });
+      }
+      
+      const parseResult = insertCommunicationSchema.partial().safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid communication data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      const communication = await storage.updateCommunication(id, parseResult.data);
+      
+      if (!communication) {
+        return res.status(404).json({ message: "Communication not found" });
+      }
+      
+      res.json(communication);
+    } catch (error) {
+      console.error("Update communication error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.delete("/api/communications/:id", authMiddleware, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid communication ID" });
+      }
+      
+      const success = await storage.deleteCommunication(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Communication not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Delete communication error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Communication Action Items routes
+  app.get("/api/communications/:communicationId/action-items", authMiddleware, async (req, res) => {
+    try {
+      const communicationId = Number(req.params.communicationId);
+      
+      if (isNaN(communicationId)) {
+        return res.status(400).json({ message: "Invalid communication ID" });
+      }
+      
+      const actionItems = await storage.getCommunicationActionItems(communicationId);
+      res.json(actionItems);
+    } catch (error) {
+      console.error("Get communication action items error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.post("/api/communication-action-items", authMiddleware, async (req, res) => {
+    try {
+      const parseResult = insertCommunicationActionItemSchema.safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid action item data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      // Ensure assignedTo is set to current user if not specified
+      const data = parseResult.data;
+      if (!data.assignedTo) {
+        data.assignedTo = req.session.userId;
+      }
+      
+      const actionItem = await storage.createCommunicationActionItem(data);
+      res.status(201).json(actionItem);
+    } catch (error) {
+      console.error("Create communication action item error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.put("/api/communication-action-items/:id", authMiddleware, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid action item ID" });
+      }
+      
+      const parseResult = insertCommunicationActionItemSchema.partial().safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid action item data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      // If marking as completed, set completedAt
+      if (parseResult.data.status === 'completed' && !parseResult.data.completedAt) {
+        parseResult.data.completedAt = new Date();
+      }
+      
+      const actionItem = await storage.updateCommunicationActionItem(id, parseResult.data);
+      
+      if (!actionItem) {
+        return res.status(404).json({ message: "Action item not found" });
+      }
+      
+      res.json(actionItem);
+    } catch (error) {
+      console.error("Update communication action item error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Pending action items routes
+  app.get("/api/clients/:clientId/pending-action-items", authMiddleware, async (req, res) => {
+    try {
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      const actionItems = await storage.getPendingActionItemsByClient(clientId);
+      res.json(actionItems);
+    } catch (error) {
+      console.error("Get pending action items error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.get("/api/my-pending-action-items", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      const actionItems = await storage.getPendingActionItemsByRM(userId);
+      res.json(actionItems);
+    } catch (error) {
+      console.error("Get RM pending action items error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Communication attachments routes
+  app.get("/api/communications/:communicationId/attachments", authMiddleware, async (req, res) => {
+    try {
+      const communicationId = Number(req.params.communicationId);
+      
+      if (isNaN(communicationId)) {
+        return res.status(400).json({ message: "Invalid communication ID" });
+      }
+      
+      const attachments = await storage.getCommunicationAttachments(communicationId);
+      res.json(attachments);
+    } catch (error) {
+      console.error("Get communication attachments error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Client communication preferences routes
+  app.get("/api/clients/:clientId/communication-preferences", authMiddleware, async (req, res) => {
+    try {
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      const preferences = await storage.getClientCommunicationPreferences(clientId);
+      
+      if (!preferences) {
+        // Return default preferences if none exist
+        return res.json({
+          clientId,
+          preferredChannels: ['email', 'phone'],
+          preferredFrequency: 'monthly',
+          preferredDays: ['Monday', 'Wednesday', 'Friday'],
+          preferredTimeSlots: ['morning', 'afternoon'],
+          preferredLanguage: 'English'
+        });
+      }
+      
+      res.json(preferences);
+    } catch (error) {
+      console.error("Get client communication preferences error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.post("/api/clients/:clientId/communication-preferences", authMiddleware, async (req, res) => {
+    try {
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      const parseResult = insertClientCommunicationPreferenceSchema.safeParse({
+        ...req.body,
+        clientId
+      });
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid communication preferences data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      const preferences = await storage.setClientCommunicationPreferences(parseResult.data);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Set client communication preferences error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Communication templates routes
+  app.get("/api/communication-templates", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      const templates = await storage.getCommunicationTemplates(userId);
+      res.json(templates);
+    } catch (error) {
+      console.error("Get communication templates error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.get("/api/communication-templates/category/:category", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      const { category } = req.params;
+      
+      if (!category) {
+        return res.status(400).json({ message: "Category is required" });
+      }
+      
+      const templates = await storage.getCommunicationTemplatesByCategory(category, userId);
+      res.json(templates);
+    } catch (error) {
+      console.error("Get communication templates by category error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.post("/api/communication-templates", authMiddleware, async (req, res) => {
+    try {
+      const parseResult = insertCommunicationTemplateSchema.safeParse({
+        ...req.body,
+        createdBy: req.session.userId
+      });
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid template data", 
+          errors: parseResult.error.format() 
+        });
+      }
+      
+      const template = await storage.createCommunicationTemplate(parseResult.data);
+      res.status(201).json(template);
+    } catch (error) {
+      console.error("Create communication template error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Communication analytics routes
+  app.get("/api/communication-analytics", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      const { clientId, period = 'monthly', limit = 12 } = req.query;
+      
+      let clientIdNum: number | null = null;
+      if (clientId) {
+        clientIdNum = Number(clientId);
+        if (isNaN(clientIdNum)) {
+          return res.status(400).json({ message: "Invalid client ID" });
+        }
+      }
+      
+      const analytics = await storage.getCommunicationAnalytics(
+        userId,
+        clientIdNum,
+        period as string,
+        Number(limit)
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Get communication analytics error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.post("/api/communication-analytics/generate", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      const { 
+        clientId, 
+        period = 'monthly',
+        startDate: startDateStr,
+        endDate: endDateStr 
+      } = req.body;
+      
+      let clientIdNum: number | null = null;
+      if (clientId) {
+        clientIdNum = Number(clientId);
+        if (isNaN(clientIdNum)) {
+          return res.status(400).json({ message: "Invalid client ID" });
+        }
+      }
+      
+      // Parse dates if provided
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      
+      if (startDateStr) {
+        startDate = new Date(startDateStr);
+        if (isNaN(startDate.getTime())) {
+          return res.status(400).json({ message: "Invalid start date format" });
+        }
+      }
+      
+      if (endDateStr) {
+        endDate = new Date(endDateStr);
+        if (isNaN(endDate.getTime())) {
+          return res.status(400).json({ message: "Invalid end date format" });
+        }
+      }
+      
+      const analytics = await storage.generateCommunicationAnalytics(
+        userId,
+        clientIdNum,
+        period as string,
+        startDate,
+        endDate
+      );
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Generate communication analytics error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

@@ -1407,6 +1407,296 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return entry || undefined;
   }
+
+  // Communication methods
+  async getCommunication(id: number): Promise<Communication | undefined> {
+    const [communication] = await db.select().from(communications).where(eq(communications.id, id));
+    return communication || undefined;
+  }
+
+  async getClientCommunications(clientId: number): Promise<Communication[]> {
+    return db.select()
+      .from(communications)
+      .where(eq(communications.clientId, clientId))
+      .orderBy(desc(communications.startTime));
+  }
+
+  async getRecentCommunications(userId: number, limit: number = 10): Promise<Communication[]> {
+    return db.select()
+      .from(communications)
+      .where(eq(communications.initiatedBy, userId))
+      .orderBy(desc(communications.startTime))
+      .limit(limit);
+  }
+
+  async createCommunication(communication: InsertCommunication): Promise<Communication> {
+    const [result] = await db.insert(communications).values(communication).returning();
+    return result;
+  }
+
+  async updateCommunication(id: number, updates: Partial<InsertCommunication>): Promise<Communication | undefined> {
+    const [result] = await db
+      .update(communications)
+      .set(updates)
+      .where(eq(communications.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteCommunication(id: number): Promise<boolean> {
+    await db.delete(communications).where(eq(communications.id, id));
+    return true;
+  }
+
+  // Communication action items methods
+  async getCommunicationActionItems(communicationId: number): Promise<CommunicationActionItem[]> {
+    return db.select()
+      .from(communicationActionItems)
+      .where(eq(communicationActionItems.communicationId, communicationId))
+      .orderBy(communicationActionItems.dueDate);
+  }
+
+  async createCommunicationActionItem(actionItem: InsertCommunicationActionItem): Promise<CommunicationActionItem> {
+    const [result] = await db.insert(communicationActionItems).values(actionItem).returning();
+    return result;
+  }
+
+  async updateCommunicationActionItem(id: number, updates: Partial<InsertCommunicationActionItem>): Promise<CommunicationActionItem | undefined> {
+    const [result] = await db
+      .update(communicationActionItems)
+      .set(updates)
+      .where(eq(communicationActionItems.id, id))
+      .returning();
+    return result;
+  }
+
+  async getPendingActionItemsByClient(clientId: number): Promise<(CommunicationActionItem & { communication: Communication })[]> {
+    return db.select({
+      ...communicationActionItems,
+      communication: communications
+    })
+    .from(communicationActionItems)
+    .innerJoin(communications, eq(communicationActionItems.communicationId, communications.id))
+    .where(eq(communications.clientId, clientId))
+    .where(eq(communicationActionItems.status, 'pending'))
+    .orderBy(communicationActionItems.dueDate);
+  }
+
+  async getPendingActionItemsByRM(userId: number): Promise<(CommunicationActionItem & { communication: Communication })[]> {
+    return db.select({
+      ...communicationActionItems,
+      communication: communications
+    })
+    .from(communicationActionItems)
+    .innerJoin(communications, eq(communicationActionItems.communicationId, communications.id))
+    .where(eq(communicationActionItems.assignedTo, userId))
+    .where(eq(communicationActionItems.status, 'pending'))
+    .orderBy(communicationActionItems.dueDate);
+  }
+
+  // Communication attachment methods
+  async getCommunicationAttachments(communicationId: number): Promise<CommunicationAttachment[]> {
+    return db.select()
+      .from(communicationAttachments)
+      .where(eq(communicationAttachments.communicationId, communicationId))
+      .orderBy(communicationAttachments.createdAt);
+  }
+
+  async createCommunicationAttachment(attachment: InsertCommunicationAttachment): Promise<CommunicationAttachment> {
+    const [result] = await db.insert(communicationAttachments).values(attachment).returning();
+    return result;
+  }
+
+  // Client communication preferences methods
+  async getClientCommunicationPreferences(clientId: number): Promise<ClientCommunicationPreference | undefined> {
+    const [preferences] = await db
+      .select()
+      .from(clientCommunicationPreferences)
+      .where(eq(clientCommunicationPreferences.clientId, clientId));
+    return preferences || undefined;
+  }
+
+  async setClientCommunicationPreferences(preferences: InsertClientCommunicationPreference): Promise<ClientCommunicationPreference> {
+    // Upsert operation - insert or update if exists
+    const [result] = await db
+      .insert(clientCommunicationPreferences)
+      .values(preferences)
+      .onConflictDoUpdate({
+        target: clientCommunicationPreferences.clientId,
+        set: { 
+          ...preferences,
+          lastUpdated: new Date()
+        }
+      })
+      .returning();
+    return result;
+  }
+
+  // Communication templates methods
+  async getCommunicationTemplates(userId: number): Promise<CommunicationTemplate[]> {
+    // Get templates created by this user or global templates
+    return db.select()
+      .from(communicationTemplates)
+      .where(
+        or(
+          eq(communicationTemplates.createdBy, userId),
+          eq(communicationTemplates.isGlobal, true)
+        )
+      )
+      .where(eq(communicationTemplates.isActive, true))
+      .orderBy(communicationTemplates.name);
+  }
+
+  async getCommunicationTemplatesByCategory(category: string, userId: number): Promise<CommunicationTemplate[]> {
+    return db.select()
+      .from(communicationTemplates)
+      .where(eq(communicationTemplates.category, category))
+      .where(
+        or(
+          eq(communicationTemplates.createdBy, userId),
+          eq(communicationTemplates.isGlobal, true)
+        )
+      )
+      .where(eq(communicationTemplates.isActive, true))
+      .orderBy(communicationTemplates.name);
+  }
+
+  async createCommunicationTemplate(template: InsertCommunicationTemplate): Promise<CommunicationTemplate> {
+    const [result] = await db.insert(communicationTemplates).values(template).returning();
+    return result;
+  }
+
+  // Communication analytics methods
+  async generateCommunicationAnalytics(
+    userId: number | null = null,
+    clientId: number | null = null,
+    period: string = 'monthly',
+    startDate: Date = new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    endDate: Date = new Date()
+  ): Promise<CommunicationAnalytic> {
+    // Build the query to get communications for the specified filters
+    let query = db.select().from(communications);
+    
+    if (userId) {
+      query = query.where(eq(communications.initiatedBy, userId));
+    }
+    
+    if (clientId) {
+      query = query.where(eq(communications.clientId, clientId));
+    }
+    
+    query = query.where(gte(communications.startTime, startDate));
+    query = query.where(lte(communications.startTime, endDate));
+    
+    const results = await query;
+    
+    // Process the results to calculate analytics
+    const totalCommunications = results.length;
+    
+    // Group by type
+    const communicationsByType = results.reduce((acc, comm) => {
+      const type = comm.communicationType;
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Group by direction
+    const communicationsByDirection = results.reduce((acc, comm) => {
+      const direction = comm.direction;
+      acc[direction] = (acc[direction] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Group by channel
+    const communicationsByChannel = results.reduce((acc, comm) => {
+      const channel = comm.channel;
+      if (channel) {
+        acc[channel] = (acc[channel] || 0) + 1;
+      }
+      return acc;
+    }, {});
+    
+    // Calculate sentiment distribution
+    const sentimentAnalysis = results.reduce((acc, comm) => {
+      const sentiment = comm.sentiment;
+      acc[sentiment] = (acc[sentiment] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Convert sentiment counts to percentages
+    Object.keys(sentimentAnalysis).forEach(key => {
+      sentimentAnalysis[key] = (sentimentAnalysis[key] / totalCommunications) * 100;
+    });
+    
+    // Extract tags to find most discussed topics
+    const allTags = results.flatMap(comm => comm.tags || []);
+    const topicCounts = allTags.reduce((acc, tag) => {
+      acc[tag] = (acc[tag] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Sort topics by count and take top 5
+    const mostDiscussedTopics = Object.entries(topicCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
+    
+    // Calculate average duration for communications with duration
+    const durationsAvailable = results.filter(comm => comm.duration !== null && comm.duration !== undefined);
+    const averageDuration = durationsAvailable.length > 0
+      ? durationsAvailable.reduce((sum, comm) => sum + comm.duration, 0) / durationsAvailable.length
+      : null;
+    
+    // Create the analytics record
+    const analyticsData: InsertCommunicationAnalytic = {
+      userId,
+      clientId,
+      period,
+      startDate,
+      endDate,
+      totalCommunications,
+      communicationsByType,
+      communicationsByDirection,
+      communicationsByChannel,
+      sentimentAnalysis,
+      mostDiscussedTopics,
+      averageDuration,
+      // These would need additional queries to calculate properly
+      averageResponseTime: null,
+      communicationEffectiveness: null,
+      followupCompletion: null
+    };
+    
+    // Save and return the analytics
+    const [analytics] = await db.insert(communicationAnalytics).values(analyticsData).returning();
+    return analytics;
+  }
+
+  async getCommunicationAnalytics(
+    userId: number | null = null,
+    clientId: number | null = null,
+    period: string = 'monthly',
+    limit: number = 12
+  ): Promise<CommunicationAnalytic[]> {
+    let query = db.select().from(communicationAnalytics);
+    
+    if (userId) {
+      query = query.where(eq(communicationAnalytics.userId, userId));
+    }
+    
+    if (clientId) {
+      query = query.where(eq(communicationAnalytics.clientId, clientId));
+    }
+    
+    query = query.where(eq(communicationAnalytics.period, period));
+    query = query.orderBy(desc(communicationAnalytics.endDate));
+    query = query.limit(limit);
+    
+    return query;
+  }
 }
 
 export const storage = new DatabaseStorage();
