@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { pool } from "./db";
+import communicationsRouter from "./communications";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { z } from "zod";
@@ -44,6 +45,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }),
     })
   );
+  
+  // Register communications router
+  app.use(communicationsRouter);
 
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
