@@ -29,6 +29,7 @@ import ClientPortfolio from "@/pages/client-portfolio";
 import ClientInteractions from "@/pages/client-interactions";
 import ClientTransactions from "@/pages/client-transactions";
 import ClientCommunications from "@/pages/client-communications";
+import ClientAppointments from "@/pages/client-appointments";
 import { Loader2 } from "lucide-react";
 
 // Custom router implementation using hash-based routing
@@ -168,6 +169,8 @@ function AuthenticatedApp() {
         return <ClientTransactions />;
       case /^\/clients\/\d+\/communications$/.test(currentRoute):
         return <ClientCommunications />;
+      case /^\/clients\/\d+\/appointments$/.test(currentRoute):
+        return <ClientAppointments />;
       
       case currentRoute === '/calendar':
         return <Calendar />;

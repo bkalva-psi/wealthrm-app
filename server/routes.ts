@@ -802,6 +802,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const assignedTo = req.session.userId;
       let date: Date | undefined = undefined;
+      let clientId: number | undefined = undefined;
       
       if (req.query.date) {
         date = new Date(req.query.date as string);
@@ -810,7 +811,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const appointments = await storage.getAppointments(assignedTo, date);
+      if (req.query.clientId) {
+        clientId = Number(req.query.clientId);
+        if (isNaN(clientId)) {
+          return res.status(400).json({ message: "Invalid client ID format" });
+        }
+      }
+      
+      const appointments = await storage.getAppointments(assignedTo, date, clientId);
       res.json(appointments);
     } catch (error) {
       console.error("Get appointments error:", error);

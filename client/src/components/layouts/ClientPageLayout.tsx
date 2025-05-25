@@ -29,6 +29,12 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
     queryKey: [`/api/clients/${clientId}`],
     enabled: !!clientId
   });
+  
+  // Fetch client appointments count
+  const { data: appointments } = useQuery({
+    queryKey: [`/api/appointments`, { clientId }],
+    enabled: !!clientId
+  });
 
   return (
     <div className="container mx-auto p-4 md:p-6">
@@ -171,15 +177,15 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
               <span className="sm:hidden">Docs</span>
             </Button>
           </TabsTrigger>
-          <TabsTrigger value="calendar">
+          <TabsTrigger value="appointments">
             <Button 
-              variant={currentTab === 'calendar' ? 'default' : 'ghost'} 
+              variant={currentTab === 'appointments' ? 'default' : 'ghost'} 
               className="mr-1"
-              onClick={() => window.location.hash = `/clients/${clientId}/calendar`}
+              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
             >
               <Calendar className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Appointments</span>
-              <span className="sm:hidden">Appts</span>
+              <span className="hidden sm:inline">Appointments {appointments?.length ? `(${appointments.length})` : '(0)'}</span>
+              <span className="sm:hidden">Appts {appointments?.length ? `(${appointments.length})` : '(0)'}</span>
             </Button>
           </TabsTrigger>
         </TabsList>

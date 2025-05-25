@@ -606,7 +606,7 @@ export class MemStorage implements IStorage {
     return this.appointments.get(id);
   }
   
-  async getAppointments(assignedTo?: number, date?: Date): Promise<Appointment[]> {
+  async getAppointments(assignedTo?: number, date?: Date, clientId?: number): Promise<Appointment[]> {
     let appointments = Array.from(this.appointments.values());
     
     if (assignedTo) {
@@ -620,6 +620,10 @@ export class MemStorage implements IStorage {
                appointmentDate.getMonth() === date.getMonth() &&
                appointmentDate.getFullYear() === date.getFullYear();
       });
+    }
+    
+    if (clientId) {
+      appointments = appointments.filter(appointment => appointment.clientId === clientId);
     }
     
     return appointments.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
