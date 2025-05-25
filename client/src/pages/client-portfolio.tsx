@@ -557,11 +557,7 @@ export default function ClientPortfolioPage() {
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
                     <div className="flex-1 border rounded-md p-4 h-52">
-                      <AumTrendChart 
-                        currentValue={client?.aumValue || 5000000} 
-                        clientSince={client?.createdAt ? new Date(client.createdAt) : undefined}
-                        showFullPeriod={false}
-                      />
+                      <SimpleAumTrendChart aumValue={client?.aumValue || 5000000} />
                     </div>
                   </div>
                 </div>
