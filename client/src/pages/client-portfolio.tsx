@@ -902,15 +902,51 @@ export default function ClientPortfolioPage() {
                 <CardTitle className="text-lg">Performance by Time Period</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {performancePeriods.map((period) => (
-                    <div key={period.label} className="p-4 bg-slate-50 rounded-lg text-center">
-                      <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-                      </div>
-                      <div className="text-sm text-slate-500">{period.label}</div>
+                <div className="space-y-4">
+                  {/* Monthly Performance */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Monthly Performance</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {performancePeriods.filter(p => ['1M', '3M', '6M'].includes(p.label)).map((period) => (
+                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg text-center">
+                          <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                          </div>
+                          <div className="text-sm text-slate-500">{period.label}</div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                  
+                  {/* Yearly Performance */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Yearly Performance</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {performancePeriods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label)).map((period) => (
+                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg text-center">
+                          <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                          </div>
+                          <div className="text-sm text-slate-500">{period.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Other Timeframes */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Overall Performance</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {performancePeriods.filter(p => ['YTD', 'Since Inception'].includes(p.label)).map((period) => (
+                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg text-center">
+                          <div className={`text-xl font-bold ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+                          </div>
+                          <div className="text-sm text-slate-500">{period.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
