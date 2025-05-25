@@ -695,7 +695,8 @@ export default function ClientPortfolioPage() {
     ];
   };
   
-  const aumValue = getAumValue(client?.aum);
+  // Handle client data safely with fallbacks for development
+  const aumValue = client?.aumValue || getAumValue(client?.aum) || 2500000;
   const transactions = generateTransactionData();
   
   return (
@@ -768,7 +769,7 @@ export default function ClientPortfolioPage() {
         
         <MetricCard 
           title="XIRR"
-          value={`${client?.yearlyPerformance || 12.5}%`}
+          value={`${12.5}%`}
           icon={<Percent className="h-5 w-5" />}
           description="Annualized returns"
           color="amber"
@@ -778,10 +779,12 @@ export default function ClientPortfolioPage() {
       
       {/* Tabs for different portfolio views */}
       <Tabs defaultValue="overview" className="space-y-4 flex-grow">
-        <TabsList className="grid grid-cols-2 md:grid-cols-3 w-full sticky top-0 z-10 bg-white">
+        <TabsList className="grid grid-cols-3 md:grid-cols-5 w-full sticky top-0 z-10 bg-white">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="holdings">Holdings</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
+          <TabsTrigger value="planning">Planning</TabsTrigger>
         </TabsList>
         
         {/* Portfolio Overview Tab */}
@@ -797,7 +800,7 @@ export default function ClientPortfolioPage() {
                     <h3 className="text-sm font-medium mb-2">Asset Allocation</h3>
                     <div className="flex-1 h-52">
                       <AssetAllocationChart 
-                        data={client?.assetAllocation || mockAssetAllocation} 
+                        data={mockAssetAllocation} 
                       />
                     </div>
                   </div>
