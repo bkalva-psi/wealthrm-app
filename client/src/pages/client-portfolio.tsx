@@ -335,7 +335,66 @@ export default function ClientPortfolioPage() {
     return match ? parseFloat(match[1]) * 100000 : 0;
   };
   
+  // Generate realistic AUM trend data based on current value and relationship start date
+  const generateAumTrendData = (currentValue: number, relationshipStartDate?: string | null): {date: string, value: number}[] => {
+    const data: {date: string, value: number}[] = [];
+    const today = new Date();
+    
+    // Default to 3 years ago if no relationship start date provided
+    const startDate = relationshipStartDate 
+      ? new Date(relationshipStartDate) 
+      : new Date(today.getFullYear() - 3, today.getMonth(), 1);
+      
+    // Ensure valid date
+    if (isNaN(startDate.getTime())) {
+      startDate.setFullYear(today.getFullYear() - 3);
+    }
+    
+    // Generate monthly data points from start date to today
+    let currentDate = new Date(startDate);
+    let previousValue = currentValue * 0.85; // Start with a lower value
+    
+    // Add data point for start month
+    data.push({
+      date: currentDate.toISOString().slice(0, 7),
+      value: previousValue
+    });
+    
+    // Move to next month
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    
+    // Generate data points for all months between start and now
+    while (currentDate <= today) {
+      // Random fluctuation between -5% and +5%
+      const fluctuation = 0.95 + (Math.random() * 0.1);
+      
+      // Gradually increase probability of growth as we approach present time
+      const timeProgress = (currentDate.getTime() - startDate.getTime()) / 
+                          (today.getTime() - startDate.getTime());
+      const growthBias = 0.02 * timeProgress; // Up to 2% growth bias toward present time
+      
+      // Apply fluctuation with growth bias
+      const newValue = previousValue * (fluctuation + growthBias);
+      
+      data.push({
+        date: currentDate.toISOString().slice(0, 7),
+        value: newValue
+      });
+      
+      previousValue = newValue;
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+    
+    // Ensure the last value is the current AUM
+    if (data.length > 0) {
+      data[data.length - 1].value = currentValue;
+    }
+    
+    return data;
+  };
+  
   const aumValue = getAumValue(client?.aum);
+  const aumTrendData = generateAumTrendData(aumValue, client?.relationshipStartDate);
   
   return (
     <div className="p-6 pb-20 md:pb-6">
@@ -438,21 +497,7 @@ export default function ClientPortfolioPage() {
                     <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
                     <div className="flex-1">
                       <PerformanceChart 
-                        data={[
-                          { date: '2022-05', value: aumValue * 0.85 },
-                          { date: '2022-08', value: aumValue * 0.87 },
-                          { date: '2022-11', value: aumValue * 0.9 },
-                          { date: '2023-02', value: aumValue * 0.92 },
-                          { date: '2023-05', value: aumValue * 0.95 },
-                          { date: '2023-08', value: aumValue * 0.97 },
-                          { date: '2023-11', value: aumValue * 0.99 },
-                          { date: '2024-02', value: aumValue * 0.99 },
-                          { date: '2024-05', value: aumValue * 1.0 },
-                          { date: '2024-08', value: aumValue * 1.05 },
-                          { date: '2024-11', value: aumValue * 1.08 },
-                          { date: '2025-02', value: aumValue * 1.12 },
-                          { date: '2025-05', value: aumValue }
-                        ]}
+                        data={aumTrendData}
                         yAxisLabel="₹"
                         tooltipFormatter={(value) => `₹${(value / 100000).toFixed(2)} L`}
                       />
