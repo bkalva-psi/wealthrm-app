@@ -194,15 +194,9 @@ function AuthenticatedApp() {
           </div>
         )}
         
-        <SwipeableView 
-          onSwipeLeft={handleSwipeLeft}
-          onSwipeRight={handleSwipeRight}
-          className="flex-1 overflow-hidden"
-        >
-          <main className="flex-1 overflow-y-auto bg-slate-50 p-0 pb-mobile-nav">
-            {renderComponent()}
-          </main>
-        </SwipeableView>
+        <main className="flex-1 overflow-y-auto bg-slate-50 pb-mobile-nav">
+          {renderComponent()}
+        </main>
         
         <BottomNavigation />
       </div>
