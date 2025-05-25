@@ -48,10 +48,19 @@ const ClientAppointments = () => {
   const [selectedView, setSelectedView] = useState<'month' | 'day' | 'week'>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isNewAppointmentDialogOpen, setIsNewAppointmentDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
   
   // Fetch client-specific appointments
   const { data: appointments, isLoading, refetch } = useQuery({
-    queryKey: ['/api/appointments', { clientId }],
+    queryKey: ['/api/appointments'],
+    queryFn: async () => {
+      const response = await fetch(`/api/appointments?clientId=${clientId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch client appointments');
+      }
+      return response.json();
+    },
     enabled: !isNaN(clientId)
   });
   
@@ -288,7 +297,11 @@ const ClientAppointments = () => {
                     {timeAppointments.map(appointment => (
                       <div 
                         key={appointment.id} 
-                        className={`p-2 mb-1 text-sm rounded border-l-4 ${getAppointmentTypeColor(appointment.type)}`}
+                        className={`p-2 mb-1 text-sm rounded border-l-4 ${getAppointmentTypeColor(appointment.type)} cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}
+                        onClick={() => {
+                          setSelectedAppointment(appointment);
+                          setIsAppointmentDetailsOpen(true);
+                        }}
                       >
                         <div className="font-medium">{appointment.title}</div>
                         <div className="text-xs mt-1 flex justify-between">
