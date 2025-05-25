@@ -692,68 +692,94 @@ export default function ClientPortfolioPage() {
           </Card>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-lg">
-                  <AlertCircle className="h-5 w-5 mr-2 text-amber-500" />
+            <Card className="overflow-hidden border-0 shadow-md">
+              <CardHeader className="pb-3 bg-gradient-to-r from-amber-500/90 to-amber-600/90">
+                <CardTitle className="flex items-center text-lg text-white font-semibold">
+                  <AlertCircle className="h-5 w-5 mr-2 text-white" />
                   Portfolio Alerts
                 </CardTitle>
-                <CardDescription>Important notices about your investments</CardDescription>
+                <CardDescription className="text-amber-100">Important notices about your investments</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-5">
                 <div className="space-y-4">
-                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
                     <h4 className="text-sm font-medium text-amber-800 flex items-center">
                       <AlertTriangle className="h-4 w-4 mr-2 text-amber-500" />
-                      Portfolio Rebalancing Due
+                      <span className="font-semibold">Portfolio Rebalancing Due</span>
                     </h4>
-                    <p className="text-xs text-amber-700 mt-1">
+                    <p className="text-xs text-amber-700 mt-2 leading-relaxed">
                       Your equity allocation has drifted 5% above target. Consider rebalancing to maintain your risk profile.
                     </p>
+                    <div className="mt-3">
+                      <Button size="sm" variant="outline" className="text-xs bg-white text-amber-600 border-amber-300 hover:bg-amber-50">
+                        Review Allocation
+                      </Button>
+                    </div>
                   </div>
                   
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm">
                     <h4 className="text-sm font-medium text-blue-800 flex items-center">
                       <Clock className="h-4 w-4 mr-2 text-blue-500" />
-                      Fixed Deposit Maturing
+                      <span className="font-semibold">Fixed Deposit Maturing</span>
                     </h4>
-                    <p className="text-xs text-blue-700 mt-1">
+                    <p className="text-xs text-blue-700 mt-2 leading-relaxed">
                       Your HDFC Bank FD of ₹3,00,000 is maturing in 15 days. Contact your RM for reinvestment options.
                     </p>
+                    <div className="mt-3">
+                      <Button size="sm" variant="outline" className="text-xs bg-white text-blue-600 border-blue-300 hover:bg-blue-50">
+                        View Options
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-lg">
-                  <Target className="h-5 w-5 mr-2 text-indigo-500" />
+            <Card className="overflow-hidden border-0 shadow-md">
+              <CardHeader className="pb-3 bg-gradient-to-r from-indigo-500/90 to-indigo-600/90">
+                <CardTitle className="flex items-center text-lg text-white font-semibold">
+                  <Target className="h-5 w-5 mr-2 text-white" />
                   Investment Opportunities
                 </CardTitle>
-                <CardDescription>Personalized recommendations</CardDescription>
+                <CardDescription className="text-indigo-100">Personalized recommendations</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-5">
                 <div className="space-y-4">
-                  <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-                    <h4 className="text-sm font-medium text-indigo-800">Increase Tax-Efficient Investments</h4>
-                    <p className="text-xs text-indigo-700 mt-1">
+                  <div className="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg shadow-sm">
+                    <h4 className="text-sm font-medium text-indigo-800 flex items-center">
+                      <Wallet className="h-4 w-4 mr-2 text-indigo-500" />
+                      <span className="font-semibold">Increase Tax-Efficient Investments</span>
+                    </h4>
+                    <p className="text-xs text-indigo-700 mt-2 leading-relaxed">
                       Based on your tax bracket, consider additional ELSS funds to optimize tax savings.
                     </p>
-                    <div className="mt-2">
-                      <Badge variant="outline" className="bg-white text-indigo-700 mr-1">ELSS Funds</Badge>
-                      <Badge variant="outline" className="bg-white text-indigo-700">Tax Planning</Badge>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">ELSS Funds</Badge>
+                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">Tax Planning</Badge>
+                    </div>
+                    <div className="mt-3">
+                      <Button size="sm" variant="outline" className="text-xs bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                        Explore Options
+                      </Button>
                     </div>
                   </div>
                   
-                  <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-                    <h4 className="text-sm font-medium text-indigo-800">International Diversification</h4>
-                    <p className="text-xs text-indigo-700 mt-1">
+                  <div className="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg shadow-sm">
+                    <h4 className="text-sm font-medium text-indigo-800 flex items-center">
+                      <Globe className="h-4 w-4 mr-2 text-indigo-500" />
+                      <span className="font-semibold">International Diversification</span>
+                    </h4>
+                    <p className="text-xs text-indigo-700 mt-2 leading-relaxed">
                       Add exposure to US markets through index funds to increase geographic diversification.
                     </p>
-                    <div className="mt-2">
-                      <Badge variant="outline" className="bg-white text-indigo-700 mr-1">International Equity</Badge>
-                      <Badge variant="outline" className="bg-white text-indigo-700">Diversification</Badge>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">International Equity</Badge>
+                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">Diversification</Badge>
+                    </div>
+                    <div className="mt-3">
+                      <Button size="sm" variant="outline" className="text-xs bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                        View Funds
+                      </Button>
                     </div>
                   </div>
                 </div>
