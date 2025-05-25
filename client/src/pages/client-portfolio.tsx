@@ -871,7 +871,7 @@ export default function ClientPortfolioPage() {
         
         {/* Performance Tab */}
         <TabsContent value="performance" className="space-y-4 pt-6">
-          <div className="grid grid-cols-1 gap-4 mb-4">
+          <div className="grid grid-cols-1 gap-6 mb-6">
             <Card>
               <CardHeader>
                 <CardTitle>Historical Performance</CardTitle>
@@ -884,13 +884,13 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Benchmark Comparison</CardTitle>
                   <CardDescription>Portfolio vs Market Index (Base 100)</CardDescription>
                 </CardHeader>
-                <CardContent className="h-80">
+                <CardContent className="h-72">
                   <div className="h-full">
                     <BenchmarkComparisonChart aumValue={client?.aumValue || 5000000} />
                   </div>
@@ -902,7 +902,7 @@ export default function ClientPortfolioPage() {
                   <CardTitle>Portfolio Efficiency Analysis</CardTitle>
                   <CardDescription>Risk vs. Return with Efficient Frontier</CardDescription>
                 </CardHeader>
-                <CardContent className="h-80">
+                <CardContent className="h-72">
                   <div className="h-full">
                     <PortfolioEfficiencyChart holdings={mockHoldings} />
                   </div>
