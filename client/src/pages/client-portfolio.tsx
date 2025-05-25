@@ -338,7 +338,7 @@ export default function ClientPortfolioPage() {
   const aumValue = getAumValue(client?.aum);
   
   return (
-    <div className="p-6">
+    <div className="p-6 h-full overflow-y-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={handleBackClick}>
@@ -397,7 +397,7 @@ export default function ClientPortfolioPage() {
         />
         
         <MetricCard 
-          title="CAGR"
+          title="XIRR"
           value={`${client?.yearlyPerformance || 12.5}%`}
           icon={<Percent className="h-5 w-5" />}
           description="Annualized returns"
@@ -467,7 +467,7 @@ export default function ClientPortfolioPage() {
                       <div className="text-lg font-semibold text-green-600">
                         +{client?.threeYearReturn || 12.3}%
                       </div>
-                      <div className="text-sm text-slate-500">3 Year Returns (CAGR)</div>
+                      <div className="text-sm text-slate-500">3 Year Returns (XIRR)</div>
                     </div>
                   </div>
                   
