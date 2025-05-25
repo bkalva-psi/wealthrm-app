@@ -558,7 +558,8 @@ export default function ClientPortfolioPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: client, isLoading, error } = useQuery({
     queryKey: ["client", id],
-    queryFn: () => clientApi.getClient(Number(id))
+    queryFn: () => clientApi.getClient(Number(id)),
+    enabled: !!id && !isNaN(Number(id))
   });
   
   useEffect(() => {
@@ -588,6 +589,9 @@ export default function ClientPortfolioPage() {
     const match = aumString.match(/₹([\d\.]+)\s*L/);
     return match ? parseFloat(match[1]) * 100000 : 0;
   };
+  
+  // Set default AUM value for demo purposes
+  const defaultAumValue = 2500000;
   
   // Generate realistic AUM trend data based on current value and relationship start date
   const generateAumTrendData = (currentValue: number, clientSince?: Date | null): {date: string, value: number}[] => {
@@ -736,7 +740,7 @@ export default function ClientPortfolioPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCard 
           title="Assets Under Management"
-          value={client?.aum || "₹0"}
+          value={client?.aum || "₹25.00 L"}
           icon={<Wallet className="h-5 w-5" />}
           description="Total portfolio value"
           color="blue"
@@ -745,7 +749,7 @@ export default function ClientPortfolioPage() {
         
         <MetricCard 
           title="Invested Amount"
-          value={`₹${((aumValue * 0.85) / 100000).toFixed(2)} L`}
+          value={`₹${(((client?.aumValue || defaultAumValue) * 0.85) / 100000).toFixed(2)} L`}
           icon={<DollarSign className="h-5 w-5" />}
           description="Principal investment"
           color="indigo"
@@ -754,7 +758,7 @@ export default function ClientPortfolioPage() {
         
         <MetricCard 
           title="Unrealized Gains"
-          value={`₹${((aumValue * 0.15) / 100000).toFixed(2)} L`}
+          value={`₹${(((client?.aumValue || defaultAumValue) * 0.15) / 100000).toFixed(2)} L`}
           icon={<TrendingUp className="h-5 w-5" />}
           description="Growth in portfolio value"
           color="green"
