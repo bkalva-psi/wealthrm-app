@@ -874,11 +874,13 @@ export default function ClientPortfolioPage() {
               <CardTitle>Historical Performance</CardTitle>
               <CardDescription>Portfolio value growth over time</CardDescription>
             </CardHeader>
-            <CardContent className="h-80 flex items-center justify-center bg-slate-50 rounded-lg">
-              <div className="text-center">
-                <LineChart className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                <p className="text-sm text-slate-500">Performance chart</p>
-              </div>
+            <CardContent className="h-80">
+              <AumTrendChart 
+                currentValue={client?.aumValue || 5000000} 
+                clientSince={client?.createdAt ? new Date(client.createdAt) : undefined}
+                showFullPeriod={true}
+                title="All Time Performance"
+              />
             </CardContent>
           </Card>
           
