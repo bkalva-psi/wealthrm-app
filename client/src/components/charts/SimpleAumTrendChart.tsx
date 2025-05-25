@@ -47,6 +47,10 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
     // Start with the initial value
     let prevValue = startValue;
     
+    // Store all values to find min and max
+    const allValues = [];
+    
+    // First pass - generate all the raw values
     for (let i = 0; i <= totalPoints; i++) {
       // Calculate the date for this point
       const pointDate = new Date(startDate);
@@ -76,25 +80,69 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
       const extraVolatility = progress * (1 - progress) * 0.1; // Up to 10% extra in middle
       newValue = newValue * (1 + (random() * 2 - 1) * extraVolatility);
       
-      // Ensure the point stays within reasonable bounds
-      newValue = Math.max(startValue * 0.7, Math.min(endValue * 1.1, newValue));
+      allValues.push(newValue);
+      prevValue = newValue;
+    }
+    
+    // Make sure start and end values are as expected
+    allValues[0] = startValue;
+    allValues[allValues.length - 1] = endValue;
+    
+    // Find actual min and max from the generated data
+    const minValue = Math.min(...allValues) * 0.98; // Add 2% padding at bottom
+    const maxValue = Math.max(...allValues) * 1.02; // Add 2% padding at top
+    
+    // Reset for second pass
+    prevValue = startValue;
+    seedValue = parseInt(seed) || 12345;
+    
+    // Second pass - now we know min and max, so we can properly scale the y-coordinates
+    for (let i = 0; i <= totalPoints; i++) {
+      // Calculate the date for this point
+      const pointDate = new Date(startDate);
+      pointDate.setMonth(startDate.getMonth() + i);
+      
+      // Format date as MMM YYYY
+      const dateString = pointDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        year: 'numeric' 
+      });
+      
+      // Calculate progress through the timeline
+      const progress = i / totalPoints;
+      
+      // Trend line value (linear progression from start to end)
+      const trendValue = startValue + (endValue - startValue) * progress;
+      
+      // Random walk with trend reversion
+      const volatility = 0.03; // 3% volatility
+      const randomFactor = (random() * 2 - 1) * volatility; // Between -3% and +3%
+      const reversion = (trendValue - prevValue) * 0.3; // 30% reversion to trend
+      
+      // New value with random fluctuation
+      let newValue = prevValue * (1 + randomFactor) + reversion;
+      
+      // More volatility in the middle of the time period
+      const extraVolatility = progress * (1 - progress) * 0.1; // Up to 10% extra in middle
+      newValue = newValue * (1 + (random() * 2 - 1) * extraVolatility);
+      
+      // Adjust the first and last values
+      if (i === 0) newValue = startValue;
+      if (i === totalPoints) newValue = endValue;
+      
+      // Scale to full SVG height (40 units)
+      // Note: In SVG, y=0 is the top, so we invert the calculation
+      const yCoord = 40 - ((newValue - minValue) / (maxValue - minValue) * 40);
       
       points.push({
         date: dateString,
         value: newValue,
         x: i * (100 / totalPoints),
-        y: 40 - (newValue - startValue * 0.7) / (endValue * 1.1 - startValue * 0.7) * 40
+        y: yCoord
       });
       
       prevValue = newValue;
     }
-    
-    // Ensure first and last points match our expected values
-    points[0].value = startValue;
-    points[0].y = 40 - (startValue - startValue * 0.7) / (endValue * 1.1 - startValue * 0.7) * 40;
-    
-    points[points.length - 1].value = endValue;
-    points[points.length - 1].y = 40 - (endValue - startValue * 0.7) / (endValue * 1.1 - startValue * 0.7) * 40;
     
     return points;
   };
@@ -150,10 +198,10 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
         
         <div className="relative pt-5">
           <div className="absolute top-0 left-0 text-xs text-muted-foreground">
-            ₹{(aumValue / 100000).toFixed(1)}L
+            ₹{(dataPoints[0].value * 1.02 / 100000).toFixed(1)}L
           </div>
           <div className="absolute bottom-0 left-0 text-xs text-muted-foreground">
-            ₹{(aumValue * 0.85 / 100000).toFixed(1)}L
+            ₹{(Math.min(...dataPoints.map(p => p.value)) * 0.98 / 100000).toFixed(1)}L
           </div>
           
           {/* Visual trend line */}
@@ -179,7 +227,7 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
                   points={pointsString}
                   fill="none"
                   stroke="#1e40af" /* Deep blue color that should be clearly visible */
-                  strokeWidth="2.5"
+                  strokeWidth="1.25"
                   strokeLinejoin="round"
                   strokeLinecap="round"
                 />
