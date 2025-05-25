@@ -1076,64 +1076,110 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Risk-Weighted Return Analysis</CardTitle>
+                <CardTitle className="text-lg">Risk and Return Analysis</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-sm">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                    <div className="border rounded-lg p-2">
-                      <div className="text-muted-foreground text-xs">Standard Deviation (1Y)</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">12.4%</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                  {/* Risk Adjusted Returns Section */}
+                  <div className="mb-4">
+                    <h4 className="font-medium text-slate-800 mb-2">Risk Adjusted Returns</h4>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Standard Deviation (1Y)</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">12.4%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Sharpe Ratio</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">1.78</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Good</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Alpha</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">2.6%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Positive</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Beta</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">0.92</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-800">Defensive</div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="border rounded-lg p-2">
-                      <div className="text-muted-foreground text-xs">Sharpe Ratio</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">1.78</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Good</div>
+                  </div>
+                  
+                  {/* Drawdown Analysis Section */}
+                  <div className="mb-4">
+                    <h4 className="font-medium text-slate-800 mb-2">Drawdown Analysis</h4>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Max. Drawdown</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">-9.2%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Low</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Drawdown Recovery</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">68 days</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Fast</div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="border rounded-lg p-2">
-                      <div className="text-muted-foreground text-xs">Alpha</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">2.6%</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Positive</div>
+                  </div>
+                  
+                  {/* Value at Risk Section */}
+                  <div className="mb-4">
+                    <h4 className="font-medium text-slate-800 mb-2">Value at Risk</h4>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">VaR (95% Confidence)</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium text-red-600">-7.2%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">VaR (99% Confidence)</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium text-red-600">-11.5%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="border rounded-lg p-2">
-                      <div className="text-muted-foreground text-xs">Max. Drawdown</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">-9.2%</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Low</div>
+                  </div>
+                  
+                  {/* Diversification Section */}
+                  <div>
+                    <h4 className="font-medium text-slate-800 mb-2">Diversification</h4>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Diversification Score</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">8.2/10</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Well Diversified</div>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="border rounded-lg p-2">
-                      <div className="text-muted-foreground text-xs">Drawdown Recovery</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">68 days</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Fast</div>
-                      </div>
-                    </div>
-                    
-                    <div className="border rounded-lg p-2">
-                      <div className="text-muted-foreground text-xs">Beta</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">0.92</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-800">Defensive</div>
-                      </div>
-                    </div>
-                    
-                    <div className="border rounded-lg p-2 col-span-2">
-                      <div className="text-muted-foreground text-xs">Information Ratio</div>
-                      <div className="flex items-center mt-1">
-                        <span className="text-base font-medium">1.24</span>
-                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Strong</div>
+                      
+                      <div className="border rounded-lg p-2">
+                        <div className="text-muted-foreground text-xs">Information Ratio</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">1.24</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Strong</div>
+                        </div>
                       </div>
                     </div>
                   </div>
