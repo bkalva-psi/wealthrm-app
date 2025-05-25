@@ -197,10 +197,6 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
         </div>
         
         <div className="relative pt-2">
-          {/* Min value at bottom of chart */}
-          <div className="absolute bottom-0 left-0 text-xs text-muted-foreground">
-            Min: ₹{(Math.min(...dataPoints.map(p => p.value)) / 100000).toFixed(1)}L
-          </div>
           
           {/* Visual trend line */}
           <div className="h-40 w-full relative flex items-end mt-4">
