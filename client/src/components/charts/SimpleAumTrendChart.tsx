@@ -262,12 +262,12 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
             </div>
           </div>
           
-          {/* Date markers */}
-          <div className="flex justify-between mt-2">
-            <span className="text-xs">Q2'22</span>
-            <span className="text-xs">Q2'23</span>
-            <span className="text-xs">Q2'24</span>
-            <span className="text-xs">Q2'25</span>
+          {/* Date markers - using text-center to prevent overlap */}
+          <div className="grid grid-cols-4 mt-2">
+            <span className="text-xs text-center">Q2'22</span>
+            <span className="text-xs text-center">Q2'23</span>
+            <span className="text-xs text-center">Q2'24</span>
+            <span className="text-xs text-center">Q2'25</span>
           </div>
         </div>
         
