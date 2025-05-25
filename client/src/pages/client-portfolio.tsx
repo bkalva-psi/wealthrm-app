@@ -36,6 +36,7 @@ import { Separator } from "@/components/ui/separator";
 import AssetAllocationChart from "../components/charts/AssetAllocationChart";
 import PerformanceChart from "../components/charts/PerformanceChart";
 import BarChartComponent from "../components/charts/BarChart";
+import AumTrendChart from "../components/charts/AumTrendChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -511,11 +512,7 @@ export default function ClientPortfolioPage() {
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
                     <div className="flex-1">
-                      <PerformanceChart 
-                        data={aumTrendData}
-                        yAxisLabel="₹"
-                        tooltipFormatter={(value) => `₹${(value / 100000).toFixed(2)} L`}
-                      />
+                      <AumTrendChart aumValue={aumValue} />
                     </div>
                   </div>
                 </div>
