@@ -597,128 +597,136 @@ export default function ClientTransactions() {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-6">
+            {/* Quick Date Filters */}
+            <div className="flex flex-wrap gap-2">
+              <Label className="flex items-center mr-2">Quick Filters:</Label>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleQuickDateFilter('1w')}
+              >
+                1w
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleQuickDateFilter('1m')}
+              >
+                1m
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleQuickDateFilter('3m')}
+              >
+                3m
+              </Button>
+            </div>
+
+            {/* Main Filters Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Date Range */}
+              <div className="space-y-2">
                 <Label>Date Range</Label>
-                <div className="flex space-x-1">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleQuickDateFilter('1w')}
-                  >
-                    1w
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleQuickDateFilter('1m')}
-                  >
-                    1m
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleQuickDateFilter('3m')}
-                  >
-                    3m
-                  </Button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
+                        <CalendarIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="truncate">{format(startDate, 'PP')}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => date && setStartDate(date)}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
+                        <CalendarIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="truncate">{format(endDate, 'PP')}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => date && setEndDate(date)}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(startDate, 'PPP')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={(date) => date && setStartDate(date)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(endDate, 'PPP')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => date && setEndDate(date)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+              
+              {/* Transaction Type */}
+              <div className="space-y-2">
+                <Label>Transaction Type</Label>
+                <Select 
+                  value={transactionType} 
+                  onValueChange={setTransactionType}
+                >
+                  <SelectTrigger className="text-xs sm:text-sm">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    {uniqueTransactionTypes.map(type => (
+                      <SelectItem key={type} value={type}>
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Transaction Type</Label>
-              <Select 
-                value={transactionType} 
-                onValueChange={setTransactionType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select transaction type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  {uniqueTransactionTypes.map(type => (
-                    <SelectItem key={type} value={type}>
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Product Type</Label>
-              <Select 
-                value={productType} 
-                onValueChange={setProductType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select product type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Products</SelectItem>
-                  {uniqueProductTypes.map(type => (
-                    <SelectItem key={type} value={type}>
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Security Filter</Label>
-              <Select 
-                value={securityFilter} 
-                onValueChange={setSecurityFilter}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select security" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Securities</SelectItem>
-                  {transactions && [...new Set(transactions.map(t => t.productName))].sort().map(security => (
-                    <SelectItem key={security} value={security}>
-                      {security}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              
+              {/* Product Type */}
+              <div className="space-y-2">
+                <Label>Product Type</Label>
+                <Select 
+                  value={productType} 
+                  onValueChange={setProductType}
+                >
+                  <SelectTrigger className="text-xs sm:text-sm">
+                    <SelectValue placeholder="Select product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Products</SelectItem>
+                    {uniqueProductTypes.map(type => (
+                      <SelectItem key={type} value={type}>
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Security Filter */}
+              <div className="space-y-2">
+                <Label>Security</Label>
+                <Select 
+                  value={securityFilter} 
+                  onValueChange={setSecurityFilter}
+                >
+                  <SelectTrigger className="text-xs sm:text-sm">
+                    <SelectValue placeholder="Select security" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Securities</SelectItem>
+                    {transactions && [...new Set(transactions.map(t => t.productName))].sort().map(security => (
+                      <SelectItem key={security} value={security}>
+                        {security}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardContent>
