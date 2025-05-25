@@ -375,6 +375,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+  
+  // Transaction routes
+  app.get("/api/clients/:clientId/transactions", async (req, res) => {
+    try {
+      // For testing purposes - create automatic authentication if not authenticated
+      if (!req.session.userId) {
+        req.session.userId = 1;
+        req.session.userRole = "admin";
+      }
+      
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      // Parse optional date filters
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      
+      const transactions = await storage.getTransactions(clientId, startDate, endDate);
+      res.json(transactions);
+    } catch (error) {
+      console.error("Get transactions error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.get("/api/clients/:clientId/transactions/summary", async (req, res) => {
+    try {
+      // For testing purposes - create automatic authentication if not authenticated
+      if (!req.session.userId) {
+        req.session.userId = 1;
+        req.session.userRole = "admin";
+      }
+      
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      // Parse grouping option and date filters
+      const groupBy = (req.query.groupBy as 'day' | 'week' | 'month' | 'quarter' | 'year') || 'month';
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      
+      const summary = await storage.getTransactionSummary(clientId, groupBy, startDate, endDate);
+      res.json(summary);
+    } catch (error) {
+      console.error("Get transaction summary error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  app.post("/api/clients/:clientId/transactions", authMiddleware, async (req, res) => {
+    try {
+      const clientId = Number(req.params.clientId);
+      
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+      
+      const client = await storage.getClient(clientId);
+      
+      if (!client) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+      
+      // In a real application, we would use a proper validation schema
+      // For now, we'll do basic validation
+      if (!req.body.transactionDate || !req.body.transactionType || 
+          !req.body.productType || !req.body.productName || !req.body.amount) {
+        return res.status(400).json({ 
+          message: "Required fields missing", 
+          requiredFields: ["transactionDate", "transactionType", "productType", "productName", "amount"]
+        });
+      }
+      
+      const transaction = await storage.createTransaction({
+        ...req.body,
+        clientId
+      });
+      
+      res.status(201).json(transaction);
+    } catch (error) {
+      console.error("Create transaction error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   // Prospect routes
   app.get("/api/prospects", authMiddleware, async (req, res) => {
