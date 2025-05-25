@@ -81,7 +81,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
         <BarChart
           data={chartData}
           layout="vertical"
-          margin={{ top: 5, right: 40, left: 50, bottom: 5 }}
+          margin={{ top: 5, right: 40, left: 70, bottom: 5 }}
           barGap={2}
           barSize={10} // Thinner bars
         >
