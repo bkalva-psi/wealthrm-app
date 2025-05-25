@@ -175,6 +175,11 @@ export default function ClientTransactions() {
     if (!transactions) return [];
     
     return transactions.filter(transaction => {
+      // Remove fee transactions
+      if (transaction.transactionType === 'fee') {
+        return false;
+      }
+      
       // Apply transaction type filter
       if (transactionType !== 'all' && transaction.transactionType !== transactionType) {
         return false;
