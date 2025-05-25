@@ -395,22 +395,6 @@ export default function ClientPortfolioPage() {
   };
   
   const aumValue = getAumValue(client?.aum);
-  // Ensure we have data for the AUM trend chart by creating a fixed dataset
-  const aumTrendData = [
-    { date: '2022-05', value: aumValue * 0.85 },
-    { date: '2022-08', value: aumValue * 0.87 },
-    { date: '2022-11', value: aumValue * 0.9 },
-    { date: '2023-02', value: aumValue * 0.92 },
-    { date: '2023-05', value: aumValue * 0.95 },
-    { date: '2023-08', value: aumValue * 0.97 },
-    { date: '2023-11', value: aumValue * 0.99 },
-    { date: '2024-02', value: aumValue * 0.99 },
-    { date: '2024-05', value: aumValue * 1.0 },
-    { date: '2024-08', value: aumValue * 1.05 },
-    { date: '2024-11', value: aumValue * 1.08 },
-    { date: '2025-02', value: aumValue * 1.12 },
-    { date: '2025-05', value: aumValue }
-  ];
   
   return (
     <div className="p-6 pb-20 md:pb-6">
@@ -511,8 +495,61 @@ export default function ClientPortfolioPage() {
                   </div>
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
-                    <div className="flex-1">
-                      <AumTrendChart aumValue={aumValue} />
+                    <div className="flex-1 border rounded-md p-4">
+                      {/* Simple AUM trend visualization */}
+                      <div className="flex flex-col h-full">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-xs text-muted-foreground">
+                            May 2022
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            May 2025
+                          </span>
+                        </div>
+                        
+                        <div className="relative pt-5">
+                          <div className="absolute top-0 left-0 text-xs text-muted-foreground">
+                            ₹{(aumValue / 100000).toFixed(1)}L
+                          </div>
+                          <div className="absolute bottom-0 left-0 text-xs text-muted-foreground">
+                            ₹{(aumValue * 0.85 / 100000).toFixed(1)}L
+                          </div>
+                          
+                          {/* Visual trend line */}
+                          <div className="h-40 w-full relative flex items-end mt-4">
+                            <div className="absolute w-full h-[1px] bg-gray-200 top-0"></div>
+                            <div className="absolute w-full h-[1px] bg-gray-200 bottom-0"></div>
+                            
+                            <div className="w-full h-full flex items-end">
+                              <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full">
+                                <path 
+                                  d={`M0,34 Q20,32 40,25 Q60,18 80,8 Q90,4 100,0`} 
+                                  fill="none" 
+                                  stroke="var(--color-primary)" 
+                                  strokeWidth="1.5"
+                                />
+                                <circle cx="0" cy="34" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="25" cy="30" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="50" cy="20" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="75" cy="10" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="100" cy="0" r="1.5" fill="var(--color-primary)" />
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          {/* Date markers */}
+                          <div className="flex justify-between mt-2">
+                            <span className="text-xs">Q2'22</span>
+                            <span className="text-xs">Q2'23</span>
+                            <span className="text-xs">Q2'24</span>
+                            <span className="text-xs">Q2'25</span>
+                          </div>
+                        </div>
+                        
+                        <div className="text-center mt-4 text-sm font-medium text-green-600">
+                          +{((aumValue / (aumValue * 0.85) - 1) * 100).toFixed(1)}% growth over 3 years
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
