@@ -932,14 +932,14 @@ export class DatabaseStorage implements IStorage {
     let query = db.select().from(transactions).where(eq(transactions.clientId, clientId));
     
     if (startDate) {
-      query = query.where(transactions.transactionDate >= startDate);
+      query = query.where(gte(transactions.transactionDate, startDate));
     }
     
     if (endDate) {
-      query = query.where(transactions.transactionDate <= endDate);
+      query = query.where(lte(transactions.transactionDate, endDate));
     }
     
-    return query.orderBy(transactions.transactionDate);
+    return query.orderBy(desc(transactions.transactionDate));
   }
 
   async getTransactionsByType(clientId: number, type: string): Promise<Transaction[]> {
