@@ -36,6 +36,7 @@ import { Separator } from "@/components/ui/separator";
 import AssetAllocationChart from "../components/charts/AssetAllocationChart";
 import PerformanceChart from "../components/charts/PerformanceChart";
 import BarChartComponent from "../components/charts/BarChart";
+import SimpleAumTrendChart from "../components/charts/SimpleAumTrendChart";
 import AumTrendChart from "../components/charts/AumTrendChart";
 
 // Mock data for portfolio holdings
@@ -496,85 +497,7 @@ export default function ClientPortfolioPage() {
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
                     <div className="flex-1 border rounded-md p-4">
-                      {/* Simple AUM trend visualization */}
-                      <div className="flex flex-col h-full">
-                        <div className="flex justify-between mb-2">
-                          <span className="text-xs text-muted-foreground">
-                            May 2022
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            May 2025
-                          </span>
-                        </div>
-                        
-                        <div className="relative pt-5">
-                          <div className="absolute top-0 left-0 text-xs text-muted-foreground">
-                            ₹{(aumValue / 100000).toFixed(1)}L
-                          </div>
-                          <div className="absolute bottom-0 left-0 text-xs text-muted-foreground">
-                            ₹{(aumValue * 0.85 / 100000).toFixed(1)}L
-                          </div>
-                          
-                          {/* Visual trend line */}
-                          <div className="h-40 w-full relative flex items-end mt-4">
-                            <div className="absolute w-full h-[1px] bg-gray-200 top-0"></div>
-                            <div className="absolute w-full h-[1px] bg-gray-200 bottom-0"></div>
-                            
-                            <div className="w-full h-full flex items-end">
-                              <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full">
-                                {/* Generate polyline points with random fluctuations */}
-                                <polyline 
-                                  points={`
-                                    0,${34}
-                                    5,${32 + Math.random() * 4 - 2}
-                                    10,${31 + Math.random() * 4 - 2}
-                                    15,${30 + Math.random() * 3 - 1.5}
-                                    20,${29 + Math.random() * 3 - 1.5}
-                                    25,${27 + Math.random() * 4 - 2}
-                                    30,${26 + Math.random() * 3 - 1.5}
-                                    35,${24 + Math.random() * 4 - 2}
-                                    40,${22 + Math.random() * 3 - 1.5}
-                                    45,${20 + Math.random() * 4 - 2}
-                                    50,${18 + Math.random() * 3 - 1.5}
-                                    55,${16 + Math.random() * 4 - 2}
-                                    60,${15 + Math.random() * 3 - 1.5}
-                                    65,${12 + Math.random() * 4 - 2}
-                                    70,${10 + Math.random() * 3 - 1.5}
-                                    75,${8 + Math.random() * 3 - 1.5}
-                                    80,${6 + Math.random() * 2 - 1}
-                                    85,${4 + Math.random() * 2 - 1}
-                                    90,${2 + Math.random() * 1.5 - 0.75}
-                                    95,${1 + Math.random() * 1 - 0.5}
-                                    100,0
-                                  `}
-                                  fill="none"
-                                  stroke="var(--color-primary)"
-                                  strokeWidth="1.5"
-                                />
-                                
-                                {/* Data points */}
-                                <circle cx="0" cy="34" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="25" cy="27" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="50" cy="18" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="75" cy="8" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="100" cy="0" r="1.5" fill="var(--color-primary)" />
-                              </svg>
-                            </div>
-                          </div>
-                          
-                          {/* Date markers */}
-                          <div className="flex justify-between mt-2">
-                            <span className="text-xs">Q2'22</span>
-                            <span className="text-xs">Q2'23</span>
-                            <span className="text-xs">Q2'24</span>
-                            <span className="text-xs">Q2'25</span>
-                          </div>
-                        </div>
-                        
-                        <div className="text-center mt-4 text-sm font-medium text-green-600">
-                          +{((aumValue / (aumValue * 0.85) - 1) * 100).toFixed(1)}% growth over 3 years
-                        </div>
-                      </div>
+                      <SimpleAumTrendChart aumValue={aumValue} />
                     </div>
                   </div>
                 </div>
