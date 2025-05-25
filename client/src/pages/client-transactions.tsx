@@ -8,7 +8,6 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Table, 
   TableBody, 
@@ -56,19 +55,6 @@ import {
   X,
   Plus
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
@@ -135,7 +121,6 @@ export default function ClientTransactions() {
   // Date filter state
   const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 3));
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'quarter' | 'year'>('month');
   const [transactionType, setTransactionType] = useState<string>('all');
   const [productType, setProductType] = useState<string>('all');
   const [securityFilter, setSecurityFilter] = useState<string>('all');
@@ -179,19 +164,6 @@ export default function ClientTransactions() {
     enabled: !!clientId
   });
   
-  // Get transaction summary data
-  const { data: transactionSummary, isLoading: isSummaryLoading } = useApiQuery<TransactionSummary[]>({
-    queryKey: [
-      `/api/clients/${clientId}/transactions/summary`, 
-      { 
-        startDate: startDate.toISOString(), 
-        endDate: endDate.toISOString(),
-        groupBy
-      }
-    ],
-    enabled: !!clientId
-  });
-
   // Filter transactions based on security filter and other filters
   const filteredTransactions = React.useMemo(() => {
     if (!transactions) return [];
@@ -259,10 +231,23 @@ export default function ClientTransactions() {
       currency: currencyCode
     }).format(amount);
   };
+
+  // Format value for display
+  const formatValue = (value: number): string => {
+    if (value >= 10000000) {
+      return (value / 10000000).toFixed(2) + ' Cr';
+    } else if (value >= 100000) {
+      return (value / 100000).toFixed(2) + ' L';
+    } else if (value >= 1000) {
+      return (value / 1000).toFixed(2) + 'K';
+    } else {
+      return value.toFixed(2);
+    }
+  };
   
   // Calculate metrics for dashboard
   const metrics = React.useMemo(() => {
-    if (!transactions) return {
+    if (!filteredTransactions || filteredTransactions.length === 0) return {
       totalTransactions: 0,
       totalValue: 0,
       buyCount: 0,
@@ -272,13 +257,13 @@ export default function ClientTransactions() {
       largestTransaction: 0
     };
     
-    const totalTransactions = transactions.length;
-    const totalValue = transactions.reduce((sum, t) => sum + t.amount, 0);
-    const buyCount = transactions.filter(t => t.transactionType === 'buy').length;
-    const sellCount = transactions.filter(t => t.transactionType === 'sell').length;
+    const totalTransactions = filteredTransactions.length;
+    const totalValue = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const buyCount = filteredTransactions.filter(t => t.transactionType === 'buy').length;
+    const sellCount = filteredTransactions.filter(t => t.transactionType === 'sell').length;
     const averageTransactionValue = totalTransactions > 0 ? totalValue / totalTransactions : 0;
-    const totalFees = transactions.reduce((sum, t) => sum + (t.fees || 0) + (t.taxes || 0), 0);
-    const largestTransaction = Math.max(...transactions.map(t => t.amount));
+    const totalFees = filteredTransactions.reduce((sum, t) => sum + (t.fees || 0) + (t.taxes || 0), 0);
+    const largestTransaction = Math.max(...filteredTransactions.map(t => t.amount));
     
     return {
       totalTransactions,
@@ -289,69 +274,7 @@ export default function ClientTransactions() {
       totalFees,
       largestTransaction
     };
-  }, [transactions]);
-  
-  // Transaction type distribution for chart
-  const transactionTypeData = React.useMemo(() => {
-    if (!transactions) return [];
-    
-    const typeCounts: Record<string, number> = {};
-    
-    transactions.forEach(transaction => {
-      // Exclude fee transactions from the chart
-      if (transaction.transactionType !== 'fee') {
-        const type = transaction.transactionType;
-        typeCounts[type] = (typeCounts[type] || 0) + 1;
-      }
-    });
-    
-    return Object.entries(typeCounts).map(([type, count]) => ({
-      name: type.charAt(0).toUpperCase() + type.slice(1),
-      value: count
-    }));
-  }, [transactions]);
-  
-  // Product type distribution for chart
-  const productTypeData = React.useMemo(() => {
-    if (!transactions) return [];
-    
-    const typeCounts: Record<string, number> = {};
-    
-    transactions.forEach(transaction => {
-      // Exclude fee transactions from the product chart
-      if (transaction.transactionType !== 'fee') {
-        const type = transaction.productType;
-        typeCounts[type] = (typeCounts[type] || 0) + 1;
-      }
-    });
-    
-    return Object.entries(typeCounts).map(([type, count]) => ({
-      name: type.charAt(0).toUpperCase() + type.slice(1),
-      value: count
-    }));
-  }, [transactions]);
-  
-  // Transaction volume over time for chart
-  const volumeOverTimeData = React.useMemo(() => {
-    if (!transactionSummary) return [];
-    
-    return transactionSummary.map(summary => ({
-      period: summary.period,
-      Buys: summary.buyCount,
-      Sells: summary.sellCount,
-      Other: summary.otherCount,
-      totalAmount: summary.totalAmount
-    })).reverse(); // Reverse to show oldest to newest
-  }, [transactionSummary]);
-  
-  // Calculate churn ratio (sell/buy ratio)
-  const churnRatio = React.useMemo(() => {
-    if (!metrics.buyCount) return 0;
-    return metrics.sellCount / metrics.buyCount;
-  }, [metrics]);
-  
-  // Colors for charts
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A569BD', '#EC7063'];
+  }, [filteredTransactions]);
   
   // Unique transaction types, product types, and product categories for filters
   const uniqueTransactionTypes = React.useMemo(() => {
@@ -532,44 +455,34 @@ export default function ClientTransactions() {
                   </Label>
                   <Select defaultValue="buy">
                     <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder="Transaction Type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="buy">Buy</SelectItem>
                       <SelectItem value="sell">Sell</SelectItem>
                       <SelectItem value="dividend">Dividend</SelectItem>
                       <SelectItem value="interest">Interest</SelectItem>
-                      <SelectItem value="fee">Fee</SelectItem>
-                      <SelectItem value="transfer">Transfer</SelectItem>
+                      <SelectItem value="deposit">Deposit</SelectItem>
+                      <SelectItem value="withdrawal">Withdrawal</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="productType" className="text-right">
-                    Product Type
+                    Product
                   </Label>
                   <Select defaultValue="equity">
                     <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select product type" />
+                      <SelectValue placeholder="Product Type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="equity">Equity</SelectItem>
                       <SelectItem value="mutual_fund">Mutual Fund</SelectItem>
-                      <SelectItem value="fixed_deposit">Fixed Deposit</SelectItem>
                       <SelectItem value="bond">Bond</SelectItem>
+                      <SelectItem value="fd">Fixed Deposit</SelectItem>
                       <SelectItem value="insurance">Insurance</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="productName" className="text-right">
-                    Product Name
-                  </Label>
-                  <Input
-                    id="productName"
-                    placeholder="Enter product name"
-                    className="col-span-3"
-                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="amount" className="text-right">
@@ -578,27 +491,36 @@ export default function ClientTransactions() {
                   <Input
                     id="amount"
                     type="number"
-                    placeholder="Enter amount"
                     className="col-span-3"
+                    placeholder="Enter amount"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-right">
+                    Description
+                  </Label>
+                  <Input
+                    id="description"
+                    className="col-span-3"
+                    placeholder="Enter description"
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Save Transaction</Button>
+                <Button type="submit">Submit</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
       </div>
       
-      {/* Date range and filter controls */}
+      {/* Filters */}
       <Card>
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            {/* Main Filters Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Date Range */}
               <div className="space-y-2">
@@ -736,275 +658,52 @@ export default function ClientTransactions() {
       
       {/* Compact Transaction Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Value
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isTransactionsLoading ? (
-                <Skeleton className="h-8 w-28" />
-              ) : (
-                formatCurrency(metrics.totalValue)
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              From {transactions?.length || 0} transactions
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-muted rounded-md p-3 flex flex-col">
+          <span className="text-xs text-muted-foreground">Total Value</span>
+          <span className="text-lg font-semibold">
+            {isTransactionsLoading ? (
+              <Skeleton className="h-6 w-20" />
+            ) : (
+              formatCurrency(metrics.totalValue)
+            )}
+          </span>
+        </div>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Buy/Sell Ratio
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isTransactionsLoading ? (
-                <Skeleton className="h-8 w-28" />
-              ) : (
-                churnRatio.toFixed(2)
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {metrics.buyCount} buys, {metrics.sellCount} sells
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-muted rounded-md p-3 flex flex-col">
+          <span className="text-xs text-muted-foreground">Buy/Sell</span>
+          <span className="text-lg font-semibold">
+            {isTransactionsLoading ? (
+              <Skeleton className="h-6 w-20" />
+            ) : (
+              `${metrics.buyCount} : ${metrics.sellCount}`
+            )}
+          </span>
+        </div>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Average Transaction
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isTransactionsLoading ? (
-                <Skeleton className="h-8 w-28" />
-              ) : (
-                formatCurrency(metrics.averageTransactionValue)
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {((metrics.averageTransactionValue / metrics.totalValue) * 100).toFixed(1)}% of total
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-muted rounded-md p-3 flex flex-col">
+          <span className="text-xs text-muted-foreground">Avg. Value</span>
+          <span className="text-lg font-semibold">
+            {isTransactionsLoading ? (
+              <Skeleton className="h-6 w-20" />
+            ) : (
+              formatCurrency(metrics.averageTransactionValue)
+            )}
+          </span>
+        </div>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Fees & Taxes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isTransactionsLoading ? (
-                <Skeleton className="h-8 w-28" />
-              ) : (
-                formatCurrency(metrics.totalFees)
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {((metrics.totalFees / metrics.totalValue) * 100).toFixed(2)}% of total value
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-muted rounded-md p-3 flex flex-col">
+          <span className="text-xs text-muted-foreground">Transactions</span>
+          <span className="text-lg font-semibold">
+            {isTransactionsLoading ? (
+              <Skeleton className="h-6 w-20" />
+            ) : (
+              filteredTransactions.length
+            )}
+          </span>
+        </div>
       </div>
       
-      {/* Transaction charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Types</CardTitle>
-            <CardDescription>Distribution of transaction types over time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              {isTransactionsLoading ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <Skeleton className="h-64 w-full" />
-                </div>
-              ) : transactionTypeData.length === 0 ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <p className="text-muted-foreground">No transaction data available</p>
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={transactionTypeData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={true}
-                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {transactionTypeData.map((entry, index) => {
-                        return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
-                      })}
-                    </Pie>
-                    <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Volume Over Time</CardTitle>
-            <CardDescription>Number and value of transactions by period</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              {isSummaryLoading ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <Skeleton className="h-64 w-full" />
-                </div>
-              ) : volumeOverTimeData.length === 0 ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <p className="text-muted-foreground">No transaction data available</p>
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={volumeOverTimeData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="period" />
-                    <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
-                    <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
-                    <Tooltip formatter={(value, name) => {
-                      if (name === 'totalAmount') {
-                        return [formatCurrency(value as number), 'Total Value'];
-                      }
-                      return [value, name];
-                    }} />
-                    <Legend />
-                    <Bar yAxisId="left" dataKey="Buys" stackId="a" fill="#8884d8" />
-                    <Bar yAxisId="left" dataKey="Sells" stackId="a" fill="#82ca9d" />
-                    <Bar yAxisId="left" dataKey="Other" stackId="a" fill="#ffc658" />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Product Types</CardTitle>
-            <CardDescription>Distribution of products by type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              {isTransactionsLoading ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <Skeleton className="h-64 w-full" />
-                </div>
-              ) : productTypeData.length === 0 ? (
-                <div className="h-full w-full flex items-center justify-center">
-                  <p className="text-muted-foreground">No transaction data available</p>
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={productTypeData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={true}
-                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {productTypeData.map((entry, index) => {
-                        return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
-                      })}
-                    </Pie>
-                    <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Summary</CardTitle>
-            <CardDescription>
-              <Select 
-                value={groupBy} 
-                onValueChange={(value) => setGroupBy(value as any)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Group by..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Daily</SelectItem>
-                  <SelectItem value="week">Weekly</SelectItem>
-                  <SelectItem value="month">Monthly</SelectItem>
-                  <SelectItem value="quarter">Quarterly</SelectItem>
-                  <SelectItem value="year">Yearly</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Period</TableHead>
-                    <TableHead>Transactions</TableHead>
-                    <TableHead>Buys/Sells</TableHead>
-                    <TableHead className="text-right">Total Amount</TableHead>
-                    <TableHead className="text-right">Fees & Taxes</TableHead>
-                    <TableHead className="text-right">Net Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isSummaryLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={6}>
-                        <Skeleton className="h-10 w-full" />
-                      </TableCell>
-                    </TableRow>
-                  ) : !transactionSummary || transactionSummary.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center">
-                        No transaction data available
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    transactionSummary.map(summary => (
-                      <TableRow key={summary.period}>
-                        <TableCell className="font-medium">{summary.period}</TableCell>
-                        <TableCell>{summary.transactionCount}</TableCell>
-                        <TableCell>{summary.buyCount}/{summary.sellCount}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(summary.totalAmount)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(summary.totalFees + summary.totalTaxes)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(summary.netAmount)}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Transactions table */}
+      {/* Transaction Details Table */}
       <Card>
         <CardHeader>
           <CardTitle>Transaction Details</CardTitle>
@@ -1019,11 +718,13 @@ export default function ClientTransactions() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSortChange('date')}
-                      className="px-0 font-medium flex items-center"
+                      className="flex items-center justify-start p-0 h-auto font-medium"
                     >
                       Date
                       {sortBy === 'date' && (
-                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                        sortDirection === 'asc' ? 
+                          <ArrowUp className="ml-2 h-4 w-4" /> : 
+                          <ArrowDown className="ml-2 h-4 w-4" />
                       )}
                     </Button>
                   </TableHead>
@@ -1031,11 +732,13 @@ export default function ClientTransactions() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSortChange('transactionType')}
-                      className="px-0 font-medium flex items-center"
+                      className="flex items-center justify-start p-0 h-auto font-medium"
                     >
                       Type
                       {sortBy === 'transactionType' && (
-                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                        sortDirection === 'asc' ? 
+                          <ArrowUp className="ml-2 h-4 w-4" /> : 
+                          <ArrowDown className="ml-2 h-4 w-4" />
                       )}
                     </Button>
                   </TableHead>
@@ -1043,11 +746,13 @@ export default function ClientTransactions() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSortChange('productType')}
-                      className="px-0 font-medium flex items-center"
+                      className="flex items-center justify-start p-0 h-auto font-medium"
                     >
-                      Product Type
+                      Product
                       {sortBy === 'productType' && (
-                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                        sortDirection === 'asc' ? 
+                          <ArrowUp className="ml-2 h-4 w-4" /> : 
+                          <ArrowDown className="ml-2 h-4 w-4" />
                       )}
                     </Button>
                   </TableHead>
@@ -1055,11 +760,13 @@ export default function ClientTransactions() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSortChange('productName')}
-                      className="px-0 font-medium flex items-center"
+                      className="flex items-center justify-start p-0 h-auto font-medium"
                     >
-                      Product Name
+                      Security
                       {sortBy === 'productName' && (
-                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                        sortDirection === 'asc' ? 
+                          <ArrowUp className="ml-2 h-4 w-4" /> : 
+                          <ArrowDown className="ml-2 h-4 w-4" />
                       )}
                     </Button>
                   </TableHead>
@@ -1067,46 +774,70 @@ export default function ClientTransactions() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSortChange('amount')}
-                      className="px-0 font-medium flex items-center justify-end w-full"
+                      className="flex items-center justify-end p-0 h-auto font-medium ml-auto"
                     >
                       Amount
                       {sortBy === 'amount' && (
-                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                        sortDirection === 'asc' ? 
+                          <ArrowUp className="ml-2 h-4 w-4" /> : 
+                          <ArrowDown className="ml-2 h-4 w-4" />
                       )}
                     </Button>
                   </TableHead>
-                  <TableHead className="text-right">Status</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isTransactionsLoading ? (
-                  Array.from({ length: 5 }).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell colSpan={6}>
-                        <Skeleton className="h-10 w-full" />
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24">
+                      <div className="flex flex-col gap-2">
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ) : sortedTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center">
-                      No transactions found matching the filters
+                    <TableCell colSpan={7} className="h-24 text-center">
+                      No transactions found. Try adjusting your filters.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  sortedTransactions.map(transaction => (
+                  sortedTransactions.map((transaction) => (
                     <TableRow key={transaction.id}>
-                      <TableCell>
+                      <TableCell className="font-medium">
                         {format(new Date(transaction.transactionDate), 'dd MMM yyyy')}
                       </TableCell>
-                      <TableCell className="capitalize">{transaction.transactionType}</TableCell>
-                      <TableCell className="capitalize">{transaction.productType}</TableCell>
-                      <TableCell>{transaction.productName}</TableCell>
+                      <TableCell>
+                        <Badge variant={
+                          transaction.transactionType === 'buy' ? 'default' :
+                          transaction.transactionType === 'sell' ? 'destructive' :
+                          'secondary'
+                        }>
+                          {transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate">
+                        {transaction.productName}
+                      </TableCell>
                       <TableCell className="text-right">
                         {formatCurrency(transaction.amount)}
                       </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(transaction.totalAmount)}
+                      </TableCell>
                       <TableCell>
-                        <Badge variant={transaction.status === 'completed' ? 'outline' : 'secondary'}>
+                        <Badge variant={
+                          transaction.status === 'completed' ? 'outline' :
+                          transaction.status === 'pending' ? 'secondary' :
+                          'outline'
+                        }>
                           {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
                         </Badge>
                       </TableCell>
