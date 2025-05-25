@@ -1,0 +1,1287 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'wouter';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Paperclip, Calendar, CheckCircle2, AlertCircle, Filter } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { apiRequest } from '@/lib/queryClient';
+import ClientPageLayout from '@/components/layouts/ClientPageLayout';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getInitials } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
+import EmptyState from '@/components/empty-state';
+
+// Type definitions for communications data
+interface Communication {
+  id: number;
+  client_id: number;
+  initiated_by: number;
+  start_time: string;
+  end_time: string | null;
+  duration: number | null;
+  communication_type: string;
+  channel: string;
+  direction: string;
+  subject: string | null;
+  summary: string | null;
+  notes: string | null;
+  sentiment: string | null;
+  tags: string[];
+  follow_up_required: boolean;
+  next_steps: string | null;
+  action_item_count: number;
+  attachment_count: number;
+}
+
+interface CommunicationPreference {
+  client_id: number;
+  preferred_channels: string[];
+  preferred_frequency: string;
+  preferred_days: string[];
+  preferred_time_slots: string[];
+  preferred_language: string;
+  opt_in_marketing: boolean;
+  do_not_contact: boolean;
+  last_updated: string;
+}
+
+interface ActionItem {
+  id: number;
+  communication_id: number;
+  title: string;
+  description: string | null;
+  assigned_to: number;
+  due_date: string;
+  priority: string;
+  status: string;
+  completed_at: string | null;
+}
+
+interface Attachment {
+  id: number;
+  communication_id: number;
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  file_url: string;
+  description: string | null;
+  uploaded_by: number;
+  created_at: string;
+}
+
+interface Template {
+  id: number;
+  name: string;
+  category: string;
+  subject: string;
+  content: string;
+  variables: string[];
+  is_global: boolean;
+  created_by: number;
+  is_active: boolean;
+}
+
+// Component for displaying individual communication items
+const CommunicationItem: React.FC<{ 
+  communication: Communication, 
+  isSelected: boolean, 
+  onClick: () => void 
+}> = ({ communication, isSelected, onClick }) => {
+  const channelIcon = () => {
+    switch (communication.channel) {
+      case 'phone':
+        return <Phone className="h-4 w-4" />;
+      case 'email':
+        return <Mail className="h-4 w-4" />;
+      case 'in_person':
+        return <MessageCircle className="h-4 w-4" />;
+      case 'video':
+        return <Video className="h-4 w-4" />;
+      default:
+        return <MessageCircle className="h-4 w-4" />;
+    }
+  };
+
+  return (
+    <Card 
+      className={`mb-3 cursor-pointer hover:bg-muted/50 transition-colors ${isSelected ? 'border-primary bg-muted/50' : ''}`} 
+      onClick={onClick}
+    >
+      <CardContent className="p-4">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary/10 p-2 rounded-full">
+              {channelIcon()}
+            </div>
+            <div>
+              <h4 className="font-medium">
+                {communication.subject || 
+                 `${communication.communication_type.replace('_', ' ')} (${format(new Date(communication.start_time), 'dd MMM yyyy')})`}
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                {format(new Date(communication.start_time), 'dd MMM yyyy, h:mm a')}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {communication.follow_up_required && (
+              <Badge variant="outline" className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400">
+                Follow Up
+              </Badge>
+            )}
+            {communication.action_item_count > 0 && (
+              <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
+                {communication.action_item_count} {communication.action_item_count === 1 ? 'Action' : 'Actions'}
+              </Badge>
+            )}
+          </div>
+        </div>
+        
+        {communication.summary && (
+          <p className="mt-2 text-sm line-clamp-2">{communication.summary}</p>
+        )}
+        
+        <div className="mt-2 flex items-center gap-2">
+          {communication.tags && communication.tags.length > 0 && communication.tags.slice(0, 3).map((tag, i) => (
+            <Badge key={i} variant="secondary" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+          {communication.tags && communication.tags.length > 3 && (
+            <Badge variant="secondary" className="text-xs">
+              +{communication.tags.length - 3} more
+            </Badge>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Component for displaying action items
+const ActionItems: React.FC<{ communicationId: number }> = ({ communicationId }) => {
+  const { data: actionItems, isLoading } = useQuery({
+    queryKey: [`/api/communications/${communicationId}/action-items`],
+    enabled: !!communicationId
+  });
+  
+  const queryClient = useQueryClient();
+  
+  const updateActionItemMutation = useMutation({
+    mutationFn: (data: { id: number, status: string }) => 
+      apiRequest(`/api/action-items/${data.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ 
+          status: data.status,
+          completedAt: data.status === 'completed' ? new Date().toISOString() : null
+        })
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/communications/${communicationId}/action-items`] });
+      toast({
+        title: "Action item updated",
+        description: "The action item status has been updated successfully."
+      });
+    }
+  });
+  
+  const handleStatusChange = (id: number, status: string) => {
+    updateActionItemMutation.mutate({ id, status });
+  };
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
+  
+  if (!actionItems || actionItems.length === 0) {
+    return (
+      <EmptyState 
+        icon={<CheckCircle2 className="h-10 w-10 text-muted-foreground" />}
+        title="No action items"
+        description="There are no action items for this communication."
+      />
+    );
+  }
+  
+  return (
+    <div className="space-y-3">
+      {actionItems.map((item: ActionItem) => (
+        <Card key={item.id}>
+          <CardContent className="p-4">
+            <div className="flex justify-between">
+              <div>
+                <h4 className="font-medium">{item.title}</h4>
+                {item.description && (
+                  <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge variant={item.status === 'completed' ? 'secondary' : 'outline'}>
+                    {item.status}
+                  </Badge>
+                  <Badge variant="outline" className={
+                    item.priority === 'high' ? 'text-red-500 border-red-200 bg-red-50 dark:bg-red-950/30' :
+                    item.priority === 'medium' ? 'text-yellow-500 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30' :
+                    'text-green-500 border-green-200 bg-green-50 dark:bg-green-950/30'
+                  }>
+                    {item.priority}
+                  </Badge>
+                  <span className="text-xs flex items-center gap-1">
+                    <Clock className="h-3 w-3" /> 
+                    Due: {format(new Date(item.due_date), 'dd MMM yyyy')}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {item.status !== 'completed' ? (
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleStatusChange(item.id, 'completed')}
+                  >
+                    Mark Complete
+                  </Button>
+                ) : (
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleStatusChange(item.id, 'pending')}
+                  >
+                    Reopen
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+// Component for displaying attachments
+const Attachments: React.FC<{ communicationId: number }> = ({ communicationId }) => {
+  const { data: attachments, isLoading } = useQuery({
+    queryKey: [`/api/communications/${communicationId}/attachments`],
+    enabled: !!communicationId
+  });
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
+  
+  if (!attachments || attachments.length === 0) {
+    return (
+      <EmptyState 
+        icon={<Paperclip className="h-10 w-10 text-muted-foreground" />}
+        title="No attachments"
+        description="There are no attachments for this communication."
+      />
+    );
+  }
+  
+  return (
+    <div className="space-y-3">
+      {attachments.map((attachment: Attachment) => (
+        <Card key={attachment.id}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div>
+                  <h4 className="font-medium">{attachment.file_name}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {(attachment.file_size / 1024 / 1024).toFixed(2)} MB • {attachment.file_type}
+                  </p>
+                </div>
+              </div>
+              <Button variant="outline" asChild>
+                <a href={attachment.file_url} target="_blank" rel="noopener noreferrer">
+                  Download
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+// Component for displaying client preferences
+const ClientPreferences: React.FC<{ clientId: number }> = ({ clientId }) => {
+  const { data: preferences, isLoading } = useQuery({
+    queryKey: [`/api/communications/preferences/${clientId}`],
+    enabled: !!clientId
+  });
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<Partial<CommunicationPreference>>({});
+  
+  useEffect(() => {
+    if (preferences) {
+      setFormData(preferences);
+    }
+  }, [preferences]);
+  
+  const queryClient = useQueryClient();
+  
+  const updatePreferencesMutation = useMutation({
+    mutationFn: (data: Partial<CommunicationPreference>) => 
+      apiRequest(`/api/communications/preferences/${clientId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/communications/preferences/${clientId}`] });
+      setIsEditing(false);
+      toast({
+        title: "Preferences updated",
+        description: "Communication preferences have been updated successfully."
+      });
+    }
+  });
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updatePreferencesMutation.mutate(formData);
+  };
+  
+  const handleChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-6 w-40 mt-4" />
+        <Skeleton className="h-20 w-full" />
+      </div>
+    );
+  }
+  
+  if (!preferences) {
+    return (
+      <EmptyState 
+        icon={<AlertCircle className="h-10 w-10 text-muted-foreground" />}
+        title="No preferences found"
+        description="Communication preferences have not been set for this client."
+        action={
+          <Button onClick={() => setIsEditing(true)}>
+            Set Preferences
+          </Button>
+        }
+      />
+    );
+  }
+  
+  if (isEditing) {
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-4">
+          <div>
+            <Label>Preferred Communication Channels</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2 sm:grid-cols-4">
+              {['email', 'phone', 'in_person', 'video'].map(channel => (
+                <Button
+                  key={channel}
+                  type="button"
+                  variant={formData.preferred_channels?.includes(channel) ? "default" : "outline"}
+                  onClick={() => {
+                    const channels = formData.preferred_channels || [];
+                    if (channels.includes(channel)) {
+                      handleChange('preferred_channels', channels.filter(c => c !== channel));
+                    } else {
+                      handleChange('preferred_channels', [...channels, channel]);
+                    }
+                  }}
+                  className="justify-start"
+                >
+                  {channel === 'email' && <Mail className="h-4 w-4 mr-2" />}
+                  {channel === 'phone' && <Phone className="h-4 w-4 mr-2" />}
+                  {channel === 'in_person' && <MessageCircle className="h-4 w-4 mr-2" />}
+                  {channel === 'video' && <Video className="h-4 w-4 mr-2" />}
+                  {channel.replace('_', ' ')}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <Label htmlFor="frequency">Preferred Frequency</Label>
+              <Select 
+                value={formData.preferred_frequency} 
+                onValueChange={(value) => handleChange('preferred_frequency', value)}
+              >
+                <SelectTrigger id="frequency" className="mt-2">
+                  <SelectValue placeholder="Select frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="bi-weekly">Bi-Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="quarterly">Quarterly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="language">Preferred Language</Label>
+              <Select 
+                value={formData.preferred_language} 
+                onValueChange={(value) => handleChange('preferred_language', value)}
+              >
+                <SelectTrigger id="language" className="mt-2">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="English">English</SelectItem>
+                  <SelectItem value="Hindi">Hindi</SelectItem>
+                  <SelectItem value="Tamil">Tamil</SelectItem>
+                  <SelectItem value="Telugu">Telugu</SelectItem>
+                  <SelectItem value="Kannada">Kannada</SelectItem>
+                  <SelectItem value="Malayalam">Malayalam</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div>
+            <Label>Preferred Days</Label>
+            <div className="grid grid-cols-3 gap-2 mt-2 sm:grid-cols-7">
+              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                <Button
+                  key={day}
+                  type="button"
+                  variant={formData.preferred_days?.includes(day) ? "default" : "outline"}
+                  onClick={() => {
+                    const days = formData.preferred_days || [];
+                    if (days.includes(day)) {
+                      handleChange('preferred_days', days.filter(d => d !== day));
+                    } else {
+                      handleChange('preferred_days', [...days, day]);
+                    }
+                  }}
+                  size="sm"
+                >
+                  {day.substring(0, 3)}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <Label>Preferred Time Slots</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2 sm:grid-cols-4">
+              {['Morning', 'Afternoon', 'Evening', 'Night'].map(slot => (
+                <Button
+                  key={slot}
+                  type="button"
+                  variant={formData.preferred_time_slots?.includes(slot) ? "default" : "outline"}
+                  onClick={() => {
+                    const slots = formData.preferred_time_slots || [];
+                    if (slots.includes(slot)) {
+                      handleChange('preferred_time_slots', slots.filter(s => s !== slot));
+                    } else {
+                      handleChange('preferred_time_slots', [...slots, slot]);
+                    }
+                  }}
+                >
+                  {slot}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="marketing" 
+                className="form-checkbox h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
+                checked={!!formData.opt_in_marketing}
+                onChange={(e) => handleChange('opt_in_marketing', e.target.checked)}
+              />
+              <Label htmlFor="marketing" className="cursor-pointer">Opt-in Marketing</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="doNotContact" 
+                className="form-checkbox h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
+                checked={!!formData.do_not_contact}
+                onChange={(e) => handleChange('do_not_contact', e.target.checked)}
+              />
+              <Label htmlFor="doNotContact" className="cursor-pointer">Do Not Contact</Label>
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={updatePreferencesMutation.isPending}>
+              {updatePreferencesMutation.isPending ? "Saving..." : "Save Preferences"}
+            </Button>
+          </div>
+        </div>
+      </form>
+    );
+  }
+  
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-center">
+          <CardTitle>Communication Preferences</CardTitle>
+          <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        </div>
+        <CardDescription>
+          Last updated: {format(new Date(preferences.last_updated), 'dd MMM yyyy')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium mb-1">Preferred Channels</h4>
+            <div className="flex flex-wrap gap-2">
+              {preferences.preferred_channels && preferences.preferred_channels.map((channel: string) => (
+                <Badge key={channel} variant="outline">
+                  {channel === 'email' && <Mail className="h-3 w-3 mr-1" />}
+                  {channel === 'phone' && <Phone className="h-3 w-3 mr-1" />}
+                  {channel === 'in_person' && <MessageCircle className="h-3 w-3 mr-1" />}
+                  {channel === 'video' && <Video className="h-3 w-3 mr-1" />}
+                  {channel.replace('_', ' ')}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-medium mb-1">Frequency</h4>
+              <p className="text-sm">{preferences.preferred_frequency.replace('-', ' ')}</p>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-1">Language</h4>
+              <p className="text-sm">{preferences.preferred_language}</p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium mb-1">Preferred Days</h4>
+            <div className="flex flex-wrap gap-2">
+              {preferences.preferred_days && preferences.preferred_days.map((day: string) => (
+                <Badge key={day} variant="outline">
+                  {day}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium mb-1">Preferred Time Slots</h4>
+            <div className="flex flex-wrap gap-2">
+              {preferences.preferred_time_slots && preferences.preferred_time_slots.map((slot: string) => (
+                <Badge key={slot} variant="outline">
+                  {slot}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-4">
+            <Badge 
+              variant={preferences.opt_in_marketing ? "default" : "destructive"}
+              className={preferences.opt_in_marketing ? "" : "opacity-75"}
+            >
+              {preferences.opt_in_marketing ? "Marketing: Opted In" : "Marketing: Opted Out"}
+            </Badge>
+            
+            {preferences.do_not_contact && (
+              <Badge variant="destructive">
+                Do Not Contact
+              </Badge>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// New Communication Dialog Component
+const NewCommunicationDialog: React.FC<{ 
+  clientId: number,
+  onSuccess: () => void
+}> = ({ clientId, onSuccess }) => {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    clientId,
+    initiatedBy: 1, // Assuming current user ID is 1
+    startTime: new Date().toISOString().substring(0, 16),
+    communicationType: '',
+    channel: '',
+    direction: 'outbound',
+    subject: '',
+    summary: '',
+    notes: '',
+    sentiment: 'neutral',
+    tags: [] as string[],
+    followUpRequired: false
+  });
+  
+  const queryClient = useQueryClient();
+  
+  const createCommunicationMutation = useMutation({
+    mutationFn: (data: any) => 
+      apiRequest('/api/communications', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/communications/${clientId}`] });
+      setOpen(false);
+      onSuccess();
+      toast({
+        title: "Communication added",
+        description: "The communication has been added successfully."
+      });
+    }
+  });
+  
+  const handleChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createCommunicationMutation.mutate(formData);
+  };
+  
+  const { data: templates } = useQuery({
+    queryKey: ['/api/communication-templates'],
+    enabled: open
+  });
+  
+  const handleSelectTemplate = (template: Template) => {
+    setFormData(prev => ({
+      ...prev,
+      subject: template.subject,
+      summary: template.content.replace(/\{\{.*?\}\}/g, '___')
+    }));
+  };
+  
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <MessageCircle className="h-4 w-4 mr-2" />
+          New Communication
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Log New Communication</DialogTitle>
+          <DialogDescription>
+            Record details about your communication with the client.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="communicationType">Type</Label>
+                <Select 
+                  value={formData.communicationType} 
+                  onValueChange={(value) => handleChange('communicationType', value)}
+                  required
+                >
+                  <SelectTrigger id="communicationType">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="portfolio_review">Portfolio Review</SelectItem>
+                    <SelectItem value="market_update">Market Update</SelectItem>
+                    <SelectItem value="investment_advice">Investment Advice</SelectItem>
+                    <SelectItem value="onboarding">Onboarding</SelectItem>
+                    <SelectItem value="complaint_handling">Complaint Handling</SelectItem>
+                    <SelectItem value="relationship_building">Relationship Building</SelectItem>
+                    <SelectItem value="service_request">Service Request</SelectItem>
+                    <SelectItem value="product_information">Product Information</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="channel">Channel</Label>
+                <Select 
+                  value={formData.channel} 
+                  onValueChange={(value) => handleChange('channel', value)}
+                  required
+                >
+                  <SelectTrigger id="channel">
+                    <SelectValue placeholder="Select channel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="phone">Phone</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="in_person">In Person</SelectItem>
+                    <SelectItem value="video">Video Call</SelectItem>
+                    <SelectItem value="chat">Chat</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="direction">Direction</Label>
+                <Select 
+                  value={formData.direction} 
+                  onValueChange={(value) => handleChange('direction', value)}
+                >
+                  <SelectTrigger id="direction">
+                    <SelectValue placeholder="Select direction" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="inbound">Inbound</SelectItem>
+                    <SelectItem value="outbound">Outbound</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="startTime">Date & Time</Label>
+                <Input 
+                  id="startTime" 
+                  type="datetime-local" 
+                  value={formData.startTime}
+                  onChange={(e) => handleChange('startTime', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="subject">Subject</Label>
+                {templates && templates.length > 0 && (
+                  <Select 
+                    onValueChange={(value) => {
+                      const template = templates.find((t: Template) => t.id.toString() === value);
+                      if (template) handleSelectTemplate(template);
+                    }}
+                  >
+                    <SelectTrigger id="template" className="w-[180px]">
+                      <SelectValue placeholder="Use Template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates.map((template: Template) => (
+                        <SelectItem key={template.id} value={template.id.toString()}>
+                          {template.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+              <Input 
+                id="subject" 
+                value={formData.subject}
+                onChange={(e) => handleChange('subject', e.target.value)}
+                placeholder="Enter subject"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="summary">Summary</Label>
+              <Textarea 
+                id="summary" 
+                value={formData.summary}
+                onChange={(e) => handleChange('summary', e.target.value)}
+                placeholder="Enter a summary of the communication"
+                rows={3}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea 
+                id="notes" 
+                value={formData.notes}
+                onChange={(e) => handleChange('notes', e.target.value)}
+                placeholder="Enter detailed notes"
+                rows={3}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="tags">Tags (comma separated)</Label>
+              <Input 
+                id="tags" 
+                value={formData.tags.join(', ')}
+                onChange={(e) => handleChange('tags', e.target.value.split(',').map(tag => tag.trim()).filter(Boolean))}
+                placeholder="Enter tags"
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="followUpRequired" 
+                className="form-checkbox h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
+                checked={formData.followUpRequired}
+                onChange={(e) => handleChange('followUpRequired', e.target.checked)}
+              />
+              <Label htmlFor="followUpRequired" className="cursor-pointer">Follow Up Required</Label>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={createCommunicationMutation.isPending}>
+              {createCommunicationMutation.isPending ? "Saving..." : "Save Communication"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Main ClientCommunications component
+const ClientCommunications: React.FC = () => {
+  const { id } = useParams();
+  const clientId = parseInt(id as string);
+  const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('details');
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filterChannel, setFilterChannel] = useState<string | null>(null);
+  
+  // Query to fetch client communications
+  const { 
+    data: communications, 
+    isLoading,
+    refetch: refetchCommunications
+  } = useQuery({
+    queryKey: [`/api/communications/${clientId}`],
+    enabled: !isNaN(clientId)
+  });
+  
+  // Query to fetch client data
+  const { data: client } = useQuery({
+    queryKey: [`/api/clients/${clientId}`],
+    enabled: !isNaN(clientId)
+  });
+  
+  // Reset selected communication when clientId changes
+  useEffect(() => {
+    setSelectedCommunication(null);
+  }, [clientId]);
+  
+  // Select first communication when data loads if none selected
+  useEffect(() => {
+    if (communications && communications.length > 0 && !selectedCommunication) {
+      setSelectedCommunication(communications[0]);
+    }
+  }, [communications, selectedCommunication]);
+  
+  // Filter communications based on selected filters
+  const filteredCommunications = React.useMemo(() => {
+    if (!communications) return [];
+    
+    return communications.filter((comm: Communication) => {
+      if (filterType && comm.communication_type !== filterType) return false;
+      if (filterChannel && comm.channel !== filterChannel) return false;
+      return true;
+    });
+  }, [communications, filterType, filterChannel]);
+  
+  const handleClearFilters = () => {
+    setFilterType(null);
+    setFilterChannel(null);
+  };
+  
+  if (isNaN(clientId)) {
+    return (
+      <div className="p-4">
+        <p>Invalid client ID</p>
+      </div>
+    );
+  }
+  
+  return (
+    <ClientPageLayout clientId={clientId} currentTab="communications">
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <Link href={`/clients/${clientId}`}>
+              <Button variant="ghost" size="sm" className="mr-2">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Client
+              </Button>
+            </Link>
+            <h1 className="text-2xl font-bold">Communication History</h1>
+          </div>
+          
+          <NewCommunicationDialog 
+            clientId={clientId}
+            onSuccess={refetchCommunications}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="md:col-span-1">
+            <Card className="mb-4">
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle>Communications</CardTitle>
+                  
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Filter className="h-4 w-4 mr-2" />
+                        Filter
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Filter Communications</DialogTitle>
+                      </DialogHeader>
+                      <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                          <Label>Communication Type</Label>
+                          <Select 
+                            value={filterType || ""} 
+                            onValueChange={(value) => setFilterType(value || null)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="All Types" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All Types</SelectItem>
+                              <SelectItem value="portfolio_review">Portfolio Review</SelectItem>
+                              <SelectItem value="market_update">Market Update</SelectItem>
+                              <SelectItem value="investment_advice">Investment Advice</SelectItem>
+                              <SelectItem value="onboarding">Onboarding</SelectItem>
+                              <SelectItem value="complaint_handling">Complaint Handling</SelectItem>
+                              <SelectItem value="relationship_building">Relationship Building</SelectItem>
+                              <SelectItem value="service_request">Service Request</SelectItem>
+                              <SelectItem value="product_information">Product Information</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label>Channel</Label>
+                          <Select 
+                            value={filterChannel || ""} 
+                            onValueChange={(value) => setFilterChannel(value || null)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="All Channels" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All Channels</SelectItem>
+                              <SelectItem value="phone">Phone</SelectItem>
+                              <SelectItem value="email">Email</SelectItem>
+                              <SelectItem value="in_person">In Person</SelectItem>
+                              <SelectItem value="video">Video Call</SelectItem>
+                              <SelectItem value="chat">Chat</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={handleClearFilters}>
+                          Clear Filters
+                        </Button>
+                        <DialogTrigger asChild>
+                          <Button>Apply</Button>
+                        </DialogTrigger>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                
+                {(filterType || filterChannel) && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {filterType && (
+                      <Badge variant="secondary" className="flex items-center gap-1">
+                        Type: {filterType.replace('_', ' ')}
+                        <button 
+                          onClick={() => setFilterType(null)}
+                          className="ml-1 hover:bg-muted-foreground/20 rounded-full h-4 w-4 inline-flex items-center justify-center"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    )}
+                    {filterChannel && (
+                      <Badge variant="secondary" className="flex items-center gap-1">
+                        Channel: {filterChannel.replace('_', ' ')}
+                        <button 
+                          onClick={() => setFilterChannel(null)}
+                          className="ml-1 hover:bg-muted-foreground/20 rounded-full h-4 w-4 inline-flex items-center justify-center"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    )}
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent className="pt-0">
+                <ScrollArea className="h-[600px] pr-4">
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <Skeleton className="h-24 w-full" />
+                      <Skeleton className="h-24 w-full" />
+                      <Skeleton className="h-24 w-full" />
+                    </div>
+                  ) : filteredCommunications.length === 0 ? (
+                    <EmptyState 
+                      icon={<MessageCircle className="h-10 w-10 text-muted-foreground" />}
+                      title="No communications"
+                      description={
+                        filterType || filterChannel 
+                          ? "No communications match your filters."
+                          : "No communications found for this client."
+                      }
+                      action={
+                        filterType || filterChannel ? (
+                          <Button onClick={handleClearFilters}>
+                            Clear Filters
+                          </Button>
+                        ) : null
+                      }
+                    />
+                  ) : (
+                    filteredCommunications.map((communication: Communication) => (
+                      <CommunicationItem 
+                        key={communication.id}
+                        communication={communication}
+                        isSelected={selectedCommunication?.id === communication.id}
+                        onClick={() => setSelectedCommunication(communication)}
+                      />
+                    ))
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+            
+            <ClientPreferences clientId={clientId} />
+          </div>
+          
+          <div className="md:col-span-2">
+            {selectedCommunication ? (
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>
+                        {selectedCommunication.subject || 
+                         `${selectedCommunication.communication_type.replace('_', ' ')} (${format(new Date(selectedCommunication.start_time), 'dd MMM yyyy')})`}
+                      </CardTitle>
+                      <CardDescription>
+                        {format(new Date(selectedCommunication.start_time), 'dd MMMM yyyy, h:mm a')}
+                      </CardDescription>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="capitalize">
+                        {selectedCommunication.direction}
+                      </Badge>
+                      <Badge variant="outline" className="capitalize">
+                        {selectedCommunication.channel.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="details">Details</TabsTrigger>
+                      <TabsTrigger value="actions">
+                        Action Items
+                        {selectedCommunication.action_item_count > 0 && (
+                          <Badge variant="secondary" className="ml-2">
+                            {selectedCommunication.action_item_count}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                      <TabsTrigger value="attachments">
+                        Attachments
+                        {selectedCommunication.attachment_count > 0 && (
+                          <Badge variant="secondary" className="ml-2">
+                            {selectedCommunication.attachment_count}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="details" className="mt-0">
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Communication Type</h3>
+                          <p className="capitalize">{selectedCommunication.communication_type.replace('_', ' ')}</p>
+                        </div>
+                        
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Summary</h3>
+                          <p>{selectedCommunication.summary || "No summary provided."}</p>
+                        </div>
+                        
+                        {selectedCommunication.notes && (
+                          <div>
+                            <h3 className="text-sm font-medium mb-1">Notes</h3>
+                            <p className="whitespace-pre-line">{selectedCommunication.notes}</p>
+                          </div>
+                        )}
+                        
+                        {selectedCommunication.tags && selectedCommunication.tags.length > 0 && (
+                          <div>
+                            <h3 className="text-sm font-medium mb-1">Tags</h3>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedCommunication.tags.map((tag, index) => (
+                                <Badge key={index} variant="secondary">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedCommunication.sentiment && (
+                          <div>
+                            <h3 className="text-sm font-medium mb-1">Sentiment</h3>
+                            <Badge 
+                              variant="outline" 
+                              className={
+                                selectedCommunication.sentiment === 'positive' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400' :
+                                selectedCommunication.sentiment === 'negative' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400' :
+                                'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                              }
+                            >
+                              {selectedCommunication.sentiment}
+                            </Badge>
+                          </div>
+                        )}
+                        
+                        {selectedCommunication.follow_up_required && (
+                          <div>
+                            <h3 className="text-sm font-medium mb-1">Follow Up</h3>
+                            <Badge variant="outline" className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400">
+                              Follow Up Required
+                            </Badge>
+                            {selectedCommunication.next_steps && (
+                              <p className="mt-2">{selectedCommunication.next_steps}</p>
+                            )}
+                          </div>
+                        )}
+                        
+                        <Separator />
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="text-sm font-medium mb-1">Duration</h3>
+                            <p>
+                              {selectedCommunication.duration 
+                                ? `${selectedCommunication.duration} minutes` 
+                                : "Not recorded"}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <h3 className="text-sm font-medium mb-1">Initiated By</h3>
+                            <div className="flex items-center">
+                              <Avatar className="h-6 w-6 mr-2">
+                                <AvatarFallback>RM</AvatarFallback>
+                              </Avatar>
+                              <span>Relationship Manager</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="actions" className="mt-0">
+                      <ActionItems communicationId={selectedCommunication.id} />
+                    </TabsContent>
+                    
+                    <TabsContent value="attachments" className="mt-0">
+                      <Attachments communicationId={selectedCommunication.id} />
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="h-full flex items-center justify-center">
+                <CardContent className="pt-6">
+                  <EmptyState 
+                    icon={<MessageCircle className="h-12 w-12 text-muted-foreground" />}
+                    title="No communication selected"
+                    description="Select a communication from the list to view its details."
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+    </ClientPageLayout>
+  );
+};
+
+export default ClientCommunications;

@@ -157,11 +157,11 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             </div>
           </div>
           
-          {/* Last contact - navigates to interactions page */}
+          {/* Last contact - navigates to communications page */}
           <div 
             className="border-r border-slate-200 pr-3 cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'interactions')}
-            title="View client interactions"
+            onClick={(e) => handleSectionClick(e, 'communications')}
+            title="View client communications"
           >
             <div className="text-xs text-slate-500 mb-1">Last Contact</div>
             <div className="text-sm text-slate-500">
