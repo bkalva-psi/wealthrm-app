@@ -760,12 +760,300 @@ export class MemStorage implements IStorage {
     this.salesPipeline.set(id, updatedEntry);
     return updatedEntry;
   }
+
+  // Transaction methods
+  async getTransaction(id: number): Promise<Transaction | undefined> {
+    return this.transactions.get(id);
+  }
+
+  async getTransactions(clientId: number, startDate?: Date, endDate?: Date): Promise<Transaction[]> {
+    const transactions = Array.from(this.transactions.values())
+      .filter(transaction => transaction.clientId === clientId);
+    
+    if (startDate) {
+      const startTimestamp = startDate.getTime();
+      return transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.transactionDate).getTime();
+        return transactionDate >= startTimestamp;
+      });
+    }
+    
+    if (endDate) {
+      const endTimestamp = endDate.getTime();
+      return transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.transactionDate).getTime();
+        return transactionDate <= endTimestamp;
+      });
+    }
+    
+    return transactions.sort((a, b) => {
+      const dateA = new Date(a.transactionDate).getTime();
+      const dateB = new Date(b.transactionDate).getTime();
+      return dateB - dateA; // Most recent first
+    });
+  }
+
+  async getTransactionsByType(clientId: number, type: string): Promise<Transaction[]> {
+    return Array.from(this.transactions.values())
+      .filter(transaction => 
+        transaction.clientId === clientId && 
+        transaction.transactionType === type
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.transactionDate).getTime();
+        const dateB = new Date(b.transactionDate).getTime();
+        return dateB - dateA; // Most recent first
+      });
+  }
+
+  async getTransactionsByProduct(clientId: number, productType: string): Promise<Transaction[]> {
+    return Array.from(this.transactions.values())
+      .filter(transaction => 
+        transaction.clientId === clientId && 
+        transaction.productType === productType
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.transactionDate).getTime();
+        const dateB = new Date(b.transactionDate).getTime();
+        return dateB - dateA; // Most recent first
+      });
+  }
+
+  async getTransactionSummary(
+    clientId: number, 
+    groupBy: 'day' | 'week' | 'month' | 'quarter' | 'year', 
+    startDate?: Date, 
+    endDate?: Date
+  ): Promise<any[]> {
+    const transactions = await this.getTransactions(clientId, startDate, endDate);
+    
+    // Group transactions by the specified period
+    const groupedTransactions = new Map();
+    
+    for (const transaction of transactions) {
+      const date = new Date(transaction.transactionDate);
+      let period: string;
+      
+      switch (groupBy) {
+        case 'day':
+          period = date.toISOString().split('T')[0]; // YYYY-MM-DD
+          break;
+        case 'week':
+          // Get the week number
+          const weekNum = Math.ceil((date.getDate() + (date.getDay() + 1)) / 7);
+          period = `${date.getFullYear()}-W${weekNum}`;
+          break;
+        case 'month':
+          period = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          break;
+        case 'quarter':
+          const quarter = Math.floor(date.getMonth() / 3) + 1;
+          period = `${date.getFullYear()}-Q${quarter}`;
+          break;
+        case 'year':
+          period = `${date.getFullYear()}`;
+          break;
+        default:
+          period = date.toISOString().split('T')[0];
+      }
+      
+      if (!groupedTransactions.has(period)) {
+        groupedTransactions.set(period, {
+          period,
+          transactionCount: 0,
+          totalAmount: 0,
+          totalFees: 0,
+          totalTaxes: 0,
+          netAmount: 0,
+          buyCount: 0,
+          sellCount: 0,
+          otherCount: 0,
+          transactions: []
+        });
+      }
+      
+      const summary = groupedTransactions.get(period);
+      summary.transactionCount += 1;
+      summary.totalAmount += transaction.amount;
+      summary.totalFees += transaction.fees || 0;
+      summary.totalTaxes += transaction.taxes || 0;
+      summary.netAmount += transaction.totalAmount;
+      
+      if (transaction.transactionType === 'buy') {
+        summary.buyCount += 1;
+      } else if (transaction.transactionType === 'sell') {
+        summary.sellCount += 1;
+      } else {
+        summary.otherCount += 1;
+      }
+      
+      summary.transactions.push(transaction);
+    }
+    
+    // Convert Map to Array and sort by period
+    return Array.from(groupedTransactions.values()).sort((a, b) => a.period.localeCompare(b.period));
+  }
+
+  async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
+    const id = ++this.transactionCurrentId;
+    const newTransaction: Transaction = { ...transaction, id, createdAt: new Date() };
+    this.transactions.set(id, newTransaction);
+    return newTransaction;
+  }
+
+  async updateTransaction(id: number, transactionUpdate: Partial<InsertTransaction>): Promise<Transaction | undefined> {
+    const transaction = this.transactions.get(id);
+    
+    if (!transaction) {
+      return undefined;
+    }
+    
+    const updatedTransaction = { ...transaction, ...transactionUpdate };
+    this.transactions.set(id, updatedTransaction);
+    return updatedTransaction;
+  }
+
+  async deleteTransaction(id: number): Promise<boolean> {
+    return this.transactions.delete(id);
+  }
 }
 
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
+  // Transaction methods
+  async getTransaction(id: number): Promise<Transaction | undefined> {
+    const [transaction] = await db.select().from(transactions).where(eq(transactions.id, id));
+    return transaction || undefined;
+  }
+
+  async getTransactions(clientId: number, startDate?: Date, endDate?: Date): Promise<Transaction[]> {
+    let query = db.select().from(transactions).where(eq(transactions.clientId, clientId));
+    
+    if (startDate) {
+      query = query.where(transactions.transactionDate >= startDate);
+    }
+    
+    if (endDate) {
+      query = query.where(transactions.transactionDate <= endDate);
+    }
+    
+    return query.orderBy(transactions.transactionDate);
+  }
+
+  async getTransactionsByType(clientId: number, type: string): Promise<Transaction[]> {
+    return db.select()
+      .from(transactions)
+      .where(eq(transactions.clientId, clientId))
+      .where(eq(transactions.transactionType, type))
+      .orderBy(transactions.transactionDate);
+  }
+
+  async getTransactionsByProduct(clientId: number, productType: string): Promise<Transaction[]> {
+    return db.select()
+      .from(transactions)
+      .where(eq(transactions.clientId, clientId))
+      .where(eq(transactions.productType, productType))
+      .orderBy(transactions.transactionDate);
+  }
+
+  async getTransactionSummary(
+    clientId: number, 
+    groupBy: 'day' | 'week' | 'month' | 'quarter' | 'year', 
+    startDate?: Date, 
+    endDate?: Date
+  ): Promise<any[]> {
+    // This would typically use SQL GROUP BY with date functions
+    // For now, we'll fetch all transactions and process them in memory
+    const transactions = await this.getTransactions(clientId, startDate, endDate);
+    
+    // Group transactions by the specified period
+    const groupedTransactions = new Map();
+    
+    for (const transaction of transactions) {
+      const date = new Date(transaction.transactionDate);
+      let period: string;
+      
+      switch (groupBy) {
+        case 'day':
+          period = date.toISOString().split('T')[0]; // YYYY-MM-DD
+          break;
+        case 'week':
+          // Get the week number
+          const weekNum = Math.ceil((date.getDate() + (date.getDay() + 1)) / 7);
+          period = `${date.getFullYear()}-W${weekNum}`;
+          break;
+        case 'month':
+          period = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          break;
+        case 'quarter':
+          const quarter = Math.floor(date.getMonth() / 3) + 1;
+          period = `${date.getFullYear()}-Q${quarter}`;
+          break;
+        case 'year':
+          period = `${date.getFullYear()}`;
+          break;
+        default:
+          period = date.toISOString().split('T')[0];
+      }
+      
+      if (!groupedTransactions.has(period)) {
+        groupedTransactions.set(period, {
+          period,
+          transactionCount: 0,
+          totalAmount: 0,
+          totalFees: 0,
+          totalTaxes: 0,
+          netAmount: 0,
+          buyCount: 0,
+          sellCount: 0,
+          otherCount: 0,
+          transactions: []
+        });
+      }
+      
+      const summary = groupedTransactions.get(period);
+      summary.transactionCount += 1;
+      summary.totalAmount += transaction.amount;
+      summary.totalFees += transaction.fees || 0;
+      summary.totalTaxes += transaction.taxes || 0;
+      summary.netAmount += transaction.totalAmount;
+      
+      if (transaction.transactionType === 'buy') {
+        summary.buyCount += 1;
+      } else if (transaction.transactionType === 'sell') {
+        summary.sellCount += 1;
+      } else {
+        summary.otherCount += 1;
+      }
+      
+      summary.transactions.push(transaction);
+    }
+    
+    // Convert Map to Array and sort by period
+    return Array.from(groupedTransactions.values()).sort((a, b) => a.period.localeCompare(b.period));
+  }
+
+  async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
+    const [newTransaction] = await db.insert(transactions).values(transaction).returning();
+    return newTransaction;
+  }
+
+  async updateTransaction(id: number, transactionUpdate: Partial<InsertTransaction>): Promise<Transaction | undefined> {
+    const [updatedTransaction] = await db
+      .update(transactions)
+      .set(transactionUpdate)
+      .where(eq(transactions.id, id))
+      .returning();
+    
+    return updatedTransaction || undefined;
+  }
+
+  async deleteTransaction(id: number): Promise<boolean> {
+    const result = await db.delete(transactions).where(eq(transactions.id, id));
+    return result.rowCount > 0;
+  }
   // User methods
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));

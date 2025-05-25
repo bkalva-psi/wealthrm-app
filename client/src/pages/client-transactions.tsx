@@ -706,9 +706,9 @@ export default function ClientTransactions() {
                         dataKey="value"
                         label={(entry) => entry.name}
                       >
-                        {transactionTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                        {transactionTypeData.map((entry, index) => {
+                          return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                        })}
                       </Pie>
                       <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
                     </PieChart>
@@ -946,7 +946,8 @@ export default function ClientTransactions() {
                           </Badge>
                         </TableCell>
                       </TableRow>
-                    ))
+                        );
+                      })
                   }</TableBody>
                 </Table>
               </div>
@@ -981,9 +982,9 @@ export default function ClientTransactions() {
                         dataKey="value"
                         label={(entry) => entry.name}
                       >
-                        {productTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                        {productTypeData.map((entry, index) => {
+                          return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                        })}
                       </Pie>
                       <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
                       <Legend />
@@ -1083,8 +1084,9 @@ export default function ClientTransactions() {
                             <TableCell className="text-right">{formatCurrency(summary.totalFees + summary.totalTaxes)}</TableCell>
                             <TableCell className="text-right">{formatCurrency(summary.netAmount)}</TableCell>
                           </TableRow>
-                        ))
-                      )}
+                        );
+                      })
+                    }
                     </TableBody>
                   </Table>
                 </div>
