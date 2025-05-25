@@ -391,9 +391,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid client ID" });
       }
       
-      // Parse optional date filters
-      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
-      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      // Parse optional date filters with debug logging
+      console.log("Date filter query params:", req.query);
+      
+      let startDate = undefined;
+      let endDate = undefined;
+      
+      if (req.query.startDate) {
+        startDate = new Date(req.query.startDate as string);
+        console.log("Parsed startDate:", startDate, "Valid:", !isNaN(startDate.getTime()));
+      }
+      
+      if (req.query.endDate) {
+        endDate = new Date(req.query.endDate as string);
+        console.log("Parsed endDate:", endDate, "Valid:", !isNaN(endDate.getTime()));
+      }
       
       const transactions = await storage.getTransactions(clientId, startDate, endDate);
       res.json(transactions);
