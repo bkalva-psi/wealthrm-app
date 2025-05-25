@@ -1,65 +1,140 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SimpleAumTrendChartProps {
   aumValue: number;
 }
 
 /**
- * A simple SVG-based AUM trend chart component
+ * A simple SVG-based AUM trend chart component with tooltip on hover
  */
 const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) => {
-  // Create random points for the line chart
-  const generateRandomPoints = () => {
-    // Create fixed points array with random variation
-    const points: {x: number, y: number}[] = [];
+  const [tooltipInfo, setTooltipInfo] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    value: number;
+    date: string;
+  }>({
+    visible: false,
+    x: 0,
+    y: 0,
+    value: 0,
+    date: ''
+  });
+  
+  // Create consistent random points for the line chart
+  const generatePoints = () => {
+    // Create data points with dates and values
+    const points = [];
+    const startDate = new Date(2022, 4, 1); // May 2022
+    const endDate = new Date(2025, 4, 1);   // May 2025
+    const startValue = aumValue * 0.85;
+    const endValue = aumValue;
     
-    // Start at 85% of current AUM value
-    const startValue = 34; // 85% (in our SVG coordinate system)
-    const endValue = 0;    // 100% (in our SVG coordinate system)
+    // Number of data points
+    const totalPoints = 36; // Monthly data for 3 years
     
-    // Generate 100 points with stronger random variations for a more natural market pattern
-    const totalPoints = 100;
+    // Seed for consistent randomness
+    const seed = aumValue.toString().slice(-4);
+    let seedValue = parseInt(seed) || 12345;
     
-    // Previous point value to create realistic oscillations
-    let prevY = startValue;
+    // Simple pseudo-random function with seed
+    const random = () => {
+      seedValue = (seedValue * 9301 + 49297) % 233280;
+      return seedValue / 233280;
+    };
+    
+    // Start with the initial value
+    let prevValue = startValue;
     
     for (let i = 0; i <= totalPoints; i++) {
+      // Calculate the date for this point
+      const pointDate = new Date(startDate);
+      pointDate.setMonth(startDate.getMonth() + i);
+      
+      // Format date as MMM YYYY
+      const dateString = pointDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        year: 'numeric' 
+      });
+      
+      // Calculate progress through the timeline
       const progress = i / totalPoints;
       
-      // Overall downward trend from startValue to endValue (remember in SVG, 0 is top)
-      const trendValue = startValue - (startValue - endValue) * progress;
+      // Trend line value (linear progression from start to end)
+      const trendValue = startValue + (endValue - startValue) * progress;
       
-      // Create realistic market movements with small changes between points
-      // Use a random walk pattern with trend reversion
-      const randomWalk = (Math.random() * 2 - 1) * 0.8; // Random movement between -0.8 and +0.8
-      const reversion = (trendValue - prevY) * 0.2; // Pull back to trend line
+      // Random walk with trend reversion
+      const volatility = 0.03; // 3% volatility
+      const randomFactor = (random() * 2 - 1) * volatility; // Between -3% and +3%
+      const reversion = (trendValue - prevValue) * 0.3; // 30% reversion to trend
       
-      // Calculate next point with more randomness for mid-range
-      const variationAmplitude = progress * (1 - progress) * 6; // More variation in the middle
-      const variation = randomWalk * variationAmplitude + reversion;
+      // New value with random fluctuation
+      let newValue = prevValue * (1 + randomFactor) + reversion;
       
-      // New Y value with limit to prevent extreme variations
-      const newY = Math.max(0, Math.min(40, prevY + variation));
-      prevY = newY;
+      // More volatility in the middle of the time period
+      const extraVolatility = progress * (1 - progress) * 0.1; // Up to 10% extra in middle
+      newValue = newValue * (1 + (random() * 2 - 1) * extraVolatility);
+      
+      // Ensure the point stays within reasonable bounds
+      newValue = Math.max(startValue * 0.7, Math.min(endValue * 1.1, newValue));
       
       points.push({
+        date: dateString,
+        value: newValue,
         x: i * (100 / totalPoints),
-        y: newY
+        y: 40 - (newValue - startValue * 0.7) / (endValue * 1.1 - startValue * 0.7) * 40
       });
+      
+      prevValue = newValue;
     }
     
-    // Force the first and last points to be exact
-    points[0].y = startValue;
-    points[points.length - 1].y = endValue;
+    // Ensure first and last points match our expected values
+    points[0].value = startValue;
+    points[0].y = 40 - (startValue - startValue * 0.7) / (endValue * 1.1 - startValue * 0.7) * 40;
+    
+    points[points.length - 1].value = endValue;
+    points[points.length - 1].y = 40 - (endValue - startValue * 0.7) / (endValue * 1.1 - startValue * 0.7) * 40;
     
     return points;
   };
   
-  // Generate points once, not on every render, using React.useMemo
-  const dataPoints = React.useMemo(() => generateRandomPoints(), [aumValue]);
+  // Generate data points using memoization to keep them consistent between renders
+  const dataPoints = React.useMemo(() => generatePoints(), [aumValue]);
   
-  // Convert points array to SVG polyline points string
+  // Create SVG points string for polyline
   const pointsString = dataPoints.map(p => `${p.x},${p.y}`).join(' ');
+  
+  // Handle mouse movement over the chart
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svgRect = e.currentTarget.getBoundingClientRect();
+    const xPosition = (e.clientX - svgRect.left) / svgRect.width * 100;
+    
+    // Find the closest point
+    let closestPoint = dataPoints[0];
+    let minDistance = Math.abs(closestPoint.x - xPosition);
+    
+    for (const point of dataPoints) {
+      const distance = Math.abs(point.x - xPosition);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestPoint = point;
+      }
+    }
+    
+    // Show tooltip with the point's information
+    setTooltipInfo({
+      visible: true,
+      x: closestPoint.x,
+      y: closestPoint.y,
+      value: closestPoint.value,
+      date: closestPoint.date
+    });
+  };
+  
+  const handleMouseLeave = () => {
+    setTooltipInfo({ ...tooltipInfo, visible: false });
+  };
   
   return (
     <div className="w-full h-full">
@@ -87,8 +162,19 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
             <div className="absolute w-full h-[1px] bg-gray-200 bottom-0"></div>
             
             <div className="w-full h-full flex items-end">
-              <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full">
-                {/* Smooth line chart without visible points */}
+              <svg 
+                viewBox="0 0 100 40" 
+                preserveAspectRatio="none" 
+                className="w-full h-full"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+              >
+                {/* Background grid */}
+                <line x1="0" y1="10" x2="100" y2="10" stroke="#f0f0f0" strokeWidth="1" />
+                <line x1="0" y1="20" x2="100" y2="20" stroke="#f0f0f0" strokeWidth="1" />
+                <line x1="0" y1="30" x2="100" y2="30" stroke="#f0f0f0" strokeWidth="1" />
+                
+                {/* Smooth line chart */}
                 <polyline 
                   points={pointsString}
                   fill="none"
@@ -97,7 +183,32 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
                   strokeLinejoin="round"
                   strokeLinecap="round"
                 />
+                
+                {/* Tooltip indicator circle */}
+                {tooltipInfo.visible && (
+                  <circle 
+                    cx={tooltipInfo.x} 
+                    cy={tooltipInfo.y} 
+                    r="3" 
+                    fill="var(--color-primary)" 
+                  />
+                )}
               </svg>
+              
+              {/* Tooltip */}
+              {tooltipInfo.visible && (
+                <div 
+                  className="absolute bg-white border border-gray-200 rounded-md shadow-sm px-2 py-1 text-xs"
+                  style={{ 
+                    left: `${tooltipInfo.x}%`, 
+                    top: `${tooltipInfo.y}px`,
+                    transform: 'translate(-50%, -120%)'
+                  }}
+                >
+                  <div className="font-medium">{tooltipInfo.date}</div>
+                  <div>₹{(tooltipInfo.value / 100000).toFixed(2)} L</div>
+                </div>
+              )}
             </div>
           </div>
           
