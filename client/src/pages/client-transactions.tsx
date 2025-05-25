@@ -138,9 +138,31 @@ export default function ClientTransactions() {
   const [groupBy, setGroupBy] = useState<'day' | 'week' | 'month' | 'quarter' | 'year'>('month');
   const [transactionType, setTransactionType] = useState<string>('all');
   const [productType, setProductType] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [securityFilter, setSecurityFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  
+  // Quick date filter handler
+  const handleQuickDateFilter = (period: '1w' | '1m' | '3m') => {
+    const end = new Date();
+    let start: Date;
+    
+    switch (period) {
+      case '1w':
+        start = subDays(end, 7);
+        break;
+      case '1m':
+        start = subMonths(end, 1);
+        break;
+      case '3m':
+      default:
+        start = subMonths(end, 3);
+        break;
+    }
+    
+    setStartDate(start);
+    setEndDate(end);
+  };
   
   // Get client data
   const { data: client, isLoading: isClientLoading } = useApiQuery<Client>({
@@ -170,7 +192,7 @@ export default function ClientTransactions() {
     enabled: !!clientId
   });
 
-  // Filter transactions based on search query and other filters
+  // Filter transactions based on security filter and other filters
   const filteredTransactions = React.useMemo(() => {
     if (!transactions) return [];
     
@@ -190,22 +212,14 @@ export default function ClientTransactions() {
         return false;
       }
       
-      // Apply search query filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          transaction.productName.toLowerCase().includes(query) ||
-          transaction.description?.toLowerCase().includes(query) ||
-          transaction.reference?.toLowerCase().includes(query) ||
-          transaction.transactionType.toLowerCase().includes(query) ||
-          transaction.productType.toLowerCase().includes(query) ||
-          transaction.productCategory?.toLowerCase().includes(query)
-        );
+      // Apply security filter
+      if (securityFilter !== 'all' && transaction.productName !== securityFilter) {
+        return false;
       }
       
       return true;
     });
-  }, [transactions, transactionType, productType, searchQuery]);
+  }, [transactions, transactionType, productType, securityFilter]);
   
   // Sort transactions
   const sortedTransactions = React.useMemo(() => {
@@ -585,7 +599,32 @@ export default function ClientTransactions() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label>Date Range</Label>
+              <div className="flex justify-between items-center">
+                <Label>Date Range</Label>
+                <div className="flex space-x-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleQuickDateFilter('1w')}
+                  >
+                    1w
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleQuickDateFilter('1m')}
+                  >
+                    1m
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleQuickDateFilter('3m')}
+                  >
+                    3m
+                  </Button>
+                </div>
+              </div>
               <div className="flex gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
@@ -663,26 +702,23 @@ export default function ClientTransactions() {
             </div>
             
             <div className="space-y-2">
-              <Label>Search</Label>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8"
-                />
-                {searchQuery && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3"
-                    onClick={() => setSearchQuery('')}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+              <Label>Security Filter</Label>
+              <Select 
+                value={securityFilter} 
+                onValueChange={setSecurityFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select security" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Securities</SelectItem>
+                  {transactions && [...new Set(transactions.map(t => t.productName))].sort().map(security => (
+                    <SelectItem key={security} value={security}>
+                      {security}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
