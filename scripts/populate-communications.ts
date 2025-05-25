@@ -128,7 +128,7 @@ const getRandomDuration = (min: number = 5, max: number = 120): number => {
 async function main() {
   try {
     // Get all clients from the database
-    const allClients = await db.select().from(clients);
+    const { rows: allClients } = await pool.query('SELECT * FROM clients');
     
     if (allClients.length === 0) {
       console.error("No clients found in the database. Please run the client population script first.");
@@ -138,7 +138,10 @@ async function main() {
     console.log(`Found ${allClients.length} clients in the database.`);
     
     // Create communication templates
-    const templateData = [];
+    const templateValues = [];
+    const templateParams = [];
+    let paramIndex = 1;
+    
     for (let i = 0; i < 15; i++) {
       const category = getRandomElement(templateCategories);
       
@@ -171,162 +174,241 @@ async function main() {
           content = faker.lorem.paragraphs(3);
       }
       
-      templateData.push({
-        name: `${category.replace('_', ' ')} template ${i + 1}`,
-        category,
-        subject,
-        content,
-        variables: ["clientName", "rmName", "month", "year", "quarter", "performanceDescription", "highlight1", "highlight2", "highlight3"],
-        isGlobal: Math.random() > 0.7, // 30% chance of being global
-        createdBy: 1, // Assume user ID 1 is creating all templates
-        isActive: true
-      });
-    }
-    
-    console.log(`Inserting ${templateData.length} communication templates...`);
-    await db.insert(communicationTemplates).values(templateData);
-    
-    // Generate client communication preferences
-    const preferenceData = [];
-    for (const client of allClients) {
-      preferenceData.push({
-        clientId: client.id,
-        preferredChannels: getRandomSubset(channels, 1, 3),
-        preferredFrequency: getRandomElement(["weekly", "bi-weekly", "monthly", "quarterly"]),
-        preferredDays: getRandomSubset(daysOfWeek, 1, 3),
-        preferredTimeSlots: getRandomSubset(timeSlots, 1, 2),
-        preferredLanguage: getRandomElement(["English", "Hindi", "Tamil", "Telugu", "Kannada", "Malayalam"]),
-        optInMarketing: Math.random() > 0.3, // 70% chance of opting in
-        doNotContact: Math.random() < 0.05, // 5% chance of do not contact
-        lastUpdated: getRandomPastDate(90)
-      });
-    }
-    
-    console.log(`Inserting ${preferenceData.length} client communication preferences...`);
-    await db.insert(clientCommunicationPreferences).values(preferenceData);
-    
-    // Generate communications (more for older clients, fewer for newer ones)
-    const communicationData = [];
-    const actionItemData = [];
-    const attachmentData = [];
-    
-    for (const client of allClients) {
-      // Generate between 5-20 communications per client
-      const communicationCount = Math.floor(Math.random() * 16) + 5;
+      const name = `${category.replace('_', ' ')} template ${i + 1}`;
+      const variables = ["clientName", "rmName", "month", "year", "quarter", "performanceDescription", "highlight1", "highlight2", "highlight3"];
+      const isGlobal = Math.random() > 0.7; // 30% chance of being global
+      const createdBy = 1; // Assume user ID 1 is creating all templates
+      const isActive = true;
       
-      for (let i = 0; i < communicationCount; i++) {
-        // Generate a communication record
-        const startTime = getRandomPastDate(365);
-        const communicationType = getRandomElement(communicationTypes);
-        const channel = getRandomElement(channels);
-        const direction = getRandomElement(directions);
-        const sentiment = getRandomElement(sentiments);
-        const duration = channel === "email" ? null : getRandomDuration();
+      templateValues.push(`($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`);
+      templateParams.push(
+        name, 
+        category, 
+        subject, 
+        content, 
+        variables, 
+        isGlobal, 
+        createdBy, 
+        isActive
+      );
+    }
+    
+    console.log(`Inserting ${templateValues.length} communication templates...`);
+    
+    if (templateValues.length > 0) {
+      const templateQuery = `
+        INSERT INTO communication_templates 
+        (name, category, subject, content, variables, is_global, created_by, is_active) 
+        VALUES ${templateValues.join(', ')}
+      `;
+      
+      await pool.query(templateQuery, templateParams);
+    }
+    
+    // Check for existing client communication preferences
+    const { rows: existingPreferences } = await pool.query('SELECT client_id FROM client_communication_preferences');
+    const existingClientIds = new Set(existingPreferences.map(p => p.client_id));
+    
+    console.log(`Found ${existingPreferences.length} existing client communication preferences.`);
+    
+    // Generate client communication preferences for clients without preferences
+    const preferenceValues = [];
+    const preferenceParams = [];
+    paramIndex = 1; // Reset parameter index
+    
+    for (const client of allClients) {
+      // Skip clients that already have preferences
+      if (existingClientIds.has(client.id)) {
+        continue;
+      }
+      
+      const preferredChannels = getRandomSubset(channels, 1, 3);
+      const preferredFrequency = getRandomElement(["weekly", "bi-weekly", "monthly", "quarterly"]);
+      const preferredDays = getRandomSubset(daysOfWeek, 1, 3);
+      const preferredTimeSlots = getRandomSubset(timeSlots, 1, 2);
+      const preferredLanguage = getRandomElement(["English", "Hindi", "Tamil", "Telugu", "Kannada", "Malayalam"]);
+      const optInMarketing = Math.random() > 0.3; // 70% chance of opting in
+      const doNotContact = Math.random() < 0.05; // 5% chance of do not contact
+      const lastUpdated = getRandomPastDate(90);
+      
+      preferenceValues.push(`($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`);
+      preferenceParams.push(
+        client.id,
+        preferredChannels,
+        preferredFrequency,
+        preferredDays,
+        preferredTimeSlots,
+        preferredLanguage,
+        optInMarketing,
+        doNotContact,
+        lastUpdated
+      );
+    }
+    
+    console.log(`Inserting ${preferenceValues.length} new client communication preferences...`);
+    
+    if (preferenceValues.length > 0) {
+      const preferenceQuery = `
+        INSERT INTO client_communication_preferences 
+        (client_id, preferred_channels, preferred_frequency, preferred_days, preferred_time_slots, preferred_language, opt_in_marketing, do_not_contact, last_updated) 
+        VALUES ${preferenceValues.join(', ')}
+      `;
+      
+      await pool.query(preferenceQuery, preferenceParams);
+    }
+    
+    // Generate communications data
+    let communicationsInserted = 0;
+    let actionItemsInserted = 0;
+    let attachmentsInserted = 0;
+    
+    // Process clients in batches to avoid memory issues
+    const batchSize = 5;
+    for (let i = 0; i < allClients.length; i += batchSize) {
+      const clientBatch = allClients.slice(i, i + batchSize);
+      
+      for (const client of clientBatch) {
+        // Generate between 5-20 communications per client
+        const communicationCount = Math.floor(Math.random() * 16) + 5;
         
-        // More structured subject and summary based on communication type
-        let subject = "";
-        let summary = "";
-        
-        switch (communicationType) {
-          case "portfolio_review":
-            subject = `Portfolio Review - ${new Date(startTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
-            summary = `Reviewed portfolio performance for ${client.fullName}. Discussed market conditions, recent performance, and potential adjustments to investment strategy.`;
-            break;
-          case "market_update":
-            subject = `Market Update - ${new Date(startTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
-            summary = `Provided market updates to ${client.fullName} covering recent market developments, economic indicators, and potential impacts on their investment strategy.`;
-            break;
-          case "investment_advice":
-            subject = "Investment Opportunity Discussion";
-            summary = `Discussed potential investment opportunities with ${client.fullName} based on their risk profile and financial goals.`;
-            break;
-          case "onboarding":
-            subject = "Welcome and Onboarding Process";
-            summary = `Completed onboarding process for ${client.fullName}. Reviewed financial goals, risk tolerance, and initial investment strategy.`;
-            break;
-          case "complaint_handling":
-            subject = "Resolution of Service Issue";
-            summary = `Addressed concerns from ${client.fullName} regarding ${faker.lorem.words(3)}. Provided resolution steps and follow-up plan.`;
-            break;
-          default:
-            subject = `${communicationType.replace('_', ' ')} - ${faker.lorem.words(3)}`;
-            summary = faker.lorem.paragraph();
-        }
-        
-        const communicationId = i + 1 + (client.id * 100); // Generate unique IDs
-        
-        communicationData.push({
-          id: communicationId,
-          clientId: client.id,
-          initiatedBy: 1, // Assume user ID 1 is the RM
-          startTime,
-          endTime: duration ? new Date(startTime.getTime() + duration * 60000) : null,
-          duration,
-          communicationType,
-          channel,
-          direction,
-          subject,
-          summary,
-          notes: faker.lorem.paragraphs(2),
-          sentiment,
-          tags: getRandomSubset(tags, 0, 4),
-          followUpRequired: Math.random() > 0.7, // 30% chance of requiring follow-up
-          nextSteps: Math.random() > 0.7 ? faker.lorem.sentences(2) : null
-        });
-        
-        // Generate action items for some communications (30% chance)
-        if (Math.random() > 0.7) {
-          const actionItemCount = Math.floor(Math.random() * 3) + 1; // 1-3 action items
+        for (let j = 0; j < communicationCount; j++) {
+          // Generate a communication record
+          const startTime = getRandomPastDate(365);
+          const communicationType = getRandomElement(communicationTypes);
+          const channel = getRandomElement(channels);
+          const direction = getRandomElement(directions);
+          const sentiment = getRandomElement(sentiments);
+          const duration = channel === "email" ? null : getRandomDuration();
+          const endTime = duration ? new Date(startTime.getTime() + duration * 60000) : null;
           
-          for (let j = 0; j < actionItemCount; j++) {
-            actionItemData.push({
-              communicationId,
-              title: `${faker.lorem.words(3)} for ${client.fullName}`,
-              description: faker.lorem.sentences(2),
-              assignedTo: 1, // Assume user ID 1 is the RM
-              dueDate: getRandomFutureDate(30),
-              priority: getRandomElement(priorities),
-              status: getRandomElement(statuses),
-              completedAt: Math.random() > 0.5 ? getRandomPastDate(10) : null
-            });
+          // More structured subject and summary based on communication type
+          let subject = "";
+          let summary = "";
+          
+          switch (communicationType) {
+            case "portfolio_review":
+              subject = `Portfolio Review - ${new Date(startTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+              summary = `Reviewed portfolio performance for ${client.full_name}. Discussed market conditions, recent performance, and potential adjustments to investment strategy.`;
+              break;
+            case "market_update":
+              subject = `Market Update - ${new Date(startTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+              summary = `Provided market updates to ${client.full_name} covering recent market developments, economic indicators, and potential impacts on their investment strategy.`;
+              break;
+            case "investment_advice":
+              subject = "Investment Opportunity Discussion";
+              summary = `Discussed potential investment opportunities with ${client.full_name} based on their risk profile and financial goals.`;
+              break;
+            case "onboarding":
+              subject = "Welcome and Onboarding Process";
+              summary = `Completed onboarding process for ${client.full_name}. Reviewed financial goals, risk tolerance, and initial investment strategy.`;
+              break;
+            case "complaint_handling":
+              subject = "Resolution of Service Issue";
+              summary = `Addressed concerns from ${client.full_name} regarding ${faker.lorem.words(3)}. Provided resolution steps and follow-up plan.`;
+              break;
+            default:
+              subject = `${communicationType.replace('_', ' ')} - ${faker.lorem.words(3)}`;
+              summary = faker.lorem.paragraph();
           }
-        }
-        
-        // Generate attachments for some communications (20% chance)
-        if (Math.random() > 0.8) {
-          const attachmentCount = Math.floor(Math.random() * 2) + 1; // 1-2 attachments
           
-          for (let j = 0; j < attachmentCount; j++) {
-            attachmentData.push({
-              communicationId,
-              fileName: `${getRandomElement(attachmentTypes)}_${faker.lorem.slug(2)}.pdf`,
-              fileType: "application/pdf",
-              fileSize: Math.floor(Math.random() * 5000000) + 100000, // 100KB-5MB
-              fileUrl: `https://example.com/attachments/${faker.lorem.slug(4)}.pdf`,
-              description: faker.lorem.sentence(),
-              uploadedBy: 1,
-              createdAt: startTime
-            });
+          const notes = faker.lorem.paragraphs(2);
+          const communicationTags = getRandomSubset(tags, 0, 4);
+          const followUpRequired = Math.random() > 0.7; // 30% chance of requiring follow-up
+          const nextSteps = Math.random() > 0.7 ? faker.lorem.sentences(2) : null;
+          
+          // Insert communication
+          const communicationResult = await pool.query(
+            `INSERT INTO communications 
+            (client_id, initiated_by, start_time, end_time, duration, communication_type, 
+             channel, direction, subject, summary, notes, sentiment, tags, follow_up_required, next_steps) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
+            RETURNING id`,
+            [
+              client.id, 
+              1, // Assume user ID 1 is the RM
+              startTime, 
+              endTime, 
+              duration, 
+              communicationType, 
+              channel, 
+              direction, 
+              subject, 
+              summary, 
+              notes, 
+              sentiment, 
+              communicationTags, 
+              followUpRequired, 
+              nextSteps
+            ]
+          );
+          
+          communicationsInserted++;
+          
+          // Get the communication ID from the insert result
+          const communicationId = communicationResult.rows[0].id;
+          
+          // Generate action items for some communications (30% chance)
+          if (Math.random() > 0.7) {
+            const actionItemCount = Math.floor(Math.random() * 3) + 1; // 1-3 action items
+            
+            for (let k = 0; k < actionItemCount; k++) {
+              const title = `${faker.lorem.words(3)} for ${client.full_name}`;
+              const description = faker.lorem.sentences(2);
+              const assignedTo = 1; // Assume user ID 1 is the RM
+              const dueDate = getRandomFutureDate(30);
+              const priority = getRandomElement(priorities);
+              const status = getRandomElement(statuses);
+              const completedAt = status === 'completed' ? getRandomPastDate(10) : null;
+              
+              await pool.query(
+                `INSERT INTO communication_action_items 
+                (communication_id, title, description, assigned_to, due_date, priority, status, completed_at) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                [communicationId, title, description, assignedTo, dueDate, priority, status, completedAt]
+              );
+              
+              actionItemsInserted++;
+            }
+          }
+          
+          // Generate attachments for some communications (20% chance)
+          if (Math.random() > 0.8) {
+            const attachmentCount = Math.floor(Math.random() * 2) + 1; // 1-2 attachments
+            
+            for (let k = 0; k < attachmentCount; k++) {
+              const fileName = `${getRandomElement(attachmentTypes)}_${faker.lorem.slug(2)}.pdf`;
+              const fileType = "application/pdf";
+              const fileSize = Math.floor(Math.random() * 5000000) + 100000; // 100KB-5MB
+              const fileUrl = `https://example.com/attachments/${faker.lorem.slug(4)}.pdf`;
+              const description = faker.lorem.sentence();
+              const uploadedBy = 1;
+              
+              await pool.query(
+                `INSERT INTO communication_attachments 
+                (communication_id, file_name, file_type, file_size, file_url, description, uploaded_by) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                [communicationId, fileName, fileType, fileSize, fileUrl, description, uploadedBy]
+              );
+              
+              attachmentsInserted++;
+            }
+          }
+          
+          // Log progress every 50 communications
+          if (communicationsInserted % 50 === 0) {
+            console.log(`Progress: ${communicationsInserted} communications, ${actionItemsInserted} action items, ${attachmentsInserted} attachments`);
           }
         }
       }
     }
     
-    console.log(`Inserting ${communicationData.length} communications...`);
-    await db.insert(communications).values(communicationData);
-    
-    console.log(`Inserting ${actionItemData.length} action items...`);
-    await db.insert(communicationActionItems).values(actionItemData);
-    
-    console.log(`Inserting ${attachmentData.length} attachments...`);
-    await db.insert(communicationAttachments).values(attachmentData);
-    
+    console.log(`Inserted ${communicationsInserted} communications, ${actionItemsInserted} action items, and ${attachmentsInserted} attachments.`);
     console.log("Sample communication data inserted successfully!");
     
   } catch (error) {
     console.error("Error inserting sample data:", error);
   } finally {
-    await db.end();
+    await pool.end();
   }
 }
 
