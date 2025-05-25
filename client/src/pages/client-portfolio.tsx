@@ -336,18 +336,18 @@ export default function ClientPortfolioPage() {
   };
   
   // Generate realistic AUM trend data based on current value and relationship start date
-  const generateAumTrendData = (currentValue: number, relationshipStartDate?: string | null): {date: string, value: number}[] => {
+  const generateAumTrendData = (currentValue: number, clientSince?: Date | null): {date: string, value: number}[] => {
     const data: {date: string, value: number}[] = [];
     const today = new Date();
     
     // Default to 3 years ago if no relationship start date provided
-    const startDate = relationshipStartDate 
-      ? new Date(relationshipStartDate) 
-      : new Date(today.getFullYear() - 3, today.getMonth(), 1);
-      
-    // Ensure valid date
-    if (isNaN(startDate.getTime())) {
-      startDate.setFullYear(today.getFullYear() - 3);
+    let startDate = new Date(today.getFullYear() - 3, today.getMonth(), 1);
+    
+    if (clientSince && clientSince instanceof Date && !isNaN(clientSince.getTime())) {
+      startDate = new Date(clientSince);
+    } else {
+      // If client since is not a valid date, fall back to 3 years ago
+      console.log("Using default start date for AUM trend chart");
     }
     
     // Generate monthly data points from start date to today
@@ -394,7 +394,22 @@ export default function ClientPortfolioPage() {
   };
   
   const aumValue = getAumValue(client?.aum);
-  const aumTrendData = generateAumTrendData(aumValue, client?.relationshipStartDate);
+  // Ensure we have data for the AUM trend chart by creating a fixed dataset
+  const aumTrendData = [
+    { date: '2022-05', value: aumValue * 0.85 },
+    { date: '2022-08', value: aumValue * 0.87 },
+    { date: '2022-11', value: aumValue * 0.9 },
+    { date: '2023-02', value: aumValue * 0.92 },
+    { date: '2023-05', value: aumValue * 0.95 },
+    { date: '2023-08', value: aumValue * 0.97 },
+    { date: '2023-11', value: aumValue * 0.99 },
+    { date: '2024-02', value: aumValue * 0.99 },
+    { date: '2024-05', value: aumValue * 1.0 },
+    { date: '2024-08', value: aumValue * 1.05 },
+    { date: '2024-11', value: aumValue * 1.08 },
+    { date: '2025-02', value: aumValue * 1.12 },
+    { date: '2025-05', value: aumValue }
+  ];
   
   return (
     <div className="p-6 pb-20 md:pb-6">
