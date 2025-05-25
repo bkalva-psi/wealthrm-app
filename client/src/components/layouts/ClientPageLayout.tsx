@@ -33,11 +33,13 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
   return (
     <div className="container mx-auto p-4 md:p-6">
       <div className="mb-6">
-        <Button variant="ghost" asChild>
-          <Link href="/clients">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Clients
-          </Link>
+        <Button 
+          variant="ghost" 
+          onClick={() => window.location.hash = "/clients"}
+          className="flex items-center"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Clients
         </Button>
       </div>
 
@@ -114,59 +116,71 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
       {/* Tabs Navigation */}
       <Tabs defaultValue={currentTab} className="mb-6">
         <TabsList className="mb-4 flex overflow-x-auto pb-1">
-          <TabsTrigger value="personal" asChild>
-            <Link href={`/clients/${clientId}/personal`}>
-              <Button variant={currentTab === 'personal' ? 'default' : 'ghost'} className="mr-1">
-                <User className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Personal Info</span>
-                <span className="sm:hidden">Personal</span>
-              </Button>
-            </Link>
+          <TabsTrigger value="personal">
+            <Button 
+              variant={currentTab === 'personal' ? 'default' : 'ghost'} 
+              className="mr-1"
+              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            >
+              <User className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Personal Info</span>
+              <span className="sm:hidden">Personal</span>
+            </Button>
           </TabsTrigger>
-          <TabsTrigger value="portfolio" asChild>
-            <Link href={`/clients/${clientId}/portfolio`}>
-              <Button variant={currentTab === 'portfolio' ? 'default' : 'ghost'} className="mr-1">
-                <PieChart className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Portfolio</span>
-                <span className="sm:hidden">Portfolio</span>
-              </Button>
-            </Link>
+          <TabsTrigger value="portfolio">
+            <Button 
+              variant={currentTab === 'portfolio' ? 'default' : 'ghost'} 
+              className="mr-1"
+              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+            >
+              <PieChart className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Portfolio</span>
+              <span className="sm:hidden">Portfolio</span>
+            </Button>
           </TabsTrigger>
-          <TabsTrigger value="transactions" asChild>
-            <Link href={`/clients/${clientId}/transactions`}>
-              <Button variant={currentTab === 'transactions' ? 'default' : 'ghost'} className="mr-1">
-                <Wallet className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Transactions</span>
-                <span className="sm:hidden">Txns</span>
-              </Button>
-            </Link>
+          <TabsTrigger value="transactions">
+            <Button 
+              variant={currentTab === 'transactions' ? 'default' : 'ghost'} 
+              className="mr-1"
+              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+            >
+              <Wallet className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Transactions</span>
+              <span className="sm:hidden">Txns</span>
+            </Button>
           </TabsTrigger>
-          <TabsTrigger value="communications" asChild>
-            <Link href={`/clients/${clientId}/communications`}>
-              <Button variant={currentTab === 'communications' ? 'default' : 'ghost'} className="mr-1">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Communications</span>
-                <span className="sm:hidden">Comms</span>
-              </Button>
-            </Link>
+          <TabsTrigger value="communications">
+            <Button 
+              variant={currentTab === 'communications' ? 'default' : 'ghost'} 
+              className="mr-1"
+              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Communications</span>
+              <span className="sm:hidden">Comms</span>
+            </Button>
           </TabsTrigger>
-          <TabsTrigger value="documents" asChild>
-            <Link href={`/clients/${clientId}/documents`}>
-              <Button variant={currentTab === 'documents' ? 'default' : 'ghost'} className="mr-1">
-                <FileText className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Documents</span>
-                <span className="sm:hidden">Docs</span>
-              </Button>
-            </Link>
+          <TabsTrigger value="documents">
+            <Button 
+              variant={currentTab === 'documents' ? 'default' : 'ghost'} 
+              className="mr-1"
+              onClick={() => window.location.hash = `/clients/${clientId}/documents`}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Documents</span>
+              <span className="sm:hidden">Docs</span>
+            </Button>
           </TabsTrigger>
-          <TabsTrigger value="calendar" asChild>
-            <Link href={`/clients/${clientId}/calendar`}>
-              <Button variant={currentTab === 'calendar' ? 'default' : 'ghost'} className="mr-1">
-                <Calendar className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Appointments</span>
-                <span className="sm:hidden">Appts</span>
-              </Button>
-            </Link>
+          <TabsTrigger value="calendar">
+            <Button 
+              variant={currentTab === 'calendar' ? 'default' : 'ghost'} 
+              className="mr-1"
+              onClick={() => window.location.hash = `/clients/${clientId}/calendar`}
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Appointments</span>
+              <span className="sm:hidden">Appts</span>
+            </Button>
           </TabsTrigger>
         </TabsList>
       </Tabs>
