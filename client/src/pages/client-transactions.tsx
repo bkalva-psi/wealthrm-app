@@ -161,24 +161,29 @@ export default function ClientTransactions() {
     enabled: !!clientId
   });
   
-  // Get transaction data
-  const formattedStartDate = format(startDate, 'yyyy-MM-dd');
-  const formattedEndDate = format(endDate, 'yyyy-MM-dd');
-  
+  // Get all transaction data - we'll filter it client-side
   const { data: transactions, isLoading: isTransactionsLoading } = useApiQuery<Transaction[]>({
     queryKey: [
-      `/api/clients/${clientId}/transactions?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+      `/api/clients/${clientId}/transactions`,
     ],
     enabled: !!clientId
   });
   
-  // Filter transactions based on security filter and other filters
+  // Filter transactions based on date range, security filter and other filters
   const filteredTransactions = React.useMemo(() => {
     if (!transactions) return [];
+    
+    console.log(`Filtering transactions between ${startDate.toISOString()} and ${endDate.toISOString()}`);
     
     return transactions.filter(transaction => {
       // Remove fee transactions
       if (transaction.transactionType === 'fee') {
+        return false;
+      }
+      
+      // Apply date range filter
+      const txDate = new Date(transaction.transactionDate);
+      if (txDate < startDate || txDate > endDate) {
         return false;
       }
       
@@ -199,7 +204,7 @@ export default function ClientTransactions() {
       
       return true;
     });
-  }, [transactions, transactionType, productType, securityFilter]);
+  }, [transactions, transactionType, productType, securityFilter, startDate, endDate]);
   
   // Sort transactions
   const sortedTransactions = React.useMemo(() => {
