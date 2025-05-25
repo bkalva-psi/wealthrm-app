@@ -875,12 +875,9 @@ export default function ClientPortfolioPage() {
               <CardDescription>Portfolio value growth over time</CardDescription>
             </CardHeader>
             <CardContent className="h-80">
-              <AumTrendChart 
-                currentValue={client?.aumValue || 5000000} 
-                clientSince={client?.createdAt ? new Date(client.createdAt) : undefined}
-                showFullPeriod={true}
-                title="All Time Performance"
-              />
+              <div className="h-full">
+                <SimpleAumTrendChart aumValue={client?.aumValue || 5000000} />
+              </div>
             </CardContent>
           </Card>
           
