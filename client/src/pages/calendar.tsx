@@ -253,7 +253,7 @@ export default function CalendarPage() {
   
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 px-4 md:px-0">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Calendar</h1>
           <p className="text-sm text-slate-600">Manage your meetings and appointments</p>

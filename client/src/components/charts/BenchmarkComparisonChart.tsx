@@ -100,13 +100,8 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
       const benchmarkChange = (random() * 3 - 1.3) * (timeRange === '3m' ? 0.5 : 1); // -1.3% to +1.7% change
       
       // Calculate new values based on previous point
-      let newPortfolioValue = 0;
-      let newBenchmarkValue = 0;
-      
-      if (i > 0 && portfolioData[i-1] !== undefined && benchmarkData[i-1] !== undefined) {
-        newPortfolioValue = portfolioData[i-1] * (1 + portfolioChange/100);
-        newBenchmarkValue = benchmarkData[i-1] * (1 + benchmarkChange/100);
-      }
+      const newPortfolioValue = portfolioData[i-1] * (1 + portfolioChange/100);
+      const newBenchmarkValue = benchmarkData[i-1] * (1 + benchmarkChange/100);
       
       portfolioData.push(newPortfolioValue);
       benchmarkData.push(newBenchmarkValue);
