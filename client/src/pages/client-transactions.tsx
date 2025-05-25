@@ -156,23 +156,13 @@ export default function ClientTransactions() {
   });
   
   // Get transaction data
-  const { data: transactions, isLoading: isTransactionsLoading, refetch: refetchTransactions } = useApiQuery<Transaction[]>({
+  const { data: transactions, isLoading: isTransactionsLoading } = useApiQuery<Transaction[]>({
     queryKey: [
-      `/api/clients/${clientId}/transactions`
+      `/api/clients/${clientId}/transactions`,
+      { startDate: format(startDate, 'yyyy-MM-dd'), endDate: format(endDate, 'yyyy-MM-dd') }
     ],
-    enabled: !!clientId,
-    queryParams: {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString()
-    }
+    enabled: !!clientId
   });
-  
-  // Refetch transactions when date filters change
-  useEffect(() => {
-    if (clientId) {
-      refetchTransactions();
-    }
-  }, [startDate, endDate, clientId, refetchTransactions]);
   
   // Filter transactions based on security filter and other filters
   const filteredTransactions = React.useMemo(() => {

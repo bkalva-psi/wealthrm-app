@@ -1,8 +1,34 @@
 import { QueryClient, QueryFunction, useQuery } from "@tanstack/react-query";
+import React from "react";
 
-export function useApiQuery<T>(options: Parameters<typeof useQuery<T>>[0]) {
+export function useApiQuery<T>(options: Parameters<typeof useQuery<T>>[0] & {
+  queryParams?: Record<string, string>
+}) {
+  const { queryKey, queryParams, ...rest } = options;
+  
+  // Create URL with query parameters if provided
+  const enhancedQueryKey = React.useMemo(() => {
+    if (!queryParams || Object.keys(queryParams).length === 0) {
+      return queryKey;
+    }
+    
+    const baseUrl = queryKey[0] as string;
+    const url = new URL(baseUrl, window.location.origin);
+    
+    // Add query parameters
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, value);
+      }
+    });
+    
+    // Replace first element of queryKey with the enhanced URL
+    return [url.pathname + url.search, ...(queryKey as any).slice(1)];
+  }, [queryKey, queryParams]);
+  
   return useQuery<T>({
-    ...options,
+    ...rest,
+    queryKey: enhancedQueryKey,
   });
 }
 
