@@ -1,6 +1,7 @@
 import { db } from '../server/db';
 import { appointments } from '../shared/schema';
 import { faker } from '@faker-js/faker';
+import { sql } from 'drizzle-orm';
 
 // Get random item from array
 function getRandomItem<T>(array: T[]): T {

@@ -171,6 +171,8 @@ function AuthenticatedApp() {
       
       case currentRoute === '/calendar':
         return <Calendar />;
+      case currentRoute === '/appointments':
+        return <Calendar />;
       case currentRoute === '/tasks':
         return <Tasks />;
       case currentRoute === '/analytics':
