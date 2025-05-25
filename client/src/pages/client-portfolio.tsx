@@ -177,30 +177,91 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
 
 // Local performance chart component (simplified for now)
 function LocalPerformanceChart({ periods }: { periods: { label: string, value: number }[] }) {
+  // Find highest and lowest performance values
+  const maxValue = Math.max(...periods.map(period => period.value));
+  const minValue = Math.min(...periods.map(period => period.value));
+  
+  // Group periods into rows as requested
+  const shortTermPeriods = periods.filter(p => ['1M', '3M', '6M'].includes(p.label));
+  const mediumTermPeriods = periods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label));
+  const longTermPeriods = periods.filter(p => ['YTD', 'Since Inception'].includes(p.label));
+  
+  // Render a single performance item
+  const renderPeriodItem = (period: {label: string, value: number}) => (
+    <div key={period.label} className="flex flex-col items-center">
+      <span className={`text-sm ${
+        period.value >= 0 ? 'text-green-600' : 'text-red-600'
+      } ${
+        period.value === maxValue || period.value === minValue ? 'font-bold' : 'font-medium'
+      }`}>
+        {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+      </span>
+      <span className="text-xs text-slate-500">{period.label}</span>
+    </div>
+  );
+  
+  // Render a group of performance items
+  const renderPeriodGroup = (periodGroup: {label: string, value: number}[]) => (
+    <div className="flex justify-between gap-4">
+      {periodGroup.map(renderPeriodItem)}
+    </div>
+  );
+  
   return (
     <div className="mt-4">
-      {/* Desktop view */}
-      <div className="hidden md:flex flex-wrap gap-3">
-        {periods.map((period) => (
-          <div key={period.label} className="flex flex-col items-center">
-            <span className={`text-sm font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-            </span>
-            <span className="text-xs text-slate-500">{period.label}</span>
-          </div>
-        ))}
+      {/* Desktop view with organized rows */}
+      <div className="hidden md:block space-y-4">
+        {renderPeriodGroup(shortTermPeriods)}
+        {renderPeriodGroup(mediumTermPeriods)}
+        {renderPeriodGroup(longTermPeriods)}
       </div>
       
-      {/* Mobile view - grid layout */}
-      <div className="md:hidden grid grid-cols-4 gap-2">
-        {periods.map((period) => (
-          <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
-            <span className={`text-sm font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-            </span>
-            <span className="text-xs text-slate-500">{period.label}</span>
-          </div>
-        ))}
+      {/* Mobile view - compact grid layout */}
+      <div className="md:hidden space-y-3">
+        <div className="grid grid-cols-3 gap-2">
+          {shortTermPeriods.map(period => (
+            <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
+              <span className={`text-sm ${
+                period.value >= 0 ? 'text-green-600' : 'text-red-600'
+              } ${
+                period.value === maxValue || period.value === minValue ? 'font-bold' : 'font-medium'
+              }`}>
+                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+              </span>
+              <span className="text-xs text-slate-500">{period.label}</span>
+            </div>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-3 gap-2">
+          {mediumTermPeriods.map(period => (
+            <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
+              <span className={`text-sm ${
+                period.value >= 0 ? 'text-green-600' : 'text-red-600'
+              } ${
+                period.value === maxValue || period.value === minValue ? 'font-bold' : 'font-medium'
+              }`}>
+                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+              </span>
+              <span className="text-xs text-slate-500">{period.label}</span>
+            </div>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-2 gap-2">
+          {longTermPeriods.map(period => (
+            <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
+              <span className={`text-sm ${
+                period.value >= 0 ? 'text-green-600' : 'text-red-600'
+              } ${
+                period.value === maxValue || period.value === minValue ? 'font-bold' : 'font-medium'
+              }`}>
+                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
+              </span>
+              <span className="text-xs text-slate-500">{period.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
