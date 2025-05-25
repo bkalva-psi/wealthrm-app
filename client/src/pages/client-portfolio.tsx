@@ -40,6 +40,7 @@ import SimpleAumTrendChart from "../components/charts/SimpleAumTrendChart";
 import AumTrendChart from "../components/charts/AumTrendChart";
 import BenchmarkComparisonChart from "../components/charts/BenchmarkComparisonChart";
 import FixedTooltipChart from "../components/charts/FixedTooltipChart";
+import PerformanceComparisonChart from "../components/charts/PerformanceComparisonChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -1023,103 +1024,40 @@ export default function ClientPortfolioPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Performance by Time Period</CardTitle>
+                <CardDescription>Portfolio vs Benchmark comparison across timeframes</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Monthly Performance */}
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Monthly Performance</h3>
-                    <div className="grid grid-cols-3 gap-3">
-                      {performancePeriods.filter(p => ['1M', '3M', '6M'].includes(p.label)).map((period) => (
-                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg">
-                          <div className="text-sm font-medium text-center mb-2">{period.label}</div>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Portfolio:</span>
-                              <span className={`font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Benchmark:</span>
-                              <span className={`font-medium ${period.benchmark >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.benchmark > 0 ? '+' : ''}{period.benchmark.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between border-t border-slate-200 pt-1 mt-1">
-                              <span className="text-slate-600">Alpha:</span>
-                              <span className={`font-medium ${period.alpha >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.alpha > 0 ? '+' : ''}{period.alpha.toFixed(1)}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                <div className="space-y-6">
+                  {/* Monthly Performance Chart */}
+                  <div className="border rounded-lg p-4 bg-white">
+                    <PerformanceComparisonChart 
+                      data={performancePeriods.filter(p => ['1M', '3M', '6M'].includes(p.label))} 
+                      timeframe="monthly"
+                    />
                   </div>
                   
-                  {/* Yearly Performance */}
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Yearly Performance</h3>
-                    <div className="grid grid-cols-3 gap-3">
-                      {performancePeriods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label)).map((period) => (
-                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg">
-                          <div className="text-sm font-medium text-center mb-2">{period.label}</div>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Portfolio:</span>
-                              <span className={`font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Benchmark:</span>
-                              <span className={`font-medium ${period.benchmark >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.benchmark > 0 ? '+' : ''}{period.benchmark.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between border-t border-slate-200 pt-1 mt-1">
-                              <span className="text-slate-600">Alpha:</span>
-                              <span className={`font-medium ${period.alpha >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.alpha > 0 ? '+' : ''}{period.alpha.toFixed(1)}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Yearly Performance Chart */}
+                  <div className="border rounded-lg p-4 bg-white">
+                    <PerformanceComparisonChart 
+                      data={performancePeriods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label))} 
+                      timeframe="yearly"
+                    />
                   </div>
                   
-                  {/* Other Timeframes */}
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Overall Performance</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      {performancePeriods.filter(p => ['YTD', 'Since Inception'].includes(p.label)).map((period) => (
-                        <div key={period.label} className="p-3 bg-slate-50 rounded-lg">
-                          <div className="text-sm font-medium text-center mb-2">{period.label}</div>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Portfolio:</span>
-                              <span className={`font-medium ${period.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-600">Benchmark:</span>
-                              <span className={`font-medium ${period.benchmark >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.benchmark > 0 ? '+' : ''}{period.benchmark.toFixed(1)}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between border-t border-slate-200 pt-1 mt-1">
-                              <span className="text-slate-600">Alpha:</span>
-                              <span className={`font-medium ${period.alpha >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {period.alpha > 0 ? '+' : ''}{period.alpha.toFixed(1)}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Overall Performance Chart */}
+                  <div className="border rounded-lg p-4 bg-white">
+                    <PerformanceComparisonChart 
+                      data={performancePeriods.filter(p => ['YTD', 'Since Inception'].includes(p.label))} 
+                      timeframe="overall"
+                    />
+                  </div>
+                  
+                  {/* Summary Text */}
+                  <div className="text-xs text-slate-500 pt-2 px-1">
+                    <p>
+                      <span className="font-medium">Alpha</span> represents excess return over benchmark after adjusting for risk. 
+                      Positive values indicate outperformance of the managed portfolio versus the market benchmark.
+                    </p>
                   </div>
                 </div>
               </CardContent>
