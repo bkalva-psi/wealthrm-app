@@ -199,7 +199,7 @@ function AuthenticatedApp() {
           onSwipeRight={handleSwipeRight}
           className="flex-1 overflow-hidden"
         >
-          <main className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6 pb-mobile-nav" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <main className="flex-1 overflow-y-auto bg-slate-50 p-0 pb-mobile-nav">
             {renderComponent()}
           </main>
         </SwipeableView>
