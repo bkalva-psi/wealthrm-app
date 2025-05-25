@@ -558,7 +558,11 @@ export default function ClientPortfolioPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: client, isLoading, error } = useQuery({
     queryKey: ["client", id],
-    queryFn: () => clientApi.getClient(Number(id)),
+    queryFn: async () => {
+      const data = await clientApi.getClient(Number(id));
+      console.log("Client data in portfolio page:", data);
+      return data;
+    },
     enabled: !!id && !isNaN(Number(id))
   });
   
