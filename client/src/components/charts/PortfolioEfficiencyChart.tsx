@@ -173,8 +173,8 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
           width="100%" 
           height="100%" 
           viewBox={`0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`}
-          className="overflow-visible"
-          style={{ maxHeight: "calc(100% - 24px)" }} // Prevent overflow
+          className="overflow-hidden"
+          style={{ maxHeight: "250px" }} // Fixed height to prevent overlap
         >
           <g transform={`translate(${margin.left}, ${margin.top})`}>
             {/* X and Y axis */}
@@ -322,24 +322,14 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
         )}
       </div>
       
-      <div className="mt-1 flex flex-wrap gap-2 justify-center text-[10px]">
-        {/* Show actual securities in legend */}
-        {dataPoints.map((point, i) => (
-          <div key={`legend-${i}`} className="flex items-center">
-            <div 
-              className="w-2 h-2 rounded-full mr-1" 
-              style={{ backgroundColor: getColor(point.name, point.type) }}
-            ></div>
-            <span className="truncate max-w-[80px]">{point.name.split(' ')[0]}</span>
-          </div>
-        ))}
+      <div className="mt-1 flex justify-center gap-6 text-xs">
         <div className="flex items-center">
-          <div className="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
           <span>Portfolio</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-0 border-t-2 border-dashed border-purple-500 mr-1"></div>
-          <span>Efficient</span>
+          <div className="w-4 h-0 border-t-2 border-dashed border-purple-500 mr-1"></div>
+          <span>Efficient Frontier</span>
         </div>
       </div>
     </div>
