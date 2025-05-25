@@ -23,6 +23,8 @@ interface PerformanceChartProps {
   showBenchmark?: boolean;
   height?: number;
   periodFilter?: boolean;
+  yAxisLabel?: string;
+  tooltipFormatter?: (value: number) => string;
 }
 
 const PERIODS = [
@@ -40,7 +42,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   title,
   showBenchmark = true,
   height = 300,
-  periodFilter = true
+  periodFilter = true,
+  yAxisLabel,
+  tooltipFormatter
 }) => {
   const [activePeriod, setActivePeriod] = useState('1Y');
   const [hoveredData, setHoveredData] = useState<any | null>(null);
@@ -74,6 +78,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
   };
   
   const formatYAxis = (value: number) => {
+    if (yAxisLabel) {
+      return `${yAxisLabel}${value}`;
+    }
     return `${value}%`;
   };
   
@@ -86,7 +93,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
             <div className="flex items-center">
               <div className="w-3 h-3 rounded-full bg-primary mr-2"></div>
               <p className="text-xs">
-                Portfolio: <span className="font-medium">{payload[0].value}%</span>
+                Portfolio: <span className="font-medium">
+                  {tooltipFormatter ? tooltipFormatter(payload[0].value) : `${payload[0].value}%`}
+                </span>
               </p>
             </div>
             {showBenchmark && payload[1] && (
@@ -147,7 +156,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
           <div className="absolute top-0 left-0 z-10 bg-white/80 p-2 rounded-lg border border-slate-200">
             <p className="text-xs text-slate-500">{formatTooltipDate(hoveredData.date)}</p>
             <p className="text-sm font-medium">
-              {hoveredData.value > 0 ? '+' : ''}{hoveredData.value}%
+              {tooltipFormatter 
+                ? tooltipFormatter(hoveredData.value)
+                : `${hoveredData.value > 0 ? '+' : ''}${hoveredData.value}%`}
             </p>
           </div>
         )}

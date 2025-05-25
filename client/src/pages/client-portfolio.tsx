@@ -434,11 +434,30 @@ export default function ClientPortfolioPage() {
                       />
                     </div>
                   </div>
-                  <AllocationChart 
-                    data={client?.assetAllocation || mockAssetAllocation} 
-                    title="Asset Classes" 
-                    color="blue" 
-                  />
+                  <div className="flex flex-col">
+                    <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
+                    <div className="flex-1">
+                      <PerformanceChart 
+                        data={[
+                          { date: '2022-05', value: aumValue * 0.85 },
+                          { date: '2022-08', value: aumValue * 0.87 },
+                          { date: '2022-11', value: aumValue * 0.9 },
+                          { date: '2023-02', value: aumValue * 0.92 },
+                          { date: '2023-05', value: aumValue * 0.95 },
+                          { date: '2023-08', value: aumValue * 0.97 },
+                          { date: '2023-11', value: aumValue * 0.99 },
+                          { date: '2024-02', value: aumValue * 0.99 },
+                          { date: '2024-05', value: aumValue * 1.0 },
+                          { date: '2024-08', value: aumValue * 1.05 },
+                          { date: '2024-11', value: aumValue * 1.08 },
+                          { date: '2025-02', value: aumValue * 1.12 },
+                          { date: '2025-05', value: aumValue }
+                        ]}
+                        yAxisLabel="₹"
+                        tooltipFormatter={(value) => `₹${(value / 100000).toFixed(2)} L`}
+                      />
+                    </div>
+                  </div>
                 </div>
               </CardContent>
               <CardFooter className="pt-0">
@@ -456,22 +475,6 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  <div className="flex items-baseline justify-between">
-                    <div>
-                      <div className="text-3xl font-bold text-green-600">
-                        +{client?.yearlyPerformance || 14.5}%
-                      </div>
-                      <div className="text-sm text-slate-500">1 Year Returns</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-semibold text-green-600">
-                        +{client?.threeYearReturn || 12.3}%
-                      </div>
-                      <div className="text-sm text-slate-500">3 Year Returns (XIRR)</div>
-                    </div>
-                  </div>
-                  
-                  <Separator />
                   
                   <div>
                     <h4 className="text-sm font-medium mb-2">Returns by Period</h4>
