@@ -701,7 +701,9 @@ export default function ClientPortfolioPage() {
   
   // Extract client data safely with proper fallbacks
   const aumValue = client?.aumValue || getAumValue(client?.aum) || 2500000;
-  const yearlyPerformance = client?.oneYearReturn || 12.5; // Get from oneYearReturn property
+  // Log the AUM value for debugging
+  console.log("Client AUM Value:", aumValue, "Client AUM formatted:", client?.aum);
+  const yearlyPerformance = client?.yearlyPerformance || client?.oneYearReturn || 12.5; 
   const clientSinceDate = client?.clientSince ? new Date(client.clientSince) : null;
   const transactions = generateTransactionData();
   
@@ -747,7 +749,7 @@ export default function ClientPortfolioPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCard 
           title="Assets Under Management"
-          value={client?.aum || "₹25.00 L"}
+          value={`₹${(aumValue / 100000).toFixed(2)} L`}
           icon={<Wallet className="h-5 w-5" />}
           description="Total portfolio value"
           color="blue"
