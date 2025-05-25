@@ -111,6 +111,7 @@ const AumTrendChart: React.FC<AumTrendChartProps> = ({
             axisLine={{ stroke: '#E5E7EB' }}
             tickLine={false}
             width={60}
+            domain={['dataMin - 50000', 'dataMax + 50000']}
           />
           <Tooltip
             formatter={(value: number) => [formatTooltipValue(value), 'AUM']}
@@ -126,7 +127,7 @@ const AumTrendChart: React.FC<AumTrendChartProps> = ({
             type="monotone"
             dataKey="value"
             stroke="#2563EB"
-            strokeWidth={2.5}
+            strokeWidth={3.75}
             dot={false}
             activeDot={{ r: 6, stroke: "#2563EB", strokeWidth: 2, fill: "white" }}
             animationDuration={1000}
