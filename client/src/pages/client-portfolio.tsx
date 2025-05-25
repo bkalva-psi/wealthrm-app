@@ -43,13 +43,83 @@ import FixedTooltipChart from "../components/charts/FixedTooltipChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
-  { name: "HDFC Top 100 Fund", type: "Mutual Fund - Equity", value: 1250000, allocation: 25, gain: 15.4 },
-  { name: "SBI Small Cap Fund", type: "Mutual Fund - Equity", value: 875000, allocation: 17.5, gain: 22.8 },
-  { name: "ICICI Prudential Corporate Bond Fund", type: "Mutual Fund - Debt", value: 1000000, allocation: 20, gain: 7.2 },
-  { name: "Reliance Industries Ltd.", type: "Direct Equity", value: 625000, allocation: 12.5, gain: 18.7 },
-  { name: "HDFC Bank Ltd.", type: "Direct Equity", value: 500000, allocation: 10, gain: 9.8 },
-  { name: "Gold ETF", type: "Gold ETF", value: 375000, allocation: 7.5, gain: 11.2 },
-  { name: "HDFC Savings Account", type: "Cash", value: 375000, allocation: 7.5, gain: 3.5 },
+  { 
+    name: "HDFC Top 100 Fund", 
+    type: "Mutual Fund - Equity", 
+    value: 1250000, 
+    allocation: 25, 
+    gain: 15.4, 
+    oneYearReturn: 17.8, 
+    benchmark: "NIFTY 50", 
+    benchmarkReturn: 16.3, 
+    alphaReturn: 1.5 
+  },
+  { 
+    name: "SBI Small Cap Fund", 
+    type: "Mutual Fund - Equity", 
+    value: 875000, 
+    allocation: 17.5, 
+    gain: 22.8, 
+    oneYearReturn: 24.2, 
+    benchmark: "NIFTY SMALLCAP 250", 
+    benchmarkReturn: 20.5, 
+    alphaReturn: 3.7 
+  },
+  { 
+    name: "ICICI Prudential Corporate Bond Fund", 
+    type: "Mutual Fund - Debt", 
+    value: 1000000, 
+    allocation: 20, 
+    gain: 7.2, 
+    oneYearReturn: 8.4, 
+    benchmark: "CRISIL Corporate Bond Index", 
+    benchmarkReturn: 7.8, 
+    alphaReturn: 0.6 
+  },
+  { 
+    name: "Reliance Industries Ltd.", 
+    type: "Direct Equity", 
+    value: 625000, 
+    allocation: 12.5, 
+    gain: 18.7, 
+    oneYearReturn: 22.4, 
+    benchmark: "NIFTY 50", 
+    benchmarkReturn: 16.3, 
+    alphaReturn: 6.1 
+  },
+  { 
+    name: "HDFC Bank Ltd.", 
+    type: "Direct Equity", 
+    value: 500000, 
+    allocation: 10, 
+    gain: 9.8, 
+    oneYearReturn: 12.3, 
+    benchmark: "NIFTY BANK", 
+    benchmarkReturn: 14.7, 
+    alphaReturn: -2.4 
+  },
+  { 
+    name: "Gold ETF", 
+    type: "Gold ETF", 
+    value: 375000, 
+    allocation: 7.5, 
+    gain: 11.2, 
+    oneYearReturn: 14.6, 
+    benchmark: "MCX Gold", 
+    benchmarkReturn: 14.2, 
+    alphaReturn: 0.4 
+  },
+  { 
+    name: "HDFC Savings Account", 
+    type: "Cash", 
+    value: 375000, 
+    allocation: 7.5, 
+    gain: 3.5, 
+    oneYearReturn: 3.5, 
+    benchmark: "Savings Rate", 
+    benchmarkReturn: 3.5, 
+    alphaReturn: 0.0 
+  },
 ];
 
 // Mock data for performance periods
@@ -282,7 +352,11 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
               <th className="px-4 py-3 text-left font-medium text-slate-500">Type</th>
               <th className="px-4 py-3 text-right font-medium text-slate-500">Value</th>
               <th className="px-4 py-3 text-right font-medium text-slate-500">Allocation</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">Gain/Loss</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">Current Gain</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">1Y Return</th>
+              <th className="px-4 py-3 text-left font-medium text-slate-500">Benchmark</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">Benchmark Return</th>
+              <th className="px-4 py-3 text-right font-medium text-slate-500">Alpha</th>
             </tr>
           </thead>
           <tbody>
@@ -296,6 +370,16 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
                 <td className="px-4 py-3 text-right">{holding.allocation}%</td>
                 <td className={`px-4 py-3 text-right ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {holding.gain > 0 ? '+' : ''}{holding.gain}%
+                </td>
+                <td className={`px-4 py-3 text-right ${holding.oneYearReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
+                </td>
+                <td className="px-4 py-3 text-slate-600">{holding.benchmark}</td>
+                <td className={`px-4 py-3 text-right ${holding.benchmarkReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
+                </td>
+                <td className={`px-4 py-3 text-right font-medium ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-slate-600'}`}>
+                  {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
                 </td>
               </tr>
             ))}
@@ -314,7 +398,8 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
               </span>
             </div>
             <div className="text-xs text-slate-500 mb-3">{holding.type}</div>
-            <div className="flex justify-between border-t border-slate-100 pt-2">
+            
+            <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-2">
               <div>
                 <div className="text-xs text-slate-500">Value</div>
                 <div className="font-medium">₹{(holding.value / 100000).toFixed(2)} L</div>
@@ -322,6 +407,29 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
               <div>
                 <div className="text-xs text-slate-500">Allocation</div>
                 <div className="font-medium text-right">{holding.allocation}%</div>
+              </div>
+              
+              <div>
+                <div className="text-xs text-slate-500">1Y Return</div>
+                <div className={`font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500">Alpha</div>
+                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-slate-600'}`}>
+                  {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-2 pt-2 border-t border-slate-100">
+              <div className="text-xs text-slate-500">Benchmark</div>
+              <div className="flex justify-between items-center">
+                <div className="font-medium text-sm">{holding.benchmark}</div>
+                <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
+                </div>
               </div>
             </div>
           </div>
