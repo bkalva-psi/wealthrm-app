@@ -43,7 +43,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
-import { format, isValid, parseISO, subMonths } from 'date-fns';
+import { format, isValid, parseISO, subMonths, subDays } from 'date-fns';
 import { 
   ArrowLeft, 
   Download, 
