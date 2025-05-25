@@ -597,38 +597,40 @@ export default function ClientTransactions() {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-6">
-            {/* Quick Date Filters */}
-            <div className="flex flex-wrap gap-2">
-              <Label className="flex items-center mr-2">Quick Filters:</Label>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => handleQuickDateFilter('1w')}
-              >
-                1w
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => handleQuickDateFilter('1m')}
-              >
-                1m
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => handleQuickDateFilter('3m')}
-              >
-                3m
-              </Button>
-            </div>
-
+          <div className="flex flex-col gap-4">
             {/* Main Filters Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Date Range */}
               <div className="space-y-2">
-                <Label>Date Range</Label>
+                <div className="flex justify-between items-center">
+                  <Label>Date Range</Label>
+                  <div className="flex space-x-1">
+                    <Button 
+                      variant="outline" 
+                      size="xs" 
+                      onClick={() => handleQuickDateFilter('1w')}
+                      className="h-6 text-xs px-2"
+                    >
+                      1w
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="xs" 
+                      onClick={() => handleQuickDateFilter('1m')}
+                      className="h-6 text-xs px-2"
+                    >
+                      1m
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="xs" 
+                      onClick={() => handleQuickDateFilter('3m')}
+                      className="h-6 text-xs px-2"
+                    >
+                      3m
+                    </Button>
+                  </div>
+                </div>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
