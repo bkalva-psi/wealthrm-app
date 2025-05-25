@@ -7,7 +7,8 @@ import {
   portfolioAlerts, PortfolioAlert, InsertPortfolioAlert,
   performanceMetrics, PerformanceMetric, InsertPerformanceMetric,
   aumTrends, AumTrend, InsertAumTrend,
-  salesPipeline, SalesPipeline, InsertSalesPipeline
+  salesPipeline, SalesPipeline, InsertSalesPipeline,
+  transactions, Transaction, InsertTransaction
 } from "@shared/schema";
 import { eq, and, gte, lt, lte, desc } from "drizzle-orm";
 import { db } from "./db";
