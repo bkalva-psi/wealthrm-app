@@ -284,8 +284,11 @@ export default function ClientTransactions() {
     const typeCounts: Record<string, number> = {};
     
     transactions.forEach(transaction => {
-      const type = transaction.transactionType;
-      typeCounts[type] = (typeCounts[type] || 0) + 1;
+      // Exclude fee transactions from the chart
+      if (transaction.transactionType !== 'fee') {
+        const type = transaction.transactionType;
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+      }
     });
     
     return Object.entries(typeCounts).map(([type, count]) => ({
@@ -301,8 +304,11 @@ export default function ClientTransactions() {
     const typeCounts: Record<string, number> = {};
     
     transactions.forEach(transaction => {
-      const type = transaction.productType;
-      typeCounts[type] = (typeCounts[type] || 0) + 1;
+      // Exclude fee transactions from the product chart
+      if (transaction.transactionType !== 'fee') {
+        const type = transaction.productType;
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+      }
     });
     
     return Object.entries(typeCounts).map(([type, count]) => ({
