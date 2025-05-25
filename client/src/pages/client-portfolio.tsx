@@ -39,7 +39,7 @@ import BarChartComponent from "../components/charts/BarChart";
 import SimpleAumTrendChart from "../components/charts/SimpleAumTrendChart";
 import AumTrendChart from "../components/charts/AumTrendChart";
 import BenchmarkComparisonChart from "../components/charts/BenchmarkComparisonChart";
-import PortfolioEfficiencyChart from "../components/charts/PortfolioEfficiencyChart";
+import FixedTooltipChart from "../components/charts/FixedTooltipChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -904,7 +904,7 @@ export default function ClientPortfolioPage() {
                 </CardHeader>
                 <CardContent className="h-72">
                   <div className="h-full">
-                    <PortfolioEfficiencyChart holdings={mockHoldings} />
+                    <FixedTooltipChart holdings={mockHoldings} />
                   </div>
                 </CardContent>
               </Card>
