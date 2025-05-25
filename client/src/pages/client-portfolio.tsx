@@ -556,7 +556,10 @@ function TransactionsTable({ transactions }: { transactions: any[] }) {
 export default function ClientPortfolioPage() {
   const { id } = Object.fromEntries(new URLSearchParams(window.location.hash.split('?')[1])) as { id?: string };
   const [activeTab, setActiveTab] = useState("overview");
-  const { data: client, isLoading, error } = useQuery(["client", id], () => clientApi.getClient(Number(id)));
+  const { data: client, isLoading, error } = useQuery({
+    queryKey: ["client", id],
+    queryFn: () => clientApi.getClient(Number(id))
+  });
   
   useEffect(() => {
     // Set document title
