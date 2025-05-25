@@ -1,4 +1,10 @@
-import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { QueryClient, QueryFunction, useQuery } from "@tanstack/react-query";
+
+export function useApiQuery<T>(options: Parameters<typeof useQuery<T>>[0]) {
+  return useQuery<T>({
+    ...options,
+  });
+}
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {

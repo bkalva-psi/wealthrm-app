@@ -515,8 +515,7 @@ export default function ClientTransactions() {
                       <SelectItem value="dividend">Dividend</SelectItem>
                       <SelectItem value="interest">Interest</SelectItem>
                       <SelectItem value="fee">Fee</SelectItem>
-                      <SelectItem value="deposit">Deposit</SelectItem>
-                      <SelectItem value="withdrawal">Withdrawal</SelectItem>
+                      <SelectItem value="transfer">Transfer</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -531,10 +530,9 @@ export default function ClientTransactions() {
                     <SelectContent>
                       <SelectItem value="equity">Equity</SelectItem>
                       <SelectItem value="mutual_fund">Mutual Fund</SelectItem>
-                      <SelectItem value="bond">Bond</SelectItem>
                       <SelectItem value="fixed_deposit">Fixed Deposit</SelectItem>
+                      <SelectItem value="bond">Bond</SelectItem>
                       <SelectItem value="insurance">Insurance</SelectItem>
-                      <SelectItem value="commodity">Commodity</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -542,558 +540,527 @@ export default function ClientTransactions() {
                   <Label htmlFor="productName" className="text-right">
                     Product Name
                   </Label>
-                  <Input id="productName" className="col-span-3" />
+                  <Input
+                    id="productName"
+                    placeholder="Enter product name"
+                    className="col-span-3"
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="amount" className="text-right">
                     Amount
                   </Label>
-                  <Input id="amount" type="number" className="col-span-3" />
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="Enter amount"
+                    className="col-span-3"
+                  />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Record Transaction</Button>
+                <Button type="submit">Save Transaction</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
       </div>
       
-      {/* Date range filter */}
-      <Card className="bg-white">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Transaction Period</CardTitle>
-          <CardDescription>Select the date range to analyze transactions</CardDescription>
+      {/* Date range and filter controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 items-end">
-            <div className="space-y-2 flex-1">
-              <Label>Start Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={(date) => date && setStartDate(date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div className="space-y-2 flex-1">
-              <Label>End Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={(date) => date && setEndDate(date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <Label>Date Range</Label>
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(startDate, 'PPP')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => date && setStartDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(endDate, 'PPP')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(date) => date && setEndDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             
             <div className="space-y-2">
-              <Label>Group By</Label>
-              <Select value={groupBy} onValueChange={(value) => setGroupBy(value as any)}>
-                <SelectTrigger className="w-full md:w-[180px]">
-                  <SelectValue placeholder="Select grouping" />
+              <Label>Transaction Type</Label>
+              <Select 
+                value={transactionType} 
+                onValueChange={setTransactionType}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select transaction type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="day">Day</SelectItem>
-                  <SelectItem value="week">Week</SelectItem>
-                  <SelectItem value="month">Month</SelectItem>
-                  <SelectItem value="quarter">Quarter</SelectItem>
-                  <SelectItem value="year">Year</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {uniqueTransactionTypes.map(type => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             
-            <Button className="md:mb-0">Apply Filters</Button>
+            <div className="space-y-2">
+              <Label>Product Type</Label>
+              <Select 
+                value={productType} 
+                onValueChange={setProductType}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select product type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Products</SelectItem>
+                  {uniqueProductTypes.map(type => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Search</Label>
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search transactions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
       
-      {/* Dashboard Summary */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="w-full sm:w-auto mb-4">
-          <TabsTrigger value="overview" className="flex-1 sm:flex-none">Overview</TabsTrigger>
-          <TabsTrigger value="details" className="flex-1 sm:flex-none">Transaction Details</TabsTrigger>
-          <TabsTrigger value="analytics" className="flex-1 sm:flex-none">Analytics</TabsTrigger>
-        </TabsList>
+      {/* Transaction metrics overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Value
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isTransactionsLoading ? (
+                <Skeleton className="h-8 w-28" />
+              ) : (
+                formatCurrency(metrics.totalValue)
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              From {transactions?.length || 0} transactions
+            </p>
+          </CardContent>
+        </Card>
         
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {/* Key Metrics */}
-            <Card className="bg-white md:col-span-2">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Transaction Summary</CardTitle>
-                <CardDescription>Key metrics for the selected period</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Total Transactions</p>
-                    <p className="text-2xl font-bold">{metrics.totalTransactions}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Total Value</p>
-                    <p className="text-2xl font-bold">{formatCurrency(metrics.totalValue)}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Avg. Transaction</p>
-                    <p className="text-2xl font-bold">{formatCurrency(metrics.averageTransactionValue)}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Buy Transactions</p>
-                    <p className="text-2xl font-bold">{metrics.buyCount}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Sell Transactions</p>
-                    <p className="text-2xl font-bold">{metrics.sellCount}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Churn Ratio</p>
-                    <p className="text-2xl font-bold">{churnRatio.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground">(Sell/Buy Ratio)</p>
-                  </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">
+              Buy/Sell Ratio
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isTransactionsLoading ? (
+                <Skeleton className="h-8 w-28" />
+              ) : (
+                churnRatio.toFixed(2)
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {metrics.buyCount} buys, {metrics.sellCount} sells
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">
+              Average Transaction
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isTransactionsLoading ? (
+                <Skeleton className="h-8 w-28" />
+              ) : (
+                formatCurrency(metrics.averageTransactionValue)
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {((metrics.averageTransactionValue / metrics.totalValue) * 100).toFixed(1)}% of total
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Fees & Taxes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isTransactionsLoading ? (
+                <Skeleton className="h-8 w-28" />
+              ) : (
+                formatCurrency(metrics.totalFees)
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {((metrics.totalFees / metrics.totalValue) * 100).toFixed(2)}% of total value
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Transaction charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Transaction Types</CardTitle>
+            <CardDescription>Distribution of transaction types over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              {isTransactionsLoading ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <Skeleton className="h-64 w-full" />
                 </div>
-              </CardContent>
-            </Card>
-            
-            {/* Transaction Type Distribution */}
-            <Card className="bg-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Transaction Types</CardTitle>
-                <CardDescription>Distribution by transaction type</CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-center items-center h-48">
-                {isTransactionsLoading ? (
-                  <Skeleton className="h-48 w-full" />
-                ) : transactionTypeData.length === 0 ? (
-                  <p className="text-center text-muted-foreground">No data available</p>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={transactionTypeData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={(entry) => entry.name}
-                      >
-                        {transactionTypeData.map((entry, index) => {
-                          return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
-                        })}
-                      </Pie>
-                      <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-4">
-            {/* Transaction Volume Over Time */}
-            <Card className="bg-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Transaction Volume Over Time</CardTitle>
-                <CardDescription>Number of transactions by period</CardDescription>
-              </CardHeader>
-              <CardContent className="h-72">
-                {isSummaryLoading ? (
-                  <Skeleton className="h-72 w-full" />
-                ) : volumeOverTimeData.length === 0 ? (
-                  <p className="text-center text-muted-foreground">No data available</p>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={volumeOverTimeData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+              ) : transactionTypeData.length === 0 ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <p className="text-muted-foreground">No transaction data available</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={transactionTypeData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
                     >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="period" 
-                        angle={-45} 
-                        textAnchor="end" 
-                        height={70}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis />
-                      <Tooltip formatter={(value, name) => [value, name]} />
-                      <Legend />
-                      <Bar dataKey="Buys" fill="#4CAF50" stackId="a" />
-                      <Bar dataKey="Sells" fill="#F44336" stackId="a" />
-                      <Bar dataKey="Other" fill="#9E9E9E" stackId="a" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                      {transactionTypeData.map((entry, index) => {
+                        return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                      })}
+                    </Pie>
+                    <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
         
-        <TabsContent value="details">
-          {/* Transaction Filters */}
-          <Card className="bg-white mb-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Filter Transactions</CardTitle>
-              <CardDescription>Refine the transaction list</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-4 items-end">
-                <div className="space-y-2 flex-1">
-                  <Label>Search</Label>
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search products, references..."
-                      className="pl-8"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery && (
-                      <X
-                        className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground cursor-pointer"
-                        onClick={() => setSearchQuery('')}
-                      />
-                    )}
-                  </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Transaction Volume Over Time</CardTitle>
+            <CardDescription>Number and value of transactions by period</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              {isSummaryLoading ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <Skeleton className="h-64 w-full" />
                 </div>
-                
-                <div className="space-y-2">
-                  <Label>Transaction Type</Label>
-                  <Select value={transactionType} onValueChange={setTransactionType}>
-                    <SelectTrigger className="w-full md:w-[180px]">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      {uniqueTransactionTypes.map(type => (
-                        <SelectItem key={type} value={type}>
-                          {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              ) : volumeOverTimeData.length === 0 ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <p className="text-muted-foreground">No transaction data available</p>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label>Product Type</Label>
-                  <Select value={productType} onValueChange={setProductType}>
-                    <SelectTrigger className="w-full md:w-[180px]">
-                      <SelectValue placeholder="Select product type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      {uniqueProductTypes.map(type => (
-                        <SelectItem key={type} value={type}>
-                          {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={volumeOverTimeData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="period" />
+                    <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                    <Tooltip formatter={(value, name) => {
+                      if (name === 'totalAmount') {
+                        return [formatCurrency(value as number), 'Total Value'];
+                      }
+                      return [value, name];
+                    }} />
+                    <Legend />
+                    <Bar yAxisId="left" dataKey="Buys" stackId="a" fill="#8884d8" />
+                    <Bar yAxisId="left" dataKey="Sells" stackId="a" fill="#82ca9d" />
+                    <Bar yAxisId="left" dataKey="Other" stackId="a" fill="#ffc658" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Product Types</CardTitle>
+            <CardDescription>Distribution of products by type</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              {isTransactionsLoading ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <Skeleton className="h-64 w-full" />
                 </div>
-                
-                <Button variant="outline" onClick={() => {
-                  setSearchQuery('');
-                  setTransactionType('all');
-                  setProductType('all');
-                }}>
-                  Reset Filters
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Transaction Table */}
-          <Card className="bg-white">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Transaction Details</CardTitle>
-              <CardDescription>
-                {isTransactionsLoading 
-                  ? 'Loading transactions...' 
-                  : `Showing ${sortedTransactions.length} of ${transactions?.length || 0} transactions`
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
+              ) : productTypeData.length === 0 ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <p className="text-muted-foreground">No transaction data available</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={productTypeData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {productTypeData.map((entry, index) => {
+                        return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                      })}
+                    </Pie>
+                    <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Transaction Summary</CardTitle>
+            <CardDescription>
+              <Select 
+                value={groupBy} 
+                onValueChange={(value) => setGroupBy(value as any)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Group by..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="day">Daily</SelectItem>
+                  <SelectItem value="week">Weekly</SelectItem>
+                  <SelectItem value="month">Monthly</SelectItem>
+                  <SelectItem value="quarter">Quarterly</SelectItem>
+                  <SelectItem value="year">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Period</TableHead>
+                    <TableHead>Transactions</TableHead>
+                    <TableHead>Buys/Sells</TableHead>
+                    <TableHead className="text-right">Total Amount</TableHead>
+                    <TableHead className="text-right">Fees & Taxes</TableHead>
+                    <TableHead className="text-right">Net Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isSummaryLoading ? (
                     <TableRow>
-                      <TableHead className="w-[150px] cursor-pointer" onClick={() => handleSortChange('date')}>
-                        Date
-                        {sortBy === 'date' && (
-                          sortDirection === 'asc' 
-                            ? <ArrowUp className="ml-1 h-4 w-4 inline" /> 
-                            : <ArrowDown className="ml-1 h-4 w-4 inline" />
-                        )}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSortChange('transactionType')}>
-                        Type
-                        {sortBy === 'transactionType' && (
-                          sortDirection === 'asc' 
-                            ? <ArrowUp className="ml-1 h-4 w-4 inline" /> 
-                            : <ArrowDown className="ml-1 h-4 w-4 inline" />
-                        )}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSortChange('productType')}>
-                        Product Type
-                        {sortBy === 'productType' && (
-                          sortDirection === 'asc' 
-                            ? <ArrowUp className="ml-1 h-4 w-4 inline" /> 
-                            : <ArrowDown className="ml-1 h-4 w-4 inline" />
-                        )}
-                      </TableHead>
-                      <TableHead className="cursor-pointer" onClick={() => handleSortChange('productName')}>
-                        Product Name
-                        {sortBy === 'productName' && (
-                          sortDirection === 'asc' 
-                            ? <ArrowUp className="ml-1 h-4 w-4 inline" /> 
-                            : <ArrowDown className="ml-1 h-4 w-4 inline" />
-                        )}
-                      </TableHead>
-                      <TableHead className="text-right cursor-pointer" onClick={() => handleSortChange('amount')}>
-                        Amount
-                        {sortBy === 'amount' && (
-                          sortDirection === 'asc' 
-                            ? <ArrowUp className="ml-1 h-4 w-4 inline" /> 
-                            : <ArrowDown className="ml-1 h-4 w-4 inline" />
-                        )}
-                      </TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableCell colSpan={6}>
+                        <Skeleton className="h-10 w-full" />
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {isTransactionsLoading ? (
-                      Array(5).fill(0).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                          <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-                          <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                          <TableCell><Skeleton className="h-5 w-40" /></TableCell>
-                          <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                          <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                        </TableRow>
-                      ))
-                    ) : sortedTransactions.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-4">
-                          No transactions found matching the current filters.
-                        </TableCell>
+                  ) : !transactionSummary || transactionSummary.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center">
+                        No transaction data available
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    transactionSummary.map(summary => (
+                      <TableRow key={summary.period}>
+                        <TableCell className="font-medium">{summary.period}</TableCell>
+                        <TableCell>{summary.transactionCount}</TableCell>
+                        <TableCell>{summary.buyCount}/{summary.sellCount}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(summary.totalAmount)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(summary.totalFees + summary.totalTaxes)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(summary.netAmount)}</TableCell>
                       </TableRow>
-                    ) : (
-                      sortedTransactions.map((transaction) => {
-                        return (
-                        <TableRow key={transaction.id}>
-                          <TableCell>
-                            {transaction.transactionDate && format(new Date(transaction.transactionDate), 'dd MMM yyyy')}
-                          </TableCell>
-                          <TableCell>
-                            <Badge 
-                              variant="outline" 
-                              className={`
-                                ${transaction.transactionType === 'buy' && 'bg-green-50 text-green-700 border-green-200'} 
-                                ${transaction.transactionType === 'sell' && 'bg-red-50 text-red-700 border-red-200'}
-                                ${transaction.transactionType === 'dividend' && 'bg-blue-50 text-blue-700 border-blue-200'}
-                                ${transaction.transactionType === 'interest' && 'bg-purple-50 text-purple-700 border-purple-200'}
-                                ${transaction.transactionType === 'fee' && 'bg-orange-50 text-orange-700 border-orange-200'}
-                                ${transaction.transactionType === 'deposit' && 'bg-teal-50 text-teal-700 border-teal-200'}
-                                ${transaction.transactionType === 'withdrawal' && 'bg-gray-50 text-gray-700 border-gray-200'}
-                              `
-                            }
-                          >
-                            {transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{transaction.productType}</TableCell>
-                        <TableCell>{transaction.productName}</TableCell>
-                        <TableCell className="text-right">
-                          <span className={transaction.transactionType === 'buy' || transaction.transactionType === 'fee' ? 'text-red-600' : 'text-green-600'}>
-                            {transaction.transactionType === 'buy' || transaction.transactionType === 'fee' ? '-' : '+'}
-                            {formatCurrency(transaction.amount, transaction.currencyCode)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={transaction.status === 'completed' ? 'outline' : 'secondary'}>
-                            {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                      );
-                    })
-                    </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="analytics">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {/* Product Type Distribution */}
-            <Card className="bg-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Product Distribution</CardTitle>
-                <CardDescription>Transaction distribution by product type</CardDescription>
-              </CardHeader>
-              <CardContent className="h-72">
-                {isTransactionsLoading ? (
-                  <Skeleton className="h-72 w-full" />
-                ) : productTypeData.length === 0 ? (
-                  <p className="text-center text-muted-foreground">No data available</p>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={productTypeData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={30}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={(entry) => entry.name}
-                      >
-                        {productTypeData.map((entry, index) => {
-                          return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
-                        })}
-                      </Pie>
-                      <Tooltip formatter={(value, name) => [`${value} Transactions`, name]} />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-            
-            {/* Transaction Value Over Time */}
-            <Card className="bg-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Transaction Value Over Time</CardTitle>
-                <CardDescription>Total transaction value by period</CardDescription>
-              </CardHeader>
-              <CardContent className="h-72">
-                {isSummaryLoading ? (
-                  <Skeleton className="h-72 w-full" />
-                ) : volumeOverTimeData.length === 0 ? (
-                  <p className="text-center text-muted-foreground">No data available</p>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={volumeOverTimeData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Transactions table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Transaction Details</CardTitle>
+          <CardDescription>Showing {sortedTransactions.length} of {transactions?.length || 0} transactions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSortChange('date')}
+                      className="px-0 font-medium flex items-center"
                     >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="period" 
-                        angle={-45} 
-                        textAnchor="end" 
-                        height={70}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis />
-                      <Tooltip formatter={(value, name) => [formatCurrency(value), name]} />
-                      <Legend />
-                      <Bar dataKey="totalAmount" name="Total Value" fill="#FF8042" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                      Date
+                      {sortBy === 'date' && (
+                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSortChange('transactionType')}
+                      className="px-0 font-medium flex items-center"
+                    >
+                      Type
+                      {sortBy === 'transactionType' && (
+                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSortChange('productType')}
+                      className="px-0 font-medium flex items-center"
+                    >
+                      Product Type
+                      {sortBy === 'productType' && (
+                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSortChange('productName')}
+                      className="px-0 font-medium flex items-center"
+                    >
+                      Product Name
+                      {sortBy === 'productName' && (
+                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSortChange('amount')}
+                      className="px-0 font-medium flex items-center justify-end w-full"
+                    >
+                      Amount
+                      {sortBy === 'amount' && (
+                        sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isTransactionsLoading ? (
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={6}>
+                        <Skeleton className="h-10 w-full" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : sortedTransactions.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center">
+                      No transactions found matching the filters
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  sortedTransactions.map(transaction => (
+                    <TableRow key={transaction.id}>
+                      <TableCell>
+                        {format(new Date(transaction.transactionDate), 'dd MMM yyyy')}
+                      </TableCell>
+                      <TableCell className="capitalize">{transaction.transactionType}</TableCell>
+                      <TableCell className="capitalize">{transaction.productType}</TableCell>
+                      <TableCell>{transaction.productName}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(transaction.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={transaction.status === 'completed' ? 'outline' : 'secondary'}>
+                          {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-              </CardContent>
-            </Card>
+              </TableBody>
+            </Table>
           </div>
-          
-          <div className="grid grid-cols-1 gap-4">
-            {/* Transaction Summary Table */}
-            <Card className="bg-white">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Period Summary</CardTitle>
-                <CardDescription>Transaction summary by {groupBy}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Period</TableHead>
-                        <TableHead>Transactions</TableHead>
-                        <TableHead>Buy</TableHead>
-                        <TableHead>Sell</TableHead>
-                        <TableHead>Other</TableHead>
-                        <TableHead className="text-right">Total Amount</TableHead>
-                        <TableHead className="text-right">Fees & Taxes</TableHead>
-                        <TableHead className="text-right">Net Amount</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {isSummaryLoading ? (
-                        Array(5).fill(0).map((_, index) => (
-                          <TableRow key={index}>
-                            <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-10" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-10" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-10" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-10" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                            <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                          </TableRow>
-                        ))
-                      ) : !transactionSummary || transactionSummary.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={8} className="text-center py-4">
-                            No summary data available for the selected period.
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        transactionSummary.map((summary) => (
-                          <TableRow key={summary.period}>
-                            <TableCell>{summary.period}</TableCell>
-                            <TableCell>{summary.transactionCount}</TableCell>
-                            <TableCell>{summary.buyCount}</TableCell>
-                            <TableCell>{summary.sellCount}</TableCell>
-                            <TableCell>{summary.otherCount}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(summary.totalAmount)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(summary.totalFees + summary.totalTaxes)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(summary.netAmount)}</TableCell>
-                          </TableRow>
-                        );
-                      })
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
