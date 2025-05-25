@@ -72,6 +72,16 @@ export interface IStorage {
   getSalesPipeline(userId: number): Promise<SalesPipeline[]>;
   createSalesPipelineEntry(entry: InsertSalesPipeline): Promise<SalesPipeline>;
   updateSalesPipelineEntry(id: number, entry: Partial<InsertSalesPipeline>): Promise<SalesPipeline | undefined>;
+  
+  // Transaction methods
+  getTransaction(id: number): Promise<Transaction | undefined>;
+  getTransactions(clientId: number, startDate?: Date, endDate?: Date): Promise<Transaction[]>;
+  getTransactionsByType(clientId: number, type: string): Promise<Transaction[]>;
+  getTransactionsByProduct(clientId: number, productType: string): Promise<Transaction[]>;
+  getTransactionSummary(clientId: number, groupBy: 'day' | 'week' | 'month' | 'quarter' | 'year', startDate?: Date, endDate?: Date): Promise<any[]>;
+  createTransaction(transaction: InsertTransaction): Promise<Transaction>;
+  updateTransaction(id: number, transaction: Partial<InsertTransaction>): Promise<Transaction | undefined>;
+  deleteTransaction(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -84,6 +94,7 @@ export class MemStorage implements IStorage {
   private performanceMetrics: Map<number, PerformanceMetric>;
   private aumTrends: Map<number, AumTrend>;
   private salesPipeline: Map<number, SalesPipeline>;
+  private transactions: Map<number, Transaction>;
   
   userCurrentId: number;
   clientCurrentId: number;
@@ -94,6 +105,7 @@ export class MemStorage implements IStorage {
   performanceMetricCurrentId: number;
   aumTrendCurrentId: number;
   salesPipelineCurrentId: number;
+  transactionCurrentId: number;
 
   constructor() {
     this.users = new Map();
@@ -105,6 +117,7 @@ export class MemStorage implements IStorage {
     this.performanceMetrics = new Map();
     this.aumTrends = new Map();
     this.salesPipeline = new Map();
+    this.transactions = new Map();
     
     this.userCurrentId = 1;
     this.clientCurrentId = 1;
@@ -115,6 +128,7 @@ export class MemStorage implements IStorage {
     this.performanceMetricCurrentId = 1;
     this.aumTrendCurrentId = 1;
     this.salesPipelineCurrentId = 1;
+    this.transactionCurrentId = 1;
     
     // Seed with a default user
     this.createUser({

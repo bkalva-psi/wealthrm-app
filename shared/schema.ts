@@ -277,6 +277,35 @@ export const insertSalesPipelineSchema = createInsertSchema(salesPipeline).omit(
   createdAt: true,
 });
 
+// Transactions model
+export const transactions = pgTable("transactions", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  transactionDate: timestamp("transaction_date").notNull(),
+  settlementDate: timestamp("settlement_date"),
+  transactionType: text("transaction_type").notNull(), // buy, sell, dividend, interest, fee, deposit, withdrawal
+  productType: text("product_type").notNull(), // equity, mutual_fund, bond, fixed_deposit, insurance, etc.
+  productName: text("product_name").notNull(),
+  productCategory: text("product_category"), // large_cap, mid_cap, small_cap, debt, hybrid, etc.
+  quantity: real("quantity"),
+  price: real("price"),
+  amount: real("amount").notNull(),
+  fees: real("fees").default(0),
+  taxes: real("taxes").default(0),
+  totalAmount: real("total_amount").notNull(),
+  currencyCode: text("currency_code").default("INR"),
+  status: text("status").notNull().default("completed"), // pending, completed, failed, cancelled
+  reference: text("reference"), // Reference number or ID
+  description: text("description"),
+  portfolioImpact: real("portfolio_impact"), // Percentage change in portfolio value
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTransactionSchema = createInsertSchema(transactions).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -304,3 +333,6 @@ export type InsertAumTrend = z.infer<typeof insertAumTrendSchema>;
 
 export type SalesPipeline = typeof salesPipeline.$inferSelect;
 export type InsertSalesPipeline = z.infer<typeof insertSalesPipelineSchema>;
+
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
