@@ -652,19 +652,20 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Security Exposure</CardTitle>
-                <CardDescription>Top 5 securities by allocation</CardDescription>
+                <CardTitle className="text-lg">Underlying Security Exposure</CardTitle>
+                <CardDescription>Look-through to actual companies</CardDescription>
               </CardHeader>
               <CardContent>
                 <AllocationChart 
                   data={{
-                    "HDFC Top 100 Fund": 25,
-                    "SBI Small Cap Fund": 17.5,
-                    "ICICI Prudential Bond": 20,
-                    "Reliance Industries": 12.5,
-                    "HDFC Bank Ltd.": 10
+                    "Reliance Industries": 8.3,
+                    "HDFC Bank": 7.5,
+                    "Infosys": 6.2,
+                    "TCS": 5.8,
+                    "ICICI Bank": 5.1,
+                    "Others": 67.1
                   }} 
-                  title="Securities" 
+                  title="Companies" 
                   color="green" 
                 />
               </CardContent>
