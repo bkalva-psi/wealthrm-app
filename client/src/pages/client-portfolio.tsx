@@ -38,6 +38,7 @@ import PerformanceChart from "../components/charts/PerformanceChart";
 import BarChartComponent from "../components/charts/BarChart";
 import SimpleAumTrendChart from "../components/charts/SimpleAumTrendChart";
 import AumTrendChart from "../components/charts/AumTrendChart";
+import BenchmarkComparisonChart from "../components/charts/BenchmarkComparisonChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -869,17 +870,31 @@ export default function ClientPortfolioPage() {
         
         {/* Performance Tab */}
         <TabsContent value="performance" className="space-y-4 pt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Historical Performance</CardTitle>
-              <CardDescription>Portfolio value growth over time</CardDescription>
-            </CardHeader>
-            <CardContent className="h-80">
-              <div className="h-full">
-                <SimpleAumTrendChart aumValue={client?.aumValue || 5000000} />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 gap-4 mb-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Historical Performance</CardTitle>
+                <CardDescription>Portfolio value growth over time</CardDescription>
+              </CardHeader>
+              <CardContent className="h-80">
+                <div className="h-full">
+                  <SimpleAumTrendChart aumValue={client?.aumValue || 5000000} />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Benchmark Comparison</CardTitle>
+                <CardDescription>Portfolio vs Market Index (Base 100)</CardDescription>
+              </CardHeader>
+              <CardContent className="h-80">
+                <div className="h-full">
+                  <BenchmarkComparisonChart aumValue={client?.aumValue || 5000000} />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
