@@ -311,6 +311,17 @@
     padding-right: 0.75rem;
   }
   
+  /* Improved header description and content spacing */
+  .header-description, 
+  .page-subtitle, 
+  .card-description, 
+  .section-description,
+  p, 
+  .text-content {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
   /* Chart container padding */
   .recharts-wrapper {
     padding-left: 0.5rem;
@@ -327,5 +338,13 @@
   .card-header-content {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+  
+  /* Global content container spacing */
+  .content-container,
+  .page-content,
+  .card-content {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 }
