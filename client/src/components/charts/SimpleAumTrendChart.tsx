@@ -189,17 +189,17 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
       <div className="flex flex-col h-full">
         <div className="flex justify-between mb-2">
           <span className="text-xs text-muted-foreground">
-            May 2022
+            Start: ₹{(dataPoints[0].value / 100000).toFixed(1)}L
           </span>
           <span className="text-xs text-muted-foreground">
-            May 2025
+            Current: ₹{(dataPoints[dataPoints.length-1].value / 100000).toFixed(1)}L
           </span>
         </div>
         
         <div className="relative pt-2">
-          {/* Removed overlapping start value */}
+          {/* Min value at bottom of chart */}
           <div className="absolute bottom-0 left-0 text-xs text-muted-foreground">
-            ₹{(Math.min(...dataPoints.map(p => p.value)) * 0.98 / 100000).toFixed(1)}L
+            Min: ₹{(Math.min(...dataPoints.map(p => p.value)) / 100000).toFixed(1)}L
           </div>
           
           {/* Visual trend line */}
@@ -260,8 +260,8 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
             </div>
           </div>
           
-          {/* Date markers - using text-center to prevent overlap */}
-          <div className="grid grid-cols-4 mt-2">
+          {/* Date markers - positioned above the bottom border line */}
+          <div className="absolute w-full bottom-1 left-0 grid grid-cols-4">
             <span className="text-xs text-center">Q2'22</span>
             <span className="text-xs text-center">Q2'23</span>
             <span className="text-xs text-center">Q2'24</span>
