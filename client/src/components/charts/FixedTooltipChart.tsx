@@ -18,9 +18,13 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
   const [tooltipData, setTooltipData] = useState<{
     visible: boolean;
     content: React.ReactNode;
+    x: number;
+    y: number;
   }>({
     visible: false,
-    content: null
+    content: null,
+    x: 0,
+    y: 0
   });
   
   // Generate realistic risk values based on asset type and returns
@@ -112,9 +116,9 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
   const efficientFrontier = generateEfficientFrontier();
   
   // Calculate SVG coordinates
-  const margin = { top: 10, right: 10, bottom: 40, left: 40 };
-  const width = 450 - margin.left - margin.right;
-  const height = 320 - margin.top - margin.bottom;
+  const margin = { top: 10, right: 20, bottom: 40, left: 40 };
+  const width = 550 - margin.left - margin.right; // Increased width for more horizontal space
+  const height = 300 - margin.top - margin.bottom;
   
   // Find min and max values for scaling
   const minRisk = Math.min(...dataPoints.map(p => p.risk)) * 0.8;
@@ -156,7 +160,11 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
     .join(' ');
   
   // Handle mouse events for points
-  const handleMouseEnter = (point: DataPoint) => {
+  const handleMouseEnter = (point: DataPoint, event: React.MouseEvent) => {
+    // Calculate SVG coordinates of the point
+    const svgX = xScale(point.risk);
+    const svgY = yScale(point.return);
+    
     const content = (
       <>
         <div className="font-medium truncate">{point.name}</div>
@@ -173,18 +181,19 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
     
     setTooltipData({
       visible: true,
-      content
+      content,
+      x: svgX,
+      y: svgY
     });
   };
   
   const handleMouseLeave = () => {
-    // Add a slight delay to avoid flickering
-    setTimeout(() => {
-      setTooltipData({
-        visible: false,
-        content: null
-      });
-    }, 100);
+    setTooltipData({
+      visible: false,
+      content: null,
+      x: 0,
+      y: 0
+    });
   };
   
   return (
@@ -198,21 +207,27 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
         <span className="text-green-600">{portfolioStats.return > 0 ? '+' : ''}{portfolioStats.return.toFixed(1)}%</span>
       </div>
       
-      {/* Fixed tooltip that doesn't move with mouse */}
-      {tooltipData.visible && (
-        <div className="bg-white border border-gray-200 rounded-md shadow-sm px-3 py-2 text-xs absolute left-1/2 top-4 transform -translate-x-1/2 z-50 w-[180px]">
-          {tooltipData.content}
-        </div>
-      )}
-      
-      {/* Chart container */}
+      {/* Chart container with relative positioning */}
       <div className="relative flex-1">
+        {/* In-chart tooltip */}
+        {tooltipData.visible && (
+          <div 
+            className="bg-white border border-gray-200 rounded-md shadow-sm px-3 py-2 text-xs absolute z-50 w-[180px]"
+            style={{
+              left: `${tooltipData.x + margin.left}px`,
+              top: `${tooltipData.y - 80}px`, // Position above the point
+              transform: 'translateX(-50%)'
+            }}
+          >
+            {tooltipData.content}
+          </div>
+        )}
+        
         <svg 
           width="100%" 
           height="100%" 
           viewBox={`0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`}
-          className="overflow-hidden"
-          style={{ maxHeight: "220px" }} // Fixed height to prevent overlap
+          className="overflow-visible"
         >
           <g transform={`translate(${margin.left}, ${margin.top})`}>
             {/* X and Y axis */}
@@ -294,7 +309,7 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
                 opacity="0.8"
                 stroke="#ffffff"
                 strokeWidth="1"
-                onMouseEnter={() => handleMouseEnter(point)}
+                onMouseEnter={(e) => handleMouseEnter(point, e)}
                 onMouseLeave={handleMouseLeave}
                 style={{ cursor: 'pointer' }}
               />
