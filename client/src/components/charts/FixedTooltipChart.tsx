@@ -167,14 +167,14 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
     
     const content = (
       <>
-        <div className="font-medium truncate">{point.name}</div>
-        <div className="text-muted-foreground text-[10px]">{point.type}</div>
-        <div className="grid grid-cols-2 gap-x-4 mt-1">
-          <div>Risk: <span className="font-medium">{point.risk.toFixed(1)}%</span></div>
-          <div>Return: <span className={`font-medium ${point.return >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="font-medium truncate text-gray-900">{point.name}</div>
+        <div className="text-gray-600 text-[10px] font-medium">{point.type}</div>
+        <div className="grid grid-cols-2 gap-x-4 mt-1 text-gray-800">
+          <div>Risk: <span className="font-semibold text-gray-900">{point.risk.toFixed(1)}%</span></div>
+          <div>Return: <span className={`font-semibold ${point.return >= 0 ? 'text-green-700' : 'text-red-700'}`}>
             {point.return > 0 ? '+' : ''}{point.return.toFixed(1)}%
           </span></div>
-          <div className="col-span-2">Allocation: <span className="font-medium">{point.size.toFixed(1)}%</span></div>
+          <div className="col-span-2">Allocation: <span className="font-semibold text-gray-900">{point.size.toFixed(1)}%</span></div>
         </div>
       </>
     );
@@ -212,10 +212,10 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
         {/* In-chart tooltip */}
         {tooltipData.visible && (
           <div 
-            className="bg-white border border-gray-200 rounded-md shadow-sm px-3 py-2 text-xs absolute z-50 w-[180px]"
+            className="bg-white border border-gray-200 rounded-md shadow-md px-3 py-2 text-xs absolute z-50 w-[180px]"
             style={{
               left: `${tooltipData.x + margin.left}px`,
-              top: `${tooltipData.y - 80}px`, // Position above the point
+              top: `${tooltipData.y - 110}px`, // Position well above the point
               transform: 'translateX(-50%)'
             }}
           >
