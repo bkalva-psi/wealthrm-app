@@ -299,18 +299,19 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
           </g>
         </svg>
         
-        {/* Tooltip */}
+        {/* Fixed Tooltip - positioned at top of chart to avoid flickering */}
         {hoveredPoint && (
           <div 
             className="absolute bg-white border border-gray-200 rounded-md shadow-sm px-3 py-2 text-xs z-10"
             style={{ 
-              left: `${margin.left + xScale(hoveredPoint.risk)}px`, 
-              top: `${margin.top + yScale(hoveredPoint.return) - 70}px`,
-              transform: 'translateX(-50%)'
+              left: '50%', 
+              top: '10px',
+              transform: 'translateX(-50%)',
+              width: '180px'
             }}
           >
-            <div className="font-medium">{hoveredPoint.name}</div>
-            <div className="text-muted-foreground">{hoveredPoint.type}</div>
+            <div className="font-medium truncate">{hoveredPoint.name}</div>
+            <div className="text-muted-foreground text-[10px]">{hoveredPoint.type}</div>
             <div className="grid grid-cols-2 gap-x-4 mt-1">
               <div>Risk: <span className="font-medium">{hoveredPoint.risk.toFixed(1)}%</span></div>
               <div>Return: <span className={`font-medium ${hoveredPoint.return >= 0 ? 'text-green-600' : 'text-red-600'}`}>
