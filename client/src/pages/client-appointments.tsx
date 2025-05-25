@@ -378,7 +378,13 @@ const ClientAppointments = () => {
                 const priorityColors = getPriorityColor(appointment.priority);
                 
                 return (
-                  <Card key={appointment.id} className="overflow-hidden">
+                  <Card 
+                    key={appointment.id} 
+                    className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => {
+                      setSelectedAppointment(appointment);
+                      setIsAppointmentDetailsOpen(true);
+                    }}>
                     <CardHeader className={cn(
                       "py-3 border-l-4",
                       getAppointmentTypeColor(appointment.type)
@@ -662,6 +668,89 @@ const ClientAppointments = () => {
         
         {/* New Appointment Dialog */}
         <NewAppointmentDialog />
+        
+        {/* Appointment Details Dialog */}
+        <Dialog open={isAppointmentDetailsOpen} onOpenChange={setIsAppointmentDetailsOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl">{selectedAppointment?.title}</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-3">
+              {selectedAppointment?.description && (
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">Description</p>
+                  <p className="text-slate-900 dark:text-slate-100">{selectedAppointment.description}</p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">Start Time</p>
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-2 text-slate-400" />
+                    <p className="text-slate-900 dark:text-slate-100">
+                      {selectedAppointment && format(new Date(selectedAppointment.startTime), 'MMMM d, yyyy h:mm a')}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">End Time</p>
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-2 text-slate-400" />
+                    <p className="text-slate-900 dark:text-slate-100">
+                      {selectedAppointment && format(new Date(selectedAppointment.endTime), 'MMMM d, yyyy h:mm a')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {selectedAppointment?.location && (
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">Location</p>
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-slate-400" />
+                    <p className="text-slate-900 dark:text-slate-100">{selectedAppointment.location}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">Type</p>
+                  <Badge className={cn(
+                    "mt-1",
+                    getAppointmentTypeColor(selectedAppointment?.type || "meeting")
+                  )}>
+                    {selectedAppointment?.type || "Meeting"}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">Priority</p>
+                  <Badge variant="outline" className={cn(
+                    "mt-1",
+                    selectedAppointment && getPriorityColor(selectedAppointment.priority).bg,
+                    selectedAppointment && getPriorityColor(selectedAppointment.priority).text,
+                    "border",
+                    selectedAppointment && getPriorityColor(selectedAppointment.priority).border
+                  )}>
+                    {selectedAppointment?.priority || "Normal"} Priority
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            
+            <DialogFooter className="sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setIsAppointmentDetailsOpen(false)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </ClientPageLayout>
   );
