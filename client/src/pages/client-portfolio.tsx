@@ -1033,7 +1033,7 @@ export default function ClientPortfolioPage() {
               <CardDescription>AUM trend over time</CardDescription>
             </CardHeader>
             <CardContent className="h-80">
-              <AumTrendChart />
+              <AumTrendChart currentValue={client?.aumValue || defaultAumValue} />
             </CardContent>
           </Card>
           
@@ -1044,7 +1044,7 @@ export default function ClientPortfolioPage() {
                 <CardDescription>Portfolio vs. Benchmark</CardDescription>
               </CardHeader>
               <CardContent className="h-64">
-                <BenchmarkComparisonChart />
+                <BenchmarkComparisonChart aumValue={client?.aumValue || defaultAumValue} />
               </CardContent>
             </Card>
             
