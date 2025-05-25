@@ -948,7 +948,7 @@ export default function ClientTransactions() {
                       </TableRow>
                         );
                       })
-                  }</TableBody>
+                    </TableBody>
                 </Table>
               </div>
             </CardContent>
