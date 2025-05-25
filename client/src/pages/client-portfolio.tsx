@@ -917,70 +917,70 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Benchmark Comparison</CardTitle>
+                <CardTitle className="text-lg">Risk-Weighted Return Analysis</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Desktop view */}
-                  <div className="hidden md:block space-y-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">Your Portfolio</div>
-                        <div className="text-xs text-slate-500">1 Year Return</div>
+                <div className="text-sm">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                    <div className="border rounded-lg p-2">
+                      <div className="text-muted-foreground text-xs">Standard Deviation (1Y)</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">12.4%</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
                       </div>
-                      <div className="text-green-600 font-medium">+{client?.yearlyPerformance || 14.5}%</div>
                     </div>
                     
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">Nifty 50</div>
-                        <div className="text-xs text-slate-500">Benchmark</div>
+                    <div className="border rounded-lg p-2">
+                      <div className="text-muted-foreground text-xs">Sharpe Ratio</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">1.78</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Good</div>
                       </div>
-                      <div className="text-green-600 font-medium">+12.8%</div>
                     </div>
                     
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">Category Average</div>
-                        <div className="text-xs text-slate-500">Moderate Allocation</div>
+                    <div className="border rounded-lg p-2">
+                      <div className="text-muted-foreground text-xs">Alpha</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">2.6%</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Positive</div>
                       </div>
-                      <div className="text-green-600 font-medium">+11.2%</div>
                     </div>
                     
-                    <Separator />
-                    
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">Alpha</div>
-                        <div className="text-xs text-slate-500">Excess Return vs Benchmark</div>
+                    <div className="border rounded-lg p-2">
+                      <div className="text-muted-foreground text-xs">Max. Drawdown</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">-9.2%</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Low</div>
                       </div>
-                      <div className="text-green-600 font-medium">+1.7%</div>
+                    </div>
+                    
+                    <div className="border rounded-lg p-2">
+                      <div className="text-muted-foreground text-xs">Drawdown Recovery</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">68 days</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Fast</div>
+                      </div>
+                    </div>
+                    
+                    <div className="border rounded-lg p-2">
+                      <div className="text-muted-foreground text-xs">Beta</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">0.92</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-800">Defensive</div>
+                      </div>
+                    </div>
+                    
+                    <div className="border rounded-lg p-2 col-span-2">
+                      <div className="text-muted-foreground text-xs">Information Ratio</div>
+                      <div className="flex items-center mt-1">
+                        <span className="text-base font-medium">1.24</span>
+                        <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Strong</div>
+                      </div>
                     </div>
                   </div>
                   
-                  {/* Mobile view - card grid */}
-                  <div className="md:hidden space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-slate-50 p-3 rounded-lg">
-                        <div className="text-sm text-slate-500">Your Portfolio</div>
-                        <div className="text-lg font-medium text-green-600">+{client?.yearlyPerformance || 14.5}%</div>
-                      </div>
-                      
-                      <div className="bg-slate-50 p-3 rounded-lg">
-                        <div className="text-sm text-slate-500">Nifty 50</div>
-                        <div className="text-lg font-medium text-green-600">+12.8%</div>
-                      </div>
-                      
-                      <div className="bg-slate-50 p-3 rounded-lg">
-                        <div className="text-sm text-slate-500">Category Avg</div>
-                        <div className="text-lg font-medium text-green-600">+11.2%</div>
-                      </div>
-                      
-                      <div className="bg-slate-50 p-3 rounded-lg">
-                        <div className="text-sm text-slate-500">Alpha</div>
-                        <div className="text-lg font-medium text-green-600">+1.7%</div>
-                      </div>
-                    </div>
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    <p>Risk metrics calculated as of {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                   </div>
                 </div>
               </CardContent>
