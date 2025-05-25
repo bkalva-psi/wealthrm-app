@@ -538,7 +538,7 @@ export default function ClientPortfolioPage() {
         </TabsList>
         
         {/* Portfolio Overview Tab */}
-        <TabsContent value="overview" className="space-y-4 pt-4 md:pt-6">
+        <TabsContent value="overview" className="space-y-4 pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
@@ -789,7 +789,7 @@ export default function ClientPortfolioPage() {
         </TabsContent>
         
         {/* Holdings Tab */}
-        <TabsContent value="holdings" className="space-y-4">
+        <TabsContent value="holdings" className="space-y-4 pt-4 md:pt-6">
           <Card>
             <CardHeader>
               <CardTitle>Complete Holdings</CardTitle>
@@ -868,7 +868,7 @@ export default function ClientPortfolioPage() {
         </TabsContent>
         
         {/* Performance Tab */}
-        <TabsContent value="performance" className="space-y-4">
+        <TabsContent value="performance" className="space-y-4 pt-6">
           <Card>
             <CardHeader>
               <CardTitle>Historical Performance</CardTitle>
@@ -975,7 +975,7 @@ export default function ClientPortfolioPage() {
         </TabsContent>
         
         {/* Risk Analysis Tab */}
-        <TabsContent value="risk" className="space-y-4">
+        <TabsContent value="risk" className="space-y-4 pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <MetricCard 
               title="Risk Score"
@@ -1128,7 +1128,7 @@ export default function ClientPortfolioPage() {
         </TabsContent>
         
         {/* Financial Planning Tab */}
-        <TabsContent value="planning" className="space-y-4">
+        <TabsContent value="planning" className="space-y-4 pt-6">
           <Card>
             <CardHeader>
               <CardTitle>Financial Goals</CardTitle>
