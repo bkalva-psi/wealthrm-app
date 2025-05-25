@@ -695,8 +695,10 @@ export default function ClientPortfolioPage() {
     ];
   };
   
-  // Handle client data safely with fallbacks for development
+  // Extract client data safely with proper fallbacks
   const aumValue = client?.aumValue || getAumValue(client?.aum) || 2500000;
+  const yearlyPerformance = client?.oneYearReturn || 12.5; // Get from oneYearReturn property
+  const clientSinceDate = client?.clientSince ? new Date(client.clientSince) : null;
   const transactions = generateTransactionData();
   
   return (
@@ -769,7 +771,7 @@ export default function ClientPortfolioPage() {
         
         <MetricCard 
           title="XIRR"
-          value={`${12.5}%`}
+          value={`${yearlyPerformance}%`}
           icon={<Percent className="h-5 w-5" />}
           description="Annualized returns"
           color="amber"
