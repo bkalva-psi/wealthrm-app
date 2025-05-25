@@ -8,7 +8,13 @@ import {
   performanceMetrics, PerformanceMetric, InsertPerformanceMetric,
   aumTrends, AumTrend, InsertAumTrend,
   salesPipeline, SalesPipeline, InsertSalesPipeline,
-  transactions, Transaction, InsertTransaction
+  transactions, Transaction, InsertTransaction,
+  communications, Communication, InsertCommunication,
+  communicationActionItems, CommunicationActionItem, InsertCommunicationActionItem,
+  communicationAttachments, CommunicationAttachment, InsertCommunicationAttachment,
+  clientCommunicationPreferences, ClientCommunicationPreference, InsertClientCommunicationPreference,
+  communicationTemplates, CommunicationTemplate, InsertCommunicationTemplate,
+  communicationAnalytics, CommunicationAnalytic, InsertCommunicationAnalytic
 } from "@shared/schema";
 import { eq, and, gte, lt, lte, desc } from "drizzle-orm";
 import { db } from "./db";

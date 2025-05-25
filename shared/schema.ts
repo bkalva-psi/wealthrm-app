@@ -336,3 +336,160 @@ export type InsertSalesPipeline = z.infer<typeof insertSalesPipelineSchema>;
 
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
+
+// Communications model - track all client interactions
+export const communications = pgTable("communications", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  initiatedBy: integer("initiated_by").references(() => users.id).notNull(), // the RM who initiated or received
+  communicationType: text("communication_type").notNull(), // call, email, meeting, message, note
+  direction: text("direction").notNull(), // inbound, outbound
+  subject: text("subject").notNull(),
+  summary: text("summary").notNull(),
+  details: text("details"),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time"),
+  duration: integer("duration"), // in minutes
+  channel: text("channel"), // phone, video, in-person, email, chat
+  sentiment: text("sentiment").default("neutral"), // positive, neutral, negative
+  followupRequired: boolean("followup_required").default(false),
+  followupDate: timestamp("followup_date"),
+  hasAttachments: boolean("has_attachments").default(false),
+  tags: text("tags").array(), // topics discussed, categorization
+  status: text("status").default("completed"), // scheduled, in-progress, completed, cancelled
+  location: text("location"), // for in-person meetings
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommunicationSchema = createInsertSchema(communications).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Communication Action Items - tasks generated from communications
+export const communicationActionItems = pgTable("communication_action_items", {
+  id: serial("id").primaryKey(),
+  communicationId: integer("communication_id").references(() => communications.id).notNull(),
+  description: text("description").notNull(),
+  dueDate: timestamp("due_date"),
+  priority: text("priority").default("medium"), // low, medium, high
+  status: text("status").default("pending"), // pending, in-progress, completed, cancelled
+  assignedTo: integer("assigned_to").references(() => users.id).notNull(),
+  completedAt: timestamp("completed_at"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommunicationActionItemSchema = createInsertSchema(communicationActionItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Communication Attachments - documents exchanged in communications
+export const communicationAttachments = pgTable("communication_attachments", {
+  id: serial("id").primaryKey(),
+  communicationId: integer("communication_id").references(() => communications.id).notNull(),
+  fileName: text("file_name").notNull(),
+  fileType: text("file_type").notNull(), // PDF, DOCX, XLSX, JPG, etc.
+  fileSize: integer("file_size").notNull(), // in bytes
+  filePath: text("file_path").notNull(),
+  uploadedBy: integer("uploaded_by").references(() => users.id).notNull(),
+  description: text("description"),
+  isClientVisible: boolean("is_client_visible").default(true),
+  viewedByClient: boolean("viewed_by_client").default(false),
+  viewedAt: timestamp("viewed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommunicationAttachmentSchema = createInsertSchema(communicationAttachments).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Client Communication Preferences - detailed preferences for client communications
+export const clientCommunicationPreferences = pgTable("client_communication_preferences", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).unique().notNull(),
+  preferredChannels: text("preferred_channels").array(), // ranked list: [email, phone, in-person]
+  preferredFrequency: text("preferred_frequency").default("monthly"), // daily, weekly, monthly, quarterly
+  preferredDays: text("preferred_days").array(), // Monday, Tuesday, etc.
+  preferredTimeSlots: text("preferred_time_slots").array(), // morning, afternoon, evening
+  doNotContactTimes: text("do_not_contact_times"),
+  preferredLanguage: text("preferred_language").default("English"),
+  communicationStyle: text("communication_style"), // formal, informal, detailed, concise
+  topicsOfInterest: text("topics_of_interest").array(), // market updates, tax planning, etc.
+  optOutCategories: text("opt_out_categories").array(), // marketing, newsletters, etc.
+  specialInstructions: text("special_instructions"),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
+export const insertClientCommunicationPreferenceSchema = createInsertSchema(clientCommunicationPreferences).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+// Communication Templates - reusable templates for common communications
+export const communicationTemplates = pgTable("communication_templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // market update, portfolio review, birthday wish, etc.
+  subject: text("subject").notNull(),
+  content: text("content").notNull(),
+  variables: text("variables").array(), // placeholders like {{client_name}}, {{portfolio_value}}
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  isGlobal: boolean("is_global").default(false), // available to all RMs or just creator
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertCommunicationTemplateSchema = createInsertSchema(communicationTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Communication Analytics - aggregated metrics for communication analysis
+export const communicationAnalytics = pgTable("communication_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id), // optional, if null = all RMs
+  clientId: integer("client_id").references(() => clients.id), // optional, if null = all clients
+  period: text("period").notNull(), // daily, weekly, monthly, quarterly, yearly
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  totalCommunications: integer("total_communications").notNull(),
+  communicationsByType: jsonb("communications_by_type").notNull(), // {call: 10, email: 15, meeting: 5}
+  communicationsByDirection: jsonb("communications_by_direction").notNull(), // {inbound: 15, outbound: 15}
+  averageResponseTime: integer("average_response_time"), // in minutes
+  averageDuration: integer("average_duration"), // in minutes
+  communicationsByChannel: jsonb("communications_by_channel"), // {phone: 10, video: 5, in-person: 5, email: 10}
+  sentimentAnalysis: jsonb("sentiment_analysis"), // {positive: 60, neutral: 30, negative: 10} (percentages)
+  mostDiscussedTopics: jsonb("most_discussed_topics"), // {portfolio_review: 5, tax_planning: 3}
+  communicationEffectiveness: real("communication_effectiveness"), // 0-100 score based on outcomes
+  followupCompletion: real("followup_completion"), // percentage of follow-ups completed
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommunicationAnalyticSchema = createInsertSchema(communicationAnalytics).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Export types for new tables
+export type Communication = typeof communications.$inferSelect;
+export type InsertCommunication = z.infer<typeof insertCommunicationSchema>;
+
+export type CommunicationActionItem = typeof communicationActionItems.$inferSelect;
+export type InsertCommunicationActionItem = z.infer<typeof insertCommunicationActionItemSchema>;
+
+export type CommunicationAttachment = typeof communicationAttachments.$inferSelect;
+export type InsertCommunicationAttachment = z.infer<typeof insertCommunicationAttachmentSchema>;
+
+export type ClientCommunicationPreference = typeof clientCommunicationPreferences.$inferSelect;
+export type InsertClientCommunicationPreference = z.infer<typeof insertClientCommunicationPreferenceSchema>;
+
+export type CommunicationTemplate = typeof communicationTemplates.$inferSelect;
+export type InsertCommunicationTemplate = z.infer<typeof insertCommunicationTemplateSchema>;
+
+export type CommunicationAnalytic = typeof communicationAnalytics.$inferSelect;
+export type InsertCommunicationAnalytic = z.infer<typeof insertCommunicationAnalyticSchema>;
