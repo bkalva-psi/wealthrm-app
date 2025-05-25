@@ -196,10 +196,8 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
           </span>
         </div>
         
-        <div className="relative pt-5">
-          <div className="absolute top-0 left-0 text-xs text-muted-foreground">
-            ₹{(dataPoints[0].value * 1.02 / 100000).toFixed(1)}L
-          </div>
+        <div className="relative pt-2">
+          {/* Removed overlapping start value */}
           <div className="absolute bottom-0 left-0 text-xs text-muted-foreground">
             ₹{(Math.min(...dataPoints.map(p => p.value)) * 0.98 / 100000).toFixed(1)}L
           </div>
