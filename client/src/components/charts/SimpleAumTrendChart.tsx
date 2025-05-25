@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 interface SimpleAumTrendChartProps {
   aumValue: number;
 }
 
+type TimeRange = '3m' | '6m' | '1y' | '3y';
+
 /**
- * A simple SVG-based AUM trend chart component with tooltip on hover
+ * A simple SVG-based AUM trend chart component with tooltip on hover and time range filtering
  */
 const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) => {
+  // State for time range filter
+  const [timeRange, setTimeRange] = useState<TimeRange>('3y');
+  
   const [tooltipInfo, setTooltipInfo] = useState<{
     visible: boolean;
     x: number;
@@ -22,17 +27,75 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
     date: ''
   });
   
-  // Create consistent random points for the line chart
+  // Calculate date ranges based on selected time frame
+  const getDateRangeInfo = (selectedRange: TimeRange) => {
+    const today = new Date();
+    let startDate: Date;
+    let rangeLabel: string;
+    let pointCount: number;
+    
+    switch (selectedRange) {
+      case '3m':
+        startDate = new Date(today);
+        startDate.setMonth(today.getMonth() - 3);
+        rangeLabel = '3 months';
+        pointCount = 12; // Weekly data points
+        break;
+      case '6m':
+        startDate = new Date(today);
+        startDate.setMonth(today.getMonth() - 6);
+        rangeLabel = '6 months';
+        pointCount = 24; // Weekly data points
+        break;
+      case '1y':
+        startDate = new Date(today);
+        startDate.setFullYear(today.getFullYear() - 1);
+        rangeLabel = '1 year';
+        pointCount = 12; // Monthly data points
+        break;
+      case '3y':
+      default:
+        startDate = new Date(today);
+        startDate.setFullYear(today.getFullYear() - 3);
+        rangeLabel = '3 years';
+        pointCount = 36; // Monthly data points
+        break;
+    }
+    
+    return { startDate, endDate: today, rangeLabel, pointCount };
+  };
+  
+  // Create consistent random points for the line chart based on selected time range
   const generatePoints = () => {
+    // Get date range info based on selected time frame
+    const { startDate, endDate, pointCount } = getDateRangeInfo(timeRange);
+    
     // Create data points with dates and values
     const points = [];
-    const startDate = new Date(2022, 4, 1); // May 2022
-    const endDate = new Date(2025, 4, 1);   // May 2025
-    const startValue = aumValue * 0.85;
+    
+    // Calculate start and end values - shorter timeframes have less growth
+    let startValue: number;
     const endValue = aumValue;
     
-    // Number of data points
-    const totalPoints = 36; // Monthly data for 3 years
+    // Adjust starting value based on time range - less time means less growth
+    switch (timeRange) {
+      case '3m':
+        startValue = aumValue * 0.95; // 5% growth in 3 months
+        break;
+      case '6m':
+        startValue = aumValue * 0.90; // 10% growth in 6 months
+        break;
+      case '1y':
+        startValue = aumValue * 0.85; // 15% growth in 1 year
+        break;
+      case '3y':
+      default:
+        startValue = aumValue * 0.75; // 25% growth in 3 years
+        break;
+    }
+    
+    // Number of data points based on selected range
+    const totalPoints = pointCount;
     
     // Seed for consistent randomness
     const seed = aumValue.toString().slice(-4);
@@ -148,7 +211,11 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
   };
   
   // Generate data points using memoization to keep them consistent between renders
-  const dataPoints = React.useMemo(() => generatePoints(), [aumValue]);
+  // Include timeRange in dependency array to recalculate when it changes
+  const dataPoints = useMemo(() => generatePoints(), [aumValue, timeRange]);
+  
+  // Get time range label for display
+  const { rangeLabel } = getDateRangeInfo(timeRange);
   
   // Create SVG points string for polyline
   const pointsString = dataPoints.map(p => `${p.x},${p.y}`).join(' ');
@@ -184,16 +251,54 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
     setTooltipInfo({ ...tooltipInfo, visible: false });
   };
   
+  // Handle time range selection
+  const handleTimeRangeChange = (range: TimeRange) => {
+    setTimeRange(range);
+  };
+  
+  // Calculate growth percentage
+  const growthPercentage = ((dataPoints[dataPoints.length-1].value / dataPoints[0].value - 1) * 100).toFixed(1);
+  
   return (
     <div className="w-full h-full">
       <div className="flex flex-col h-full">
-        <div className="flex justify-between mb-2">
-          <span className="text-xs text-muted-foreground">
-            Start: ₹{(dataPoints[0].value / 100000).toFixed(1)}L
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Current: ₹{(dataPoints[dataPoints.length-1].value / 100000).toFixed(1)}L
-          </span>
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex space-x-1">
+            <span className="text-xs text-muted-foreground">
+              Start: ₹{(dataPoints[0].value / 100000).toFixed(1)}L
+            </span>
+            <span className="mx-1 text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground">
+              Current: ₹{(dataPoints[dataPoints.length-1].value / 100000).toFixed(1)}L
+            </span>
+          </div>
+          
+          <div className="flex text-xs rounded-md overflow-hidden border">
+            <button 
+              onClick={() => handleTimeRangeChange('3m')}
+              className={`px-2 py-0.5 ${timeRange === '3m' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+            >
+              3M
+            </button>
+            <button 
+              onClick={() => handleTimeRangeChange('6m')}
+              className={`px-2 py-0.5 ${timeRange === '6m' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+            >
+              6M
+            </button>
+            <button 
+              onClick={() => handleTimeRangeChange('1y')}
+              className={`px-2 py-0.5 ${timeRange === '1y' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+            >
+              1Y
+            </button>
+            <button 
+              onClick={() => handleTimeRangeChange('3y')}
+              className={`px-2 py-0.5 ${timeRange === '3y' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+            >
+              3Y
+            </button>
+          </div>
         </div>
         
         <div className="relative pt-2">
@@ -256,17 +361,45 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
             </div>
           </div>
           
-          {/* Date markers - positioned above the bottom border line */}
+          {/* Dynamic date markers based on selected time range */}
           <div className="absolute w-full bottom-1 left-0 grid grid-cols-4">
-            <span className="text-xs text-center">Q2'22</span>
-            <span className="text-xs text-center">Q2'23</span>
-            <span className="text-xs text-center">Q2'24</span>
-            <span className="text-xs text-center">Q2'25</span>
+            {timeRange === '3m' && (
+              <>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 3)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 2)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date().toLocaleDateString('en-US', {month: 'short'})}</span>
+              </>
+            )}
+            {timeRange === '6m' && (
+              <>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 6)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 4)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 2)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date().toLocaleDateString('en-US', {month: 'short'})}</span>
+              </>
+            )}
+            {timeRange === '1y' && (
+              <>
+                <span className="text-xs text-center">{new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 8)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date(new Date().setMonth(new Date().getMonth() - 4)).toLocaleDateString('en-US', {month: 'short'})}</span>
+                <span className="text-xs text-center">{new Date().toLocaleDateString('en-US', {month: 'short'})}</span>
+              </>
+            )}
+            {timeRange === '3y' && (
+              <>
+                <span className="text-xs text-center">Y-3</span>
+                <span className="text-xs text-center">Y-2</span>
+                <span className="text-xs text-center">Y-1</span>
+                <span className="text-xs text-center">Now</span>
+              </>
+            )}
           </div>
         </div>
         
         <div className="text-center mt-4 text-sm font-medium text-green-600">
-          +{((aumValue / (aumValue * 0.85) - 1) * 100).toFixed(1)}% growth over 3 years
+          +{growthPercentage}% growth over {rangeLabel}
         </div>
       </div>
     </div>
