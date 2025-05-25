@@ -522,16 +522,41 @@ export default function ClientPortfolioPage() {
                             
                             <div className="w-full h-full flex items-end">
                               <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full">
-                                <path 
-                                  d={`M0,34 Q20,32 40,25 Q60,18 80,8 Q90,4 100,0`} 
-                                  fill="none" 
-                                  stroke="var(--color-primary)" 
+                                {/* Generate polyline points with random fluctuations */}
+                                <polyline 
+                                  points={`
+                                    0,${34}
+                                    5,${32 + Math.random() * 4 - 2}
+                                    10,${31 + Math.random() * 4 - 2}
+                                    15,${30 + Math.random() * 3 - 1.5}
+                                    20,${29 + Math.random() * 3 - 1.5}
+                                    25,${27 + Math.random() * 4 - 2}
+                                    30,${26 + Math.random() * 3 - 1.5}
+                                    35,${24 + Math.random() * 4 - 2}
+                                    40,${22 + Math.random() * 3 - 1.5}
+                                    45,${20 + Math.random() * 4 - 2}
+                                    50,${18 + Math.random() * 3 - 1.5}
+                                    55,${16 + Math.random() * 4 - 2}
+                                    60,${15 + Math.random() * 3 - 1.5}
+                                    65,${12 + Math.random() * 4 - 2}
+                                    70,${10 + Math.random() * 3 - 1.5}
+                                    75,${8 + Math.random() * 3 - 1.5}
+                                    80,${6 + Math.random() * 2 - 1}
+                                    85,${4 + Math.random() * 2 - 1}
+                                    90,${2 + Math.random() * 1.5 - 0.75}
+                                    95,${1 + Math.random() * 1 - 0.5}
+                                    100,0
+                                  `}
+                                  fill="none"
+                                  stroke="var(--color-primary)"
                                   strokeWidth="1.5"
                                 />
+                                
+                                {/* Data points */}
                                 <circle cx="0" cy="34" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="25" cy="30" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="50" cy="20" r="1.5" fill="var(--color-primary)" />
-                                <circle cx="75" cy="10" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="25" cy="27" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="50" cy="18" r="1.5" fill="var(--color-primary)" />
+                                <circle cx="75" cy="8" r="1.5" fill="var(--color-primary)" />
                                 <circle cx="100" cy="0" r="1.5" fill="var(--color-primary)" />
                               </svg>
                             </div>
