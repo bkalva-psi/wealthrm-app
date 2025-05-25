@@ -125,10 +125,10 @@ const AumTrendChart: React.FC<AumTrendChartProps> = ({
           <Line
             type="monotone"
             dataKey="value"
-            stroke={showFullPeriod ? "#6366f1" : "var(--color-primary)"}
-            strokeWidth={2}
+            stroke="#2563EB"
+            strokeWidth={2.5}
             dot={false}
-            activeDot={{ r: 6, stroke: showFullPeriod ? "#6366f1" : "var(--color-primary)", strokeWidth: 2, fill: "white" }}
+            activeDot={{ r: 6, stroke: "#2563EB", strokeWidth: 2, fill: "white" }}
             animationDuration={1000}
           />
         </LineChart>
