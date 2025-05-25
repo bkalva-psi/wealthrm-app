@@ -1297,23 +1297,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTodaysAppointments(assignedTo?: number): Promise<Appointment[]> {
-    // Getting today's appointments would require date filtering
-    // This is a simplified implementation
-    let query = db.select().from(appointments);
+    const today = new Date();
+    // Set to start of day
+    today.setHours(0, 0, 0, 0);
     
+    // Set to end of day
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    // Get all appointments
+    let allAppointments = await db.select().from(appointments);
+    
+    // Filter for today's appointments
+    let todayAppointments = allAppointments.filter(appointment => {
+      const appointmentDate = new Date(appointment.startTime);
+      return appointmentDate >= today && appointmentDate <= endOfDay;
+    });
+    
+    // Filter by assignedTo if provided
     if (assignedTo) {
-      query = query.where(eq(appointments.assignedTo, assignedTo));
+      todayAppointments = todayAppointments.filter(appointment => appointment.assignedTo === assignedTo);
     }
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    // This would require comparing date parts which depends on the database
-    // For a complete implementation, we'd need to adjust based on specific database capabilities
-    
-    return query;
+    // Sort by start time
+    return todayAppointments.sort((a, b) => {
+      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+    });
   }
 
   // Portfolio Alert methods
