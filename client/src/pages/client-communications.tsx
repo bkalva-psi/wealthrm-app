@@ -944,8 +944,8 @@ const ClientCommunications: React.FC = () => {
     if (!communications) return [];
     
     return communications.filter((comm: Communication) => {
-      if (filterType && comm.communication_type !== filterType) return false;
-      if (filterChannel && comm.channel !== filterChannel) return false;
+      if (filterType && filterType !== "all_types" && comm.communication_type !== filterType) return false;
+      if (filterChannel && filterChannel !== "all_channels" && comm.channel !== filterChannel) return false;
       return true;
     });
   }, [communications, filterType, filterChannel]);
@@ -1012,7 +1012,7 @@ const ClientCommunications: React.FC = () => {
                               <SelectValue placeholder="All Types" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All Types</SelectItem>
+                              <SelectItem value="all_types">All Types</SelectItem>
                               <SelectItem value="portfolio_review">Portfolio Review</SelectItem>
                               <SelectItem value="market_update">Market Update</SelectItem>
                               <SelectItem value="investment_advice">Investment Advice</SelectItem>
@@ -1035,7 +1035,7 @@ const ClientCommunications: React.FC = () => {
                               <SelectValue placeholder="All Channels" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All Channels</SelectItem>
+                              <SelectItem value="all_channels">All Channels</SelectItem>
                               <SelectItem value="phone">Phone</SelectItem>
                               <SelectItem value="email">Email</SelectItem>
                               <SelectItem value="in_person">In Person</SelectItem>
