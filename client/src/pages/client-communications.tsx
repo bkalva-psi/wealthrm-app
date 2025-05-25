@@ -902,7 +902,9 @@ const NewCommunicationDialog: React.FC<{
 
 // Main ClientCommunications component
 const ClientCommunications: React.FC = () => {
-  const { id } = useParams();
+  const params = useParams();
+  // The URL format is /clients/:id/communications, so we need to get the id parameter
+  const id = params.id || window.location.hash.split('/')[2];
   const clientId = parseInt(id as string);
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
