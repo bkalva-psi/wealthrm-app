@@ -1115,6 +1115,14 @@ export default function ClientPortfolioPage() {
                           <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-800">Defensive</div>
                         </div>
                       </div>
+                      
+                      <div className="border rounded-lg p-2 col-span-2">
+                        <div className="text-muted-foreground text-xs">Information Ratio</div>
+                        <div className="flex items-center mt-1">
+                          <span className="text-base font-medium">1.24</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Strong</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
@@ -1175,10 +1183,10 @@ export default function ClientPortfolioPage() {
                       </div>
                       
                       <div className="border rounded-lg p-2">
-                        <div className="text-muted-foreground text-xs">Information Ratio</div>
+                        <div className="text-muted-foreground text-xs">Correlation Score</div>
                         <div className="flex items-center mt-1">
-                          <span className="text-base font-medium">1.24</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Strong</div>
+                          <span className="text-base font-medium">0.34</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Low Correlation</div>
                         </div>
                       </div>
                     </div>
