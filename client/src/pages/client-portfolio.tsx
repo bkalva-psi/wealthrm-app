@@ -652,13 +652,19 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Geographic Exposure</CardTitle>
-                <CardDescription>Allocation by regions</CardDescription>
+                <CardTitle className="text-lg">Security Exposure</CardTitle>
+                <CardDescription>Top 5 securities by allocation</CardDescription>
               </CardHeader>
               <CardContent>
                 <AllocationChart 
-                  data={client?.geographicExposure || mockGeographicExposure} 
-                  title="Regions" 
+                  data={{
+                    "HDFC Top 100 Fund": 25,
+                    "SBI Small Cap Fund": 17.5,
+                    "ICICI Prudential Bond": 20,
+                    "Reliance Industries": 12.5,
+                    "HDFC Bank Ltd.": 10
+                  }} 
+                  title="Securities" 
                   color="green" 
                 />
               </CardContent>
