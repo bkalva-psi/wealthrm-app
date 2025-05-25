@@ -800,34 +800,30 @@ export default function ClientPortfolioPage() {
             </CardContent>
           </Card>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Asset Class Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AllocationChart 
-                  data={client?.assetAllocation || mockAssetAllocation} 
-                  title="Current Allocation" 
-                  color="blue" 
-                />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Top Performers</CardTitle>
+                <CardTitle className="text-lg flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
+                  Top Performers
+                </CardTitle>
+                <CardDescription>Best performing holdings in your portfolio</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {mockHoldings
                     .sort((a, b) => b.gain - a.gain)
-                    .slice(0, 3)
+                    .slice(0, 5)
                     .map((holding, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium text-sm">{holding.name}</div>
-                          <div className="text-xs text-slate-500">{holding.type}</div>
+                      <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-slate-50">
+                        <div className="flex items-start space-x-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-medium text-xs">
+                            #{index + 1}
+                          </div>
+                          <div>
+                            <div className="font-medium text-sm">{holding.name}</div>
+                            <div className="text-xs text-slate-500">{holding.type}</div>
+                          </div>
                         </div>
                         <div className="text-green-600 font-medium">+{holding.gain}%</div>
                       </div>
@@ -838,18 +834,27 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Underperformers</CardTitle>
+                <CardTitle className="text-lg flex items-center">
+                  <ArrowDownRight className="h-5 w-5 mr-2 text-red-500" />
+                  Underperformers
+                </CardTitle>
+                <CardDescription>Holdings that need attention</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {mockHoldings
                     .sort((a, b) => a.gain - b.gain)
-                    .slice(0, 3)
+                    .slice(0, 5)
                     .map((holding, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium text-sm">{holding.name}</div>
-                          <div className="text-xs text-slate-500">{holding.type}</div>
+                      <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-slate-50">
+                        <div className="flex items-start space-x-2">
+                          <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium text-xs">
+                            #{index + 1}
+                          </div>
+                          <div>
+                            <div className="font-medium text-sm">{holding.name}</div>
+                            <div className="text-xs text-slate-500">{holding.type}</div>
+                          </div>
                         </div>
                         <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {holding.gain > 0 ? '+' : ''}{holding.gain}%
