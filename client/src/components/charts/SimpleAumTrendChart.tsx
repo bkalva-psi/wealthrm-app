@@ -17,31 +17,46 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
     const startValue = 34; // 85% (in our SVG coordinate system)
     const endValue = 0;    // 100% (in our SVG coordinate system)
     
-    // Generate 20 points with random variations
-    const totalPoints = 20;
+    // Generate 100 points with stronger random variations for a more natural market pattern
+    const totalPoints = 100;
+    
+    // Previous point value to create realistic oscillations
+    let prevY = startValue;
+    
     for (let i = 0; i <= totalPoints; i++) {
       const progress = i / totalPoints;
-      // Linear progression from start to end with random variation
-      const baseY = startValue - (startValue - endValue) * progress;
       
-      // Add more variation in the middle, less at the start and end
-      const variationFactor = progress * (1 - progress) * 4;
-      const variation = (Math.random() * 2 - 1) * variationFactor;
+      // Overall downward trend from startValue to endValue (remember in SVG, 0 is top)
+      const trendValue = startValue - (startValue - endValue) * progress;
+      
+      // Create realistic market movements with small changes between points
+      // Use a random walk pattern with trend reversion
+      const randomWalk = (Math.random() * 2 - 1) * 0.8; // Random movement between -0.8 and +0.8
+      const reversion = (trendValue - prevY) * 0.2; // Pull back to trend line
+      
+      // Calculate next point with more randomness for mid-range
+      const variationAmplitude = progress * (1 - progress) * 6; // More variation in the middle
+      const variation = randomWalk * variationAmplitude + reversion;
+      
+      // New Y value with limit to prevent extreme variations
+      const newY = Math.max(0, Math.min(40, prevY + variation));
+      prevY = newY;
       
       points.push({
         x: i * (100 / totalPoints),
-        y: baseY + variation
+        y: newY
       });
     }
     
-    // Ensure the first and last points are exact
+    // Force the first and last points to be exact
     points[0].y = startValue;
     points[points.length - 1].y = endValue;
     
     return points;
   };
   
-  const dataPoints = generateRandomPoints();
+  // Generate points once, not on every render, using React.useMemo
+  const dataPoints = React.useMemo(() => generateRandomPoints(), [aumValue]);
   
   // Convert points array to SVG polyline points string
   const pointsString = dataPoints.map(p => `${p.x},${p.y}`).join(' ');
@@ -73,20 +88,15 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
             
             <div className="w-full h-full flex items-end">
               <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="w-full h-full">
-                {/* Polyline for chart */}
+                {/* Smooth line chart without visible points */}
                 <polyline 
                   points={pointsString}
                   fill="none"
                   stroke="var(--color-primary)"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
                 />
-                
-                {/* Data points */}
-                <circle cx="0" cy={dataPoints[0].y} r="1.5" fill="var(--color-primary)" />
-                <circle cx="25" cy={dataPoints[5].y} r="1.5" fill="var(--color-primary)" />
-                <circle cx="50" cy={dataPoints[10].y} r="1.5" fill="var(--color-primary)" />
-                <circle cx="75" cy={dataPoints[15].y} r="1.5" fill="var(--color-primary)" />
-                <circle cx="100" cy={dataPoints[20].y} r="1.5" fill="var(--color-primary)" />
               </svg>
             </div>
           </div>
