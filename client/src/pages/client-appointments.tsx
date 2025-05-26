@@ -53,7 +53,7 @@ const ClientAppointments = () => {
   
   // Fetch client-specific appointments
   const { data: appointments, isLoading, refetch } = useQuery({
-    queryKey: ['/api/appointments'],
+    queryKey: ['/api/appointments', clientId],
     queryFn: async () => {
       const response = await fetch(`/api/appointments?clientId=${clientId}`);
       if (!response.ok) {
