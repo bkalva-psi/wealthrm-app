@@ -195,39 +195,34 @@ export default function ClientPersonalPage() {
           {/* Client Summary Card */}
           <Card className="mb-6">
             <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-full md:w-1/3 space-y-4">
-                  <div className="h-40 w-40 mx-auto">
-                    <Avatar className="h-40 w-40 border-4 border-white shadow-md">
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex items-center gap-4 md:w-1/2">
+                  {/* Smaller Avatar */}
+                  <div className="h-20 w-20 flex-shrink-0">
+                    <Avatar className="h-20 w-20 border-2 border-white shadow-md">
                       <AvatarImage 
                         src={svgToDataURL(generateAvatar(client.fullName, client.tier))} 
                         alt={client.fullName} 
                         className="object-cover"
                       />
-                      <AvatarFallback className="text-4xl">{client.initials}</AvatarFallback>
+                      <AvatarFallback className="text-xl">{client.initials}</AvatarFallback>
                     </Avatar>
                   </div>
-                  <h2 className="text-xl font-medium text-center">{client.fullName}</h2>
-                  <Badge className="mx-auto block w-fit" variant="outline">{client.tier.toUpperCase()} Tier Client</Badge>
-                  <div className="flex justify-center items-center mt-4">
-                    <div className="inline-flex items-center justify-center">
-                      <div className="bg-white border rounded-l-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <Clock className="h-4 w-4 text-slate-500" />
-                        <div>
-                          <div className="text-xs whitespace-nowrap">Status</div>
-                          <span className="whitespace-nowrap font-medium">
-                            KYC {client.kycStatus || "Unknown"}
-                          </span>
-                        </div>
+                  
+                  {/* Name and Category */}
+                  <div className="flex-1">
+                    <h2 className="text-xl font-medium">{client.fullName}</h2>
+                    <Badge className="mt-1" variant="outline">{client.tier.toUpperCase()} Tier Client</Badge>
+                    
+                    {/* KYC and AUM in compact layout */}
+                    <div className="flex gap-4 mt-3">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3 text-slate-500" />
+                        <span className="text-sm text-slate-600">KYC {client.kycStatus || "Unknown"}</span>
                       </div>
-                      <div className="bg-orange-500 text-white rounded-r-full px-4 py-2 flex items-center gap-2 shadow-sm -ml-1">
-                        <Wallet className="h-4 w-4" />
-                        <div>
-                          <div className="text-xs whitespace-nowrap">AUM</div>
-                          <span className="whitespace-nowrap font-medium">
-                            {client.aum}
-                          </span>
-                        </div>
+                      <div className="flex items-center gap-1">
+                        <Wallet className="h-3 w-3 text-orange-500" />
+                        <span className="text-sm font-medium text-orange-600">{client.aum}</span>
                       </div>
                     </div>
                   </div>
