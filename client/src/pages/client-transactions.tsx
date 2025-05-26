@@ -512,6 +512,22 @@ export default function ClientTransactions() {
             >
               <MessageCircle className="h-5 w-5" />
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Portfolio Report"
+            >
+              <FileText className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Investment Recommendations"
+            >
+              <Target className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>

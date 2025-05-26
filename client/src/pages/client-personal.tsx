@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Briefcase, Home, Building, 
   CreditCard, Shield, Users, Wallet, BarChart4, MessageCircle, Clock, Heart,
-  FileText, CheckCircle, XCircle, AlertCircle
+  FileText, CheckCircle, XCircle, AlertCircle, Target
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -179,6 +179,22 @@ export default function ClientPersonalPage() {
               title="Communications"
             >
               <MessageCircle className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Portfolio Report"
+            >
+              <FileText className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Investment Recommendations"
+            >
+              <Target className="h-5 w-5" />
             </Button>
           </div>
         </div>
