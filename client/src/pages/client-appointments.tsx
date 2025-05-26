@@ -40,6 +40,7 @@ interface Appointment {
   priority: string | null;
   type: string;
   createdAt: string | null;
+  clientName?: string;
 }
 
 const ClientAppointments = () => {
@@ -304,6 +305,9 @@ const ClientAppointments = () => {
                         }}
                       >
                         <div className="font-medium">{appointment.title}</div>
+                        {appointment.clientName && (
+                          <div className="text-xs text-blue-600 font-medium">{appointment.clientName}</div>
+                        )}
                         <div className="text-xs mt-1 flex justify-between">
                           <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
                           <span>{appointment.location}</span>
@@ -400,6 +404,11 @@ const ClientAppointments = () => {
                           {appointment.priority || 'Normal'} Priority
                         </Badge>
                       </div>
+                      {appointment.clientName && (
+                        <div className="text-sm text-blue-600 font-medium mb-1">
+                          Client: {appointment.clientName}
+                        </div>
+                      )}
                       <CardDescription>
                         {appointment.description}
                       </CardDescription>

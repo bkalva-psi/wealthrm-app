@@ -825,12 +825,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const query = `
         SELECT 
-          id, title, description, start_time as "startTime", end_time as "endTime", 
-          location, client_id as "clientId", prospect_id as "prospectId", 
-          assigned_to as "assignedTo", priority, type, created_at as "createdAt"
-        FROM appointments 
-        WHERE assigned_to = $1${dateFilter}${clientFilter}
-        ORDER BY start_time ASC
+          a.id, a.title, a.description, a.start_time as "startTime", a.end_time as "endTime", 
+          a.location, a.client_id as "clientId", a.prospect_id as "prospectId", 
+          a.assigned_to as "assignedTo", a.priority, a.type, a.created_at as "createdAt",
+          c.full_name as "clientName"
+        FROM appointments a
+        LEFT JOIN clients c ON a.client_id = c.id
+        WHERE a.assigned_to = $1${dateFilter}${clientFilter}
+        ORDER BY a.start_time ASC
       `;
       
       const result = await pool.query(query, params);
