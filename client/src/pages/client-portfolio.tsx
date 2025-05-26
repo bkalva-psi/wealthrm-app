@@ -1564,6 +1564,7 @@ export default function ClientPortfolioPage() {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
