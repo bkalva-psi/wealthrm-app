@@ -125,7 +125,7 @@ export default function Tasks() {
     createTaskMutation.mutate({
       title: newTask.title,
       description: newTask.description,
-      dueDate: new Date(newTask.dueDate),
+      dueDate: newTask.dueDate + 'T00:00:00.000Z',
       completed: false,
     });
   };
