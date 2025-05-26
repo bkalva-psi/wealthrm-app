@@ -61,6 +61,13 @@ export default function CalendarPage() {
   
   const { data: appointments, isLoading } = useQuery({
     queryKey: ['/api/appointments', { date: formattedSelectedDate }],
+    queryFn: async () => {
+      const response = await fetch('/api/appointments');
+      if (!response.ok) {
+        throw new Error('Failed to fetch appointments');
+      }
+      return response.json();
+    },
   });
   
   const nextMonth = () => {
