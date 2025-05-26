@@ -435,7 +435,7 @@ export default function ClientTransactions() {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => window.location.hash = `/clients/${clientId}`}
+              onClick={() => window.location.hash = `/clients`}
               className="mr-4 p-2"
             >
               <ArrowLeft className="h-5 w-5" />
