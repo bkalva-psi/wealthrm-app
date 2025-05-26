@@ -1414,21 +1414,7 @@ const ClientCommunications: React.FC = () => {
             )}
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 mb-8">
-          <div className="md:col-span-1">
-            <Card className="mb-4">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle>Preferences</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Preferences clientId={clientId} />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+
       </div>
     </div>
   );
