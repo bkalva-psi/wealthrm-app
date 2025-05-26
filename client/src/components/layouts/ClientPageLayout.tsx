@@ -170,17 +170,7 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
               <span className="sm:hidden">Comms</span>
             </Button>
           </TabsTrigger>
-          <TabsTrigger value="documents">
-            <Button 
-              variant={currentTab === 'documents' ? 'default' : 'ghost'} 
-              className="mr-1"
-              onClick={() => window.location.hash = `/clients/${clientId}/documents`}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Documents</span>
-              <span className="sm:hidden">Docs</span>
-            </Button>
-          </TabsTrigger>
+
           <TabsTrigger value="appointments">
             <Button 
               variant={currentTab === 'appointments' ? 'default' : 'ghost'} 
