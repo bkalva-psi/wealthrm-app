@@ -94,18 +94,93 @@ export default function ClientPersonalPage() {
   
   return (
     <div className="p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Button variant="ghost" size="sm" onClick={handleBackClick}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <h1 className="text-2xl font-bold">
-          {isLoading ? (
-            <Skeleton className="h-8 w-40" />
-          ) : (
-            `${client?.fullName}'s Information`
-          )}
-        </h1>
+      {/* New Consistent Header */}
+      <div className="bg-white border rounded-lg p-4 mb-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          {/* Left side - Back arrow and client info */}
+          <div className="flex items-center">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleBackClick}
+              className="mr-4 p-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            
+            <div>
+              {isLoading ? (
+                <div className="space-y-1">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    {client?.fullName}
+                  </button>
+                  <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                    {client?.phone && (
+                      <div className="flex items-center gap-1">
+                        <Phone className="h-3 w-3" />
+                        <span>{client.phone}</span>
+                      </div>
+                    )}
+                    {client?.email && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        <span>{client.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Right side - Navigation icons */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+              className="p-2"
+              title="Portfolio"
+            >
+              <BarChart4 className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+              className="p-2"
+              title="Transactions"
+            >
+              <Wallet className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+              className="p-2"
+              title="Appointments"
+            >
+              <Calendar className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+              className="p-2"
+              title="Communications"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
       </div>
       
       {isLoading ? (
