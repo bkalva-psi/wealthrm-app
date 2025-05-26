@@ -188,6 +188,8 @@ export const tasks = pgTable("tasks", {
 export const insertTaskSchema = createInsertSchema(tasks).omit({
   id: true,
   createdAt: true,
+}).extend({
+  dueDate: z.string().transform((str) => new Date(str)).optional(),
 });
 
 // Meeting/Appointment model

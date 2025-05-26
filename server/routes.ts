@@ -715,9 +715,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/tasks", authMiddleware, async (req, res) => {
     try {
+      console.log('Received task data:', req.body);
       const parseResult = insertTaskSchema.safeParse(req.body);
       
       if (!parseResult.success) {
+        console.log('Task validation failed:', parseResult.error.format());
         return res.status(400).json({ message: "Invalid task data", errors: parseResult.error.format() });
       }
       
