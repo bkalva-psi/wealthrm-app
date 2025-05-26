@@ -975,7 +975,7 @@ const ClientCommunications: React.FC = () => {
       {/* Harmonized header band */}
       <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
-          {/* Left side - Back arrow and client info */}
+          {/* Left side - Back arrow and client name */}
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -994,48 +994,31 @@ const ClientCommunications: React.FC = () => {
                 </div>
               ) : client ? (
                 <>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={svgToDataURL(generateAvatar(client.initials || client.fullName || 'C'))} />
-                      <AvatarFallback>{client.initials || getInitials(client.fullName || 'Client')}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h1 className="text-lg font-semibold text-gray-900">{client.fullName}</h1>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${client.tier ? getTierColor(client.tier).bg : 'bg-slate-100'} ${client.tier ? getTierColor(client.tier).text : 'text-slate-800'}`}>
-                          {client.tier || 'Standard'}
-                        </span>
-                        <span>Client since {client.createdAt ? new Date(client.createdAt).getFullYear() : 'N/A'}</span>
+                  <button 
+                    onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    {client.fullName}
+                  </button>
+                  <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                    {client.phone && (
+                      <div className="flex items-center gap-1">
+                        <Phone className="h-3 w-3" />
+                        <span>{client.phone}</span>
                       </div>
-                    </div>
+                    )}
+                    {client.email && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        <span>{client.email}</span>
+                      </div>
+                    )}
                   </div>
                 </>
               ) : (
                 <div className="text-gray-500">Client not found</div>
               )}
             </div>
-          </div>
-
-          {/* Center - Contact information */}
-          <div className="hidden md:flex items-center gap-4 text-sm text-gray-600">
-            {client?.phone && (
-              <div className="flex items-center gap-1">
-                <Phone className="h-4 w-4" />
-                <span>{client.phone}</span>
-              </div>
-            )}
-            {client?.email && (
-              <div className="flex items-center gap-1">
-                <Mail className="h-4 w-4" />
-                <span>{client.email}</span>
-              </div>
-            )}
-            {client?.address && (
-              <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                <span className="max-w-32 truncate">{client.address}</span>
-              </div>
-            )}
           </div>
 
           {/* Right side - Navigation icons */}
@@ -1047,7 +1030,7 @@ const ClientCommunications: React.FC = () => {
               title="Personal Profile"
               onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             >
-              <User className="h-5 w-5" />
+              <BarChart4 className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
@@ -1056,7 +1039,7 @@ const ClientCommunications: React.FC = () => {
               className="p-2"
               title="Portfolio"
             >
-              <BarChart4 className="h-5 w-5" />
+              <Wallet className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
@@ -1065,7 +1048,7 @@ const ClientCommunications: React.FC = () => {
               className="p-2"
               title="Transactions"
             >
-              <Wallet className="h-5 w-5" />
+              <ArrowUpDown className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
@@ -1079,7 +1062,8 @@ const ClientCommunications: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="p-2 bg-blue-50 text-blue-600"
+              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+              className="p-2 bg-blue-50"
               title="Communications"
             >
               <MessageCircle className="h-5 w-5" />
