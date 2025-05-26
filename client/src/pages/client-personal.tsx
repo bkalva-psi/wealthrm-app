@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { clientApi } from "@/lib/api";
 import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
+import { getTierColor } from "@/lib/utils";
 
 export default function ClientPersonalPage() {
   const [clientId, setClientId] = useState<number | null>(null);
@@ -95,7 +96,7 @@ export default function ClientPersonalPage() {
   return (
     <div className="p-6">
       {/* New Consistent Header */}
-      <div className="bg-white border rounded-lg p-4 mb-6 shadow-sm">
+      <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Back arrow and client info */}
           <div className="flex items-center">
