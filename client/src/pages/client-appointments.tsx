@@ -505,6 +505,8 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         type: formData.type
       };
       
+      console.log('Sending appointment data:', appointmentData);
+      
       try {
         const response = await fetch('/api/appointments', {
           method: 'POST',
@@ -517,8 +519,21 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         if (response.ok) {
           setIsNewAppointmentDialogOpen(false);
           refetch();
+          // Reset form
+          setFormData({
+            title: '',
+            description: '',
+            clientId: clientId ? clientId.toString() : '',
+            startDate: format(new Date(), 'yyyy-MM-dd'),
+            startTime: '09:00',
+            endTime: '10:00',
+            location: '',
+            priority: 'medium',
+            type: 'meeting'
+          });
         } else {
-          console.error('Failed to create appointment');
+          const errorData = await response.json();
+          console.error('Failed to create appointment:', errorData);
         }
       } catch (error) {
         console.error('Error creating appointment:', error);
