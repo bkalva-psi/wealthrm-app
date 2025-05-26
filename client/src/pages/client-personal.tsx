@@ -94,7 +94,7 @@ export default function ClientPersonalPage() {
   }
   
   return (
-    <div className="p-6">
+    <div>
       {/* New Consistent Header */}
       <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
@@ -199,17 +199,28 @@ export default function ClientPersonalPage() {
           </div>
         </div>
       </div>
-      
-      {isLoading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-40 w-full" />
-          <Skeleton className="h-60 w-full" />
-          <Skeleton className="h-60 w-full" />
+
+      {/* Page Description */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Personal Profile</h2>
+          <p className="text-gray-600 mt-1">
+            Complete client information and personal details
+          </p>
         </div>
-      ) : client ? (
-        <>
-          {/* Client Summary Card */}
-          <Card className="mb-6">
+      </div>
+      
+      <div className="p-6">
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-60 w-full" />
+            <Skeleton className="h-60 w-full" />
+          </div>
+        ) : client ? (
+          <>
+            {/* Client Summary Card */}
+            <Card className="mb-6">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex items-center gap-4 md:w-1/2">
@@ -818,6 +829,7 @@ export default function ClientPersonalPage() {
           <p>Could not load client information.</p>
         </div>
       )}
+      </div>
     </div>
   );
 }
