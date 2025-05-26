@@ -801,25 +801,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/appointments", authMiddleware, async (req, res) => {
     try {
       const assignedTo = req.session.userId;
-      let date: Date | undefined = undefined;
-      let clientId: number | undefined = undefined;
+      let dateFilter = '';
+      let clientFilter = '';
+      let params: any[] = [assignedTo];
       
       if (req.query.date) {
-        date = new Date(req.query.date as string);
+        const date = new Date(req.query.date as string);
         if (isNaN(date.getTime())) {
           return res.status(400).json({ message: "Invalid date format" });
         }
+        dateFilter = ' AND DATE(start_time) = DATE($' + (params.length + 1) + ')';
+        params.push(date.toISOString().split('T')[0]);
       }
       
       if (req.query.clientId) {
-        clientId = Number(req.query.clientId);
+        const clientId = Number(req.query.clientId);
         if (isNaN(clientId)) {
           return res.status(400).json({ message: "Invalid client ID format" });
         }
+        clientFilter = ' AND client_id = $' + (params.length + 1);
+        params.push(clientId);
       }
       
-      const appointments = await storage.getAppointments(assignedTo, date, clientId);
-      res.json(appointments);
+      const query = `
+        SELECT 
+          id, title, description, start_time as "startTime", end_time as "endTime", 
+          location, client_id as "clientId", prospect_id as "prospectId", 
+          assigned_to as "assignedTo", priority, type, created_at as "createdAt"
+        FROM appointments 
+        WHERE assigned_to = $1${dateFilter}${clientFilter}
+        ORDER BY start_time ASC
+      `;
+      
+      const result = await pool.query(query, params);
+      res.json(result.rows);
     } catch (error) {
       console.error("Get appointments error:", error);
       res.status(500).json({ message: "Internal server error" });
