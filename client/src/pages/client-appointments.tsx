@@ -7,7 +7,17 @@ import {
   Clock, 
   MapPin, 
   PlusCircle,
-  User
+  User,
+  ArrowLeft,
+  Phone,
+  Mail,
+  BarChart4,
+  Wallet,
+  ArrowUpDown,
+  Calendar,
+  MessageCircle,
+  FileText,
+  Target
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
 
@@ -23,9 +33,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
+import { cn, getTierColor, getInitials } from '@/lib/utils';
 // Import the EmptyState component
 import EmptyState from '@/components/empty-state';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface Appointment {
   id: number;
@@ -61,6 +72,12 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
   
+  // Fetch client data when we have a specific clientId
+  const { data: client, isLoading: isClientLoading } = useQuery({
+    queryKey: [`/api/clients/${clientId}`],
+    enabled: !!clientId && !isNaN(clientId)
+  });
+
   // Fetch appointments (all or client-specific)
   const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ['/api/appointments', clientId],
@@ -712,21 +729,138 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   }
   
   return (
-    <ClientPageLayout clientId={clientId} currentTab="appointments">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold">Client Appointments</h2>
-            <p className="text-slate-500">
-              View and manage appointment schedule for this client
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Harmonized Header Band */}
+      <div className={`bg-white shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-slate-300'}`}>
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => window.location.hash = '/clients'}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              
+              <div className="flex items-center gap-3">
+                {/* Client Avatar */}
+                {isClientLoading ? (
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                ) : client ? (
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-blue-100 text-blue-700 font-medium">
+                      {getInitials(client.fullName)}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : null}
+                
+                {/* Client Details */}
+                {isClientLoading ? (
+                  <div className="space-y-1">
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ) : client ? (
+                  <>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                      className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                    >
+                      {client.fullName}
+                    </button>
+                    <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                      {client.phone && (
+                        <div className="flex items-center gap-1">
+                          <Phone className="h-3 w-3" />
+                          <span>{client.phone}</span>
+                        </div>
+                      )}
+                      {client.email && (
+                        <div className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          <span>{client.email}</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-gray-500">Client not found</div>
+                )}
+              </div>
+            </div>
+            
+            {/* Navigation Icons */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Personal"
+              >
+                <User className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Portfolio"
+              >
+                <BarChart4 className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Transactions"
+              >
+                <ArrowUpDown className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+                className="p-2 text-blue-600 bg-blue-50 rounded-lg transition-colors"
+                title="Calendar"
+              >
+                <Calendar className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Communications"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/reports`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Reports"
+              >
+                <FileText className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Recommendations"
+              >
+                <Target className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-          
-          <Button onClick={() => setIsNewAppointmentDialogOpen(true)}>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Appointment
-          </Button>
         </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="p-6">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">Client Appointments</h2>
+              <p className="text-slate-500">
+                View and manage appointment schedule for this client
+              </p>
+            </div>
+            
+            <Button onClick={() => setIsNewAppointmentDialogOpen(true)}>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              New Appointment
+            </Button>
+          </div>
         
         <Tabs defaultValue="list" value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
           <TabsList>
@@ -835,8 +969,9 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
-    </ClientPageLayout>
+    </div>
   );
 };
 
