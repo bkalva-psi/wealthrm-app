@@ -43,8 +43,17 @@ interface Appointment {
   clientName?: string;
 }
 
-const ClientAppointments = () => {
-  const clientId = parseInt(window.location.hash.split('/')[2]);
+interface ClientAppointmentsProps {
+  clientId?: string | number | null;
+}
+
+const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps = {}) => {
+  // Handle different ways clientId can be passed
+  const clientId = propClientId === "all" 
+    ? null 
+    : propClientId 
+    ? (typeof propClientId === "string" ? parseInt(propClientId) : propClientId)
+    : parseInt(window.location.hash.split('/')[2]);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedView, setSelectedView] = useState<'month' | 'day' | 'week'>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -52,22 +61,22 @@ const ClientAppointments = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
   
-  // Fetch client-specific appointments
+  // Fetch appointments (all or client-specific)
   const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ['/api/appointments', clientId],
     queryFn: async () => {
       console.log('Fetching appointments for clientId:', clientId);
-      const url = `/api/appointments?clientId=${clientId}`;
+      // If clientId is null, fetch all appointments without filter
+      const url = clientId === null ? '/api/appointments' : `/api/appointments?clientId=${clientId}`;
       console.log('API URL:', url);
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('Failed to fetch client appointments');
+        throw new Error('Failed to fetch appointments');
       }
       const data = await response.json();
       console.log('Received appointments:', data);
       return data;
-    },
-    enabled: !isNaN(clientId)
+    }
   });
   
   // Format time (e.g., "9:00 AM")

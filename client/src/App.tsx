@@ -173,7 +173,7 @@ function AuthenticatedApp() {
         return <ClientAppointments />;
       
       case currentRoute === '/calendar':
-        return <Calendar />;
+        return <ClientAppointments clientId="all" />;
       case currentRoute === '/appointments':
         return <Calendar />;
       case currentRoute === '/tasks':
