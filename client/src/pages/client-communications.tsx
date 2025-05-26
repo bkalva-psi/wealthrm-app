@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Paperclip, Calendar, CheckCircle2, AlertCircle, Filter } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Paperclip, Calendar, CheckCircle2, AlertCircle, Filter, BarChart4, Wallet, Target, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,12 +30,12 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { apiRequest } from '@/lib/queryClient';
-import ClientPageLayout from '@/components/layouts/ClientPageLayout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { getInitials } from '@/lib/utils';
+import { getInitials, getTierColor } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import EmptyState from '@/components/empty-state';
+import { generateAvatar, svgToDataURL } from '@/lib/avatarGenerator';
 
 // Type definitions for communications data
 interface Communication {
@@ -911,6 +911,12 @@ const ClientCommunications: React.FC = () => {
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterChannel, setFilterChannel] = useState<string | null>(null);
   
+  // Fetch client data
+  const { data: client, isLoading: isClientLoading } = useQuery({
+    queryKey: ['/api/clients', clientId],
+    enabled: !!clientId
+  });
+
   // Query to fetch client communications
   const { 
     data: communications, 
@@ -921,11 +927,7 @@ const ClientCommunications: React.FC = () => {
     enabled: !isNaN(clientId)
   });
   
-  // Query to fetch client data
-  const { data: client } = useQuery({
-    queryKey: [`/api/clients/${clientId}`],
-    enabled: !isNaN(clientId)
-  });
+  // Query to fetch client data - removed duplicate declaration
   
   // Reset selected communication when clientId changes
   useEffect(() => {
@@ -964,7 +966,144 @@ const ClientCommunications: React.FC = () => {
   }
   
   return (
-    <ClientPageLayout clientId={clientId} currentTab="communications">
+    <div className="min-h-screen bg-gray-50">
+      {/* Set page title */}
+      {React.useEffect(() => {
+        document.title = `${client?.fullName || 'Client'} - Communications | Wealth RM`;
+      }, [client?.fullName])}
+
+      {/* Harmonized header band */}
+      <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+        <div className="flex items-center justify-between">
+          {/* Left side - Back arrow and client info */}
+          <div className="flex items-center">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => window.location.hash = `/clients`}
+              className="mr-4 p-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            
+            <div>
+              {isClientLoading ? (
+                <div className="space-y-1">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              ) : client ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={svgToDataURL(generateAvatar(client.initials || client.fullName || 'C'))} />
+                      <AvatarFallback>{client.initials || getInitials(client.fullName || 'Client')}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h1 className="text-lg font-semibold text-gray-900">{client.fullName}</h1>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${client.tier ? getTierColor(client.tier).bg : 'bg-slate-100'} ${client.tier ? getTierColor(client.tier).text : 'text-slate-800'}`}>
+                          {client.tier || 'Standard'}
+                        </span>
+                        <span>Client since {client.createdAt ? new Date(client.createdAt).getFullYear() : 'N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-gray-500">Client not found</div>
+              )}
+            </div>
+          </div>
+
+          {/* Center - Contact information */}
+          <div className="hidden md:flex items-center gap-4 text-sm text-gray-600">
+            {client?.phone && (
+              <div className="flex items-center gap-1">
+                <Phone className="h-4 w-4" />
+                <span>{client.phone}</span>
+              </div>
+            )}
+            {client?.email && (
+              <div className="flex items-center gap-1">
+                <Mail className="h-4 w-4" />
+                <span>{client.email}</span>
+              </div>
+            )}
+            {client?.address && (
+              <div className="flex items-center gap-1">
+                <User className="h-4 w-4" />
+                <span className="max-w-32 truncate">{client.address}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Right side - Navigation icons */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Personal Profile"
+              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+              className="p-2"
+              title="Portfolio"
+            >
+              <BarChart4 className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+              className="p-2"
+              title="Transactions"
+            >
+              <Wallet className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+              className="p-2"
+              title="Appointments"
+            >
+              <Calendar className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2 bg-blue-50 text-blue-600"
+              title="Communications"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Portfolio Report"
+            >
+              <FileText className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Investment Recommendations"
+            >
+              <Target className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto py-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
@@ -1275,8 +1414,23 @@ const ClientCommunications: React.FC = () => {
             )}
           </div>
         </div>
+        
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 mb-8">
+          <div className="md:col-span-1">
+            <Card className="mb-4">
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle>Preferences</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Preferences clientId={clientId} />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
-    </ClientPageLayout>
+    </div>
   );
 };
 
