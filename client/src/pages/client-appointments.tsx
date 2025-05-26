@@ -56,11 +56,16 @@ const ClientAppointments = () => {
   const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ['/api/appointments', clientId],
     queryFn: async () => {
-      const response = await fetch(`/api/appointments?clientId=${clientId}`);
+      console.log('Fetching appointments for clientId:', clientId);
+      const url = `/api/appointments?clientId=${clientId}`;
+      console.log('API URL:', url);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch client appointments');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('Received appointments:', data);
+      return data;
     },
     enabled: !isNaN(clientId)
   });

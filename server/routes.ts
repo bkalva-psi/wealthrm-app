@@ -816,10 +816,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (req.query.clientId) {
         const clientId = Number(req.query.clientId);
+        console.log('Filtering appointments for clientId:', clientId);
         if (isNaN(clientId)) {
           return res.status(400).json({ message: "Invalid client ID format" });
         }
-        clientFilter = ' AND client_id = $' + (params.length + 1);
+        clientFilter = ' AND a.client_id = $' + (params.length + 1);
         params.push(clientId);
       }
       
