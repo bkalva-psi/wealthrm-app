@@ -45,22 +45,19 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <div className="mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => window.location.hash = "/clients"}
-          className="flex items-center"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Clients
-        </Button>
-      </div>
-
       {/* Client Header Card */}
       <Card className="mb-6 p-4">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           {/* Client Avatar and Name */}
           <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => window.location.hash = "/clients"}
+              className="p-2 h-8 w-8"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             {isLoading ? (
               <Skeleton className="h-16 w-16 rounded-full" />
             ) : (
