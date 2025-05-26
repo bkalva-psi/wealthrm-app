@@ -972,45 +972,45 @@ const ClientCommunications: React.FC = () => {
         document.title = `${client?.fullName || 'Client'} - Communications | Wealth RM`;
       }, [client?.fullName])}
 
-      {/* Harmonized header band */}
-      <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
-        <div className="flex items-center justify-between">
+      {/* Harmonized header band - Mobile Optimized */}
+      <div className={`bg-white border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           {/* Left side - Back arrow and client name */}
-          <div className="flex items-center">
+          <div className="flex items-center min-w-0 flex-1">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => window.location.hash = `/clients`}
-              className="mr-4 p-2"
+              className="mr-2 sm:mr-4 p-1 sm:p-2 flex-shrink-0"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             
-            <div>
+            <div className="min-w-0 flex-1">
               {isClientLoading ? (
                 <div className="space-y-1">
-                  <Skeleton className="h-6 w-32" />
-                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-5 sm:h-6 w-24 sm:w-32" />
+                  <Skeleton className="h-3 sm:h-4 w-20 sm:w-24" />
                 </div>
               ) : client ? (
                 <>
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-lg sm:text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer truncate block w-full text-left"
                   >
                     {client.fullName}
                   </button>
-                  <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600 mt-1">
                     {client.phone && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3" />
-                        <span>{client.phone}</span>
+                        <span className="truncate">{client.phone}</span>
                       </div>
                     )}
                     {client.email && (
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
-                        <span>{client.email}</span>
+                        <span className="truncate">{client.email}</span>
                       </div>
                     )}
                   </div>
@@ -1022,7 +1022,7 @@ const ClientCommunications: React.FC = () => {
           </div>
 
           {/* Right side - Navigation icons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
@@ -1088,20 +1088,22 @@ const ClientCommunications: React.FC = () => {
         </div>
       </div>
 
-      {/* Page Description */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
-            <p className="text-gray-600 mt-1">
+      {/* Page Description - Mobile Optimized */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Communications</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               Track all client interactions and communication history
             </p>
           </div>
           
-          <NewCommunicationDialog 
-            clientId={clientId}
-            onSuccess={refetchCommunications}
-          />
+          <div className="flex-shrink-0">
+            <NewCommunicationDialog 
+              clientId={clientId}
+              onSuccess={refetchCommunications}
+            />
+          </div>
         </div>
       </div>
 
