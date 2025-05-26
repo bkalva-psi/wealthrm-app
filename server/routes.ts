@@ -879,9 +879,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/appointments", authMiddleware, async (req, res) => {
     try {
+      console.log('Received appointment data:', req.body);
       const parseResult = insertAppointmentSchema.safeParse(req.body);
       
       if (!parseResult.success) {
+        console.log('Validation failed:', parseResult.error.format());
         return res.status(400).json({ message: "Invalid appointment data", errors: parseResult.error.format() });
       }
       
