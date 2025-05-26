@@ -494,13 +494,30 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         new Date()
       );
       
+      // Validate required fields before submission
+      if (!formData.title.trim()) {
+        console.error('Title is required');
+        return;
+      }
+      
+      if (!formData.clientId && clientId === null) {
+        console.error('Client selection is required');
+        return;
+      }
+      
+      const clientIdNumber = parseInt(formData.clientId);
+      if (isNaN(clientIdNumber)) {
+        console.error('Invalid client ID');
+        return;
+      }
+      
       const appointmentData = {
-        title: formData.title,
-        description: formData.description,
+        title: formData.title.trim(),
+        description: formData.description || null,
         startTime: startDateTime.toISOString(),
         endTime: endDateTime.toISOString(),
-        location: formData.location,
-        clientId: parseInt(formData.clientId),
+        location: formData.location || null,
+        clientId: clientIdNumber,
         priority: formData.priority,
         type: formData.type
       };
@@ -534,6 +551,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         } else {
           const errorData = await response.json();
           console.error('Failed to create appointment:', errorData);
+          alert('Failed to create appointment: ' + (errorData.message || 'Unknown error'));
         }
       } catch (error) {
         console.error('Error creating appointment:', error);
