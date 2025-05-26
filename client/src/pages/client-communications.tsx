@@ -968,12 +968,6 @@ const ClientCommunications: React.FC = () => {
       <div className="container mx-auto py-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <Link href={`/clients/${clientId}`}>
-              <Button variant="ghost" size="sm" className="mr-2">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Client
-              </Button>
-            </Link>
             <h1 className="text-2xl font-bold">Communication History</h1>
           </div>
           
