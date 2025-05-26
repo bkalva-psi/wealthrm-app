@@ -1088,16 +1088,28 @@ const ClientCommunications: React.FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto py-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold">Communication History</h1>
+      {/* Page Description */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
+            <p className="text-gray-600 mt-1">
+              Track all client interactions and communication history
+            </p>
           </div>
           
           <NewCommunicationDialog 
             clientId={clientId}
             onSuccess={refetchCommunications}
           />
+        </div>
+      </div>
+
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold">Communication History</h1>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
