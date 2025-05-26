@@ -18,7 +18,7 @@ export function formatCurrency(value: number): string {
 }
 
 export function getTierColor(tier: string): { bg: string, text: string, border: string, icon: string } {
-  switch (tier.toLowerCase()) {
+  switch (tier?.toLowerCase()) {
     case 'platinum':
       return { 
         bg: 'bg-emerald-50', 
