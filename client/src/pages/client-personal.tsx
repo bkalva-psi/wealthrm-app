@@ -236,18 +236,18 @@ export default function ClientPersonalPage() {
                 <div className="w-full md:w-2/3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                      <Phone className="h-5 w-5 text-slate-400" />
+                      <User className="h-5 w-5 text-slate-400" />
                       <div>
-                        <p className="text-sm text-slate-500">Phone</p>
-                        <p>{client.phone || "Not provided"}</p>
+                        <p className="text-sm text-slate-500">Client Since</p>
+                        <p>{formatDate(client.createdAt)}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <Mail className="h-5 w-5 text-slate-400" />
+                      <Clock className="h-5 w-5 text-slate-400" />
                       <div>
-                        <p className="text-sm text-slate-500">Email</p>
-                        <p>{client.email || "Not provided"}</p>
+                        <p className="text-sm text-slate-500">Relationship Duration</p>
+                        <p>{client.createdAt ? `${Math.floor((new Date().getTime() - new Date(client.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365))} years` : "N/A"}</p>
                       </div>
                     </div>
                     
