@@ -53,11 +53,20 @@ import {
   ArrowDown,
   ArrowUp,
   X,
-  Plus
+  Plus,
+  Phone,
+  Mail,
+  BarChart4,
+  MessageCircle,
+  Calendar as CalendarIconNav,
+  Wallet,
+  FileText,
+  Target
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
+import { getTierColor } from '@/lib/utils';
 
 // Transaction type definition
 interface Transaction {
@@ -418,31 +427,104 @@ export default function ClientTransactions() {
   
   return (
     <div className="container mx-auto p-4 space-y-6">
-      {/* Header with navigation back to client */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <Button variant="ghost" onClick={() => window.location.hash = `/clients/${clientId}`} className="pl-0 mb-2">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Client
-          </Button>
-          <h1 className="text-2xl font-bold">{isClientLoading ? 'Loading...' : `${client?.fullName}'s Transactions`}</h1>
-          <p className="text-muted-foreground">
-            {isClientLoading ? '' : `AUM: ${client?.aum} • Total Transactions: ${client?.totalTransactionCount || 0}`}
-          </p>
+      {/* Consistent Header Band */}
+      <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+        <div className="flex items-center justify-between">
+          {/* Left side - Back arrow and client info */}
+          <div className="flex items-center">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => window.location.hash = `/clients/${clientId}`}
+              className="mr-4 p-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            
+            <div>
+              {isClientLoading ? (
+                <div className="space-y-1">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    {client?.fullName}
+                  </button>
+                  <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                    {client?.phone && (
+                      <div className="flex items-center gap-1">
+                        <Phone className="h-3 w-3" />
+                        <span>{client.phone}</span>
+                      </div>
+                    )}
+                    {client?.email && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        <span>{client.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Right side - Navigation icons */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              title="Personal Profile"
+              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            >
+              <BarChart4 className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+              className="p-2"
+              title="Portfolio"
+            >
+              <Wallet className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+              className="p-2"
+              title="Appointments"
+            >
+              <CalendarIconNav className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+              className="p-2"
+              title="Communications"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
-        
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button onClick={exportToCSV} variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export CSV
-          </Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                New Transaction
-              </Button>
-            </DialogTrigger>
+      </div>
+      
+      <Dialog>
+        <DialogTrigger asChild>
+          <div style={{ display: 'none' }}>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              New Transaction
+            </Button>
+          </div>
+        </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Add New Transaction</DialogTitle>
@@ -524,8 +606,6 @@ export default function ClientTransactions() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        </div>
-      </div>
       
       {/* Filters */}
       <Card>
