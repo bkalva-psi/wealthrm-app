@@ -913,7 +913,7 @@ const ClientCommunications: React.FC = () => {
   
   // Fetch client data
   const { data: client, isLoading: isClientLoading } = useQuery({
-    queryKey: ['/api/clients', clientId],
+    queryKey: [`/api/clients/${clientId}`],
     enabled: !!clientId
   });
 
