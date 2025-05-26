@@ -459,9 +459,15 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   
   // New Appointment Form
   const NewAppointmentDialog = () => {
+    // Fetch clients for dropdown
+    const { data: clients = [] } = useQuery({
+      queryKey: ['/api/clients'],
+    });
+    
     const [formData, setFormData] = useState({
       title: '',
       description: '',
+      clientId: clientId ? clientId.toString() : '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
       startTime: '09:00',
       endTime: '10:00',
@@ -494,7 +500,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         startTime: startDateTime.toISOString(),
         endTime: endDateTime.toISOString(),
         location: formData.location,
-        clientId: clientId,
+        clientId: parseInt(formData.clientId),
         priority: formData.priority,
         type: formData.type
       };
@@ -539,6 +545,28 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 placeholder="Appointment title"
               />
             </div>
+            
+            {/* Only show client selection when viewing all appointments (calendar view) */}
+            {clientId === null && (
+              <div className="space-y-2">
+                <Label htmlFor="clientId">Client</Label>
+                <Select 
+                  value={formData.clientId} 
+                  onValueChange={(value) => handleChange('clientId', value)}
+                >
+                  <SelectTrigger id="clientId">
+                    <SelectValue placeholder="Select client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(clients as any[]).map((client: any) => (
+                      <SelectItem key={client.id} value={client.id.toString()}>
+                        {client.fullName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
