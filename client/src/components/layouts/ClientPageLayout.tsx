@@ -32,7 +32,14 @@ const ClientPageLayout: React.FC<ClientPageLayoutProps> = ({
   
   // Fetch client appointments count
   const { data: appointments } = useQuery({
-    queryKey: [`/api/appointments`, { clientId }],
+    queryKey: [`/api/appointments`, clientId],
+    queryFn: async () => {
+      const response = await fetch(`/api/appointments?clientId=${clientId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch client appointments');
+      }
+      return response.json();
+    },
     enabled: !!clientId
   });
 
