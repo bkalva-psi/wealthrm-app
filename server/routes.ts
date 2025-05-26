@@ -800,6 +800,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Appointment routes
   app.get("/api/appointments", authMiddleware, async (req, res) => {
     try {
+      console.log('Appointments API called with query:', req.query);
       const assignedTo = req.session.userId;
       let dateFilter = '';
       let clientFilter = '';
