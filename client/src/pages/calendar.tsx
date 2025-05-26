@@ -43,6 +43,7 @@ interface Appointment {
   prospectId?: number;
   priority: string;
   type: string;
+  clientName?: string;
 }
 
 export default function CalendarPage() {
@@ -235,10 +236,13 @@ export default function CalendarPage() {
                     {dayAppointments.map(appointment => (
                       <div 
                         key={appointment.id} 
-                        className={`p-1 mb-1 text-xs rounded border-l-2 truncate ${getAppointmentTypeColor(appointment.type)}`}
+                        className={`p-1 mb-1 text-xs rounded border-l-2 ${getAppointmentTypeColor(appointment.type)}`}
                       >
-                        <div className="font-medium">{appointment.title}</div>
-                        <div className="text-xs">{formatTime(appointment.startTime)}</div>
+                        <div className="font-medium truncate">{appointment.title}</div>
+                        {appointment.clientName && (
+                          <div className="text-blue-600 font-medium truncate">{appointment.clientName}</div>
+                        )}
+                        <div className="truncate">{formatTime(appointment.startTime)}</div>
                       </div>
                     ))}
                   </div>
@@ -374,9 +378,13 @@ export default function CalendarPage() {
                       dayAppointments.slice(0, 3).map((appointment) => (
                         <div
                           key={appointment.id}
-                          className={`px-1 py-0.5 text-xs rounded truncate ${getAppointmentTypeColor(appointment.type)}`}
+                          className={`px-1 py-0.5 text-xs rounded ${getAppointmentTypeColor(appointment.type)}`}
                         >
-                          {formatTime(appointment.startTime)} {appointment.title}
+                          <div className="font-medium truncate">{appointment.title}</div>
+                          {appointment.clientName && (
+                            <div className="text-blue-600 font-medium truncate">{appointment.clientName}</div>
+                          )}
+                          <div className="truncate">{formatTime(appointment.startTime)}</div>
                         </div>
                       ))
                     )}

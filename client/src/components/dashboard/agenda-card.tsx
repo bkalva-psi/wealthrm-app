@@ -61,6 +61,9 @@ export function AgendaCard() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-sm font-medium text-slate-800">{appointment.title}</p>
+                    {appointment.clientName && (
+                      <p className="text-xs text-blue-600 font-medium">{appointment.clientName}</p>
+                    )}
                     <p className="text-xs text-slate-500 mt-1">
                       {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                     </p>
