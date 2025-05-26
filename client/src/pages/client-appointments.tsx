@@ -761,10 +761,10 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     <Skeleton className="h-4 w-24" />
                   </div>
                 ) : client ? (
-                  <>
+                  <div className="flex flex-col">
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                      className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer text-left"
                     >
                       {client.fullName}
                     </button>
@@ -782,7 +782,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         </div>
                       )}
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <div className="text-gray-500">Client not found</div>
                 )}
