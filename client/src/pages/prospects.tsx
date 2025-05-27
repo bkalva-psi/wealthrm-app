@@ -157,25 +157,25 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
 
   return (
     <Card className="mb-6">
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-slate-800 mb-6 text-center">Sales Pipeline Funnel</h3>
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4 text-center">Sales Pipeline Funnel</h3>
         
         {funnelData.length === 0 || funnelData.every(item => item.count === 0) ? (
           <div className="text-center py-8 text-slate-500">
             No prospects data available
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row items-center gap-8">
-            {/* Funnel Visualization */}
-            <div className="flex-1 flex flex-col items-center">
+          <div className="flex justify-center">
+            {/* Funnel Visualization Only */}
+            <div className="flex flex-col items-center">
               <div className="relative">
                 {/* Funnel Segments */}
-                <div className="space-y-1">
+                <div className="space-y-0">
                   {funnelData.map((item, index) => {
                     // Calculate width proportionate to prospect count
                     const maxCount = Math.max(...funnelData.map(d => d.count));
-                    const minWidth = 150;
-                    const maxWidth = 350;
+                    const minWidth = 100;
+                    const maxWidth = 240;
                     const proportionateWidth = maxCount > 0 
                       ? minWidth + ((item.count / maxCount) * (maxWidth - minWidth))
                       : minWidth;
@@ -184,96 +184,25 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
                       <div key={item.stageId} className="flex flex-col items-center">
                         {/* Funnel Segment */}
                         <div
-                          className="relative flex items-center justify-center text-white font-medium text-sm py-4 px-4 transition-all duration-300 hover:brightness-110"
+                          className="relative flex items-center justify-center text-white font-medium text-sm py-2 px-3 transition-all duration-300 hover:brightness-110"
                           style={{
                             backgroundColor: item.color,
                             width: `${proportionateWidth}px`,
                             clipPath: index === funnelData.length - 1 
-                              ? 'polygon(15% 0%, 85% 0%, 70% 100%, 30% 100%)'  // Bottom segment (more narrow)
-                              : 'polygon(10% 0%, 90% 0%, 85% 100%, 15% 100%)', // Regular segments
-                            minHeight: '56px'
+                              ? 'polygon(20% 0%, 80% 0%, 65% 100%, 35% 100%)'  // Bottom segment (more narrow)
+                              : 'polygon(15% 0%, 85% 0%, 80% 100%, 20% 100%)', // Regular segments
+                            minHeight: '40px'
                           }}
                         >
                           <div className="text-center">
-                            <div className="font-semibold text-base">{item.stage}</div>
-                            <div className="text-sm mt-1 font-medium">{item.count}</div>
+                            <div className="font-semibold text-sm">{item.stage}</div>
+                            <div className="text-xs mt-0.5 font-medium">{item.count}</div>
                           </div>
                         </div>
-                        
-                        {/* Arrow between segments */}
-                        {index < funnelData.length - 1 && (
-                          <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-slate-400 my-1"></div>
-                        )}
                       </div>
                     );
                   })}
                 </div>
-              </div>
-            </div>
-
-            {/* Statistics Panel */}
-            <div className="w-full lg:w-80 space-y-4">
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
-                {/* Pipeline Summary */}
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{activeCount}</div>
-                    <div className="text-sm text-blue-700">Active Prospects</div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{wonCount}</div>
-                    <div className="text-sm text-green-700">Won Deals</div>
-                  </div>
-                </div>
-
-                <div className="bg-red-50 rounded-lg p-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600">{lostCount}</div>
-                    <div className="text-sm text-red-700">Lost Prospects</div>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-600">{totalProspects}</div>
-                    <div className="text-sm text-slate-700">Total Prospects</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Conversion Rate */}
-              {totalProspects > 0 && (
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-purple-600">
-                      {Math.round((wonCount / totalProspects) * 100)}%
-                    </div>
-                    <div className="text-sm text-purple-700">Conversion Rate</div>
-                  </div>
-                </div>
-              )}
-
-              {/* Stage Breakdown */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-slate-700 text-sm">Stage Breakdown</h4>
-                {funnelData.map((item) => (
-                  <div key={item.stageId} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      ></div>
-                      <span className="text-slate-600">{item.stage}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-700">
-                      <span className="font-medium">{item.count}</span>
-                      <span className="text-xs text-slate-500">({item.percentage}%)</span>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
