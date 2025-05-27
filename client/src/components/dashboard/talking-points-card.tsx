@@ -47,6 +47,9 @@ export function TalkingPointsCard() {
     queryKey: ['/api/talking-points'],
   });
 
+  // Debug: Log the data to see what we're getting
+  console.log('Talking Points Data:', talkingPoints);
+
   const toggleItemExpansion = (itemKey: string) => {
     setExpandedItems(prev => ({
       ...prev,

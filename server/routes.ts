@@ -1559,6 +1559,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         WHERE is_active = true 
         ORDER BY relevance_score DESC, created_at DESC
       `);
+      console.log('Talking points API response:', result.rows.length, 'items');
       res.json(result.rows);
     } catch (error) {
       console.error('Get talking points error:', error);

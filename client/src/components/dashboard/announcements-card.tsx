@@ -54,6 +54,9 @@ export function AnnouncementsCard() {
     queryKey: ['/api/announcements'],
   });
 
+  // Debug: Log the data to see what we're getting
+  console.log('Announcements Data:', announcements);
+
   const toggleItemExpansion = (itemKey: string) => {
     setExpandedItems(prev => ({
       ...prev,
