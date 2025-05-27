@@ -542,9 +542,107 @@ export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
   createdAt: true,
 });
 
-// Export types for new tables
+// Performance Targets - targets set for each RM by period
+export const performanceTargets = pgTable("performance_targets", {
+  id: serial("id").primaryKey(),
+  rmId: integer("rm_id").references(() => users.id).notNull(),
+  period: text("period").notNull(), // M, Q, HY, Y
+  year: integer("year").notNull(),
+  quarter: integer("quarter"), // 1-4 for quarterly, null for others
+  month: integer("month"), // 1-12 for monthly, null for others
+  
+  // Primary Metrics Targets
+  newClientsTarget: integer("new_clients_target").default(0),
+  netNewMoneyTarget: doublePrecision("net_new_money_target").default(0), // in lakhs
+  clientMeetingsTarget: integer("client_meetings_target").default(0),
+  prospectPipelineTarget: doublePrecision("prospect_pipeline_target").default(0), // in lakhs
+  revenueTarget: doublePrecision("revenue_target").default(0), // in lakhs
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPerformanceTargetSchema = createInsertSchema(performanceTargets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Performance Actuals - actual performance achieved by each RM
+export const performanceActuals = pgTable("performance_actuals", {
+  id: serial("id").primaryKey(),
+  rmId: integer("rm_id").references(() => users.id).notNull(),
+  period: text("period").notNull(), // M, Q, HY, Y
+  year: integer("year").notNull(),
+  quarter: integer("quarter"), // 1-4 for quarterly, null for others
+  month: integer("month"), // 1-12 for monthly, null for others
+  
+  // Primary Metrics Actuals
+  newClientsActual: integer("new_clients_actual").default(0),
+  netNewMoneyActual: doublePrecision("net_new_money_actual").default(0), // in lakhs
+  clientMeetingsActual: integer("client_meetings_actual").default(0),
+  prospectPipelineActual: doublePrecision("prospect_pipeline_actual").default(0), // in lakhs
+  revenueActual: doublePrecision("revenue_actual").default(0), // in lakhs
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPerformanceActualSchema = createInsertSchema(performanceActuals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Performance Peer Rankings - peer comparison data
+export const performancePeerRankings = pgTable("performance_peer_rankings", {
+  id: serial("id").primaryKey(),
+  rmId: integer("rm_id").references(() => users.id).notNull(),
+  period: text("period").notNull(), // M, Q, HY, Y
+  year: integer("year").notNull(),
+  quarter: integer("quarter"), // 1-4 for quarterly, null for others
+  month: integer("month"), // 1-12 for monthly, null for others
+  
+  // Rankings (1 = best performer)
+  newClientsRank: integer("new_clients_rank"),
+  netNewMoneyRank: integer("net_new_money_rank"),
+  clientMeetingsRank: integer("client_meetings_rank"),
+  prospectPipelineRank: integer("prospect_pipeline_rank"),
+  revenueRank: integer("revenue_rank"),
+  overallRank: integer("overall_rank"),
+  
+  // Percentiles (0-100, higher is better)
+  newClientsPercentile: integer("new_clients_percentile"),
+  netNewMoneyPercentile: integer("net_new_money_percentile"),
+  clientMeetingsPercentile: integer("client_meetings_percentile"),
+  prospectPipelinePercentile: integer("prospect_pipeline_percentile"),
+  revenuePercentile: integer("revenue_percentile"),
+  overallPercentile: integer("overall_percentile"),
+  
+  totalRMs: integer("total_rms").notNull(), // total number of RMs for context
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPerformancePeerRankingSchema = createInsertSchema(performancePeerRankings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Export types for all tables
 export type TalkingPoint = typeof talkingPoints.$inferSelect;
 export type InsertTalkingPoint = z.infer<typeof insertTalkingPointSchema>;
 
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
+
+export type PerformanceTarget = typeof performanceTargets.$inferSelect;
+export type InsertPerformanceTarget = z.infer<typeof insertPerformanceTargetSchema>;
+
+export type PerformanceActual = typeof performanceActuals.$inferSelect;
+export type InsertPerformanceActual = z.infer<typeof insertPerformanceActualSchema>;
+
+export type PerformancePeerRanking = typeof performancePeerRankings.$inferSelect;
+export type InsertPerformancePeerRanking = z.infer<typeof insertPerformancePeerRankingSchema>;

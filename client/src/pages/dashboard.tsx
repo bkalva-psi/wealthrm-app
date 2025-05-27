@@ -4,6 +4,7 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
+import { PerformanceCard } from "@/components/dashboard/performance-card";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
 import { SalesPipeline } from "@/components/dashboard/sales-pipeline";
@@ -35,9 +36,9 @@ export default function Dashboard() {
           <AgendaCard />
         </div>
         
-        {/* Column 2: Performance Metrics + Talking Points */}
+        {/* Column 2: Performance + Talking Points */}
         <div className="space-y-4 sm:space-y-6">
-          <PerformanceMetrics />
+          <PerformanceCard />
           <TalkingPointsCard />
         </div>
         
