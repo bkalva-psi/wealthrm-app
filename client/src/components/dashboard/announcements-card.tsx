@@ -142,21 +142,6 @@ export function AnnouncementsCard() {
                             )}
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 font-semibold line-clamp-2">{announcement.content}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge 
-                            variant="secondary" 
-                            className={cn("text-xs px-2 py-0", typeColors[announcement.type as keyof typeof typeColors])}
-                          >
-                            {announcement.type.replace('_', ' ')}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{formatDate(announcement.created_at)}</span>
-                          {announcement.action_deadline && isDeadlineApproaching(announcement.action_deadline) && (
-                            <Badge variant="destructive" className="text-xs">
-                              Due {formatDate(announcement.action_deadline)}
-                            </Badge>
-                          )}
-                        </div>
                       </div>
                     </div>
                     
@@ -164,8 +149,22 @@ export function AnnouncementsCard() {
                       <div className="ml-7 p-3 bg-background border rounded-lg">
                         <div className="space-y-3">
                           <div>
+                            <div className="flex items-center gap-2 mb-3">
+                              <Badge 
+                                variant="secondary" 
+                                className={cn("text-xs px-2 py-0", typeColors[announcement.type as keyof typeof typeColors])}
+                              >
+                                {announcement.type.replace('_', ' ')}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">{formatDate(announcement.created_at)}</span>
+                              {announcement.action_deadline && isDeadlineApproaching(announcement.action_deadline) && (
+                                <Badge variant="destructive" className="text-xs">
+                                  Due {formatDate(announcement.action_deadline)}
+                                </Badge>
+                              )}
+                            </div>
                             <h5 className="font-medium text-sm mb-2">Full Details</h5>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                            <p className="text-sm text-muted-foreground leading-relaxed font-semibold">
                               {announcement.content}
                             </p>
                           </div>

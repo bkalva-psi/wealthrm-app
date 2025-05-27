@@ -129,16 +129,6 @@ export function TalkingPointsCard() {
                             />
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 font-semibold">{point.summary}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge 
-                            variant="secondary" 
-                            className={cn("text-xs px-2 py-0", categoryColors[point.category as keyof typeof categoryColors])}
-                          >
-                            {point.category.replace('_', ' ')}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{formatDate(point.created_at)}</span>
-                        </div>
                       </div>
                     </div>
                     
@@ -146,6 +136,18 @@ export function TalkingPointsCard() {
                       <div className="ml-7 p-3 bg-background border rounded-lg">
                         <div className="space-y-3">
                           <div>
+                            <p className="text-sm font-semibold text-muted-foreground mb-2">
+                              {point.summary}
+                            </p>
+                            <div className="flex items-center gap-2 mb-3">
+                              <Badge 
+                                variant="secondary" 
+                                className={cn("text-xs px-2 py-0", categoryColors[point.category as keyof typeof categoryColors])}
+                              >
+                                {point.category.replace('_', ' ')}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">{formatDate(point.created_at)}</span>
+                            </div>
                             <h5 className="font-medium text-sm mb-2">Detailed Information</h5>
                             <p className="text-sm text-muted-foreground leading-relaxed">
                               {point.detailed_content}
