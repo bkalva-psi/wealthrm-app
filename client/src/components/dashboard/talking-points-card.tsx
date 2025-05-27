@@ -73,33 +73,126 @@ export function TalkingPointsCard() {
   const hasMore = talkingPoints.length > 3;
 
   return (
-    <Card className="h-fit">
-      <CardHeader className="pb-3">
-        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full group">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-amber-600" />
-              Talking Points
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              {hasMore && (
-                <span className="text-sm text-muted-foreground">
-                  {isExpanded ? talkingPoints.length : 3} of {talkingPoints.length}
-                </span>
-              )}
-              {hasMore && (
-                isExpanded ? 
-                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-foreground" /> :
-                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-foreground" />
-              )}
-            </div>
-          </CollapsibleTrigger>
-        </Collapsible>
-      </CardHeader>
+    <Card className="overflow-hidden">
+      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium text-slate-700">Talking Points</h2>
+          <Lightbulb className="h-4 w-4 text-slate-500" />
+        </div>
+      </div>
       
-      <CardContent className="space-y-3 pt-0">
-        {isLoading ? (
-          <div className="space-y-3">
+      <div className="divide-y divide-slate-200">
+        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <Lightbulb className="h-4 w-4 text-amber-600" />
+                  <span className="text-xs font-medium text-slate-700 flex-1 text-left">
+                    Key Market Insights ({talkingPoints.length})
+                  </span>
+                  {hasMore && (
+                    isExpanded ? 
+                      <ChevronDown className="h-4 w-4 text-slate-400" /> :
+                      <ChevronRight className="h-4 w-4 text-slate-400" />
+                  )}
+                </div>
+              </Button>
+            </CollapsibleTrigger>
+            
+            {isLoading ? (
+              <div className="space-y-2 mt-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-8 w-full" />
+                ))}
+              </div>
+            ) : talkingPoints.length > 0 ? (
+              <div className="space-y-2 mt-3">
+                {talkingPoints.slice(0, 2).map((point) => {
+                  const pointKey = `talking-point-${point.id}`;
+                  const isItemExpanded = expandedItems[pointKey];
+                  const IconComponent = categoryIcons[point.category as keyof typeof categoryIcons] || Lightbulb;
+                  return (
+                    <div key={point.id}>
+                      <div 
+                        className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                        onClick={() => toggleItemExpansion(pointKey)}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{point.title}</span>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <div 
+                            className={cn("w-2 h-2 rounded-full", getRelevanceColor(point.relevance_score))}
+                            title={`Relevance: ${point.relevance_score}/10`}
+                          />
+                        </div>
+                      </div>
+                      {isItemExpanded && (
+                        <div className="mt-2 ml-6 p-2 bg-blue-50 rounded-md text-xs">
+                          <div className="space-y-1">
+                            <div><span className="font-medium">Summary:</span> {point.summary}</div>
+                            <div><span className="font-medium">Details:</span> {point.detailed_content}</div>
+                            <div><span className="font-medium">Source:</span> {point.source}</div>
+                            <div><span className="font-medium">Valid until:</span> {format(new Date(point.valid_until), "MMM d, yyyy")}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500 mt-3">No talking points available</p>
+            )}
+          </div>
+          
+          <CollapsibleContent>
+            {talkingPoints.length > 2 && (
+              <div className="px-4 py-3 space-y-2">
+                {talkingPoints.slice(2).map((point) => {
+                  const pointKey = `talking-point-${point.id}`;
+                  const isItemExpanded = expandedItems[pointKey];
+                  const IconComponent = categoryIcons[point.category as keyof typeof categoryIcons] || Lightbulb;
+                  return (
+                    <div key={point.id}>
+                      <div 
+                        className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                        onClick={() => toggleItemExpansion(pointKey)}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{point.title}</span>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <div 
+                            className={cn("w-2 h-2 rounded-full", getRelevanceColor(point.relevance_score))}
+                            title={`Relevance: ${point.relevance_score}/10`}
+                          />
+                        </div>
+                      </div>
+                      {isItemExpanded && (
+                        <div className="mt-2 ml-6 p-2 bg-blue-50 rounded-md text-xs">
+                          <div className="space-y-1">
+                            <div><span className="font-medium">Summary:</span> {point.summary}</div>
+                            <div><span className="font-medium">Details:</span> {point.detailed_content}</div>
+                            <div><span className="font-medium">Source:</span> {point.source}</div>
+                            <div><span className="font-medium">Valid until:</span> {format(new Date(point.valid_until), "MMM d, yyyy")}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+    </Card>
+  );
+}
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-16 w-full" />
             ))}
