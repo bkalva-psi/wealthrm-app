@@ -90,16 +90,17 @@ export function QuickActions() {
               Customize
             </Button>
           </div>
-          <div className="mt-3 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          <div className="mt-3 flex items-center gap-2">
             {quickActions.map((action) => (
               <Button
                 key={action.id}
                 variant="outline"
-                className="flex flex-col items-center justify-center p-3 h-auto bg-slate-50 hover:bg-slate-100 transition-colors"
+                size="sm"
+                className="flex items-center justify-center p-2 bg-slate-50 hover:bg-slate-100 transition-colors"
                 onClick={action.action}
+                title={action.label}
               >
-                <action.icon className="h-6 w-6 text-primary-600" />
-                <span className="mt-1 text-xs text-slate-700">{action.label}</span>
+                <action.icon className="h-5 w-5 text-primary-600" />
               </Button>
             ))}
           </div>
