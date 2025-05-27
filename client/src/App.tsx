@@ -34,9 +34,19 @@ import { Loader2 } from "lucide-react";
 
 // Custom router implementation using hash-based routing
 function useHashRouter() {
-  const [currentRoute, setCurrentRoute] = useState(
-    window.location.hash.replace(/^#/, '') || '/'
-  );
+  const [currentRoute, setCurrentRoute] = useState(() => {
+    // Always ensure we start with hash-based routing
+    const hash = window.location.hash.replace(/^#/, '');
+    const pathname = window.location.pathname;
+    
+    // If we have a pathname but no hash, move the pathname to hash
+    if (pathname && pathname !== '/' && !hash) {
+      window.location.replace('#' + pathname);
+      return pathname;
+    }
+    
+    return hash || '/';
+  });
   
   useEffect(() => {
     // Set initial hash if it's empty
