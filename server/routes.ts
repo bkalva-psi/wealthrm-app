@@ -94,6 +94,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Logged out successfully" });
     });
   });
+
+  // Talking Points routes
+  app.get('/api/talking-points', async (req: Request, res: Response) => {
+    console.log('=== TALKING POINTS API CALLED ===');
+    try {
+      const result = await pool.query(`
+        SELECT * FROM talking_points 
+        WHERE is_active = true 
+        ORDER BY relevance_score DESC, created_at DESC
+      `);
+      console.log('Talking points API response:', result.rows.length, 'items');
+      console.log('First item:', result.rows[0]);
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Get talking points error:', error);
+      res.status(500).json({ error: 'Failed to fetch talking points' });
+    }
+  });
+
+  // Announcements routes
+  app.get('/api/announcements', async (req: Request, res: Response) => {
+    console.log('=== ANNOUNCEMENTS API CALLED ===');
+    try {
+      const result = await pool.query(`
+        SELECT * FROM announcements 
+        WHERE is_active = true 
+        ORDER BY 
+          CASE priority 
+            WHEN 'high' THEN 1 
+            WHEN 'medium' THEN 2 
+            WHEN 'low' THEN 3 
+          END, 
+          created_at DESC
+      `);
+      console.log('Announcements API response:', result.rows.length, 'items');
+      console.log('First item:', result.rows[0]);
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Get announcements error:', error);
+      res.status(500).json({ error: 'Failed to fetch announcements' });
+    }
+  });
   
   app.get("/api/auth/me", async (req, res) => {
     try {
@@ -1551,42 +1593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Talking Points routes
-  app.get('/api/talking-points', async (req: Request, res: Response) => {
-    try {
-      const result = await pool.query(`
-        SELECT * FROM talking_points 
-        WHERE is_active = true 
-        ORDER BY relevance_score DESC, created_at DESC
-      `);
-      console.log('Talking points API response:', result.rows.length, 'items');
-      res.json(result.rows);
-    } catch (error) {
-      console.error('Get talking points error:', error);
-      res.status(500).json({ error: 'Failed to fetch talking points' });
-    }
-  });
 
-  // Announcements routes
-  app.get('/api/announcements', async (req: Request, res: Response) => {
-    try {
-      const result = await pool.query(`
-        SELECT * FROM announcements 
-        WHERE is_active = true 
-        ORDER BY 
-          CASE priority 
-            WHEN 'high' THEN 1 
-            WHEN 'medium' THEN 2 
-            WHEN 'low' THEN 3 
-          END, 
-          created_at DESC
-      `);
-      res.json(result.rows);
-    } catch (error) {
-      console.error('Get announcements error:', error);
-      res.status(500).json({ error: 'Failed to fetch announcements' });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;
