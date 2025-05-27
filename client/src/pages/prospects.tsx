@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatRelativeDate, getStageColor } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 // Type definitions
 interface FilterOptions {
@@ -110,6 +111,82 @@ interface PipelineColumnProps {
   stage: string;
   onProspectClick: (id: number) => void;
   isMobile?: boolean;
+}
+
+// Funnel Chart Component
+interface FunnelChartProps {
+  prospects: Prospect[];
+  stages: { id: string; title: string }[];
+}
+
+function FunnelChart({ prospects, stages }: FunnelChartProps) {
+  // Calculate prospect counts for each stage
+  const funnelData = stages.map(stage => {
+    const count = prospects.filter(p => p.stage === stage.id).length;
+    const color = getStageColor(stage.id);
+    return {
+      stage: stage.title,
+      count,
+      color,
+      percentage: prospects.length > 0 ? Math.round((count / prospects.length) * 100) : 0
+    };
+  });
+
+  // Filter out stages with 0 prospects for cleaner visualization
+  const activeFunnelData = funnelData.filter(item => item.count > 0);
+
+  return (
+    <Card className="mb-6">
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">Sales Pipeline Funnel</h3>
+        
+        {activeFunnelData.length === 0 ? (
+          <div className="text-center py-8 text-slate-500">
+            No prospects data available
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {activeFunnelData.map((item, index) => {
+              // Calculate width based on the maximum count for proper funnel shape
+              const maxCount = Math.max(...activeFunnelData.map(d => d.count));
+              const width = (item.count / maxCount) * 100;
+              
+              return (
+                <div key={item.stage} className="flex items-center gap-4">
+                  <div className="w-20 text-sm font-medium text-slate-700 text-right">
+                    {item.stage}
+                  </div>
+                  <div className="flex-1 flex items-center">
+                    <div className="relative w-full bg-slate-100 rounded-lg h-12 flex items-center">
+                      <div 
+                        className="h-full rounded-lg flex items-center justify-between px-4 text-white font-medium text-sm transition-all duration-500"
+                        style={{ 
+                          backgroundColor: item.color,
+                          width: `${Math.max(width, 20)}%` // Minimum 20% width for readability
+                        }}
+                      >
+                        <span>{item.count} prospects</span>
+                        <span>{item.percentage}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        
+        {prospects.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <div className="flex justify-between text-sm text-slate-600">
+              <span>Total Prospects: <span className="font-medium">{prospects.length}</span></span>
+              <span>Active Stages: <span className="font-medium">{activeFunnelData.length}</span></span>
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
 }
 
 function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = false }: PipelineColumnProps) {
@@ -408,6 +485,9 @@ export default function Prospects() {
           Add Prospect
         </Button>
       </div>
+      
+      {/* Funnel Chart */}
+      <FunnelChart prospects={filteredProspects} stages={stages} />
       
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
