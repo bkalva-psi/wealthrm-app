@@ -340,26 +340,58 @@ export function AgendaCard() {
         </Collapsible>
 
         {/* 4. Recent Customer Emails Section */}
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Mail className="h-4 w-4 text-green-600" />
-            <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide">Recent Emails</h3>
-          </div>
-          
-          <div className="space-y-2">
-            {recentEmails.map((email) => (
-              <div key={email.id} className="flex items-center justify-between text-xs">
-                <div className="flex-1 min-w-0">
-                  <div className="truncate font-medium">{email.subject}</div>
-                  <div className="text-slate-500">{email.clientName}</div>
+        <Collapsible open={expandedSections.emails} onOpenChange={() => toggleSection('emails')}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <Mail className="h-4 w-4 text-green-600" />
+                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Recent Emails</h3>
+                  {expandedSections.emails ? (
+                    <ChevronDown className="h-3 w-3 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 text-slate-400" />
+                  )}
                 </div>
-                <div className="text-slate-600 ml-2">
-                  {email.timestamp}
-                </div>
+              </Button>
+            </CollapsibleTrigger>
+            
+            <div className="mt-2">
+              <div className="space-y-2">
+                {recentEmails.slice(0, expandedSections.emails ? recentEmails.length : 2).map((email) => (
+                  <div key={email.id} className="flex items-center justify-between text-xs">
+                    <div className="flex-1 min-w-0">
+                      <div className="truncate font-medium">{email.subject}</div>
+                      <div className="text-slate-500">{email.clientName}</div>
+                    </div>
+                    <div className="text-slate-600 ml-2">
+                      {email.timestamp}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            
+            <CollapsibleContent>
+              {recentEmails.length > 2 && (
+                <div className="space-y-2 mt-2">
+                  {recentEmails.slice(2).map((email) => (
+                    <div key={email.id} className="flex items-center justify-between text-xs p-2 bg-green-50 rounded-md">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{email.subject}</div>
+                        <div className="text-slate-500">{email.clientName}</div>
+                        <div className="text-slate-400 text-xs mt-1">Email content preview would appear here</div>
+                      </div>
+                      <div className="text-green-600 text-xs font-medium">
+                        {email.timestamp}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CollapsibleContent>
           </div>
-        </div>
+        </Collapsible>
       </div>
     </Card>
   );
