@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { QuickActions } from "@/components/dashboard/quick-actions";
-import { AgendaCard } from "@/components/dashboard/agenda-card";
+import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TasksCard } from "@/components/dashboard/tasks-card";
 import { PortfolioAlerts } from "@/components/dashboard/portfolio-alerts";
 import { RecentClients } from "@/components/dashboard/recent-clients";
