@@ -54,8 +54,7 @@ export function AnnouncementsCard() {
     queryKey: ['/api/announcements'],
   });
 
-  // Debug: Log the data to see what we're getting
-  console.log('Announcements Data:', announcements);
+
 
   const toggleItemExpansion = (itemKey: string) => {
     setExpandedItems(prev => ({
@@ -136,18 +135,14 @@ export function AnnouncementsCard() {
                       <IconComponent className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-sm leading-tight">{announcement.title}</h4>
+                          <h4 className="font-bold text-sm leading-tight">{announcement.title}</h4>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             {announcement.action_required && (
                               <AlertTriangle className="h-3 w-3 text-orange-500" title="Action Required" />
                             )}
-                            {isItemExpanded ? 
-                              <ChevronDown className="h-3 w-3 text-muted-foreground" /> :
-                              <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                            }
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{announcement.content}</p>
+                        <p className="text-xs text-muted-foreground mt-1 font-semibold line-clamp-2">{announcement.content}</p>
                         <div className="flex items-center gap-2 mt-2">
                           <Badge 
                             variant="secondary" 

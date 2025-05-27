@@ -47,8 +47,7 @@ export function TalkingPointsCard() {
     queryKey: ['/api/talking-points'],
   });
 
-  // Debug: Log the data to see what we're getting
-  console.log('Talking Points Data:', talkingPoints);
+
 
   const toggleItemExpansion = (itemKey: string) => {
     setExpandedItems(prev => ({
@@ -122,19 +121,15 @@ export function TalkingPointsCard() {
                       <IconComponent className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-sm leading-tight">{point.title}</h4>
+                          <h4 className="font-bold text-sm leading-tight">{point.title}</h4>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             <div 
                               className={cn("w-2 h-2 rounded-full", getRelevanceColor(point.relevance_score))}
                               title={`Relevance: ${point.relevance_score}/10`}
                             />
-                            {isItemExpanded ? 
-                              <ChevronDown className="h-3 w-3 text-muted-foreground" /> :
-                              <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                            }
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{point.summary}</p>
+                        <p className="text-xs text-muted-foreground mt-1 font-semibold">{point.summary}</p>
                         <div className="flex items-center gap-2 mt-2">
                           <Badge 
                             variant="secondary" 
