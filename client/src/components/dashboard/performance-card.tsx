@@ -374,8 +374,8 @@ export function PerformanceCard() {
                     <div className="text-3xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
                     <div className="text-sm text-blue-700 font-medium">Overall Percentile Score</div>
                     <div className="text-xs text-slate-600 mt-1">
-                      {overallAveragePercentile >= 85 ? "Strong compared to peers" : 
-                       overallAveragePercentile >= 70 ? "Average compared to peers" : 
+                      {overallAveragePercentile >= 80 ? "Strong compared to peers" : 
+                       overallAveragePercentile >= 60 ? "Average compared to peers" : 
                        "Weak compared to peers"}
                     </div>
                   </div>
@@ -399,7 +399,7 @@ export function PerformanceCard() {
                             a 15.9155 15.9155 0 0 1 0 31.831
                             a 15.9155 15.9155 0 0 1 0 -31.831"
                           fill="none"
-                          stroke={overallAveragePercentile >= 85 ? "#10b981" : overallAveragePercentile >= 70 ? "#3b82f6" : "#f59e0b"}
+                          stroke={overallAveragePercentile >= 80 ? "#10b981" : overallAveragePercentile >= 60 ? "#3b82f6" : "#f59e0b"}
                           strokeWidth="2"
                           strokeDasharray={`${overallAveragePercentile}, 100`}
                           className="transition-all duration-1000 ease-out"
@@ -415,12 +415,12 @@ export function PerformanceCard() {
                   <div className="flex justify-center">
                     <div className={cn(
                       "px-3 py-1 rounded-full text-xs font-medium",
-                      overallAveragePercentile >= 85 ? "bg-green-100 text-green-700" :
-                      overallAveragePercentile >= 70 ? "bg-blue-100 text-blue-700" :
+                      overallAveragePercentile >= 80 ? "bg-green-100 text-green-700" :
+                      overallAveragePercentile >= 60 ? "bg-blue-100 text-blue-700" :
                       "bg-orange-100 text-orange-700"
                     )}>
-                      {overallAveragePercentile >= 85 ? "🏆 Strong Performer" : 
-                       overallAveragePercentile >= 70 ? "💪 Average Performer" : 
+                      {overallAveragePercentile >= 80 ? "🏆 Strong Performer" : 
+                       overallAveragePercentile >= 60 ? "💪 Average Performer" : 
                        "📈 Needs Improvement"}
                     </div>
                   </div>
@@ -435,16 +435,6 @@ export function PerformanceCard() {
           
           <CollapsibleContent>
             <div className="px-4 py-3 space-y-4">
-              {/* Overall Average Percentile - Large Display */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
-                <div className="text-sm font-medium text-blue-700">Overall Percentile Score</div>
-                <div className="text-xs text-slate-600 mt-2">
-                  {overallAveragePercentile >= 85 ? "Strong compared to peers" : 
-                   overallAveragePercentile >= 70 ? "Average compared to peers" : 
-                   "Weak compared to peers"}
-                </div>
-              </div>
 
               {/* Individual Performance Indicators */}
               <div className="space-y-3">
