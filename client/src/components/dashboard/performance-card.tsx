@@ -368,41 +368,66 @@ export function PerformanceCard() {
             
             {!peersExpanded && (
               <div className="mt-3">
-                {/* Overall Average Percentile - Prominent Display */}
-                <div className="bg-blue-50 rounded-lg p-3 mb-3">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{overallAveragePercentile}%ile</div>
-                    <div className="text-xs text-blue-700">Overall Percentile Score</div>
+                {/* Overall Percentile Score - Graphical Display */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
+                  <div className="text-center mb-3">
+                    <div className="text-3xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
+                    <div className="text-sm text-blue-700 font-medium">Overall Percentile Score</div>
                     <div className="text-xs text-slate-600 mt-1">
                       {overallAveragePercentile >= 85 ? "Strong compared to peers" : 
                        overallAveragePercentile >= 70 ? "Average compared to peers" : 
                        "Weak compared to peers"}
                     </div>
                   </div>
+
+                  {/* Visual Progress Ring */}
+                  <div className="flex justify-center mb-3">
+                    <div className="relative w-20 h-20">
+                      <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                        {/* Background circle */}
+                        <path
+                          d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#e2e8f0"
+                          strokeWidth="2"
+                        />
+                        {/* Progress circle */}
+                        <path
+                          d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke={overallAveragePercentile >= 85 ? "#10b981" : overallAveragePercentile >= 70 ? "#3b82f6" : "#f59e0b"}
+                          strokeWidth="2"
+                          strokeDasharray={`${overallAveragePercentile}, 100`}
+                          className="transition-all duration-1000 ease-out"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-bold text-slate-700">{overallAveragePercentile}%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Performance Tier Indicator */}
+                  <div className="flex justify-center">
+                    <div className={cn(
+                      "px-3 py-1 rounded-full text-xs font-medium",
+                      overallAveragePercentile >= 85 ? "bg-green-100 text-green-700" :
+                      overallAveragePercentile >= 70 ? "bg-blue-100 text-blue-700" :
+                      "bg-orange-100 text-orange-700"
+                    )}>
+                      {overallAveragePercentile >= 85 ? "🏆 Strong Performer" : 
+                       overallAveragePercentile >= 70 ? "💪 Average Performer" : 
+                       "📈 Needs Improvement"}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Quick Summary */}
-                <div className="space-y-2">
-                  {metrics.slice(0, 2).map((metric) => {
-                    const medal = getRankMedal(metric.rank || 0);
-                    return (
-                      <div key={metric.name} className="flex items-center gap-2 text-xs">
-                        <div className="w-4 text-center">
-                          {medal || `#${metric.rank}`}
-                        </div>
-                        <span className="flex-1 truncate">{metric.name}</span>
-                        <Badge 
-                          variant="outline" 
-                          className={cn("text-xs px-1 py-0", getPercentileColor(metric.percentile || 0))}
-                        >
-                          {metric.percentile}%ile
-                        </Badge>
-                      </div>
-                    );
-                  })}
-                  <div className="text-xs text-slate-500 text-center pt-1">
-                    Expand to see quarterly trends
-                  </div>
+                <div className="text-xs text-slate-500 text-center mt-3">
+                  Expand to see detailed metrics and quarterly trends
                 </div>
               </div>
             )}
@@ -418,6 +443,37 @@ export function PerformanceCard() {
                   {overallAveragePercentile >= 85 ? "Strong compared to peers" : 
                    overallAveragePercentile >= 70 ? "Average compared to peers" : 
                    "Weak compared to peers"}
+                </div>
+              </div>
+
+              {/* Individual Performance Indicators */}
+              <div className="space-y-3">
+                <div className="text-xs font-medium text-slate-600">Individual Performance Metrics</div>
+                <div className="grid grid-cols-1 gap-2">
+                  {metrics.map((metric) => {
+                    const medal = getRankMedal(metric.rank || 0);
+                    return (
+                      <div key={metric.name} className="flex items-center justify-between bg-slate-50 rounded-lg p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-6 text-center text-sm">
+                            {medal || `#${metric.rank}`}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-slate-900">{metric.name}</div>
+                            <div className="text-xs text-slate-500">
+                              Rank {metric.rank} of {metric.totalRMs} RMs
+                            </div>
+                          </div>
+                        </div>
+                        <Badge 
+                          variant="outline" 
+                          className={cn("text-xs", getPercentileColor(metric.percentile || 0))}
+                        >
+                          {metric.percentile}%ile
+                        </Badge>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
