@@ -1552,7 +1552,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Talking Points routes
-  app.get('/api/talking-points', authMiddleware, async (req: Request, res: Response) => {
+  app.get('/api/talking-points', async (req: Request, res: Response) => {
     try {
       const result = await pool.query(`
         SELECT * FROM talking_points 
@@ -1567,7 +1567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Announcements routes
-  app.get('/api/announcements', authMiddleware, async (req: Request, res: Response) => {
+  app.get('/api/announcements', async (req: Request, res: Response) => {
     try {
       const result = await pool.query(`
         SELECT * FROM announcements 
