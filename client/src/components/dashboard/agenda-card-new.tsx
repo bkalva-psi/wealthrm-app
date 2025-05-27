@@ -219,16 +219,35 @@ export function AgendaCard() {
             <CollapsibleContent>
               {urgentTasks.length > 2 && (
                 <div className="space-y-2 mt-2">
-                  {urgentTasks.slice(2).map((task) => (
-                    <div key={task.id} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        {getTaskStatusIcon(task.status)}
-                        <span className="truncate">{task.title}</span>
-                        <span className="text-slate-400 text-xs">Due: {task.dueDate ? format(new Date(task.dueDate), "MMM d") : "No date"}</span>
+                  {urgentTasks.slice(2).map((task) => {
+                    const taskKey = `task-${task.id}`;
+                    const isExpanded = expandedItems[taskKey];
+                    return (
+                      <div key={task.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                          onClick={() => toggleItem('task', task.id)}
+                        >
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {getTaskStatusIcon(task.status)}
+                            <span className="truncate">{task.title}</span>
+                            <span className="text-slate-400 text-xs">Due: {task.dueDate ? format(new Date(task.dueDate), "MMM d") : "No date"}</span>
+                          </div>
+                          {getPriorityBadge(task.priority)}
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-orange-50 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Due:</span> {task.dueDate ? format(new Date(task.dueDate), "MMM d, yyyy") : "No due date"}</div>
+                              <div><span className="font-medium">Status:</span> {task.status}</div>
+                              <div><span className="font-medium">Priority:</span> {task.priority}</div>
+                              {task.description && <div><span className="font-medium">Details:</span> {task.description}</div>}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      {getPriorityBadge(task.priority)}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CollapsibleContent>
@@ -301,18 +320,37 @@ export function AgendaCard() {
             <CollapsibleContent>
               {todayAppointments.length > 2 && (
                 <div className="space-y-2 mt-2">
-                  {todayAppointments.slice(2).map((appointment) => (
-                    <div key={appointment.id} className="flex items-center justify-between text-xs p-2 bg-blue-50 rounded-md">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{appointment.title}</div>
-                        <div className="text-slate-500">{appointment.clientName}</div>
-                        <div className="text-slate-400 text-xs mt-1">{appointment.description || "No additional details"}</div>
+                  {todayAppointments.slice(2).map((appointment) => {
+                    const appointmentKey = `appointment-${appointment.id}`;
+                    const isExpanded = expandedItems[appointmentKey];
+                    return (
+                      <div key={appointment.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-2 bg-blue-50 rounded-md"
+                          onClick={() => toggleItem('appointment', appointment.id)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{appointment.title}</div>
+                            <div className="text-slate-500">{appointment.clientName}</div>
+                          </div>
+                          <div className="text-blue-600 text-xs font-medium">
+                            {formatTime(appointment.startTime)}
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-blue-100 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Client:</span> {appointment.clientName}</div>
+                              <div><span className="font-medium">Time:</span> {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</div>
+                              <div><span className="font-medium">Duration:</span> {Math.round((new Date(appointment.endTime).getTime() - new Date(appointment.startTime).getTime()) / (1000 * 60))} minutes</div>
+                              {appointment.description && <div><span className="font-medium">Notes:</span> {appointment.description}</div>}
+                              {appointment.location && <div><span className="font-medium">Location:</span> {appointment.location}</div>}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-blue-600 text-xs font-medium">
-                        {formatTime(appointment.startTime)}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CollapsibleContent>
@@ -386,20 +424,38 @@ export function AgendaCard() {
             <CollapsibleContent>
               {priorityAlerts.length > 2 && (
                 <div className="space-y-2 mt-2">
-                  {priorityAlerts.slice(2).map((alert) => (
-                    <div key={alert.id} className="flex items-center justify-between text-xs p-2 bg-red-50 rounded-md">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{alert.title}</div>
-                        <div className="text-slate-400 text-xs mt-1">{alert.description || "Portfolio alert requiring attention"}</div>
+                  {priorityAlerts.slice(2).map((alert) => {
+                    const alertKey = `alert-${alert.id}`;
+                    const isExpanded = expandedItems[alertKey];
+                    return (
+                      <div key={alert.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-2 bg-red-50 rounded-md"
+                          onClick={() => toggleItem('alert', alert.id)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{alert.title}</div>
+                          </div>
+                          <Badge 
+                            variant={alert.priority === "high" ? "destructive" : "secondary"} 
+                            className="text-xs"
+                          >
+                            {alert.priority}
+                          </Badge>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-red-100 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Priority:</span> {alert.priority ? alert.priority.toUpperCase() : "HIGH"}</div>
+                              <div><span className="font-medium">Category:</span> {alert.category || "Portfolio Management"}</div>
+                              <div><span className="font-medium">Details:</span> {alert.description || "This alert requires immediate attention from the relationship manager."}</div>
+                              <div><span className="font-medium">Action Required:</span> Review portfolio allocation and contact client if necessary</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <Badge 
-                        variant={alert.priority === "high" ? "destructive" : "secondary"} 
-                        className="text-xs"
-                      >
-                        {alert.priority}
-                      </Badge>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CollapsibleContent>
@@ -462,18 +518,37 @@ export function AgendaCard() {
             <CollapsibleContent>
               {recentEmails.length > 2 && (
                 <div className="space-y-2 mt-2">
-                  {recentEmails.slice(2).map((email) => (
-                    <div key={email.id} className="flex items-center justify-between text-xs p-2 bg-green-50 rounded-md">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{email.subject}</div>
-                        <div className="text-slate-500">{email.clientName}</div>
-                        <div className="text-slate-400 text-xs mt-1">Email content preview would appear here</div>
+                  {recentEmails.slice(2).map((email) => {
+                    const emailKey = `email-${email.id}`;
+                    const isExpanded = expandedItems[emailKey];
+                    return (
+                      <div key={email.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-2 bg-green-50 rounded-md"
+                          onClick={() => toggleItem('email', email.id)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{email.subject}</div>
+                            <div className="text-slate-500">{email.clientName}</div>
+                          </div>
+                          <div className="text-green-600 text-xs font-medium">
+                            {email.timestamp}
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-green-100 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">From:</span> {email.clientName}</div>
+                              <div><span className="font-medium">Subject:</span> {email.subject}</div>
+                              <div><span className="font-medium">Received:</span> {email.timestamp}</div>
+                              <div><span className="font-medium">Preview:</span> This email contains important queries about portfolio performance and investment strategies that require your attention.</div>
+                              <div><span className="font-medium">Action:</span> Click to open full email in communications center</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-green-600 text-xs font-medium">
-                        {email.timestamp}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CollapsibleContent>
