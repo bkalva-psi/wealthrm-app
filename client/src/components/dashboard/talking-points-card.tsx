@@ -52,8 +52,15 @@ export function TalkingPointsCard() {
     <Card className="overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-slate-700">Talking Points</h2>
-          <Lightbulb className="h-4 w-4 text-slate-500" />
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-slate-500" />
+            <h2 className="text-sm font-medium text-slate-700">Talking Points</h2>
+          </div>
+          {hasMore && (
+            isExpanded ? 
+              <ChevronDown className="h-4 w-4 text-slate-400" /> :
+              <ChevronRight className="h-4 w-4 text-slate-400" />
+          )}
         </div>
       </div>
       
@@ -67,11 +74,6 @@ export function TalkingPointsCard() {
                   <span className="text-xs font-medium text-slate-700 flex-1 text-left">
                     Key Market Insights ({talkingPoints.length})
                   </span>
-                  {hasMore && (
-                    isExpanded ? 
-                      <ChevronDown className="h-4 w-4 text-slate-400" /> :
-                      <ChevronRight className="h-4 w-4 text-slate-400" />
-                  )}
                 </div>
               </Button>
             </CollapsibleTrigger>
