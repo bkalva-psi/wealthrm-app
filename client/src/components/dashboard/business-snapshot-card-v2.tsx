@@ -47,6 +47,9 @@ export function BusinessSnapshotCard() {
     enabled: true,
   });
 
+  // Debug: Log the data to see what we're getting
+  console.log('Business Metrics Data:', businessMetrics);
+
   // Drill-down data query
   const { data: drillDownData, isLoading: drillDownLoading } = useQuery<DrillDownData[]>({
     queryKey: [selectedDimension],
@@ -216,21 +219,7 @@ export function BusinessSnapshotCard() {
           })}
         </div>
 
-        {/* Quick Insights */}
-        <div className="mt-6 space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">Quick Insights</h4>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="text-xs">
-              {businessMetrics?.platinumClients || 0} Platinum clients
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              {businessMetrics?.goldClients || 0} Gold clients  
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              {businessMetrics?.silverClients || 0} Silver clients
-            </Badge>
-          </div>
-        </div>
+
 
         {/* Inline Expansion Section */}
         {expandedMetric && (
