@@ -86,9 +86,6 @@ export function QuickActions() {
         <CardContent className="pt-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium text-slate-700">Quick Actions</h2>
-            <Button variant="link" size="sm" className="text-xs text-primary-600 hover:text-primary-700">
-              Customize
-            </Button>
           </div>
           <div className="mt-3 flex items-center gap-2">
             {quickActions.map((action) => (
