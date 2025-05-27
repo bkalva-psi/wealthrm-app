@@ -1551,6 +1551,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Talking Points routes
+  app.get('/api/talking-points', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const result = await pool.query(`
+        SELECT * FROM talking_points 
+        WHERE is_active = true 
+        ORDER BY relevance_score DESC, created_at DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Get talking points error:', error);
+      res.status(500).json({ error: 'Failed to fetch talking points' });
+    }
+  });
+
+  // Announcements routes
+  app.get('/api/announcements', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const result = await pool.query(`
+        SELECT * FROM announcements 
+        WHERE is_active = true 
+        ORDER BY 
+          CASE priority 
+            WHEN 'high' THEN 1 
+            WHEN 'medium' THEN 2 
+            WHEN 'low' THEN 3 
+          END, 
+          created_at DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Get announcements error:', error);
+      res.status(500).json({ error: 'Failed to fetch announcements' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

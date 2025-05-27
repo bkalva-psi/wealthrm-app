@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { AgendaCard } from "@/components/dashboard/agenda-card-new";
+import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
+import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
 import { SalesPipeline } from "@/components/dashboard/sales-pipeline";
