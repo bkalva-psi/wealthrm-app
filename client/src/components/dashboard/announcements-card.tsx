@@ -83,29 +83,13 @@ export function AnnouncementsCard() {
   const hasMore = announcements.length > 3;
 
   return (
-    <Card className="h-fit">
-      <CardHeader className="pb-3">
-        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full group">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <Megaphone className="h-5 w-5 text-blue-600" />
-              Announcements
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              {hasMore && (
-                <span className="text-sm text-muted-foreground">
-                  {isExpanded ? announcements.length : 3} of {announcements.length}
-                </span>
-              )}
-              {hasMore && (
-                isExpanded ? 
-                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-foreground" /> :
-                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-foreground" />
-              )}
-            </div>
-          </CollapsibleTrigger>
-        </Collapsible>
-      </CardHeader>
+    <Card className="overflow-hidden">
+      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium text-slate-700">Announcements</h2>
+          <Megaphone className="h-4 w-4 text-slate-500" />
+        </div>
+      </div>
       
       <CardContent className="space-y-3 pt-0">
         {isLoading ? (
