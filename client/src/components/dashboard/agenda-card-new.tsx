@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { format } from "date-fns";
-import { Clock, AlertTriangle, Calendar, Mail, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { Clock, AlertTriangle, Calendar, Mail, CheckCircle, AlertCircle, XCircle, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function formatTime(timeString: string) {
@@ -65,8 +68,16 @@ function getPriorityBadge(priority: string) {
 }
 
 export function AgendaCard() {
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const today = new Date();
   const formattedDate = format(today, "EEEE, MMMM d");
+  
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
   
   // Fetch all required data
   const { data: tasks, isLoading: tasksLoading } = useQuery({
@@ -137,100 +148,196 @@ export function AgendaCard() {
       
       <div className="divide-y divide-slate-200">
         {/* 1. Urgent Tasks Section */}
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Clock className="h-4 w-4 text-orange-600" />
-            <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide">Urgent Tasks</h3>
-          </div>
-          
-          {isLoading ? (
-            <div className="space-y-2">
-              {Array(2).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
-              ))}
-            </div>
-          ) : urgentTasks.length > 0 ? (
-            <div className="space-y-2">
-              {urgentTasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {getTaskStatusIcon(task.status)}
-                    <span className="truncate">{task.title}</span>
-                  </div>
-                  {getPriorityBadge(task.priority)}
+        <Collapsible open={expandedSections.tasks} onOpenChange={() => toggleSection('tasks')}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <Clock className="h-4 w-4 text-orange-600" />
+                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Urgent Tasks</h3>
+                  {expandedSections.tasks ? (
+                    <ChevronDown className="h-3 w-3 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 text-slate-400" />
+                  )}
                 </div>
-              ))}
+              </Button>
+            </CollapsibleTrigger>
+            
+            <div className="mt-2">
+              {isLoading ? (
+                <div className="space-y-2">
+                  {Array(2).fill(0).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-full" />
+                  ))}
+                </div>
+              ) : urgentTasks.length > 0 ? (
+                <div className="space-y-2">
+                  {urgentTasks.slice(0, expandedSections.tasks ? urgentTasks.length : 2).map((task) => (
+                    <div key={task.id} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {getTaskStatusIcon(task.status)}
+                        <span className="truncate">{task.title}</span>
+                      </div>
+                      {getPriorityBadge(task.priority)}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500">No urgent tasks</p>
+              )}
             </div>
-          ) : (
-            <p className="text-xs text-slate-500">No urgent tasks</p>
-          )}
-        </div>
+            
+            <CollapsibleContent>
+              {urgentTasks.length > 2 && (
+                <div className="space-y-2 mt-2">
+                  {urgentTasks.slice(2).map((task) => (
+                    <div key={task.id} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {getTaskStatusIcon(task.status)}
+                        <span className="truncate">{task.title}</span>
+                        <span className="text-slate-400 text-xs">Due: {task.dueDate ? format(new Date(task.dueDate), "MMM d") : "No date"}</span>
+                      </div>
+                      {getPriorityBadge(task.priority)}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
 
         {/* 2. Appointments Section */}
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-2 mb-2">
-            <Calendar className="h-4 w-4 text-blue-600" />
-            <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide">Appointments</h3>
-          </div>
-          
-          {isLoading ? (
-            <div className="space-y-2">
-              {Array(2).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
-              ))}
-            </div>
-          ) : todayAppointments.length > 0 ? (
-            <div className="space-y-2">
-              {todayAppointments.map((appointment) => (
-                <div key={appointment.id} className="flex items-center justify-between text-xs">
-                  <div className="flex-1 min-w-0">
-                    <div className="truncate font-medium">{appointment.title}</div>
-                    <div className="text-slate-500">{appointment.clientName}</div>
-                  </div>
-                  <div className="text-slate-600 ml-2">
-                    {formatTime(appointment.startTime)}
-                  </div>
+        <Collapsible open={expandedSections.appointments} onOpenChange={() => toggleSection('appointments')}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <Calendar className="h-4 w-4 text-blue-600" />
+                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Appointments</h3>
+                  {expandedSections.appointments ? (
+                    <ChevronDown className="h-3 w-3 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 text-slate-400" />
+                  )}
                 </div>
-              ))}
+              </Button>
+            </CollapsibleTrigger>
+            
+            <div className="mt-2">
+              {isLoading ? (
+                <div className="space-y-2">
+                  {Array(2).fill(0).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-full" />
+                  ))}
+                </div>
+              ) : todayAppointments.length > 0 ? (
+                <div className="space-y-2">
+                  {todayAppointments.slice(0, expandedSections.appointments ? todayAppointments.length : 2).map((appointment) => (
+                    <div key={appointment.id} className="flex items-center justify-between text-xs">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{appointment.title}</div>
+                        <div className="text-slate-500">{appointment.clientName}</div>
+                      </div>
+                      <div className="text-slate-600 ml-2">
+                        {formatTime(appointment.startTime)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500">No appointments today</p>
+              )}
             </div>
-          ) : (
-            <p className="text-xs text-slate-500">No appointments today</p>
-          )}
-        </div>
+            
+            <CollapsibleContent>
+              {todayAppointments.length > 2 && (
+                <div className="space-y-2 mt-2">
+                  {todayAppointments.slice(2).map((appointment) => (
+                    <div key={appointment.id} className="flex items-center justify-between text-xs p-2 bg-blue-50 rounded-md">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{appointment.title}</div>
+                        <div className="text-slate-500">{appointment.clientName}</div>
+                        <div className="text-slate-400 text-xs mt-1">{appointment.description || "No additional details"}</div>
+                      </div>
+                      <div className="text-blue-600 text-xs font-medium">
+                        {formatTime(appointment.startTime)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
 
         {/* 3. Priority Alerts Section */}
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-            <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide">Priority Alerts</h3>
-          </div>
-          
-          {isLoading ? (
-            <div className="space-y-2">
-              {Array(2).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
-              ))}
-            </div>
-          ) : priorityAlerts.length > 0 ? (
-            <div className="space-y-2">
-              {priorityAlerts.map((alert) => (
-                <div key={alert.id} className="flex items-center justify-between text-xs">
-                  <div className="flex-1 min-w-0">
-                    <div className="truncate">{alert.title}</div>
-                  </div>
-                  <Badge 
-                    variant={alert.priority === "high" ? "destructive" : "secondary"} 
-                    className="text-xs ml-2"
-                  >
-                    {alert.priority}
-                  </Badge>
+        <Collapsible open={expandedSections.alerts} onOpenChange={() => toggleSection('alerts')}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Priority Alerts</h3>
+                  {expandedSections.alerts ? (
+                    <ChevronDown className="h-3 w-3 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 text-slate-400" />
+                  )}
                 </div>
-              ))}
+              </Button>
+            </CollapsibleTrigger>
+            
+            <div className="mt-2">
+              {isLoading ? (
+                <div className="space-y-2">
+                  {Array(2).fill(0).map((_, i) => (
+                    <Skeleton key={i} className="h-8 w-full" />
+                  ))}
+                </div>
+              ) : priorityAlerts.length > 0 ? (
+                <div className="space-y-2">
+                  {priorityAlerts.slice(0, expandedSections.alerts ? priorityAlerts.length : 2).map((alert) => (
+                    <div key={alert.id} className="flex items-center justify-between text-xs">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate">{alert.title}</div>
+                      </div>
+                      <Badge 
+                        variant={alert.priority === "high" ? "destructive" : "secondary"} 
+                        className="text-xs ml-2"
+                      >
+                        {alert.priority}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500">No alerts</p>
+              )}
             </div>
-          ) : (
-            <p className="text-xs text-slate-500">No alerts</p>
-          )}
-        </div>
+            
+            <CollapsibleContent>
+              {priorityAlerts.length > 2 && (
+                <div className="space-y-2 mt-2">
+                  {priorityAlerts.slice(2).map((alert) => (
+                    <div key={alert.id} className="flex items-center justify-between text-xs p-2 bg-red-50 rounded-md">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{alert.title}</div>
+                        <div className="text-slate-400 text-xs mt-1">{alert.description || "Portfolio alert requiring attention"}</div>
+                      </div>
+                      <Badge 
+                        variant={alert.priority === "high" ? "destructive" : "secondary"} 
+                        className="text-xs"
+                      >
+                        {alert.priority}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
 
         {/* 4. Recent Customer Emails Section */}
         <div className="px-4 py-3">
