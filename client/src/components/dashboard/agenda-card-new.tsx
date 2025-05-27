@@ -69,6 +69,7 @@ function getPriorityBadge(priority: string) {
 
 export function AgendaCard() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const today = new Date();
   const formattedDate = format(today, "EEEE, MMMM d");
   
@@ -76,6 +77,14 @@ export function AgendaCard() {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
+    }));
+  };
+
+  const toggleItem = (itemType: string, itemId: number) => {
+    const key = `${itemType}-${itemId}`;
+    setExpandedItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
     }));
   };
   
@@ -173,15 +182,34 @@ export function AgendaCard() {
                 </div>
               ) : urgentTasks.length > 0 ? (
                 <div className="space-y-2">
-                  {urgentTasks.slice(0, expandedSections.tasks ? urgentTasks.length : 2).map((task) => (
-                    <div key={task.id} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        {getTaskStatusIcon(task.status)}
-                        <span className="truncate">{task.title}</span>
+                  {urgentTasks.slice(0, expandedSections.tasks ? urgentTasks.length : 2).map((task) => {
+                    const taskKey = `task-${task.id}`;
+                    const isExpanded = expandedItems[taskKey];
+                    return (
+                      <div key={task.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                          onClick={() => toggleItem('task', task.id)}
+                        >
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {getTaskStatusIcon(task.status)}
+                            <span className="truncate">{task.title}</span>
+                          </div>
+                          {getPriorityBadge(task.priority)}
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-orange-50 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Due:</span> {task.dueDate ? format(new Date(task.dueDate), "MMM d, yyyy") : "No due date"}</div>
+                              <div><span className="font-medium">Status:</span> {task.status}</div>
+                              <div><span className="font-medium">Priority:</span> {task.priority}</div>
+                              {task.description && <div><span className="font-medium">Details:</span> {task.description}</div>}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      {getPriorityBadge(task.priority)}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-xs text-slate-500">No urgent tasks</p>
@@ -233,17 +261,37 @@ export function AgendaCard() {
                 </div>
               ) : todayAppointments.length > 0 ? (
                 <div className="space-y-2">
-                  {todayAppointments.slice(0, expandedSections.appointments ? todayAppointments.length : 2).map((appointment) => (
-                    <div key={appointment.id} className="flex items-center justify-between text-xs">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{appointment.title}</div>
-                        <div className="text-slate-500">{appointment.clientName}</div>
+                  {todayAppointments.slice(0, expandedSections.appointments ? todayAppointments.length : 2).map((appointment) => {
+                    const appointmentKey = `appointment-${appointment.id}`;
+                    const isExpanded = expandedItems[appointmentKey];
+                    return (
+                      <div key={appointment.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                          onClick={() => toggleItem('appointment', appointment.id)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{appointment.title}</div>
+                            <div className="text-slate-500">{appointment.clientName}</div>
+                          </div>
+                          <div className="text-slate-600 ml-2">
+                            {formatTime(appointment.startTime)}
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-blue-50 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Client:</span> {appointment.clientName}</div>
+                              <div><span className="font-medium">Time:</span> {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</div>
+                              <div><span className="font-medium">Duration:</span> {Math.round((new Date(appointment.endTime).getTime() - new Date(appointment.startTime).getTime()) / (1000 * 60))} minutes</div>
+                              {appointment.description && <div><span className="font-medium">Notes:</span> {appointment.description}</div>}
+                              {appointment.location && <div><span className="font-medium">Location:</span> {appointment.location}</div>}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-slate-600 ml-2">
-                        {formatTime(appointment.startTime)}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-xs text-slate-500">No appointments today</p>
@@ -297,19 +345,38 @@ export function AgendaCard() {
                 </div>
               ) : priorityAlerts.length > 0 ? (
                 <div className="space-y-2">
-                  {priorityAlerts.slice(0, expandedSections.alerts ? priorityAlerts.length : 2).map((alert) => (
-                    <div key={alert.id} className="flex items-center justify-between text-xs">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate">{alert.title}</div>
+                  {priorityAlerts.slice(0, expandedSections.alerts ? priorityAlerts.length : 2).map((alert) => {
+                    const alertKey = `alert-${alert.id}`;
+                    const isExpanded = expandedItems[alertKey];
+                    return (
+                      <div key={alert.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                          onClick={() => toggleItem('alert', alert.id)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate">{alert.title}</div>
+                          </div>
+                          <Badge 
+                            variant={alert.priority === "high" ? "destructive" : "secondary"} 
+                            className="text-xs ml-2"
+                          >
+                            {alert.priority}
+                          </Badge>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-red-50 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Priority:</span> {alert.priority.toUpperCase()}</div>
+                              <div><span className="font-medium">Category:</span> {alert.category || "Portfolio Management"}</div>
+                              <div><span className="font-medium">Details:</span> {alert.description || "This alert requires immediate attention from the relationship manager."}</div>
+                              <div><span className="font-medium">Action Required:</span> Review portfolio allocation and contact client if necessary</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <Badge 
-                        variant={alert.priority === "high" ? "destructive" : "secondary"} 
-                        className="text-xs ml-2"
-                      >
-                        {alert.priority}
-                      </Badge>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-xs text-slate-500">No alerts</p>
@@ -358,17 +425,37 @@ export function AgendaCard() {
             
             <div className="mt-2">
               <div className="space-y-2">
-                {recentEmails.slice(0, expandedSections.emails ? recentEmails.length : 2).map((email) => (
-                  <div key={email.id} className="flex items-center justify-between text-xs">
-                    <div className="flex-1 min-w-0">
-                      <div className="truncate font-medium">{email.subject}</div>
-                      <div className="text-slate-500">{email.clientName}</div>
+                {recentEmails.slice(0, expandedSections.emails ? recentEmails.length : 2).map((email) => {
+                  const emailKey = `email-${email.id}`;
+                  const isExpanded = expandedItems[emailKey];
+                  return (
+                    <div key={email.id}>
+                      <div 
+                        className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                        onClick={() => toggleItem('email', email.id)}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <div className="truncate font-medium">{email.subject}</div>
+                          <div className="text-slate-500">{email.clientName}</div>
+                        </div>
+                        <div className="text-slate-600 ml-2">
+                          {email.timestamp}
+                        </div>
+                      </div>
+                      {isExpanded && (
+                        <div className="mt-2 ml-6 p-2 bg-green-50 rounded-md text-xs">
+                          <div className="space-y-1">
+                            <div><span className="font-medium">From:</span> {email.clientName}</div>
+                            <div><span className="font-medium">Subject:</span> {email.subject}</div>
+                            <div><span className="font-medium">Received:</span> {email.timestamp}</div>
+                            <div><span className="font-medium">Preview:</span> This email contains important queries about portfolio performance and investment strategies that require your attention.</div>
+                            <div><span className="font-medium">Action:</span> Click to open full email in communications center</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="text-slate-600 ml-2">
-                      {email.timestamp}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
             
