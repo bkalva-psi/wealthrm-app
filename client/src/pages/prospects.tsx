@@ -125,12 +125,25 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   
   const funnelData = pipelineStages.map((stage, index) => {
     const count = prospects.filter(p => p.stage === stage.id).length;
-    const color = getStageColor(stage.id);
+    
+    // Define proper hex colors for each stage
+    const getStageHexColor = (stageId: string) => {
+      switch (stageId.toLowerCase()) {
+        case 'discovery': return '#3b82f6'; // Blue
+        case 'qualified': return '#10b981'; // Green
+        case 'proposal': return '#f59e0b'; // Orange
+        case 'negotiation': return '#8b5cf6'; // Purple
+        case 'won': return '#22c55e'; // Success green
+        case 'lost': return '#ef4444'; // Red
+        default: return '#6b7280'; // Gray
+      }
+    };
+    
     return {
       stage: stage.title,
       stageId: stage.id,
       count,
-      color,
+      color: getStageHexColor(stage.id),
       percentage: prospects.length > 0 ? Math.round((count / prospects.length) * 100) : 0,
       level: index
     };
@@ -147,7 +160,7 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
       <div className="p-6">
         <h3 className="text-lg font-semibold text-slate-800 mb-6 text-center">Sales Pipeline Funnel</h3>
         
-        {funnelData.length === 0 ? (
+        {funnelData.length === 0 || funnelData.every(item => item.count === 0) ? (
           <div className="text-center py-8 text-slate-500">
             No prospects data available
           </div>
