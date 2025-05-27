@@ -17,7 +17,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 
 type Period = "M" | "Q" | "HY" | "Y";
 
@@ -174,6 +174,36 @@ export function PerformanceCard() {
     fullWidth: 100 // For reference circle
   }));
 
+  // Generate quarterly trend data for last 8 quarters
+  const generateQuarterlyTrend = () => {
+    const quarters = [];
+    const currentDate = new Date();
+    
+    for (let i = 7; i >= 0; i--) {
+      const quarterDate = new Date(currentDate);
+      quarterDate.setMonth(currentDate.getMonth() - (i * 3));
+      const year = quarterDate.getFullYear();
+      const quarter = Math.floor(quarterDate.getMonth() / 3) + 1;
+      
+      quarters.push({
+        quarter: `Q${quarter} ${year.toString().slice(-2)}`,
+        newClients: Math.max(50, 72 + Math.random() * 30 - 15), // Trend around current 72%
+        netNewMoney: Math.max(60, 85 + Math.random() * 20 - 10), // Trend around current 85%
+        clientMeetings: Math.max(70, 90 + Math.random() * 15 - 7), // Trend around current 90%
+        prospectPipeline: Math.max(80, 95 + Math.random() * 10 - 5), // Trend around current 95%
+        revenue: Math.max(55, 78 + Math.random() * 25 - 12) // Trend around current 78%
+      });
+    }
+    return quarters;
+  };
+
+  const quarterlyTrendData = generateQuarterlyTrend();
+
+  // Calculate overall average percentile
+  const overallAveragePercentile = Math.round(
+    metrics.reduce((sum, metric) => sum + (metric.percentile || 0), 0) / metrics.length
+  );
+
   // Custom tooltip component for desktop hover
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -322,37 +352,112 @@ export function PerformanceCard() {
             </CollapsibleTrigger>
             
             {!peersExpanded && (
-              <div className="mt-3 space-y-2">
-                {metrics.map((metric) => {
-                  const medal = getRankMedal(metric.rank || 0);
-                  return (
-                    <div key={metric.name} className="flex items-center gap-2 text-xs">
-                      <div className="w-4 text-center">
-                        {medal || `#${metric.rank}`}
-                      </div>
-                      <span className="flex-1 truncate">{metric.name}</span>
-                      <Badge 
-                        variant="outline" 
-                        className={cn("text-xs px-1 py-0", getPercentileColor(metric.percentile || 0))}
-                      >
-                        {metric.percentile}%ile
-                      </Badge>
+              <div className="mt-3">
+                {/* Overall Average Percentile - Prominent Display */}
+                <div className="bg-blue-50 rounded-lg p-3 mb-3">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{overallAveragePercentile}%ile</div>
+                    <div className="text-xs text-blue-700">Overall Average Percentile</div>
+                    <div className="text-xs text-slate-600 mt-1">
+                      {overallAveragePercentile >= 85 ? "Top Performer" : 
+                       overallAveragePercentile >= 70 ? "Strong Performer" : 
+                       "Room for Improvement"}
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
+
+                {/* Quick Summary */}
+                <div className="space-y-2">
+                  {metrics.slice(0, 2).map((metric) => {
+                    const medal = getRankMedal(metric.rank || 0);
+                    return (
+                      <div key={metric.name} className="flex items-center gap-2 text-xs">
+                        <div className="w-4 text-center">
+                          {medal || `#${metric.rank}`}
+                        </div>
+                        <span className="flex-1 truncate">{metric.name}</span>
+                        <Badge 
+                          variant="outline" 
+                          className={cn("text-xs px-1 py-0", getPercentileColor(metric.percentile || 0))}
+                        >
+                          {metric.percentile}%ile
+                        </Badge>
+                      </div>
+                    );
+                  })}
+                  <div className="text-xs text-slate-500 text-center pt-1">
+                    Expand to see quarterly trends
+                  </div>
+                </div>
               </div>
             )}
           </div>
           
           <CollapsibleContent>
             <div className="px-4 py-3 space-y-4">
-              {/* Spider Chart Visualization */}
+              {/* Overall Average Percentile - Large Display */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
+                <div className="text-sm font-medium text-blue-700">Overall Average Percentile</div>
+                <div className="text-xs text-slate-600 mt-2">
+                  {overallAveragePercentile >= 85 ? "🏆 Top Performer - Excellent across all metrics" : 
+                   overallAveragePercentile >= 70 ? "💪 Strong Performer - Above average performance" : 
+                   "📈 Room for Improvement - Focus on key areas"}
+                </div>
+              </div>
+
+              {/* Quarterly Trend Line Chart */}
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-xs font-medium text-slate-600 mb-3 text-center">
+                  Percentile Performance Trends (Last 8 Quarters)
+                </div>
+                
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={quarterlyTrendData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis 
+                        dataKey="quarter" 
+                        tick={{ fontSize: 10, fill: '#64748b' }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis 
+                        domain={[40, 100]}
+                        tick={{ fontSize: 10, fill: '#64748b' }}
+                        label={{ value: 'Percentile', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: '10px', fill: '#64748b' } }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e2e8f0', 
+                          borderRadius: '6px',
+                          fontSize: '12px'
+                        }}
+                        formatter={(value: any, name: string) => [`${Math.round(value)}%ile`, name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')]}
+                        labelFormatter={(label) => `Quarter: ${label}`}
+                      />
+                      <Line type="monotone" dataKey="newClients" stroke="#ef4444" strokeWidth={2} name="newClients" />
+                      <Line type="monotone" dataKey="netNewMoney" stroke="#f59e0b" strokeWidth={2} name="netNewMoney" />
+                      <Line type="monotone" dataKey="clientMeetings" stroke="#10b981" strokeWidth={2} name="clientMeetings" />
+                      <Line type="monotone" dataKey="prospectPipeline" stroke="#3b82f6" strokeWidth={2} name="prospectPipeline" />
+                      <Line type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} name="revenue" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                <div className="text-xs text-slate-500 text-center mt-2">
+                  Track your improvement over time across all key metrics
+                </div>
+              </div>
+
+              {/* Current Spider Chart for Reference */}
               <div className="bg-slate-50 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-xs font-medium text-slate-600">
-                    Percentile Performance Radar
+                    Current Quarter Snapshot
                   </div>
-                  {/* Mobile toggle button */}
                   <button 
                     onClick={() => setShowMobileValues(!showMobileValues)}
                     className="md:hidden text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
@@ -399,11 +504,6 @@ export function PerformanceCard() {
                   </ResponsiveContainer>
                 </div>
                 
-                <div className="text-xs text-slate-500 text-center mt-1">
-                  Outer circle = 100th percentile (best possible)
-                </div>
-                
-                {/* Mobile values display */}
                 {showMobileValues && (
                   <div className="md:hidden mt-3 pt-3 border-t border-slate-300 space-y-2">
                     <div className="text-xs font-medium text-slate-600 mb-2">Chart Values:</div>
@@ -418,37 +518,6 @@ export function PerformanceCard() {
                     ))}
                   </div>
                 )}
-              </div>
-
-              {/* Detailed Rankings List */}
-              <div className="space-y-3">
-                <div className="text-xs font-medium text-slate-600">Detailed Rankings</div>
-                {metrics.map((metric) => {
-                  const medal = getRankMedal(metric.rank || 0);
-                  return (
-                    <div key={metric.name} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 text-center text-sm">
-                            {medal || `#${metric.rank}`}
-                          </div>
-                          <span className="text-sm font-medium">{metric.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge 
-                            variant="outline" 
-                            className={cn("text-xs", getPercentileColor(metric.percentile || 0))}
-                          >
-                            {metric.percentile}th percentile
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="text-xs text-slate-600 pl-8">
-                        Rank {metric.rank} of {metric.totalRMs} RMs • {metric.actual}{metric.unit} this {selectedPeriod === "Q" ? "quarter" : "period"}
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
             </div>
           </CollapsibleContent>
