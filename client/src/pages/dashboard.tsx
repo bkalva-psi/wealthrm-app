@@ -5,6 +5,7 @@ import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
+import { BusinessSnapshotCard } from "@/components/dashboard/business-snapshot-card";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
 import { SalesPipeline } from "@/components/dashboard/sales-pipeline";
@@ -36,15 +37,16 @@ export default function Dashboard() {
           <AgendaCard />
         </div>
         
-        {/* Column 2: Performance + Talking Points */}
+        {/* Column 2: Performance + Business Snapshot */}
         <div className="space-y-4 sm:space-y-6">
           <PerformanceCard />
-          <TalkingPointsCard />
+          <BusinessSnapshotCard />
         </div>
         
-        {/* Column 3: Sales Pipeline + Announcements */}
+        {/* Column 3: Sales Pipeline + Talking Points + Announcements */}
         <div className="space-y-4 sm:space-y-6">
           <SalesPipeline />
+          <TalkingPointsCard />
           <AnnouncementsCard />
         </div>
       </div>
