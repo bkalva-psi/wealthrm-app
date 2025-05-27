@@ -63,12 +63,7 @@ export function QuickActions() {
       label: "Add Note",
       action: () => setActiveDialog("note"),
     },
-    {
-      id: "call-client",
-      icon: Phone,
-      label: "Call Client",
-      action: () => setActiveDialog("call"),
-    },
+
     {
       id: "email",
       icon: Mail,
