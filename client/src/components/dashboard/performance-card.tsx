@@ -371,26 +371,30 @@ export function PerformanceCard() {
                 {/* Overall Percentile Score - Bar Chart Display */}
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
                   <div className="text-center mb-3">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
                     <div className="text-sm text-blue-700 font-medium">Overall Percentile Score</div>
                   </div>
 
                   {/* Horizontal Progress Bar */}
                   <div className="relative mb-3">
                     {/* Background bar */}
-                    <div className="w-full h-3 bg-slate-200 rounded-full relative">
+                    <div className="w-full h-4 bg-slate-200 rounded-full relative">
                       {/* 50% midline marker */}
-                      <div className="absolute top-0 left-1/2 transform -translate-x-0.5 w-0.5 h-3 bg-slate-400"></div>
+                      <div className="absolute top-0 left-1/2 transform -translate-x-0.5 w-0.5 h-4 bg-slate-400"></div>
                       
                       {/* Progress fill */}
                       <div 
-                        className="h-3 rounded-full transition-all duration-1000 ease-out"
+                        className="h-4 rounded-full transition-all duration-1000 ease-out relative"
                         style={{
                           width: `${overallAveragePercentile}%`,
                           backgroundColor: overallAveragePercentile >= 80 ? "#10b981" : 
                                          overallAveragePercentile >= 60 ? "#3b82f6" : "#f59e0b"
                         }}
-                      ></div>
+                      >
+                        {/* Percentile score at the end of the bar */}
+                        <div className="absolute -top-6 -right-3 bg-white border border-slate-300 rounded px-2 py-1 text-xs font-bold text-slate-700 shadow-sm">
+                          {overallAveragePercentile}%ile
+                        </div>
+                      </div>
                     </div>
                     
                     {/* Scale markers */}
