@@ -498,3 +498,53 @@ export type InsertCommunicationTemplate = z.infer<typeof insertCommunicationTemp
 
 export type CommunicationAnalytic = typeof communicationAnalytics.$inferSelect;
 export type InsertCommunicationAnalytic = z.infer<typeof insertCommunicationAnalyticSchema>;
+
+// Talking Points - insights and conversation starters for RMs
+export const talkingPoints = pgTable("talking_points", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  category: text("category").notNull(), // quarterly_results, market_analysis, regulatory_update, product_launch, etc.
+  summary: text("summary").notNull(),
+  detailedContent: text("detailed_content").notNull(),
+  source: text("source"), // Research team, Market analysis, News, etc.
+  relevanceScore: integer("relevance_score").default(5), // 1-10 scale
+  validUntil: timestamp("valid_until"),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+export const insertTalkingPointSchema = createInsertSchema(talkingPoints).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Announcements - messages from product team/CIO to RMs
+export const announcements = pgTable("announcements", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  type: text("type").notNull(), // campaign, compliance, incentive, product_update, regulation
+  priority: text("priority").default("medium"), // high, medium, low
+  targetAudience: text("target_audience").default("all_rms"), // all_rms, senior_rms, new_rms
+  validFrom: timestamp("valid_from").defaultNow(),
+  validUntil: timestamp("valid_until"),
+  author: text("author").notNull(), // Product Team, CIO, Compliance, etc.
+  actionRequired: boolean("action_required").default(false),
+  actionDeadline: timestamp("action_deadline"),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Export types for new tables
+export type TalkingPoint = typeof talkingPoints.$inferSelect;
+export type InsertTalkingPoint = z.infer<typeof insertTalkingPointSchema>;
+
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
