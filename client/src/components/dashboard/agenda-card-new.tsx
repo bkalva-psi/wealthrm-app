@@ -367,7 +367,7 @@ export function AgendaCard() {
                         {isExpanded && (
                           <div className="mt-2 ml-6 p-2 bg-red-50 rounded-md text-xs">
                             <div className="space-y-1">
-                              <div><span className="font-medium">Priority:</span> {alert.priority.toUpperCase()}</div>
+                              <div><span className="font-medium">Priority:</span> {alert.priority ? alert.priority.toUpperCase() : "HIGH"}</div>
                               <div><span className="font-medium">Category:</span> {alert.category || "Portfolio Management"}</div>
                               <div><span className="font-medium">Details:</span> {alert.description || "This alert requires immediate attention from the relationship manager."}</div>
                               <div><span className="font-medium">Action Required:</span> Review portfolio allocation and contact client if necessary</div>
