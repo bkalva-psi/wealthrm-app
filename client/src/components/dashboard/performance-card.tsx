@@ -17,6 +17,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 
 type Period = "M" | "Q" | "HY" | "Y";
 
@@ -73,59 +74,102 @@ export function PerformanceCard() {
     return null;
   };
 
-  // Sample metrics structure (will be replaced with real data)
-  const metrics: PerformanceMetric[] = [
-    {
-      name: "New Clients",
-      icon: Users,
-      target: 8,
-      actual: 6,
-      unit: "clients",
-      rank: 5,
-      percentile: 72,
-      totalRMs: 15
-    },
-    {
-      name: "Net New Money",
-      icon: DollarSign,
-      target: 50,
-      actual: 45,
-      unit: "L",
-      rank: 3,
-      percentile: 85,
-      totalRMs: 15
-    },
-    {
-      name: "Client Meetings",
-      icon: Calendar,
-      target: 25,
-      actual: 28,
-      unit: "meetings",
-      rank: 2,
-      percentile: 90,
-      totalRMs: 15
-    },
-    {
-      name: "Prospect Pipeline",
-      icon: Target,
-      target: 75,
-      actual: 82,
-      unit: "L",
-      rank: 1,
-      percentile: 95,
-      totalRMs: 15
-    },
-    {
-      name: "Revenue",
-      icon: TrendingUp,
-      target: 12,
-      actual: 11.5,
-      unit: "L",
-      rank: 4,
-      percentile: 78,
-      totalRMs: 15
-    }
-  ];
+  // Generate realistic metrics based on selected period
+  const getMetricsForPeriod = (period: Period): PerformanceMetric[] => {
+    const baseData = {
+      M: { // Monthly
+        newClients: { target: 3, actual: 2 },
+        netNewMoney: { target: 15, actual: 12 },
+        clientMeetings: { target: 8, actual: 9 },
+        prospectPipeline: { target: 20, actual: 22 },
+        revenue: { target: 3, actual: 2.8 }
+      },
+      Q: { // Quarterly  
+        newClients: { target: 8, actual: 6 },
+        netNewMoney: { target: 50, actual: 45 },
+        clientMeetings: { target: 25, actual: 28 },
+        prospectPipeline: { target: 75, actual: 82 },
+        revenue: { target: 12, actual: 11.5 }
+      },
+      HY: { // Half-Yearly
+        newClients: { target: 18, actual: 14 },
+        netNewMoney: { target: 120, actual: 108 },
+        clientMeetings: { target: 55, actual: 62 },
+        prospectPipeline: { target: 180, actual: 195 },
+        revenue: { target: 28, actual: 26.5 }
+      },
+      Y: { // Yearly
+        newClients: { target: 35, actual: 28 },
+        netNewMoney: { target: 250, actual: 225 },
+        clientMeetings: { target: 120, actual: 135 },
+        prospectPipeline: { target: 400, actual: 420 },
+        revenue: { target: 60, actual: 58 }
+      }
+    };
+
+    const data = baseData[period];
+    return [
+      {
+        name: "New Clients",
+        icon: Users,
+        target: data.newClients.target,
+        actual: data.newClients.actual,
+        unit: "",
+        rank: 5,
+        percentile: 72,
+        totalRMs: 15
+      },
+      {
+        name: "Net New Money",
+        icon: DollarSign,
+        target: data.netNewMoney.target,
+        actual: data.netNewMoney.actual,
+        unit: "L",
+        rank: 3,
+        percentile: 85,
+        totalRMs: 15
+      },
+      {
+        name: "Client Meetings",
+        icon: Calendar,
+        target: data.clientMeetings.target,
+        actual: data.clientMeetings.actual,
+        unit: "",
+        rank: 2,
+        percentile: 90,
+        totalRMs: 15
+      },
+      {
+        name: "Prospect Pipeline",
+        icon: Target,
+        target: data.prospectPipeline.target,
+        actual: data.prospectPipeline.actual,
+        unit: "L",
+        rank: 1,
+        percentile: 95,
+        totalRMs: 15
+      },
+      {
+        name: "Revenue",
+        icon: TrendingUp,
+        target: data.revenue.target,
+        actual: data.revenue.actual,
+        unit: "L",
+        rank: 4,
+        percentile: 78,
+        totalRMs: 15
+      }
+    ];
+  };
+
+  const metrics = getMetricsForPeriod(selectedPeriod);
+
+  // Prepare spider chart data for peer comparison
+  const spiderChartData = metrics.map((metric) => ({
+    metric: metric.name.split(' ')[0], // Use short names for the chart
+    percentile: metric.percentile || 0,
+    fullWidth: 100 // For reference circle
+  }));
 
   return (
     <Card className="overflow-hidden">
@@ -178,7 +222,7 @@ export function PerformanceCard() {
             
             {!targetsExpanded && (
               <div className="mt-3 space-y-2">
-                {metrics.slice(0, 2).map((metric) => {
+                {metrics.map((metric) => {
                   const percentage = getProgressPercentage(metric.actual, metric.target);
                   const IconComponent = metric.icon;
                   return (
@@ -260,7 +304,7 @@ export function PerformanceCard() {
             
             {!peersExpanded && (
               <div className="mt-3 space-y-2">
-                {metrics.slice(0, 2).map((metric) => {
+                {metrics.map((metric) => {
                   const medal = getRankMedal(metric.rank || 0);
                   return (
                     <div key={metric.name} className="flex items-center gap-2 text-xs">
@@ -282,33 +326,80 @@ export function PerformanceCard() {
           </div>
           
           <CollapsibleContent>
-            <div className="px-4 py-3 space-y-3">
-              {metrics.map((metric) => {
-                const medal = getRankMedal(metric.rank || 0);
-                return (
-                  <div key={metric.name} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 text-center text-sm">
-                          {medal || `#${metric.rank}`}
+            <div className="px-4 py-3 space-y-4">
+              {/* Spider Chart Visualization */}
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-xs font-medium text-slate-600 mb-2 text-center">
+                  Percentile Performance Radar
+                </div>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={spiderChartData}>
+                      <PolarGrid />
+                      <PolarAngleAxis 
+                        dataKey="metric" 
+                        tick={{ fontSize: 10, fill: '#64748b' }}
+                      />
+                      <PolarRadiusAxis 
+                        angle={90}
+                        domain={[0, 100]}
+                        tick={{ fontSize: 8, fill: '#94a3b8' }}
+                        tickCount={5}
+                      />
+                      <Radar 
+                        name="Your Performance" 
+                        dataKey="percentile" 
+                        stroke="#3b82f6" 
+                        fill="#3b82f6" 
+                        fillOpacity={0.3}
+                        strokeWidth={2}
+                      />
+                      <Radar 
+                        name="Reference" 
+                        dataKey="fullWidth" 
+                        stroke="#e2e8f0" 
+                        fill="transparent" 
+                        strokeWidth={1}
+                        strokeDasharray="2 2"
+                      />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="text-xs text-slate-500 text-center mt-1">
+                  Outer circle = 100th percentile (best possible)
+                </div>
+              </div>
+
+              {/* Detailed Rankings List */}
+              <div className="space-y-3">
+                <div className="text-xs font-medium text-slate-600">Detailed Rankings</div>
+                {metrics.map((metric) => {
+                  const medal = getRankMedal(metric.rank || 0);
+                  return (
+                    <div key={metric.name} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 text-center text-sm">
+                            {medal || `#${metric.rank}`}
+                          </div>
+                          <span className="text-sm font-medium">{metric.name}</span>
                         </div>
-                        <span className="text-sm font-medium">{metric.name}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge 
+                            variant="outline" 
+                            className={cn("text-xs", getPercentileColor(metric.percentile || 0))}
+                          >
+                            {metric.percentile}th percentile
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          variant="outline" 
-                          className={cn("text-xs", getPercentileColor(metric.percentile || 0))}
-                        >
-                          {metric.percentile}th percentile
-                        </Badge>
+                      <div className="text-xs text-slate-600 pl-8">
+                        Rank {metric.rank} of {metric.totalRMs} RMs • {metric.actual}{metric.unit} this {selectedPeriod === "Q" ? "quarter" : "period"}
                       </div>
                     </div>
-                    <div className="text-xs text-slate-600 pl-8">
-                      Rank {metric.rank} of {metric.totalRMs} RMs • {metric.actual}{metric.unit} this {selectedPeriod === "Q" ? "quarter" : "period"}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
