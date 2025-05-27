@@ -35,14 +35,16 @@ export default function Dashboard() {
           <AgendaCard />
         </div>
         
-        {/* Column 2: Performance Metrics */}
+        {/* Column 2: Performance Metrics + Talking Points */}
         <div className="space-y-4 sm:space-y-6">
           <PerformanceMetrics />
+          <TalkingPointsCard />
         </div>
         
-        {/* Column 3: Sales Pipeline */}
+        {/* Column 3: Sales Pipeline + Announcements */}
         <div className="space-y-4 sm:space-y-6">
           <SalesPipeline />
+          <AnnouncementsCard />
         </div>
       </div>
     </div>
