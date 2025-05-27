@@ -1,10 +1,21 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronRight, ChevronDown, Megaphone, Target, AlertTriangle, Package, FileText, Zap } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { 
+  Megaphone, 
+  ChevronRight, 
+  ChevronDown,
+  AlertTriangle,
+  TrendingUp,
+  Gift,
+  Users,
+  Target,
+  FileText
+} from "lucide-react";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface Announcement {
@@ -26,35 +37,34 @@ interface Announcement {
 
 const typeIcons = {
   campaign: Target,
-  compliance: AlertTriangle,
-  incentive: Zap,
-  product_update: Package,
-  regulation: FileText,
+  product_update: TrendingUp,
+  incentive: Gift,
+  policy: FileText,
+  general: Megaphone,
+  team_update: Users
 };
 
-const priorityColors = {
-  high: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 border-red-200",
-  medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 border-yellow-200",
-  low: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200",
-};
-
-const typeColors = {
-  campaign: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-  compliance: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-  incentive: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-  product_update: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
-  regulation: "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+const getPriorityColor = (priority: string) => {
+  switch (priority?.toLowerCase()) {
+    case 'high':
+      return 'bg-red-500';
+    case 'medium':
+      return 'bg-yellow-500';
+    case 'low':
+      return 'bg-green-500';
+    default:
+      return 'bg-gray-400';
+  }
 };
 
 export function AnnouncementsCard() {
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-  const { data: announcements = [], isLoading } = useQuery<Announcement[]>({
+  const { data: announcements = [], isLoading } = useQuery({
     queryKey: ['/api/announcements'],
+    select: (data: any) => Array.isArray(data) ? data : []
   });
-
-
 
   const toggleItemExpansion = (itemKey: string) => {
     setExpandedItems(prev => ({
@@ -63,24 +73,7 @@ export function AnnouncementsCard() {
     }));
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const isDeadlineApproaching = (deadlineString: string) => {
-    if (!deadlineString) return false;
-    const deadline = new Date(deadlineString);
-    const now = new Date();
-    const diffDays = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays <= 7 && diffDays >= 0;
-  };
-
-  const displayAnnouncements = isExpanded ? announcements : announcements.slice(0, 3);
-  const hasMore = announcements.length > 3;
+  const hasMore = announcements.length > 2;
 
   return (
     <Card className="overflow-hidden">
@@ -91,249 +84,127 @@ export function AnnouncementsCard() {
         </div>
       </div>
       
-      <CardContent className="space-y-3 pt-0">
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-16 w-full" />
-            ))}
-          </div>
-        ) : announcements.length > 0 ? (
-          <>
-            <div className="space-y-3">
-              {displayAnnouncements.map((announcement) => {
-                const announcementKey = `announcement-${announcement.id}`;
-                const isItemExpanded = expandedItems[announcementKey];
-                const IconComponent = typeIcons[announcement.type as keyof typeof typeIcons] || Megaphone;
-                const priorityColor = priorityColors[announcement.priority as keyof typeof priorityColors];
-                
-                return (
-                  <div key={announcement.id} className="space-y-2">
-                    <div 
-                      className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/40 transition-colors cursor-pointer",
-                        priorityColor
-                      )}
-                      onClick={() => toggleItemExpansion(announcementKey)}
-                    >
-                      <IconComponent className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-xs leading-tight text-foreground">{announcement.title}</h4>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            {announcement.action_required && (
-                              <AlertTriangle className="h-3 w-3 text-orange-500" title="Action Required" />
-                            )}
-                          </div>
+      <div className="divide-y divide-slate-200">
+        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <Megaphone className="h-4 w-4 text-blue-600" />
+                  <span className="text-xs font-medium text-slate-700 flex-1 text-left">
+                    Product Updates ({announcements.length})
+                  </span>
+                  {hasMore && (
+                    isExpanded ? 
+                      <ChevronDown className="h-4 w-4 text-slate-400" /> :
+                      <ChevronRight className="h-4 w-4 text-slate-400" />
+                  )}
+                </div>
+              </Button>
+            </CollapsibleTrigger>
+            
+            {isLoading ? (
+              <div className="space-y-2 mt-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-8 w-full" />
+                ))}
+              </div>
+            ) : announcements.length > 0 ? (
+              <div className="space-y-2 mt-3">
+                {announcements.slice(0, 2).map((announcement: any) => {
+                  const announcementKey = `announcement-${announcement.id}`;
+                  const isItemExpanded = expandedItems[announcementKey];
+                  const IconComponent = typeIcons[announcement.type as keyof typeof typeIcons] || Megaphone;
+                  return (
+                    <div key={announcement.id}>
+                      <div 
+                        className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                        onClick={() => toggleItemExpansion(announcementKey)}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{announcement.title}</span>
                         </div>
-                      </div>
-                    </div>
-                    
-                    {isItemExpanded && (
-                      <div className="ml-7 p-3 bg-background border rounded-lg">
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex items-center gap-2 mb-3">
-                              <Badge 
-                                variant="secondary" 
-                                className={cn("text-xs px-2 py-0", typeColors[announcement.type as keyof typeof typeColors])}
-                              >
-                                {announcement.type.replace('_', ' ')}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">{formatDate(announcement.created_at)}</span>
-                              {announcement.action_deadline && isDeadlineApproaching(announcement.action_deadline) && (
-                                <Badge variant="destructive" className="text-xs">
-                                  Due {formatDate(announcement.action_deadline)}
-                                </Badge>
-                              )}
-                            </div>
-                            <h5 className="font-medium text-sm mb-2">Full Details</h5>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                              {announcement.content}
-                            </p>
-                          </div>
-                          
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           {announcement.action_required && (
-                            <div className="p-2 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/30 rounded">
-                              <div className="flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-orange-600" />
-                                <span className="text-sm font-medium text-orange-800 dark:text-orange-200">Action Required</span>
-                              </div>
-                              {announcement.action_deadline && (
-                                <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
-                                  Deadline: {new Date(announcement.action_deadline).toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                  })}
-                                </p>
-                              )}
-                            </div>
+                            <AlertTriangle className="h-3 w-3 text-orange-500" />
                           )}
-                          
-                          <div className="grid grid-cols-2 gap-4 pt-2 border-t text-xs">
-                            <div>
-                              <span className="text-muted-foreground">Author:</span>
-                              <span className="ml-1 font-medium">{announcement.author}</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Priority:</span>
-                              <span className="ml-1 font-medium capitalize">{announcement.priority}</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Target:</span>
-                              <span className="ml-1 font-medium">{announcement.target_audience.replace('_', ' ')}</span>
-                            </div>
-                            {announcement.valid_until && (
-                              <div>
-                                <span className="text-muted-foreground">Valid Until:</span>
-                                <span className="ml-1 font-medium">{formatDate(announcement.valid_until)}</span>
-                              </div>
+                          <div 
+                            className={cn("w-2 h-2 rounded-full", getPriorityColor(announcement.priority))}
+                            title={`Priority: ${announcement.priority}`}
+                          />
+                        </div>
+                      </div>
+                      {isItemExpanded && (
+                        <div className="mt-2 ml-6 p-2 bg-orange-50 rounded-md text-xs">
+                          <div className="space-y-1">
+                            <div><span className="font-medium">Type:</span> {announcement.type.replace('_', ' ')}</div>
+                            <div><span className="font-medium">Details:</span> {announcement.content}</div>
+                            <div><span className="font-medium">From:</span> {announcement.author}</div>
+                            <div><span className="font-medium">Valid until:</span> {format(new Date(announcement.valid_until), "MMM d, yyyy")}</div>
+                            {announcement.action_required && (
+                              <div><span className="font-medium">Action by:</span> {format(new Date(announcement.action_deadline), "MMM d, yyyy")}</div>
                             )}
                           </div>
-                          
-                          {announcement.tags && announcement.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                              {announcement.tags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {hasMore && (
-              <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-                <CollapsibleContent className="space-y-3">
-                  {announcements.slice(3).map((announcement) => {
-                    const announcementKey = `announcement-${announcement.id}`;
-                    const isItemExpanded = expandedItems[announcementKey];
-                    const IconComponent = typeIcons[announcement.type as keyof typeof typeIcons] || Megaphone;
-                    const priorityColor = priorityColors[announcement.priority as keyof typeof priorityColors];
-                    
-                    return (
-                      <div key={announcement.id} className="space-y-2">
-                        <div 
-                          className={cn(
-                            "flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/40 transition-colors cursor-pointer",
-                            priorityColor
-                          )}
-                          onClick={() => toggleItemExpansion(announcementKey)}
-                        >
-                          <IconComponent className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
-                              <h4 className="font-medium text-sm leading-tight">{announcement.title}</h4>
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                {announcement.action_required && (
-                                  <AlertTriangle className="h-3 w-3 text-orange-500" title="Action Required" />
-                                )}
-                                {isItemExpanded ? 
-                                  <ChevronDown className="h-3 w-3 text-muted-foreground" /> :
-                                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                                }
-                              </div>
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{announcement.content}</p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <Badge 
-                                variant="secondary" 
-                                className={cn("text-xs px-2 py-0", typeColors[announcement.type as keyof typeof typeColors])}
-                              >
-                                {announcement.type.replace('_', ' ')}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">{formatDate(announcement.created_at)}</span>
-                              {announcement.action_deadline && isDeadlineApproaching(announcement.action_deadline) && (
-                                <Badge variant="destructive" className="text-xs">
-                                  Due {formatDate(announcement.action_deadline)}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {isItemExpanded && (
-                          <div className="ml-7 p-3 bg-background border rounded-lg">
-                            <div className="space-y-3">
-                              <div>
-                                <h5 className="font-medium text-sm mb-2">Full Details</h5>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                  {announcement.content}
-                                </p>
-                              </div>
-                              
-                              {announcement.action_required && (
-                                <div className="p-2 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/30 rounded">
-                                  <div className="flex items-center gap-2">
-                                    <AlertTriangle className="h-4 w-4 text-orange-600" />
-                                    <span className="text-sm font-medium text-orange-800 dark:text-orange-200">Action Required</span>
-                                  </div>
-                                  {announcement.action_deadline && (
-                                    <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
-                                      Deadline: {new Date(announcement.action_deadline).toLocaleDateString('en-US', {
-                                        month: 'long',
-                                        day: 'numeric',
-                                        year: 'numeric'
-                                      })}
-                                    </p>
-                                  )}
-                                </div>
-                              )}
-                              
-                              <div className="grid grid-cols-2 gap-4 pt-2 border-t text-xs">
-                                <div>
-                                  <span className="text-muted-foreground">Author:</span>
-                                  <span className="ml-1 font-medium">{announcement.author}</span>
-                                </div>
-                                <div>
-                                  <span className="text-muted-foreground">Priority:</span>
-                                  <span className="ml-1 font-medium capitalize">{announcement.priority}</span>
-                                </div>
-                                <div>
-                                  <span className="text-muted-foreground">Target:</span>
-                                  <span className="ml-1 font-medium">{announcement.target_audience.replace('_', ' ')}</span>
-                                </div>
-                                {announcement.valid_until && (
-                                  <div>
-                                    <span className="text-muted-foreground">Valid Until:</span>
-                                    <span className="ml-1 font-medium">{formatDate(announcement.valid_until)}</span>
-                                  </div>
-                                )}
-                              </div>
-                              
-                              {announcement.tags && announcement.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {announcement.tags.map((tag, index) => (
-                                    <Badge key={index} variant="outline" className="text-xs">
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </CollapsibleContent>
-              </Collapsible>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500 mt-3">No announcements available</p>
             )}
-          </>
-        ) : (
-          <div className="text-center py-6 text-muted-foreground">
-            <Megaphone className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No announcements available</p>
           </div>
-        )}
-      </CardContent>
+          
+          <CollapsibleContent>
+            {announcements.length > 2 && (
+              <div className="px-4 py-3 space-y-2">
+                {announcements.slice(2).map((announcement: any) => {
+                  const announcementKey = `announcement-${announcement.id}`;
+                  const isItemExpanded = expandedItems[announcementKey];
+                  const IconComponent = typeIcons[announcement.type as keyof typeof typeIcons] || Megaphone;
+                  return (
+                    <div key={announcement.id}>
+                      <div 
+                        className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                        onClick={() => toggleItemExpansion(announcementKey)}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{announcement.title}</span>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {announcement.action_required && (
+                            <AlertTriangle className="h-3 w-3 text-orange-500" />
+                          )}
+                          <div 
+                            className={cn("w-2 h-2 rounded-full", getPriorityColor(announcement.priority))}
+                            title={`Priority: ${announcement.priority}`}
+                          />
+                        </div>
+                      </div>
+                      {isItemExpanded && (
+                        <div className="mt-2 ml-6 p-2 bg-orange-50 rounded-md text-xs">
+                          <div className="space-y-1">
+                            <div><span className="font-medium">Type:</span> {announcement.type.replace('_', ' ')}</div>
+                            <div><span className="font-medium">Details:</span> {announcement.content}</div>
+                            <div><span className="font-medium">From:</span> {announcement.author}</div>
+                            <div><span className="font-medium">Valid until:</span> {format(new Date(announcement.valid_until), "MMM d, yyyy")}</div>
+                            {announcement.action_required && (
+                              <div><span className="font-medium">Action by:</span> {format(new Date(announcement.action_deadline), "MMM d, yyyy")}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
     </Card>
   );
 }
