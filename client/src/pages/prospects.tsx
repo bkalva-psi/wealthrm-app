@@ -172,29 +172,31 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
                 {/* Funnel Segments */}
                 <div className="space-y-1">
                   {funnelData.map((item, index) => {
-                    // Calculate width for funnel shape (each level gets smaller)
-                    const maxWidth = 320;
-                    const minWidth = 120;
-                    const widthStep = (maxWidth - minWidth) / Math.max(funnelData.length - 1, 1);
-                    const segmentWidth = maxWidth - (index * widthStep);
+                    // Calculate width proportionate to prospect count
+                    const maxCount = Math.max(...funnelData.map(d => d.count));
+                    const minWidth = 150;
+                    const maxWidth = 350;
+                    const proportionateWidth = maxCount > 0 
+                      ? minWidth + ((item.count / maxCount) * (maxWidth - minWidth))
+                      : minWidth;
                     
                     return (
                       <div key={item.stageId} className="flex flex-col items-center">
                         {/* Funnel Segment */}
                         <div
-                          className="relative flex items-center justify-center text-white font-medium text-sm py-3 px-4 transition-all duration-300 hover:brightness-110"
+                          className="relative flex items-center justify-center text-white font-medium text-sm py-4 px-4 transition-all duration-300 hover:brightness-110"
                           style={{
                             backgroundColor: item.color,
-                            width: `${segmentWidth}px`,
+                            width: `${proportionateWidth}px`,
                             clipPath: index === funnelData.length - 1 
                               ? 'polygon(15% 0%, 85% 0%, 70% 100%, 30% 100%)'  // Bottom segment (more narrow)
                               : 'polygon(10% 0%, 90% 0%, 85% 100%, 15% 100%)', // Regular segments
-                            minHeight: '50px'
+                            minHeight: '56px'
                           }}
                         >
                           <div className="text-center">
-                            <div className="font-semibold">{item.stage}</div>
-                            <div className="text-xs opacity-90">{item.count} prospects</div>
+                            <div className="font-semibold text-base">{item.stage}</div>
+                            <div className="text-sm mt-1 font-medium">{item.count}</div>
                           </div>
                         </div>
                         
