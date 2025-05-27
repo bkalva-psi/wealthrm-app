@@ -368,60 +368,50 @@ export function PerformanceCard() {
             
             {!peersExpanded && (
               <div className="mt-3">
-                {/* Overall Percentile Score - Graphical Display */}
+                {/* Overall Percentile Score - Bar Chart Display */}
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
                   <div className="text-center mb-3">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
+                    <div className="text-2xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
                     <div className="text-sm text-blue-700 font-medium">Overall Percentile Score</div>
-                    <div className="text-xs text-slate-600 mt-1">
-                      {overallAveragePercentile >= 80 ? "Strong compared to peers" : 
-                       overallAveragePercentile >= 60 ? "Average compared to peers" : 
-                       "Weak compared to peers"}
-                    </div>
                   </div>
 
-                  {/* Visual Progress Ring */}
-                  <div className="flex justify-center mb-3">
-                    <div className="relative w-20 h-20">
-                      <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-                        {/* Background circle */}
-                        <path
-                          d="M18 2.0845
-                            a 15.9155 15.9155 0 0 1 0 31.831
-                            a 15.9155 15.9155 0 0 1 0 -31.831"
-                          fill="none"
-                          stroke="#e2e8f0"
-                          strokeWidth="2"
-                        />
-                        {/* Progress circle */}
-                        <path
-                          d="M18 2.0845
-                            a 15.9155 15.9155 0 0 1 0 31.831
-                            a 15.9155 15.9155 0 0 1 0 -31.831"
-                          fill="none"
-                          stroke={overallAveragePercentile >= 80 ? "#10b981" : overallAveragePercentile >= 60 ? "#3b82f6" : "#f59e0b"}
-                          strokeWidth="2"
-                          strokeDasharray={`${overallAveragePercentile}, 100`}
-                          className="transition-all duration-1000 ease-out"
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs font-bold text-slate-700">{overallAveragePercentile}%</span>
-                      </div>
+                  {/* Horizontal Progress Bar */}
+                  <div className="relative mb-3">
+                    {/* Background bar */}
+                    <div className="w-full h-3 bg-slate-200 rounded-full relative">
+                      {/* 50% midline marker */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-0.5 w-0.5 h-3 bg-slate-400"></div>
+                      
+                      {/* Progress fill */}
+                      <div 
+                        className="h-3 rounded-full transition-all duration-1000 ease-out"
+                        style={{
+                          width: `${overallAveragePercentile}%`,
+                          backgroundColor: overallAveragePercentile >= 80 ? "#10b981" : 
+                                         overallAveragePercentile >= 60 ? "#3b82f6" : "#f59e0b"
+                        }}
+                      ></div>
+                    </div>
+                    
+                    {/* Scale markers */}
+                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                      <span>0</span>
+                      <span className="font-medium">50</span>
+                      <span>100</span>
                     </div>
                   </div>
 
                   {/* Performance Tier Indicator */}
-                  <div className="flex justify-center">
+                  <div className="text-center">
                     <div className={cn(
-                      "px-3 py-1 rounded-full text-xs font-medium",
+                      "inline-block px-3 py-1 rounded-full text-xs font-medium",
                       overallAveragePercentile >= 80 ? "bg-green-100 text-green-700" :
                       overallAveragePercentile >= 60 ? "bg-blue-100 text-blue-700" :
                       "bg-orange-100 text-orange-700"
                     )}>
-                      {overallAveragePercentile >= 80 ? "🏆 Strong Performer" : 
-                       overallAveragePercentile >= 60 ? "💪 Average Performer" : 
-                       "📈 Needs Improvement"}
+                      {overallAveragePercentile >= 80 ? "Strong compared to peers" : 
+                       overallAveragePercentile >= 60 ? "Average compared to peers" : 
+                       "Weak compared to peers"}
                     </div>
                   </div>
                 </div>
