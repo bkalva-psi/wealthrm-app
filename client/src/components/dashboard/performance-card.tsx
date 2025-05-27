@@ -383,25 +383,27 @@ export function PerformanceCard() {
                       
                       {/* Progress fill */}
                       <div 
-                        className="h-4 rounded-full transition-all duration-1000 ease-out relative"
+                        className="h-4 rounded-full transition-all duration-1000 ease-out"
                         style={{
                           width: `${overallAveragePercentile}%`,
                           backgroundColor: overallAveragePercentile >= 80 ? "#10b981" : 
                                          overallAveragePercentile >= 60 ? "#3b82f6" : "#f59e0b"
                         }}
-                      >
-                        {/* Percentile score at the end of the bar */}
-                        <div className="absolute -top-6 -right-3 bg-white border border-slate-300 rounded px-2 py-1 text-xs font-bold text-slate-700 shadow-sm">
-                          {overallAveragePercentile}%ile
-                        </div>
-                      </div>
+                      ></div>
                     </div>
                     
                     {/* Scale markers */}
-                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                    <div className="relative flex justify-between text-xs text-slate-500 mt-1">
                       <span>0</span>
                       <span className="font-medium">50</span>
                       <span>100</span>
+                      {/* Actual percentile marker */}
+                      <span 
+                        className="absolute text-xs text-slate-500 font-medium"
+                        style={{ left: `${overallAveragePercentile}%`, transform: 'translateX(-50%)' }}
+                      >
+                        {overallAveragePercentile}
+                      </span>
                     </div>
                   </div>
 
