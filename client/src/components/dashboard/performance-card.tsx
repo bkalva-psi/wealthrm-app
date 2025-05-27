@@ -17,7 +17,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 type Period = "M" | "Q" | "HY" | "Y";
 
@@ -43,6 +43,7 @@ export function PerformanceCard() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("Q");
   const [targetsExpanded, setTargetsExpanded] = useState(false);
   const [peersExpanded, setPeersExpanded] = useState(false);
+  const [showMobileValues, setShowMobileValues] = useState(false);
 
   // Fetch performance data based on selected period
   const { data: performanceData, isLoading } = useQuery({
@@ -167,9 +168,27 @@ export function PerformanceCard() {
   // Prepare spider chart data for peer comparison
   const spiderChartData = metrics.map((metric) => ({
     metric: metric.name.split(' ')[0], // Use short names for the chart
+    fullName: metric.name, // Full name for tooltip
     percentile: metric.percentile || 0,
+    rank: metric.rank,
     fullWidth: 100 // For reference circle
   }));
+
+  // Custom tooltip component for desktop hover
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-2 border border-slate-200 rounded shadow-lg text-xs">
+          <p className="font-medium">{data.fullName}</p>
+          <p className="text-blue-600">
+            {data.percentile}th percentile (Rank #{data.rank})
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -329,9 +348,22 @@ export function PerformanceCard() {
             <div className="px-4 py-3 space-y-4">
               {/* Spider Chart Visualization */}
               <div className="bg-slate-50 rounded-lg p-3">
-                <div className="text-xs font-medium text-slate-600 mb-2 text-center">
-                  Percentile Performance Radar
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-medium text-slate-600">
+                    Percentile Performance Radar
+                  </div>
+                  {/* Mobile toggle button */}
+                  <button 
+                    onClick={() => setShowMobileValues(!showMobileValues)}
+                    className="md:hidden text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                  >
+                    {showMobileValues ? 'Hide' : 'Show'} Values
+                    <div className="w-3 h-3 border border-blue-600 rounded-full flex items-center justify-center">
+                      <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                    </div>
+                  </button>
                 </div>
+                
                 <div className="h-48">
                   <ResponsiveContainer width="100%" height="100%">
                     <RadarChart data={spiderChartData}>
@@ -346,6 +378,7 @@ export function PerformanceCard() {
                         tick={{ fontSize: 8, fill: '#94a3b8' }}
                         tickCount={5}
                       />
+                      <Tooltip content={<CustomTooltip />} />
                       <Radar 
                         name="Your Performance" 
                         dataKey="percentile" 
@@ -365,9 +398,26 @@ export function PerformanceCard() {
                     </RadarChart>
                   </ResponsiveContainer>
                 </div>
+                
                 <div className="text-xs text-slate-500 text-center mt-1">
                   Outer circle = 100th percentile (best possible)
                 </div>
+                
+                {/* Mobile values display */}
+                {showMobileValues && (
+                  <div className="md:hidden mt-3 pt-3 border-t border-slate-300 space-y-2">
+                    <div className="text-xs font-medium text-slate-600 mb-2">Chart Values:</div>
+                    {spiderChartData.map((item) => (
+                      <div key={item.metric} className="flex justify-between items-center text-xs">
+                        <span className="text-slate-600">{item.fullName}:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-blue-600 font-medium">{item.percentile}%ile</span>
+                          <span className="text-slate-500">#{item.rank}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Detailed Rankings List */}
