@@ -459,13 +459,25 @@ export default function ClientTransactions() {
                     {client?.phone && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3" />
-                        <span>{client.phone}</span>
+                        <a 
+                          href={`tel:${client.phone}`}
+                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          title="Call client"
+                        >
+                          {client.phone}
+                        </a>
                       </div>
                     )}
                     {client?.email && (
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
-                        <span>{client.email}</span>
+                        <a 
+                          href={`mailto:${client.email}`}
+                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          title="Send email to client"
+                        >
+                          {client.email}
+                        </a>
                       </div>
                     )}
                   </div>

@@ -1004,13 +1004,25 @@ const ClientCommunications: React.FC = () => {
                     {client.phone && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3" />
-                        <span className="truncate">{client.phone}</span>
+                        <a 
+                          href={`tel:${client.phone}`}
+                          className="truncate text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          title="Call client"
+                        >
+                          {client.phone}
+                        </a>
                       </div>
                     )}
                     {client.email && (
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
-                        <span className="truncate">{client.email}</span>
+                        <a 
+                          href={`mailto:${client.email}`}
+                          className="truncate text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          title="Send email to client"
+                        >
+                          {client.email}
+                        </a>
                       </div>
                     )}
                   </div>
