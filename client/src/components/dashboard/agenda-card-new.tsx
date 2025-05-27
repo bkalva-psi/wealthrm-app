@@ -182,7 +182,7 @@ export function AgendaCard() {
                 </div>
               ) : urgentTasks.length > 0 ? (
                 <div className="space-y-2">
-                  {urgentTasks.slice(0, expandedSections.tasks ? urgentTasks.length : 2).map((task) => {
+                  {urgentTasks.slice(0, 2).map((task) => {
                     const taskKey = `task-${task.id}`;
                     const isExpanded = expandedItems[taskKey];
                     return (
@@ -280,7 +280,7 @@ export function AgendaCard() {
                 </div>
               ) : todayAppointments.length > 0 ? (
                 <div className="space-y-2">
-                  {todayAppointments.slice(0, expandedSections.appointments ? todayAppointments.length : 2).map((appointment) => {
+                  {todayAppointments.slice(0, 2).map((appointment) => {
                     const appointmentKey = `appointment-${appointment.id}`;
                     const isExpanded = expandedItems[appointmentKey];
                     return (
@@ -383,7 +383,7 @@ export function AgendaCard() {
                 </div>
               ) : priorityAlerts.length > 0 ? (
                 <div className="space-y-2">
-                  {priorityAlerts.slice(0, expandedSections.alerts ? priorityAlerts.length : 2).map((alert) => {
+                  {priorityAlerts.slice(0, 2).map((alert) => {
                     const alertKey = `alert-${alert.id}`;
                     const isExpanded = expandedItems[alertKey];
                     return (
@@ -481,7 +481,7 @@ export function AgendaCard() {
             
             <div className="mt-2">
               <div className="space-y-2">
-                {recentEmails.slice(0, expandedSections.emails ? recentEmails.length : 2).map((email) => {
+                {recentEmails.slice(0, 2).map((email) => {
                   const emailKey = `email-${email.id}`;
                   const isExpanded = expandedItems[emailKey];
                   return (
