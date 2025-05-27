@@ -199,6 +199,21 @@ export function PerformanceCard() {
 
   const quarterlyTrendData = generateQuarterlyTrend();
 
+  // Calculate Y-axis domain based on actual data range
+  const getYAxisDomain = () => {
+    const allValues = quarterlyTrendData.flatMap(quarter => [
+      quarter.newClients,
+      quarter.netNewMoney,
+      quarter.clientMeetings,
+      quarter.prospectPipeline,
+      quarter.revenue
+    ]);
+    const minValue = Math.min(...allValues);
+    const maxValue = Math.max(...allValues);
+    const padding = (maxValue - minValue) * 0.1; // 10% padding
+    return [Math.max(0, minValue - padding), maxValue + padding];
+  };
+
   // Calculate overall average percentile
   const overallAveragePercentile = Math.round(
     metrics.reduce((sum, metric) => sum + (metric.percentile || 0), 0) / metrics.length
@@ -357,11 +372,11 @@ export function PerformanceCard() {
                 <div className="bg-blue-50 rounded-lg p-3 mb-3">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">{overallAveragePercentile}%ile</div>
-                    <div className="text-xs text-blue-700">Overall Average Percentile</div>
+                    <div className="text-xs text-blue-700">Overall Percentile Score</div>
                     <div className="text-xs text-slate-600 mt-1">
-                      {overallAveragePercentile >= 85 ? "Top Performer" : 
-                       overallAveragePercentile >= 70 ? "Strong Performer" : 
-                       "Room for Improvement"}
+                      {overallAveragePercentile >= 85 ? "Strong compared to peers" : 
+                       overallAveragePercentile >= 70 ? "Average compared to peers" : 
+                       "Weak compared to peers"}
                     </div>
                   </div>
                 </div>
@@ -398,11 +413,11 @@ export function PerformanceCard() {
               {/* Overall Average Percentile - Large Display */}
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-1">{overallAveragePercentile}%ile</div>
-                <div className="text-sm font-medium text-blue-700">Overall Average Percentile</div>
+                <div className="text-sm font-medium text-blue-700">Overall Percentile Score</div>
                 <div className="text-xs text-slate-600 mt-2">
-                  {overallAveragePercentile >= 85 ? "🏆 Top Performer - Excellent across all metrics" : 
-                   overallAveragePercentile >= 70 ? "💪 Strong Performer - Above average performance" : 
-                   "📈 Room for Improvement - Focus on key areas"}
+                  {overallAveragePercentile >= 85 ? "Strong compared to peers" : 
+                   overallAveragePercentile >= 70 ? "Average compared to peers" : 
+                   "Weak compared to peers"}
                 </div>
               </div>
 
@@ -424,7 +439,7 @@ export function PerformanceCard() {
                         height={60}
                       />
                       <YAxis 
-                        domain={[40, 100]}
+                        domain={getYAxisDomain()}
                         tick={{ fontSize: 10, fill: '#64748b' }}
                         label={{ value: 'Percentile', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: '10px', fill: '#64748b' } }}
                       />
@@ -438,11 +453,11 @@ export function PerformanceCard() {
                         formatter={(value: any, name: string) => [`${Math.round(value)}%ile`, name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')]}
                         labelFormatter={(label) => `Quarter: ${label}`}
                       />
-                      <Line type="monotone" dataKey="newClients" stroke="#ef4444" strokeWidth={2} name="newClients" />
-                      <Line type="monotone" dataKey="netNewMoney" stroke="#f59e0b" strokeWidth={2} name="netNewMoney" />
-                      <Line type="monotone" dataKey="clientMeetings" stroke="#10b981" strokeWidth={2} name="clientMeetings" />
-                      <Line type="monotone" dataKey="prospectPipeline" stroke="#3b82f6" strokeWidth={2} name="prospectPipeline" />
-                      <Line type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} name="revenue" />
+                      <Line type="monotone" dataKey="newClients" stroke="#ef4444" strokeWidth={2} name="newClients" dot={false} />
+                      <Line type="monotone" dataKey="netNewMoney" stroke="#f59e0b" strokeWidth={2} name="netNewMoney" dot={false} />
+                      <Line type="monotone" dataKey="clientMeetings" stroke="#10b981" strokeWidth={2} name="clientMeetings" dot={false} />
+                      <Line type="monotone" dataKey="prospectPipeline" stroke="#3b82f6" strokeWidth={2} name="prospectPipeline" dot={false} />
+                      <Line type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} name="revenue" dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
