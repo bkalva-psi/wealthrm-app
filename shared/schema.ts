@@ -342,6 +342,192 @@ export type InsertSalesPipeline = z.infer<typeof insertSalesPipelineSchema>;
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 
+// Business Metrics Aggregation Tables for Dashboard Analytics
+
+// Client Portfolio Breakdown - stores current AUM breakdowns by various dimensions
+export const clientPortfolioBreakdowns = pgTable("client_portfolio_breakdowns", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(), // RM managing the client
+  
+  // Dimension and value pairs
+  dimension: text("dimension").notNull(), // asset_class, product_type, risk_profile, customer_segment, geography
+  category: text("category").notNull(), // equity, debt, mf, etc. OR platinum, gold, silver, etc.
+  
+  // Financial values
+  aumAmount: real("aum_amount").notNull(),
+  investedAmount: real("invested_amount").notNull(),
+  currentValue: real("current_value").notNull(),
+  unrealizedGains: real("unrealized_gains").notNull(),
+  
+  // Metadata
+  asOfDate: date("as_of_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// RM Business Metrics - aggregated metrics per RM for dashboard
+export const rmBusinessMetrics = pgTable("rm_business_metrics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  
+  // Core business metrics
+  totalAum: real("total_aum").notNull(),
+  totalClients: integer("total_clients").notNull(),
+  revenueMonthToDate: real("revenue_month_to_date").notNull(),
+  pipelineValue: real("pipeline_value").notNull(),
+  
+  // Client tier distribution
+  platinumClients: integer("platinum_clients").notNull().default(0),
+  goldClients: integer("gold_clients").notNull().default(0),
+  silverClients: integer("silver_clients").notNull().default(0),
+  
+  // Asset class distribution (amounts)
+  equityAum: real("equity_aum").notNull().default(0),
+  debtAum: real("debt_aum").notNull().default(0),
+  mutualFundAum: real("mutual_fund_aum").notNull().default(0),
+  othersAum: real("others_aum").notNull().default(0),
+  
+  // Risk profile distribution
+  conservativeClients: integer("conservative_clients").notNull().default(0),
+  moderateClients: integer("moderate_clients").notNull().default(0),
+  aggressiveClients: integer("aggressive_clients").notNull().default(0),
+  
+  // Time-based data
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  asOfDate: date("as_of_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Product Revenue Breakdown - for revenue drill-down analysis
+export const productRevenue = pgTable("product_revenue", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  
+  // Product information
+  productType: text("product_type").notNull(), // mutual_fund, equity, bond, insurance, etc.
+  productCategory: text("product_category"), // large_cap, debt, term_plan, etc.
+  productName: text("product_name"),
+  
+  // Revenue metrics
+  grossRevenue: real("gross_revenue").notNull(),
+  netRevenue: real("net_revenue").notNull(),
+  commissionRate: real("commission_rate"),
+  trailCommission: real("trail_commission").notNull().default(0),
+  upfrontCommission: real("upfront_commission").notNull().default(0),
+  
+  // Volume metrics
+  transactionCount: integer("transaction_count").notNull().default(0),
+  clientCount: integer("client_count").notNull().default(0),
+  totalVolume: real("total_volume").notNull().default(0),
+  
+  // Time period
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Customer Segment Analysis - for client drill-down by segments
+export const customerSegmentAnalysis = pgTable("customer_segment_analysis", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  
+  // Segment definition
+  segmentType: text("segment_type").notNull(), // tier, age_group, profession, geography, aum_band
+  segmentValue: text("segment_value").notNull(), // platinum, 25-35, corporate, mumbai, 1cr-5cr
+  
+  // Metrics for this segment
+  clientCount: integer("client_count").notNull(),
+  totalAum: real("total_aum").notNull(),
+  averageAum: real("average_aum").notNull(),
+  revenueContribution: real("revenue_contribution").notNull(),
+  
+  // Behavioral metrics
+  averageTransactionSize: real("average_transaction_size"),
+  transactionFrequency: real("transaction_frequency"), // transactions per month
+  retentionRate: real("retention_rate"),
+  
+  // Growth metrics
+  newClientsThisMonth: integer("new_clients_this_month").notNull().default(0),
+  aumGrowthRate: real("aum_growth_rate"),
+  
+  // Time period
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  asOfDate: date("as_of_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Pipeline Analysis - for prospect/pipeline drill-down
+export const pipelineAnalysis = pgTable("pipeline_analysis", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  
+  // Pipeline stage breakdown
+  stage: text("stage").notNull(), // new, qualified, proposal, negotiation, won, lost
+  prospectCount: integer("prospect_count").notNull(),
+  totalValue: real("total_value").notNull(),
+  averageValue: real("average_value").notNull(),
+  averageProbability: real("average_probability"),
+  
+  // Velocity metrics
+  averageStageTime: integer("average_stage_time"), // days in this stage
+  conversionRate: real("conversion_rate"), // to next stage
+  
+  // Source analysis
+  leadSource: text("lead_source"), // referral, digital, events, cold_calling
+  sourceProspectCount: integer("source_prospect_count"),
+  sourceConversionRate: real("source_conversion_rate"),
+  
+  // Time period
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  asOfDate: date("as_of_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Create insert schemas for the new tables
+export const insertClientPortfolioBreakdownSchema = createInsertSchema(clientPortfolioBreakdowns).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRmBusinessMetricSchema = createInsertSchema(rmBusinessMetrics).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertProductRevenueSchema = createInsertSchema(productRevenue).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCustomerSegmentAnalysisSchema = createInsertSchema(customerSegmentAnalysis).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPipelineAnalysisSchema = createInsertSchema(pipelineAnalysis).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Export types for the new tables
+export type ClientPortfolioBreakdown = typeof clientPortfolioBreakdowns.$inferSelect;
+export type InsertClientPortfolioBreakdown = z.infer<typeof insertClientPortfolioBreakdownSchema>;
+
+export type RmBusinessMetric = typeof rmBusinessMetrics.$inferSelect;
+export type InsertRmBusinessMetric = z.infer<typeof insertRmBusinessMetricSchema>;
+
+export type ProductRevenue = typeof productRevenue.$inferSelect;
+export type InsertProductRevenue = z.infer<typeof insertProductRevenueSchema>;
+
+export type CustomerSegmentAnalysis = typeof customerSegmentAnalysis.$inferSelect;
+export type InsertCustomerSegmentAnalysis = z.infer<typeof insertCustomerSegmentAnalysisSchema>;
+
+export type PipelineAnalysis = typeof pipelineAnalysis.$inferSelect;
+export type InsertPipelineAnalysis = z.infer<typeof insertPipelineAnalysisSchema>;
+
 // Communications model - track all client interactions
 export const communications = pgTable("communications", {
   id: serial("id").primaryKey(),

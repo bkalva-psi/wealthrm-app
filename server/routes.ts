@@ -1593,7 +1593,206 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Business Snapshot API Routes
+  app.get('/api/business-metrics/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentYear = currentDate.getFullYear();
 
+      // Calculate metrics from actual data
+      const [clientStats] = await db
+        .select({
+          totalClients: sql<number>`count(*)`,
+          totalAum: sql<number>`coalesce(sum(${clients.aumValue}), 0)`,
+          platinumClients: sql<number>`count(case when ${clients.tier} = 'platinum' then 1 end)`,
+          goldClients: sql<number>`count(case when ${clients.tier} = 'gold' then 1 end)`,
+          silverClients: sql<number>`count(case when ${clients.tier} = 'silver' then 1 end)`,
+          conservativeClients: sql<number>`count(case when ${clients.riskProfile} = 'conservative' then 1 end)`,
+          moderateClients: sql<number>`count(case when ${clients.riskProfile} = 'moderate' then 1 end)`,
+          aggressiveClients: sql<number>`count(case when ${clients.riskProfile} = 'aggressive' then 1 end)`
+        })
+        .from(clients)
+        .where(eq(clients.assignedTo, userId));
+
+      // Get pipeline value from prospects
+      const [pipelineStats] = await db
+        .select({
+          pipelineValue: sql<number>`coalesce(sum(${prospects.potentialAumValue}), 0)`
+        })
+        .from(prospects)
+        .where(eq(prospects.assignedTo, userId));
+
+      // Calculate revenue from transactions (this month)
+      const monthStart = new Date(currentYear, currentMonth - 1, 1);
+      const monthEnd = new Date(currentYear, currentMonth, 0);
+      
+      const [revenueStats] = await db
+        .select({
+          revenue: sql<number>`coalesce(sum(${transactions.fees}), 0)`
+        })
+        .from(transactions)
+        .innerJoin(clients, eq(transactions.clientId, clients.id))
+        .where(
+          sql`${clients.assignedTo} = ${userId} AND ${transactions.transactionDate} >= ${monthStart} AND ${transactions.transactionDate} <= ${monthEnd}`
+        );
+
+      const result = {
+        totalAum: clientStats?.totalAum || 0,
+        totalClients: clientStats?.totalClients || 0,
+        revenueMonthToDate: revenueStats?.revenue || 0,
+        pipelineValue: pipelineStats?.pipelineValue || 0,
+        platinumClients: clientStats?.platinumClients || 0,
+        goldClients: clientStats?.goldClients || 0,
+        silverClients: clientStats?.silverClients || 0,
+        conservativeClients: clientStats?.conservativeClients || 0,
+        moderateClients: clientStats?.moderateClients || 0,
+        aggressiveClients: clientStats?.aggressiveClients || 0,
+      };
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching business metrics:", error);
+      res.status(500).json({ error: "Failed to fetch business metrics" });
+    }
+  });
+
+  // AUM Breakdown by Asset Class
+  app.get('/api/business-metrics/:userId/aum/asset-class', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      const assetClassBreakdown = await db
+        .select({
+          category: sql<string>`
+            case 
+              when ${transactions.productType} in ('equity', 'stock') then 'Equity'
+              when ${transactions.productType} in ('mutual_fund', 'sip') then 'Mutual Funds'
+              when ${transactions.productType} in ('bond', 'fixed_deposit', 'debt') then 'Debt'
+              else 'Others'
+            end
+          `,
+          value: sql<number>`sum(${transactions.amount})`,
+          percentage: sql<number>`round(sum(${transactions.amount}) * 100.0 / nullif((select sum(amount) from ${transactions} t2 inner join ${clients} c2 on t2.client_id = c2.id where c2.assigned_to = ${userId}), 0), 1)`
+        })
+        .from(transactions)
+        .innerJoin(clients, eq(transactions.clientId, clients.id))
+        .where(eq(clients.assignedTo, userId))
+        .groupBy(sql`
+          case 
+            when ${transactions.productType} in ('equity', 'stock') then 'Equity'
+            when ${transactions.productType} in ('mutual_fund', 'sip') then 'Mutual Funds'
+            when ${transactions.productType} in ('bond', 'fixed_deposit', 'debt') then 'Debt'
+            else 'Others'
+          end
+        `)
+        .orderBy(sql`sum(${transactions.amount}) desc`);
+
+      res.json(assetClassBreakdown);
+    } catch (error) {
+      console.error("Error fetching asset class breakdown:", error);
+      res.status(500).json({ error: "Failed to fetch asset class breakdown" });
+    }
+  });
+
+  // Client Breakdown by Tier
+  app.get('/api/business-metrics/:userId/clients/tier', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      const tierBreakdown = await db
+        .select({
+          category: sql<string>`initcap(${clients.tier})`,
+          value: sql<number>`count(*)`,
+          percentage: sql<number>`round(count(*) * 100.0 / nullif((select count(*) from ${clients} where assigned_to = ${userId}), 0), 1)`
+        })
+        .from(clients)
+        .where(eq(clients.assignedTo, userId))
+        .groupBy(clients.tier)
+        .orderBy(sql`count(*) desc`);
+
+      res.json(tierBreakdown);
+    } catch (error) {
+      console.error("Error fetching tier breakdown:", error);
+      res.status(500).json({ error: "Failed to fetch tier breakdown" });
+    }
+  });
+
+  // Client Breakdown by Risk Profile
+  app.get('/api/business-metrics/:userId/clients/risk-profile', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      const riskProfileBreakdown = await db
+        .select({
+          category: sql<string>`initcap(${clients.riskProfile})`,
+          value: sql<number>`count(*)`,
+          percentage: sql<number>`round(count(*) * 100.0 / nullif((select count(*) from ${clients} where assigned_to = ${userId}), 0), 1)`
+        })
+        .from(clients)
+        .where(eq(clients.assignedTo, userId))
+        .groupBy(clients.riskProfile)
+        .orderBy(sql`count(*) desc`);
+
+      res.json(riskProfileBreakdown);
+    } catch (error) {
+      console.error("Error fetching risk profile breakdown:", error);
+      res.status(500).json({ error: "Failed to fetch risk profile breakdown" });
+    }
+  });
+
+  // Revenue Breakdown by Product Type
+  app.get('/api/business-metrics/:userId/revenue/product-type', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const currentDate = new Date();
+      const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+      const productRevenueBreakdown = await db
+        .select({
+          category: sql<string>`initcap(replace(${transactions.productType}, '_', ' '))`,
+          value: sql<number>`sum(${transactions.fees})`,
+          percentage: sql<number>`round(sum(${transactions.fees}) * 100.0 / nullif((select sum(fees) from ${transactions} t2 inner join ${clients} c2 on t2.client_id = c2.id where c2.assigned_to = ${userId} and t2.transaction_date >= ${monthStart}), 0), 1)`
+        })
+        .from(transactions)
+        .innerJoin(clients, eq(transactions.clientId, clients.id))
+        .where(
+          sql`${clients.assignedTo} = ${userId} AND ${transactions.transactionDate} >= ${monthStart}`
+        )
+        .groupBy(transactions.productType)
+        .orderBy(sql`sum(${transactions.fees}) desc`);
+
+      res.json(productRevenueBreakdown);
+    } catch (error) {
+      console.error("Error fetching product revenue breakdown:", error);
+      res.status(500).json({ error: "Failed to fetch product revenue breakdown" });
+    }
+  });
+
+  // Pipeline Breakdown by Stage
+  app.get('/api/business-metrics/:userId/pipeline/stage', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      const pipelineStageBreakdown = await db
+        .select({
+          category: sql<string>`initcap(${prospects.stage})`,
+          value: sql<number>`sum(${prospects.potentialAumValue})`,
+          count: sql<number>`count(*)`,
+          percentage: sql<number>`round(sum(${prospects.potentialAumValue}) * 100.0 / nullif((select sum(potential_aum_value) from ${prospects} where assigned_to = ${userId}), 0), 1)`
+        })
+        .from(prospects)
+        .where(eq(prospects.assignedTo, userId))
+        .groupBy(prospects.stage)
+        .orderBy(sql`sum(${prospects.potentialAumValue}) desc`);
+
+      res.json(pipelineStageBreakdown);
+    } catch (error) {
+      console.error("Error fetching pipeline breakdown:", error);
+      res.status(500).json({ error: "Failed to fetch pipeline breakdown" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
