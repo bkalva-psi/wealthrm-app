@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import { TrendingUp, Users, DollarSign, Target, ChevronRight, ArrowLeft } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Target, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
 
 interface BusinessMetrics {
   totalAum: number;
@@ -51,9 +49,8 @@ const formatNumber = (value: number) => {
 };
 
 export function BusinessSnapshotCard() {
-  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
-  const [drillDownOpen, setDrillDownOpen] = useState(false);
 
   // Main business metrics query
   const { data: businessMetrics, isLoading } = useQuery<BusinessMetrics>({

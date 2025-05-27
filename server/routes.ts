@@ -1597,9 +1597,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Business Snapshot API Routes
-  app.get('/api/business-metrics/:userId', async (req: Request, res: Response) => {
+  app.get('/api/business-metrics/:userId', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.session.userId; // Use session userId instead of params
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
@@ -1662,9 +1662,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AUM Breakdown by Asset Class
-  app.get('/api/business-metrics/:userId/aum/asset-class', async (req: Request, res: Response) => {
+  app.get('/api/business-metrics/:userId/aum/asset-class', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = req.session.userId;
 
       const assetClassBreakdown = await db
         .select({
