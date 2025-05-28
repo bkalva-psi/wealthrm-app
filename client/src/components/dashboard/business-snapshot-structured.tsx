@@ -166,13 +166,13 @@ export function BusinessSnapshotStructured() {
           name: 'Asset Class',
           chartType: 'donut' as const,
           data: [
-            { category: 'Structured Products', value: 2127654, percentage: 28 },
-            { category: 'Bonds', value: 1840214, percentage: 24 },
-            { category: 'Fixed Deposits', value: 1716186, percentage: 22 },
-            { category: 'Alternative Investments', value: 901195, percentage: 12 },
-            { category: 'Mutual Funds', value: 465860, percentage: 6 },
-            { category: 'Insurance', value: 349145, percentage: 5 },
-            { category: 'Equity', value: 233609, percentage: 3 }
+            { category: 'Alternative Investments', value: 26271342, percentage: 39 },
+            { category: 'Bonds', value: 14175009, percentage: 21 },
+            { category: 'Structured Products', value: 13714222, percentage: 20 },
+            { category: 'Fixed Deposits', value: 6486305, percentage: 10 },
+            { category: 'Mutual Funds', value: 3233029, percentage: 5 },
+            { category: 'Insurance', value: 2469496, percentage: 4 },
+            { category: 'Equity', value: 1522366, percentage: 2 }
           ]
         },
         {
@@ -194,9 +194,9 @@ export function BusinessSnapshotStructured() {
           name: 'Customer Type',
           chartType: 'donut' as const,
           data: [
-            { category: 'Gold', value: 2728331, percentage: 36 },
-            { category: 'Silver', value: 2581510, percentage: 34 },
-            { category: 'Platinum', value: 2324022, percentage: 30 }
+            { category: 'Gold', value: 19, count: 19, percentage: 42 },
+            { category: 'Platinum', value: 14, count: 14, percentage: 31 },
+            { category: 'Silver', value: 12, count: 12, percentage: 27 }
           ]
         },
         {
@@ -204,9 +204,9 @@ export function BusinessSnapshotStructured() {
           name: 'Risk Profile',
           chartType: 'donut' as const,
           data: [
-            { category: 'Moderate', value: 2667419, percentage: 35 },
-            { category: 'Conservative', value: 2640577, percentage: 35 },
-            { category: 'Aggressive', value: 2325867, percentage: 30 }
+            { category: 'Aggressive', value: 19, count: 19, percentage: 42 },
+            { category: 'Moderate', value: 17, count: 17, percentage: 38 },
+            { category: 'Conservative', value: 9, count: 9, percentage: 20 }
           ]
         },
         {
@@ -277,13 +277,13 @@ export function BusinessSnapshotStructured() {
           name: 'Product Type',
           chartType: 'bar' as const,
           data: [
-            { category: 'Structured Products', value: 23797, percentage: 38 },
-            { category: 'Fixed Deposits', value: 13391, percentage: 22 },
-            { category: 'Alternative Investments', value: 9909, percentage: 16 },
-            { category: 'Bonds', value: 7219, percentage: 12 },
-            { category: 'Insurance', value: 4668, percentage: 7 },
-            { category: 'Equity', value: 2523, percentage: 4 },
-            { category: 'Mutual Funds', value: 977, percentage: 1 }
+            { category: 'Alternative Investments', value: 11170, percentage: 38 },
+            { category: 'Bonds', value: 6077, percentage: 21 },
+            { category: 'Structured Products', value: 5857, percentage: 20 },
+            { category: 'Fixed Deposits', value: 2934, percentage: 10 },
+            { category: 'Mutual Funds', value: 1467, percentage: 5 },
+            { category: 'Insurance', value: 1174, percentage: 4 },
+            { category: 'Equity', value: 761, percentage: 3 }
           ]
         }
       ]
