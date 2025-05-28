@@ -1865,7 +1865,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Second-level drill-down for specific product categories
-  app.get('/api/business-metrics/:userId/products/:category', authMiddleware, async (req: Request, res: Response) => {
+  app.get('/api/business-metrics/:userId/products/:category', async (req: Request, res: Response) => {
     try {
       const { userId, category } = req.params;
       
