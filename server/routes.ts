@@ -1664,7 +1664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AUM Breakdown by Asset Class
   app.get('/api/business-metrics/:userId/aum/asset-class', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = req.session.userId;
+      const userId = req.session.user.id;
 
       const assetClassBreakdown = await db
         .select({
