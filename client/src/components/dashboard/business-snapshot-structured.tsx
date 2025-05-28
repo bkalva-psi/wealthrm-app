@@ -119,12 +119,18 @@ export function BusinessSnapshotStructured() {
           });
           
           if (response.ok) {
-            const data = await response.json();
-            console.log('Authentic customer data aggregated:', data);
-            setSecondLevelData(prev => ({
-              ...prev,
-              [secondLevelKey]: data
-            }));
+            const text = await response.text();
+            console.log('Raw response:', text);
+            try {
+              const data = JSON.parse(text);
+              console.log('Parsed authentic customer data:', data);
+              setSecondLevelData(prev => ({
+                ...prev,
+                [secondLevelKey]: data
+              }));
+            } catch (parseError) {
+              console.error('JSON parse error:', parseError, 'Raw text:', text);
+            }
           } else {
             console.error('Failed to fetch authentic data:', response.status, response.statusText);
           }

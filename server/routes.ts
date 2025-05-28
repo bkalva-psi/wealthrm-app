@@ -114,8 +114,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }));
       
       console.log('Authentic response formatted:', formattedDetails);
+      console.log('=== SENDING JSON RESPONSE ===', JSON.stringify(formattedDetails, null, 2));
       res.setHeader('Content-Type', 'application/json');
-      res.json(formattedDetails);
+      return res.json(formattedDetails);
     } catch (error) {
       console.error('Error fetching product category details:', error);
       res.status(500).json({ error: 'Failed to fetch product details' });
