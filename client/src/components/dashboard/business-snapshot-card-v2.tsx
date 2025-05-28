@@ -40,6 +40,7 @@ const formatNumber = (value: number) => {
 export function BusinessSnapshotCard() {
   const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
+  const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
 
   // Main business metrics query
   const { data: businessMetrics, isLoading } = useQuery<BusinessMetrics>({
@@ -49,12 +50,36 @@ export function BusinessSnapshotCard() {
 
 
 
-  // Drill-down data query
-  const { data: drillDownData, isLoading: drillDownLoading } = useQuery<DrillDownData[]>({
-    queryKey: [selectedDimension],
-    enabled: !!selectedDimension,
-    queryFn: async () => {
-      if (selectedDimension === '/api/aum-breakdown') {
+  // Toggle dimension expansion
+  const toggleDimension = (dimensionId: string) => {
+    const newExpanded = new Set(expandedDimensions);
+    if (newExpanded.has(dimensionId)) {
+      newExpanded.delete(dimensionId);
+    } else {
+      newExpanded.add(dimensionId);
+    }
+    setExpandedDimensions(newExpanded);
+  };
+
+  // Expand/Collapse all dimensions
+  const toggleAllDimensions = () => {
+    if (expandedDimensions.size === 6) {
+      setExpandedDimensions(new Set());
+    } else {
+      setExpandedDimensions(new Set([
+        '/api/aum-breakdown',
+        '/api/aum-product', 
+        '/api/aum-customer-type',
+        '/api/aum-risk-profile',
+        '/api/aum-age-group',
+        '/api/aum-city'
+      ]));
+    }
+  };
+
+  // Function to get data for any dimension
+  const getDimensionData = (dimensionId: string): DrillDownData[] => {
+      if (dimensionId === '/api/aum-breakdown') {
         // Return authentic asset class data from your database
         return [
           { category: 'Structured Products', value: 2127654, percentage: 28 },
@@ -65,7 +90,7 @@ export function BusinessSnapshotCard() {
           { category: 'Insurance', value: 349145, percentage: 5 },
           { category: 'Equity', value: 233609, percentage: 3 }
         ];
-      } else if (selectedDimension === '/api/clients-tier') {
+      } else if (dimensionId === '/api/clients-tier') {
         // Return authentic client tier data from your database
         return [
           { category: 'Gold', value: 19, count: 19, percentage: 42 },

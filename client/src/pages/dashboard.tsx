@@ -5,7 +5,7 @@ import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
-import { BusinessSnapshotCard } from "@/components/dashboard/business-snapshot-card-v2";
+import { BusinessSnapshotCardSimultaneous } from "@/components/dashboard/business-snapshot-card-simultaneous";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
 
