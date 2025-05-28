@@ -53,19 +53,25 @@ export function BusinessSnapshotStructured() {
   // Toggle metric expansion (shows/hides all drill-downs for that metric)
   const toggleMetric = (metricKey: string) => {
     const newExpanded = new Set(expandedMetrics);
+    const newExpandedDimensions = new Set(expandedDimensions);
+    const metric = metricsConfig[metricKey];
+    
     if (newExpanded.has(metricKey)) {
       newExpanded.delete(metricKey);
       // Also collapse all dimensions for this metric
-      const newExpandedDimensions = new Set(expandedDimensions);
-      const metric = metricsConfig[metricKey];
       metric.dimensions.forEach((dim: Dimension) => {
         newExpandedDimensions.delete(`${metricKey}-${dim.id}`);
       });
-      setExpandedDimensions(newExpandedDimensions);
     } else {
       newExpanded.add(metricKey);
+      // Expand ALL dimensions for this metric
+      metric.dimensions.forEach((dim: Dimension) => {
+        newExpandedDimensions.add(`${metricKey}-${dim.id}`);
+      });
     }
+    
     setExpandedMetrics(newExpanded);
+    setExpandedDimensions(newExpandedDimensions);
   };
 
   // Toggle individual dimension within a metric
