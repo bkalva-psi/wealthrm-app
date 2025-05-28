@@ -146,7 +146,7 @@ export function BusinessSnapshotCard() {
       icon: Target,
       color: 'text-orange-600',
       dimensions: [
-        { id: '/api/business-metrics/1/pipeline/stage', name: 'Pipeline Stage', chartType: 'bar' as const },
+        { id: '/api/pipeline-stage', name: 'Pipeline Stage', chartType: 'bar' as const },
       ]
     }
   };
