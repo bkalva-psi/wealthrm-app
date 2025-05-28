@@ -406,18 +406,43 @@ export function BusinessSnapshotStructured() {
                             {/* Data Table */}
                             <div className="space-y-2">
                               {dimension.data.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between text-sm">
-                                  <div className="flex items-center space-x-2">
-                                    <div 
-                                      className="w-3 h-3 rounded-full" 
-                                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                                    />
-                                    <span className="text-gray-700 dark:text-gray-300">{item.category}</span>
+                                <div key={index} className="space-y-1">
+                                  <div 
+                                    className={`flex items-center justify-between text-sm ${item.hasSecondLevel ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded' : ''}`}
+                                    onClick={() => item.hasSecondLevel && item.categoryKey && handleSecondLevelClick(item.category, item.categoryKey)}
+                                  >
+                                    <div className="flex items-center space-x-2">
+                                      <div 
+                                        className="w-3 h-3 rounded-full" 
+                                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                      />
+                                      <span className="text-gray-700 dark:text-gray-300">{item.category}</span>
+                                      {item.hasSecondLevel && (
+                                        <span className="text-xs text-blue-500 ml-1">↗</span>
+                                      )}
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="font-medium">{config.formatter(item.value)}</div>
+                                      <div className="text-gray-500">{item.percentage}%</div>
+                                    </div>
                                   </div>
-                                  <div className="text-right">
-                                    <div className="font-medium">{config.formatter(item.value)}</div>
-                                    <div className="text-gray-500">{item.percentage}%</div>
-                                  </div>
+                                  
+                                  {/* Second-level drill-down data */}
+                                  {item.hasSecondLevel && item.categoryKey && expandedSecondLevel.has(item.categoryKey) && (
+                                    <div className="ml-4 pl-2 border-l-2 border-gray-200 dark:border-gray-600 space-y-1">
+                                      {secondLevelData[item.categoryKey]?.map((product, productIndex) => (
+                                        <div key={productIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                                          <span className="truncate max-w-32">{product.productName}</span>
+                                          <div className="text-right">
+                                            <div className="font-medium">{formatCurrency(product.value)}</div>
+                                            <div className="text-gray-400">{product.percentage}%</div>
+                                          </div>
+                                        </div>
+                                      )) || (
+                                        <div className="text-xs text-gray-500 italic">Loading products...</div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
