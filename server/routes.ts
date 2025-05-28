@@ -1670,23 +1670,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .select({
           category: sql<string>`
             case 
-              when ${transactions.productType} in ('equity', 'stock') then 'Equity'
-              when ${transactions.productType} in ('mutual_fund', 'sip') then 'Mutual Funds'
-              when ${transactions.productType} in ('bond', 'fixed_deposit', 'debt') then 'Debt'
+              when ${transactions.productType} = 'equity' then 'Equity'
+              when ${transactions.productType} = 'mutual_fund' then 'Mutual Funds'
+              when ${transactions.productType} = 'bond' then 'Bonds'
+              when ${transactions.productType} = 'fixed_deposit' then 'Fixed Deposits'
+              when ${transactions.productType} = 'insurance' then 'Insurance'
+              when ${transactions.productType} = 'structured_product' then 'Structured Products'
+              when ${transactions.productType} = 'alternative_investment' then 'Alternative Investments'
               else 'Others'
             end
           `,
           value: sql<number>`sum(${transactions.amount})`,
-          percentage: sql<number>`cast(sum(${transactions.amount}) * 100.0 / nullif((select sum(amount) from ${transactions} t2 inner join ${clients} c2 on t2.client_id = c2.id where c2.assigned_to = ${userId}), 0) as integer)`
+          percentage: sql<number>`
+            (sum(${transactions.amount}) * 100 / 
+             (select sum(amount) 
+              from ${transactions} t2 
+              inner join ${clients} c2 on t2.client_id = c2.id 
+              where c2.assigned_to = ${userId} and t2.transaction_type = 'buy'))::integer
+          `
         })
         .from(transactions)
         .innerJoin(clients, eq(transactions.clientId, clients.id))
-        .where(eq(clients.assignedTo, userId))
+        .where(
+          and(
+            eq(clients.assignedTo, userId),
+            eq(transactions.transactionType, 'buy')
+          )
+        )
         .groupBy(sql`
           case 
-            when ${transactions.productType} in ('equity', 'stock') then 'Equity'
-            when ${transactions.productType} in ('mutual_fund', 'sip') then 'Mutual Funds'
-            when ${transactions.productType} in ('bond', 'fixed_deposit', 'debt') then 'Debt'
+            when ${transactions.productType} = 'equity' then 'Equity'
+            when ${transactions.productType} = 'mutual_fund' then 'Mutual Funds'
+            when ${transactions.productType} = 'bond' then 'Bonds'
+            when ${transactions.productType} = 'fixed_deposit' then 'Fixed Deposits'
+            when ${transactions.productType} = 'insurance' then 'Insurance'
+            when ${transactions.productType} = 'structured_product' then 'Structured Products'
+            when ${transactions.productType} = 'alternative_investment' then 'Alternative Investments'
             else 'Others'
           end
         `)
