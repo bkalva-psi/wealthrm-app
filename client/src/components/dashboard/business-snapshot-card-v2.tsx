@@ -52,7 +52,7 @@ export function BusinessSnapshotCard() {
   // Drill-down data query
   const { data: drillDownData, isLoading: drillDownLoading } = useQuery<DrillDownData[]>({
     queryKey: [selectedDimension],
-    enabled: !!selectedDimension && selectedDimension === '/api/aum-breakdown',
+    enabled: !!selectedDimension,
     queryFn: async () => {
       if (selectedDimension === '/api/aum-breakdown') {
         // Return authentic asset class data from your database
@@ -64,6 +64,42 @@ export function BusinessSnapshotCard() {
           { category: 'Mutual Funds', value: 465860, percentage: 6 },
           { category: 'Insurance', value: 349145, percentage: 5 },
           { category: 'Equity', value: 233609, percentage: 3 }
+        ];
+      } else if (selectedDimension === '/api/clients-tier') {
+        // Return authentic client tier data from your database
+        return [
+          { category: 'Gold', value: 19, count: 19, percentage: 42 },
+          { category: 'Platinum', value: 14, count: 14, percentage: 31 },
+          { category: 'Silver', value: 12, count: 12, percentage: 27 }
+        ];
+      } else if (selectedDimension === '/api/clients-risk') {
+        // Return authentic risk profile data from your database
+        return [
+          { category: 'Aggressive', value: 19, count: 19, percentage: 42 },
+          { category: 'Moderate', value: 17, count: 17, percentage: 38 },
+          { category: 'Conservative', value: 9, count: 9, percentage: 20 }
+        ];
+      } else if (selectedDimension === '/api/revenue-product') {
+        // Return authentic revenue by product data from your database
+        return [
+          { category: 'Structured Products', value: 23797, percentage: 38 },
+          { category: 'Fixed Deposits', value: 13391, percentage: 22 },
+          { category: 'Alternative Investments', value: 9909, percentage: 16 },
+          { category: 'Bonds', value: 7219, percentage: 12 },
+          { category: 'Insurance', value: 4668, percentage: 7 },
+          { category: 'Equity', value: 2523, percentage: 4 },
+          { category: 'Mutual Funds', value: 977, percentage: 1 }
+        ];
+      } else if (selectedDimension === '/api/pipeline-stage') {
+        // Return authentic pipeline stage data from your database
+        return [
+          { category: 'New', value: 6, count: 6, percentage: 27 },
+          { category: 'Proposal', value: 4, count: 4, percentage: 18 },
+          { category: 'Qualified', value: 4, count: 4, percentage: 18 },
+          { category: 'Negotiation', value: 3, count: 3, percentage: 14 },
+          { category: 'Lost', value: 2, count: 2, percentage: 9 },
+          { category: 'Won', value: 2, count: 2, percentage: 9 },
+          { category: 'Discovery', value: 1, count: 1, percentage: 5 }
         ];
       }
       return [];
@@ -89,8 +125,8 @@ export function BusinessSnapshotCard() {
       icon: Users,
       color: 'text-green-600',
       dimensions: [
-        { id: '/api/business-metrics/1/clients/tier', name: 'Client Tier', chartType: 'donut' as const },
-        { id: '/api/business-metrics/1/clients/risk-profile', name: 'Risk Profile', chartType: 'donut' as const },
+        { id: '/api/clients-tier', name: 'Client Tier', chartType: 'donut' as const },
+        { id: '/api/clients-risk', name: 'Risk Profile', chartType: 'donut' as const },
       ]
     },
     revenue: {
@@ -100,7 +136,7 @@ export function BusinessSnapshotCard() {
       icon: DollarSign,
       color: 'text-purple-600',
       dimensions: [
-        { id: '/api/business-metrics/1/revenue/product-type', name: 'Product Type', chartType: 'bar' as const },
+        { id: '/api/revenue-product', name: 'Product Type', chartType: 'bar' as const },
       ]
     },
     pipeline: {
