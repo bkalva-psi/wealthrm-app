@@ -53,6 +53,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })
   );
   
+  // Second-level drill-down for specific product categories - MOVED TO TOP
+  app.get('/api/business-metrics/:userId/products/:category', async (req: Request, res: Response) => {
+    console.log('Product category API called:', req.params);
+    try {
+      const { userId, category } = req.params;
+      
+      // Map category names to transaction types for database lookup
+      const categoryMap: Record<string, string> = {
+        'mutual-funds': 'mutual_fund',
+        'structured-products': 'structured_product',
+        'bonds': 'bond',
+        'fixed-deposits': 'fixed_deposit',
+        'alternative-investments': 'alternative_investment',
+        'insurance': 'insurance',
+        'equity': 'equity'
+      };
+      
+      const transactionType = categoryMap[category];
+      console.log('Category mapping:', category, '->', transactionType);
+      
+      if (!transactionType) {
+        console.log('Invalid category:', category);
+        return res.status(400).json({ error: 'Invalid product category' });
+      }
+      
+      // Get detailed breakdown for this product category
+      const productDetails = await db
+        .select({
+          productName: transactions.productName,
+          totalValue: sql<number>`sum(${transactions.amount})`,
+          transactionCount: sql<number>`count(*)`,
+          avgTicketSize: sql<number>`avg(${transactions.amount})`
+        })
+        .from(transactions)
+        .where(eq(transactions.productType, transactionType))
+        .groupBy(transactions.productName)
+        .orderBy(sql`sum(${transactions.amount}) desc`);
+      
+      console.log('Database query result:', productDetails);
+      
+      // Calculate total for percentage calculation
+      const total = productDetails.reduce((sum, product) => sum + product.totalValue, 0);
+      
+      // Format response with percentages
+      const formattedDetails = productDetails.map(product => ({
+        productName: product.productName,
+        value: product.totalValue,
+        count: product.transactionCount,
+        avgTicketSize: product.avgTicketSize,
+        percentage: total > 0 ? Math.round((product.totalValue / total) * 100) : 0
+      }));
+      
+      console.log('Formatted response:', formattedDetails);
+      res.setHeader('Content-Type', 'application/json');
+      res.json(formattedDetails);
+    } catch (error) {
+      console.error('Error fetching product category details:', error);
+      res.status(500).json({ error: 'Failed to fetch product details' });
+    }
+  });
+
   // Asset Class Breakdown API - Working endpoint
   app.get('/api/aum-breakdown', async (req: Request, res: Response) => {
     try {
@@ -1864,68 +1925,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Second-level drill-down for specific product categories
-  app.get('/api/business-metrics/:userId/products/:category', async (req: Request, res: Response) => {
-    console.log('Product category API called:', req.params);
-    try {
-      const { userId, category } = req.params;
-      
-      // Map category names to transaction types for database lookup
-      const categoryMap: Record<string, string> = {
-        'mutual-funds': 'mutual_fund',
-        'structured-products': 'structured_product',
-        'bonds': 'bond',
-        'fixed-deposits': 'fixed_deposit',
-        'alternative-investments': 'alternative_investment',
-        'insurance': 'insurance',
-        'equity': 'equity'
-      };
-      
-      const transactionType = categoryMap[category];
-      console.log('Category mapping:', category, '->', transactionType);
-      
-      if (!transactionType) {
-        console.log('Invalid category:', category);
-        return res.status(400).json({ error: 'Invalid product category' });
-      }
-      
-      // Get detailed breakdown for this product category
-      const productDetails = await db
-        .select({
-          productName: transactions.productName,
-          totalValue: sql<number>`sum(${transactions.amount})`,
-          transactionCount: sql<number>`count(*)`,
-          avgTicketSize: sql<number>`avg(${transactions.amount})`
-        })
-        .from(transactions)
-        .where(eq(transactions.productType, transactionType))
-        .groupBy(transactions.productName)
-        .orderBy(sql`sum(${transactions.amount}) desc`);
-      
-      console.log('Database query result:', productDetails);
-      
-      // Calculate total for percentage calculation
-      const total = productDetails.reduce((sum, product) => sum + product.totalValue, 0);
-      
-      // Format response with percentages
-      const formattedDetails = productDetails.map(product => ({
-        productName: product.productName,
-        value: product.totalValue,
-        count: product.transactionCount,
-        avgTicketSize: product.avgTicketSize,
-        percentage: total > 0 ? Math.round((product.totalValue / total) * 100) : 0
-      }));
-      
-      console.log('Formatted response:', formattedDetails);
-      res.setHeader('Content-Type', 'application/json');
-      res.json(formattedDetails);
-    } catch (error) {
-      console.error('Error fetching product category details:', error);
-      res.status(500).json({ error: 'Failed to fetch product details' });
-    }
-  });
-
-  // This duplicate endpoint is removed - using the corrected one above
+  // Duplicate endpoint removed - API moved to top of file
 
   const httpServer = createServer(app);
   return httpServer;
