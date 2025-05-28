@@ -1866,6 +1866,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Second-level drill-down for specific product categories
   app.get('/api/business-metrics/:userId/products/:category', async (req: Request, res: Response) => {
+    console.log('Product category API called:', req.params);
     try {
       const { userId, category } = req.params;
       
@@ -1881,7 +1882,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const transactionType = categoryMap[category];
+      console.log('Category mapping:', category, '->', transactionType);
+      
       if (!transactionType) {
+        console.log('Invalid category:', category);
         return res.status(400).json({ error: 'Invalid product category' });
       }
       
@@ -1898,6 +1902,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .groupBy(transactions.productName)
         .orderBy(sql`sum(${transactions.amount}) desc`);
       
+      console.log('Database query result:', productDetails);
+      
       // Calculate total for percentage calculation
       const total = productDetails.reduce((sum, product) => sum + product.totalValue, 0);
       
@@ -1910,6 +1916,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         percentage: total > 0 ? Math.round((product.totalValue / total) * 100) : 0
       }));
       
+      console.log('Formatted response:', formattedDetails);
+      res.setHeader('Content-Type', 'application/json');
       res.json(formattedDetails);
     } catch (error) {
       console.error('Error fetching product category details:', error);
