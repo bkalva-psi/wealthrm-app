@@ -1870,18 +1870,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId, category } = req.params;
       
       // Map category names to transaction types for database lookup
-      const categoryMap: Record<string, string[]> = {
-        'mutual-funds': ['Mutual Fund'],
-        'structured-products': ['Structured Product'],
-        'bonds': ['Bond'],
-        'fixed-deposits': ['Fixed Deposit'],
-        'alternative-investments': ['Alternative Investment'],
-        'insurance': ['Insurance'],
-        'equity': ['Equity']
+      const categoryMap: Record<string, string> = {
+        'mutual-funds': 'mutual_fund',
+        'structured-products': 'structured_product',
+        'bonds': 'bond',
+        'fixed-deposits': 'fixed_deposit',
+        'alternative-investments': 'alternative_investment',
+        'insurance': 'insurance',
+        'equity': 'equity'
       };
       
-      const transactionTypes = categoryMap[category];
-      if (!transactionTypes) {
+      const transactionType = categoryMap[category];
+      if (!transactionType) {
         return res.status(400).json({ error: 'Invalid product category' });
       }
       
@@ -1894,12 +1894,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           avgTicketSize: sql<number>`avg(${transactions.amount})`
         })
         .from(transactions)
-        .where(
-          and(
-            sql`${transactions.productType} = ANY(${transactionTypes})`,
-            eq(transactions.assignedTo, parseInt(userId))
-          )
-        )
+        .where(eq(transactions.productType, transactionType))
         .groupBy(transactions.productName)
         .orderBy(sql`sum(${transactions.amount}) desc`);
       
