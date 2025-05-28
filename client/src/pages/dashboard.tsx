@@ -40,7 +40,7 @@ export default function Dashboard() {
         {/* Column 2: Performance + Business Snapshot */}
         <div className="space-y-4 sm:space-y-6">
           <PerformanceCard />
-          <BusinessSnapshotCard />
+          <BusinessSnapshotCardSimultaneous />
         </div>
         
         {/* Column 3: Talking Points + Announcements */}
