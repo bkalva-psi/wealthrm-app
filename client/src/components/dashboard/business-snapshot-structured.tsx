@@ -111,13 +111,22 @@ export function BusinessSnapshotStructured() {
       // Fetch second-level data if not already loaded
       if (!secondLevelData[secondLevelKey]) {
         try {
-          const response = await fetch(`/api/business-metrics/1/products/${categoryKey}`);
+          const response = await fetch(`/api/business-metrics/1/products/${categoryKey}`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
           if (response.ok) {
             const data = await response.json();
+            console.log('Second-level data fetched:', data);
             setSecondLevelData(prev => ({
               ...prev,
               [secondLevelKey]: data
             }));
+          } else {
+            console.error('Failed to fetch second-level data:', response.status, response.statusText);
           }
         } catch (error) {
           console.error('Error fetching second-level data:', error);
