@@ -1662,7 +1662,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AUM Breakdown by Asset Class
-  app.get('/api/business-metrics/:userId/aum/asset-class', authMiddleware, async (req: Request, res: Response) => {
+  app.get('/api/business-metrics/:userId/aum/asset-class', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId) || 1;
 
