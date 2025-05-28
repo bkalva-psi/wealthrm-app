@@ -64,7 +64,7 @@ export function BusinessSnapshotCard() {
       icon: TrendingUp,
       color: 'text-blue-600',
       dimensions: [
-        { id: '/api/business-metrics/1/aum/asset-class', name: 'Asset Class', chartType: 'donut' as const },
+        { id: '/api/aum-breakdown', name: 'Asset Class', chartType: 'donut' as const },
       ]
     },
     clients: {

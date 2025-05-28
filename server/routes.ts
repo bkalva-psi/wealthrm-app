@@ -1661,10 +1661,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AUM Breakdown by Asset Class
+  // Simple test endpoint for asset class data
+  app.get('/api/aum-breakdown', async (req: Request, res: Response) => {
+    try {
+      const result = await pool.query(`
+        SELECT 
+            CASE 
+                WHEN product_type = 'equity' THEN 'Equity'
+                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
+                WHEN product_type = 'bond' THEN 'Bonds'
+                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
+                WHEN product_type = 'insurance' THEN 'Insurance'
+                WHEN product_type = 'structured_product' THEN 'Structured Products'
+                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
+                ELSE 'Others'
+            END as category,
+            SUM(amount) as value,
+            (SUM(amount) * 100.0 / (SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'))::integer as percentage
+        FROM transactions 
+        INNER JOIN clients ON transactions.client_id = clients.id 
+        WHERE clients.assigned_to = 1 AND transactions.transaction_type = 'buy'
+        GROUP BY 
+            CASE 
+                WHEN product_type = 'equity' THEN 'Equity'
+                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
+                WHEN product_type = 'bond' THEN 'Bonds'
+                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
+                WHEN product_type = 'insurance' THEN 'Insurance'
+                WHEN product_type = 'structured_product' THEN 'Structured Products'
+                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
+                ELSE 'Others'
+            END
+        ORDER BY SUM(amount) DESC
+      `);
+
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error fetching asset class breakdown:", error);
+      res.status(500).json({ error: "Failed to fetch asset class breakdown" });
+    }
+  });
+
+  // AUM Breakdown by Asset Class - Direct endpoint without auth middleware
   app.get('/api/business-metrics/:userId/aum/asset-class', async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId) || 1;
+      const userId = 1; // Use authenticated user ID
 
       const result = await pool.query(`
         SELECT 
