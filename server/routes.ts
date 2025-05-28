@@ -42,7 +42,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       secret: "wealth-rm-secret-key",
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: process.env.NODE_ENV === "production", maxAge: 86400000 }, // 24 hours
+      cookie: { 
+        secure: false, // Allow HTTP in development and deployment
+        maxAge: 86400000, // 24 hours
+        sameSite: 'lax' // Better compatibility
+      },
       store: new SessionStore({
         checkPeriod: 86400000, // prune expired entries every 24h
       }),
