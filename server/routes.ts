@@ -1719,11 +1719,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
 
-      // Calculate metrics from actual data
+      // Calculate metrics from authentic customer transaction data
+      const [aumData] = await db
+        .select({
+          totalAum: sql<number>`coalesce(sum(${transactions.amount}), 0)`
+        })
+        .from(transactions);
+
       const [clientStats] = await db
         .select({
           totalClients: sql<number>`count(*)`,
-          totalAum: sql<number>`coalesce(sum(${clients.aumValue}), 0)`,
           platinumClients: sql<number>`count(case when ${clients.tier} = 'platinum' then 1 end)`,
           goldClients: sql<number>`count(case when ${clients.tier} = 'gold' then 1 end)`,
           silverClients: sql<number>`count(case when ${clients.tier} = 'silver' then 1 end)`,
@@ -1757,7 +1762,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
 
       const result = {
-        totalAum: clientStats?.totalAum || 0,
+        totalAum: aumData?.totalAum || 0, // Use authentic customer transaction data
         totalClients: clientStats?.totalClients || 0,
         revenueMonthToDate: revenueStats?.revenue || 0,
         pipelineValue: pipelineStats?.pipelineValue || 0,
@@ -1768,6 +1773,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         moderateClients: clientStats?.moderateClients || 0,
         aggressiveClients: clientStats?.aggressiveClients || 0,
       };
+      
+      console.log('=== AUTHENTIC BUSINESS METRICS RESPONSE ===');
+      console.log('AUM from customer transactions: ₹', (aumData?.totalAum / 10000000).toFixed(2), 'Crores');
+      console.log('Total clients:', clientStats?.totalClients);
 
       res.json(result);
     } catch (error) {
