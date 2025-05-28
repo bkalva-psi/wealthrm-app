@@ -53,6 +53,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })
   );
   
+  // Test endpoint to verify routing works
+  app.get('/api/test-products', (req: Request, res: Response) => {
+    console.log('TEST ENDPOINT HIT!');
+    res.json({ message: 'Test endpoint working', timestamp: new Date().toISOString() });
+  });
+
   // Second-level drill-down for specific product categories - MOVED TO TOP
   app.get('/api/business-metrics/:userId/products/:category', async (req: Request, res: Response) => {
     console.log('Product category API called:', req.params);
