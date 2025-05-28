@@ -1765,17 +1765,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             end
           `,
           value: sql<number>`sum(${transactions.fees})`,
-          percentage: sql<number>`cast(sum(${transactions.fees}) * 100.0 / nullif((select sum(fees) from ${transactions} t2 inner join ${clients} c2 on t2.client_id = c2.id where c2.assigned_to = ${userId} and extract(month from t2.transaction_date) = ${currentMonth} and extract(year from t2.transaction_date) = ${currentYear}), 0) as integer)`
+          percentage: sql<number>`cast(sum(${transactions.fees}) * 100.0 / nullif((select sum(fees) from ${transactions} t2 inner join ${clients} c2 on t2.client_id = c2.id where c2.assigned_to = ${userId}), 0) as integer)`
         })
         .from(transactions)
         .innerJoin(clients, eq(transactions.clientId, clients.id))
-        .where(
-          and(
-            eq(clients.assignedTo, userId),
-            sql`extract(month from ${transactions.transactionDate}) = ${currentMonth}`,
-            sql`extract(year from ${transactions.transactionDate}) = ${currentYear}`
-          )
-        )
+        .where(eq(clients.assignedTo, userId))
         .groupBy(sql`
           case 
             when ${transactions.productType} in ('mutual_fund', 'sip') then 'Mutual Funds'
@@ -1802,9 +1796,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pipelineBreakdown = await db
         .select({
           category: sql<string>`initcap(${prospects.stage})`,
-          value: sql<number>`sum(${prospects.estimatedValue})`,
+          value: sql<number>`sum(${prospects.potentialAumValue})`,
           count: sql<number>`count(*)`,
-          percentage: sql<number>`cast(sum(${prospects.estimatedValue}) * 100.0 / nullif((select sum(estimated_value) from ${prospects} where assigned_to = ${userId}), 0) as integer)`
+          percentage: sql<number>`cast(sum(${prospects.potentialAumValue}) * 100.0 / nullif((select sum(potential_aum_value) from ${prospects} where assigned_to = ${userId}), 0) as integer)`
         })
         .from(prospects)
         .where(eq(prospects.assignedTo, userId))
@@ -1818,57 +1812,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Revenue Breakdown by Product Type
-  app.get('/api/business-metrics/:userId/revenue/product-type', async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const currentDate = new Date();
-      const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
-      const productRevenueBreakdown = await db
-        .select({
-          category: sql<string>`initcap(replace(${transactions.productType}, '_', ' '))`,
-          value: sql<number>`sum(${transactions.fees})`,
-          percentage: sql<number>`round(sum(${transactions.fees}) * 100.0 / nullif((select sum(fees) from ${transactions} t2 inner join ${clients} c2 on t2.client_id = c2.id where c2.assigned_to = ${userId} and t2.transaction_date >= ${monthStart}), 0), 1)`
-        })
-        .from(transactions)
-        .innerJoin(clients, eq(transactions.clientId, clients.id))
-        .where(
-          sql`${clients.assignedTo} = ${userId} AND ${transactions.transactionDate} >= ${monthStart}`
-        )
-        .groupBy(transactions.productType)
-        .orderBy(sql`sum(${transactions.fees}) desc`);
 
-      res.json(productRevenueBreakdown);
-    } catch (error) {
-      console.error("Error fetching product revenue breakdown:", error);
-      res.status(500).json({ error: "Failed to fetch product revenue breakdown" });
-    }
-  });
-
-  // Pipeline Breakdown by Stage
-  app.get('/api/business-metrics/:userId/pipeline/stage', async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-
-      const pipelineStageBreakdown = await db
-        .select({
-          category: sql<string>`initcap(${prospects.stage})`,
-          value: sql<number>`sum(${prospects.potentialAumValue})`,
-          count: sql<number>`count(*)`,
-          percentage: sql<number>`round(sum(${prospects.potentialAumValue}) * 100.0 / nullif((select sum(potential_aum_value) from ${prospects} where assigned_to = ${userId}), 0), 1)`
-        })
-        .from(prospects)
-        .where(eq(prospects.assignedTo, userId))
-        .groupBy(prospects.stage)
-        .orderBy(sql`sum(${prospects.potentialAumValue}) desc`);
-
-      res.json(pipelineStageBreakdown);
-    } catch (error) {
-      console.error("Error fetching pipeline breakdown:", error);
-      res.status(500).json({ error: "Failed to fetch pipeline breakdown" });
-    }
-  });
+  // This duplicate endpoint is removed - using the corrected one above
 
   const httpServer = createServer(app);
   return httpServer;
