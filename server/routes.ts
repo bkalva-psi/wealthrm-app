@@ -1787,7 +1787,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
 
-  // AUM Breakdown by Asset Class - Direct endpoint without auth middleware
+  // AUM Breakdown by Product Type - Authentic customer transaction aggregation
+  app.get('/api/business-metrics/:userId/aum/product-type', async (req: Request, res: Response) => {
+    try {
+      const productTypeBreakdown = await db
+        .select({
+          category: sql<string>`
+            CASE 
+              WHEN ${transactions.productType} = 'alternative_investment' THEN 'Alternative Investments'
+              WHEN ${transactions.productType} = 'bond' THEN 'Bonds'
+              WHEN ${transactions.productType} = 'structured_product' THEN 'Structured Products'
+              WHEN ${transactions.productType} = 'fixed_deposit' THEN 'Fixed Deposits'
+              WHEN ${transactions.productType} = 'mutual_fund' THEN 'Mutual Funds'
+              WHEN ${transactions.productType} = 'insurance' THEN 'Insurance'
+              WHEN ${transactions.productType} = 'equity' THEN 'Equity'
+              ELSE 'Other'
+            END`,
+          value: sql<number>`sum(${transactions.amount})`,
+          count: sql<number>`count(distinct ${transactions.clientId})`,
+          categoryKey: sql<string>`
+            CASE 
+              WHEN ${transactions.productType} = 'alternative_investment' THEN 'alternative-investments'
+              WHEN ${transactions.productType} = 'bond' THEN 'bonds'
+              WHEN ${transactions.productType} = 'structured_product' THEN 'structured-products'
+              WHEN ${transactions.productType} = 'fixed_deposit' THEN 'fixed-deposits'
+              WHEN ${transactions.productType} = 'mutual_fund' THEN 'mutual-funds'
+              WHEN ${transactions.productType} = 'insurance' THEN 'insurance'
+              WHEN ${transactions.productType} = 'equity' THEN 'equity'
+              ELSE 'other'
+            END`
+        })
+        .from(transactions)
+        .groupBy(transactions.productType)
+        .orderBy(sql`sum(${transactions.amount}) desc`);
+
+      // Calculate total for percentage calculation
+      const total = productTypeBreakdown.reduce((sum, item) => sum + item.value, 0);
+      
+      // Add percentage calculations and second-level drill capability
+      const formattedBreakdown = productTypeBreakdown.map(item => ({
+        category: item.category,
+        value: Math.round(item.value),
+        count: item.count,
+        percentage: total > 0 ? Math.round((item.value / total) * 100) : 0,
+        hasSecondLevel: true,
+        categoryKey: item.categoryKey
+      }));
+
+      console.log('=== AUTHENTIC PRODUCT TYPE BREAKDOWN ===');
+      console.log('Total AUM:', total);
+      console.log('Breakdown:', formattedBreakdown);
+      
+      res.json(formattedBreakdown);
+    } catch (error) {
+      console.error('Error fetching authentic product type breakdown:', error);
+      res.status(500).json({ error: 'Failed to fetch product type breakdown' });
+    }
+  });
+
+  // Legacy endpoint for compatibility  
   app.get('/api/business-metrics/:userId/aum/asset-class', async (req: Request, res: Response) => {
     try {
       const userId = 1; // Use authenticated user ID
