@@ -214,9 +214,9 @@ export function BusinessSnapshotStructured() {
           name: 'Age Group',
           chartType: 'bar' as const,
           data: [
-            { category: '30-45', value: 6090982, percentage: 80 },
-            { category: '46-60', value: 1456972, percentage: 19 },
-            { category: 'Under 30', value: 85909, percentage: 1 }
+            { category: '30-45', value: 54284000, percentage: 80 },
+            { category: '46-60', value: 12895000, percentage: 19 },
+            { category: 'Under 30', value: 679000, percentage: 1 }
           ]
         },
         {
@@ -224,12 +224,12 @@ export function BusinessSnapshotStructured() {
           name: 'City',
           chartType: 'bar' as const,
           data: [
-            { category: 'Gaya', value: 3779037, percentage: 49 },
-            { category: 'Surat', value: 2007355, percentage: 26 },
-            { category: 'New Delhi', value: 1443050, percentage: 19 },
-            { category: 'Mysuru', value: 230758, percentage: 3 },
-            { category: 'Udaipur', value: 87754, percentage: 1 },
-            { category: 'Jalandhar', value: 85909, percentage: 1 }
+            { category: 'Gaya', value: 33257000, percentage: 49 },
+            { category: 'Surat', value: 17647000, percentage: 26 },
+            { category: 'New Delhi', value: 12896000, percentage: 19 },
+            { category: 'Mysuru', value: 2036000, percentage: 3 },
+            { category: 'Udaipur', value: 1357000, percentage: 2 },
+            { category: 'Jalandhar', value: 679000, percentage: 1 }
           ]
         }
       ]
