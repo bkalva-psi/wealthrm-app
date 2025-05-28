@@ -59,9 +59,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: 'Test endpoint working', timestamp: new Date().toISOString() });
   });
 
-  // Second-level drill-down for specific product categories - MOVED TO TOP
+  // Second-level drill-down for specific product categories - NO AUTH REQUIRED  
   app.get('/api/business-metrics/:userId/products/:category', async (req: Request, res: Response) => {
-    console.log('Product category API called:', req.params);
+    console.log('=== PRODUCT CATEGORY API CALLED ===', req.params, req.headers);
     try {
       const { userId, category } = req.params;
       
