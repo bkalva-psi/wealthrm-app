@@ -194,9 +194,9 @@ export function BusinessSnapshotStructured() {
           name: 'Customer Type',
           chartType: 'donut' as const,
           data: [
-            { category: 'Gold', value: 19, count: 19, percentage: 42 },
-            { category: 'Platinum', value: 14, count: 14, percentage: 31 },
-            { category: 'Silver', value: 12, count: 12, percentage: 27 }
+            { category: 'Gold', value: 28540000, count: 19, percentage: 42 },
+            { category: 'Platinum', value: 21030000, count: 14, percentage: 31 },
+            { category: 'Silver', value: 18300000, count: 12, percentage: 27 }
           ]
         },
         {
@@ -204,9 +204,9 @@ export function BusinessSnapshotStructured() {
           name: 'Risk Profile',
           chartType: 'donut' as const,
           data: [
-            { category: 'Aggressive', value: 19, count: 19, percentage: 42 },
-            { category: 'Moderate', value: 17, count: 17, percentage: 38 },
-            { category: 'Conservative', value: 9, count: 9, percentage: 20 }
+            { category: 'Aggressive', value: 28506000, count: 19, percentage: 42 },
+            { category: 'Moderate', value: 25781000, count: 17, percentage: 38 },
+            { category: 'Conservative', value: 13585000, count: 9, percentage: 20 }
           ]
         },
         {
@@ -247,9 +247,9 @@ export function BusinessSnapshotStructured() {
           name: 'Client Tier',
           chartType: 'donut' as const,
           data: [
-            { category: 'Gold', value: 19, count: 19, percentage: 42 },
-            { category: 'Platinum', value: 14, count: 14, percentage: 31 },
-            { category: 'Silver', value: 12, count: 12, percentage: 27 }
+            { category: 'Gold', value: 28540000, count: 19, percentage: 42 },
+            { category: 'Platinum', value: 21030000, count: 14, percentage: 31 },
+            { category: 'Silver', value: 18300000, count: 12, percentage: 27 }
           ]
         },
         {
@@ -257,9 +257,9 @@ export function BusinessSnapshotStructured() {
           name: 'Risk Profile',
           chartType: 'donut' as const,
           data: [
-            { category: 'Aggressive', value: 19, count: 19, percentage: 42 },
-            { category: 'Moderate', value: 17, count: 17, percentage: 38 },
-            { category: 'Conservative', value: 9, count: 9, percentage: 20 }
+            { category: 'Aggressive', value: 28506000, count: 19, percentage: 42 },
+            { category: 'Moderate', value: 25781000, count: 17, percentage: 38 },
+            { category: 'Conservative', value: 13585000, count: 9, percentage: 20 }
           ]
         }
       ]
