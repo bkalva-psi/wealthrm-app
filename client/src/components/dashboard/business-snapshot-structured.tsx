@@ -124,10 +124,16 @@ export function BusinessSnapshotStructured() {
             try {
               const data = JSON.parse(text);
               console.log('Parsed authentic customer data:', data);
-              setSecondLevelData(prev => ({
-                ...prev,
-                [secondLevelKey]: data
-              }));
+              console.log('Setting data for key:', secondLevelKey);
+              console.log('Current secondLevelData before update:', secondLevelData);
+              setSecondLevelData(prev => {
+                const updated = {
+                  ...prev,
+                  [secondLevelKey]: data
+                };
+                console.log('Updated secondLevelData:', updated);
+                return updated;
+              });
             } catch (parseError) {
               console.error('JSON parse error:', parseError, 'Raw text:', text);
             }
@@ -447,16 +453,20 @@ export function BusinessSnapshotStructured() {
                                   {/* Second-level drill-down data */}
                                   {item.hasSecondLevel && item.categoryKey && expandedSecondLevel.has(item.categoryKey) && (
                                     <div className="ml-4 pl-2 border-l-2 border-gray-200 dark:border-gray-600 space-y-1">
-                                      {secondLevelData[item.categoryKey]?.map((product, productIndex) => (
-                                        <div key={productIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                                          <span className="truncate max-w-32">{product.productName}</span>
-                                          <div className="text-right">
-                                            <div className="font-medium">{formatCurrency(product.value)}</div>
-                                            <div className="text-gray-400">{product.percentage}%</div>
+                                      {secondLevelData[item.categoryKey] && secondLevelData[item.categoryKey].length > 0 ? (
+                                        secondLevelData[item.categoryKey].map((product, productIndex) => (
+                                          <div key={productIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                                            <span className="truncate max-w-32">{product.productName}</span>
+                                            <div className="text-right">
+                                              <div className="font-medium">{formatCurrency(product.value)}</div>
+                                              <div className="text-gray-400">{product.percentage}%</div>
+                                            </div>
                                           </div>
+                                        ))
+                                      ) : (
+                                        <div className="text-xs text-gray-500 italic">
+                                          {secondLevelData[item.categoryKey] ? 'No products found' : 'Loading products...'}
                                         </div>
-                                      )) || (
-                                        <div className="text-xs text-gray-500 italic">Loading products...</div>
                                       )}
                                     </div>
                                   )}
