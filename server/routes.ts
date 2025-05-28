@@ -1864,7 +1864,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-
+  // Second-level drill-down for specific product categories
+  app.get('/api/business-metrics/:userId/products/:category', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const { userId, category } = req.params;
+      
+      // Map category names to transaction types for database lookup
+      const categoryMap: Record<string, string[]> = {
+        'mutual-funds': ['Mutual Fund'],
+        'structured-products': ['Structured Product'],
+        'bonds': ['Bond'],
+        'fixed-deposits': ['Fixed Deposit'],
+        'alternative-investments': ['Alternative Investment'],
+        'insurance': ['Insurance'],
+        'equity': ['Equity']
+      };
+      
+      const transactionTypes = categoryMap[category];
+      if (!transactionTypes) {
+        return res.status(400).json({ error: 'Invalid product category' });
+      }
+      
+      // Get detailed breakdown for this product category
+      const productDetails = await db
+        .select({
+          productName: transactions.productName,
+          totalValue: sql<number>`sum(${transactions.amount})`,
+          transactionCount: sql<number>`count(*)`,
+          avgTicketSize: sql<number>`avg(${transactions.amount})`
+        })
+        .from(transactions)
+        .where(
+          and(
+            sql`${transactions.productType} = ANY(${transactionTypes})`,
+            eq(transactions.assignedTo, parseInt(userId))
+          )
+        )
+        .groupBy(transactions.productName)
+        .orderBy(sql`sum(${transactions.amount}) desc`);
+      
+      // Calculate total for percentage calculation
+      const total = productDetails.reduce((sum, product) => sum + product.totalValue, 0);
+      
+      // Format response with percentages
+      const formattedDetails = productDetails.map(product => ({
+        productName: product.productName,
+        value: product.totalValue,
+        count: product.transactionCount,
+        avgTicketSize: product.avgTicketSize,
+        percentage: total > 0 ? Math.round((product.totalValue / total) * 100) : 0
+      }));
+      
+      res.json(formattedDetails);
+    } catch (error) {
+      console.error('Error fetching product category details:', error);
+      res.status(500).json({ error: 'Failed to fetch product details' });
+    }
+  });
 
   // This duplicate endpoint is removed - using the corrected one above
 

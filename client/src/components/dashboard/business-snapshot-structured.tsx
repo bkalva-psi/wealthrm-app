@@ -17,6 +17,16 @@ interface DrillDownData {
   value: number;
   count?: number;
   percentage: number;
+  hasSecondLevel?: boolean;
+  categoryKey?: string;
+}
+
+interface SecondLevelData {
+  productName: string;
+  value: number;
+  count: number;
+  avgTicketSize: number;
+  percentage: number;
 }
 
 interface Dimension {
@@ -43,6 +53,8 @@ const formatNumber = (value: number) => {
 export function BusinessSnapshotStructured() {
   const [expandedMetrics, setExpandedMetrics] = useState<Set<string>>(new Set());
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
+  const [expandedSecondLevel, setExpandedSecondLevel] = useState<Set<string>>(new Set());
+  const [secondLevelData, setSecondLevelData] = useState<Record<string, SecondLevelData[]>>({});
 
   // Main business metrics query
   const { data: businessMetrics, isLoading } = useQuery<BusinessMetrics>({
@@ -86,6 +98,36 @@ export function BusinessSnapshotStructured() {
     setExpandedDimensions(newExpanded);
   };
 
+  // Handle second-level drill-down (e.g., clicking on "Mutual Funds" to see specific mutual fund products)
+  const handleSecondLevelClick = async (category: string, categoryKey: string) => {
+    const secondLevelKey = `${categoryKey}`;
+    const newExpanded = new Set(expandedSecondLevel);
+    
+    if (newExpanded.has(secondLevelKey)) {
+      newExpanded.delete(secondLevelKey);
+    } else {
+      newExpanded.add(secondLevelKey);
+      
+      // Fetch second-level data if not already loaded
+      if (!secondLevelData[secondLevelKey]) {
+        try {
+          const response = await fetch(`/api/business-metrics/1/products/${categoryKey}`);
+          if (response.ok) {
+            const data = await response.json();
+            setSecondLevelData(prev => ({
+              ...prev,
+              [secondLevelKey]: data
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching second-level data:', error);
+        }
+      }
+    }
+    
+    setExpandedSecondLevel(newExpanded);
+  };
+
   // Metrics configuration with authentic database data
   const metricsConfig: Record<string, any> = {
     aum: {
@@ -115,13 +157,13 @@ export function BusinessSnapshotStructured() {
           name: 'Product Type',
           chartType: 'donut' as const,
           data: [
-            { category: 'Structured Products', value: 2127654, percentage: 28 },
-            { category: 'Bonds', value: 1840214, percentage: 24 },
-            { category: 'Fixed Deposits', value: 1716186, percentage: 22 },
-            { category: 'Alternative Investments', value: 901195, percentage: 12 },
-            { category: 'Mutual Funds', value: 465860, percentage: 6 },
-            { category: 'Insurance', value: 349145, percentage: 5 },
-            { category: 'Equity', value: 233609, percentage: 3 }
+            { category: 'Structured Products', value: 2127654, percentage: 28, hasSecondLevel: true, categoryKey: 'structured-products' },
+            { category: 'Bonds', value: 1840214, percentage: 24, hasSecondLevel: true, categoryKey: 'bonds' },
+            { category: 'Fixed Deposits', value: 1716186, percentage: 22, hasSecondLevel: true, categoryKey: 'fixed-deposits' },
+            { category: 'Alternative Investments', value: 901195, percentage: 12, hasSecondLevel: true, categoryKey: 'alternative-investments' },
+            { category: 'Mutual Funds', value: 465860, percentage: 6, hasSecondLevel: true, categoryKey: 'mutual-funds' },
+            { category: 'Insurance', value: 349145, percentage: 5, hasSecondLevel: true, categoryKey: 'insurance' },
+            { category: 'Equity', value: 233609, percentage: 3, hasSecondLevel: true, categoryKey: 'equity' }
           ]
         },
         {
