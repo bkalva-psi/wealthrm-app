@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { pool } from "./db";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { clients, prospects, transactions } from "@shared/schema";
 import communicationsRouter from "./communications";
 import session from "express-session";
@@ -1664,54 +1664,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AUM Breakdown by Asset Class
   app.get('/api/business-metrics/:userId/aum/asset-class', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = req.session.user.id;
+      const userId = parseInt(req.params.userId) || 1;
 
-      const assetClassBreakdown = await db
-        .select({
-          category: sql<string>`
-            case 
-              when ${transactions.productType} = 'equity' then 'Equity'
-              when ${transactions.productType} = 'mutual_fund' then 'Mutual Funds'
-              when ${transactions.productType} = 'bond' then 'Bonds'
-              when ${transactions.productType} = 'fixed_deposit' then 'Fixed Deposits'
-              when ${transactions.productType} = 'insurance' then 'Insurance'
-              when ${transactions.productType} = 'structured_product' then 'Structured Products'
-              when ${transactions.productType} = 'alternative_investment' then 'Alternative Investments'
-              else 'Others'
-            end
-          `,
-          value: sql<number>`sum(${transactions.amount})`,
-          percentage: sql<number>`
-            (sum(${transactions.amount}) * 100 / 
-             (select sum(amount) 
-              from ${transactions} t2 
-              inner join ${clients} c2 on t2.client_id = c2.id 
-              where c2.assigned_to = ${userId} and t2.transaction_type = 'buy'))::integer
-          `
-        })
-        .from(transactions)
-        .innerJoin(clients, eq(transactions.clientId, clients.id))
-        .where(
-          and(
-            eq(clients.assignedTo, userId),
-            eq(transactions.transactionType, 'buy')
-          )
-        )
-        .groupBy(sql`
-          case 
-            when ${transactions.productType} = 'equity' then 'Equity'
-            when ${transactions.productType} = 'mutual_fund' then 'Mutual Funds'
-            when ${transactions.productType} = 'bond' then 'Bonds'
-            when ${transactions.productType} = 'fixed_deposit' then 'Fixed Deposits'
-            when ${transactions.productType} = 'insurance' then 'Insurance'
-            when ${transactions.productType} = 'structured_product' then 'Structured Products'
-            when ${transactions.productType} = 'alternative_investment' then 'Alternative Investments'
-            else 'Others'
-          end
-        `)
-        .orderBy(sql`sum(${transactions.amount}) desc`);
+      const result = await pool.query(`
+        SELECT 
+            CASE 
+                WHEN product_type = 'equity' THEN 'Equity'
+                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
+                WHEN product_type = 'bond' THEN 'Bonds'
+                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
+                WHEN product_type = 'insurance' THEN 'Insurance'
+                WHEN product_type = 'structured_product' THEN 'Structured Products'
+                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
+                ELSE 'Others'
+            END as category,
+            SUM(amount) as value,
+            (SUM(amount) * 100.0 / (SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'))::integer as percentage
+        FROM transactions 
+        INNER JOIN clients ON transactions.client_id = clients.id 
+        WHERE clients.assigned_to = $1 AND transactions.transaction_type = 'buy'
+        GROUP BY 
+            CASE 
+                WHEN product_type = 'equity' THEN 'Equity'
+                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
+                WHEN product_type = 'bond' THEN 'Bonds'
+                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
+                WHEN product_type = 'insurance' THEN 'Insurance'
+                WHEN product_type = 'structured_product' THEN 'Structured Products'
+                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
+                ELSE 'Others'
+            END
+        ORDER BY SUM(amount) DESC
+      `, [userId]);
 
-      res.json(assetClassBreakdown);
+      res.json(result.rows);
     } catch (error) {
       console.error("Error fetching asset class breakdown:", error);
       res.status(500).json({ error: "Failed to fetch asset class breakdown" });
