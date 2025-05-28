@@ -98,7 +98,7 @@ export function BusinessSnapshotStructured() {
     setExpandedDimensions(newExpanded);
   };
 
-  // Handle second-level drill-down using hardcoded product data from your database
+  // Handle second-level drill-down using authentic customer transaction data
   const handleSecondLevelClick = async (category: string, categoryKey: string) => {
     const secondLevelKey = `${categoryKey}`;
     const newExpanded = new Set(expandedSecondLevel);
@@ -108,72 +108,36 @@ export function BusinessSnapshotStructured() {
     } else {
       newExpanded.add(secondLevelKey);
       
-      // Use real product data from your database instead of API call
+      // Fetch authentic product data aggregated from customer transactions
       if (!secondLevelData[secondLevelKey]) {
-        const productData = getProductDataByCategory(categoryKey);
-        setSecondLevelData(prev => ({
-          ...prev,
-          [secondLevelKey]: productData
-        }));
+        try {
+          const response = await fetch(`/api/business-metrics/1/products/${categoryKey}`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Authentic customer data aggregated:', data);
+            setSecondLevelData(prev => ({
+              ...prev,
+              [secondLevelKey]: data
+            }));
+          } else {
+            console.error('Failed to fetch authentic data:', response.status, response.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching authentic customer data:', error);
+        }
       }
     }
     
     setExpandedSecondLevel(newExpanded);
   };
 
-  // Real product data from your database
-  const getProductDataByCategory = (categoryKey: string) => {
-    const productDatabase: Record<string, any[]> = {
-      'mutual-funds': [
-        { productName: 'DSP Tax Saver Fund', value: 525607, percentage: 17 },
-        { productName: 'Franklin India Prima Fund', value: 457150, percentage: 15 },
-        { productName: 'Axis Bluechip Fund', value: 295873, percentage: 10 },
-        { productName: 'HDFC Midcap Opportunities Fund', value: 281730, percentage: 9 },
-        { productName: 'SBI Blue Chip Fund', value: 273199, percentage: 9 },
-        { productName: 'Kotak Standard Multicap Fund', value: 244307, percentage: 8 },
-        { productName: 'Nippon India Small Cap Fund', value: 234111, percentage: 8 },
-        { productName: 'Aditya Birla Sun Life Tax Relief 96', value: 208548, percentage: 7 },
-        { productName: 'ICICI Prudential Bluechip Fund', value: 196358, percentage: 6 },
-        { productName: 'SBI Small Cap Fund', value: 190416, percentage: 6 },
-        { productName: 'Mirae Asset Large Cap Fund', value: 151732, percentage: 5 }
-      ],
-      'bonds': [
-        { productName: 'REC Limited Bonds', value: 445620, percentage: 24 },
-        { productName: 'PGCIL 8.25% 2028', value: 387540, percentage: 21 },
-        { productName: 'Tata Capital Bonds', value: 298450, percentage: 16 },
-        { productName: 'REC Limited 8.12% 2026', value: 276380, percentage: 15 },
-        { productName: 'IRFC 7.30% 2030', value: 234160, percentage: 13 },
-        { productName: 'Power Finance Corp Bonds', value: 198720, percentage: 11 }
-      ],
-      'structured-products': [
-        { productName: 'JM Financial Structured Product', value: 387650, percentage: 45 },
-        { productName: 'Edelweiss Market Linked Debenture', value: 298740, percentage: 35 },
-        { productName: 'IIFL Principal Protected Note', value: 172890, percentage: 20 }
-      ],
-      'fixed-deposits': [
-        { productName: 'Axis Bank Fixed Deposit', value: 456780, percentage: 27 },
-        { productName: 'PNB FD 6.60% 3 Year', value: 398650, percentage: 23 },
-        { productName: 'HDFC Bank FD 6.75% 2 Year', value: 345290, percentage: 20 },
-        { productName: 'ICICI Bank FD 6.80% 18 Months', value: 287340, percentage: 17 },
-        { productName: 'SBI FD 6.50% 5 Year', value: 234560, percentage: 13 }
-      ],
-      'equity': [
-        { productName: 'ICICI Bank Ltd', value: 587340, percentage: 28 },
-        { productName: 'Bharti Airtel Ltd', value: 456780, percentage: 22 },
-        { productName: 'Larsen & Toubro Ltd', value: 398650, percentage: 19 },
-        { productName: 'Infosys Ltd', value: 334560, percentage: 16 },
-        { productName: 'TCS Ltd', value: 298740, percentage: 15 }
-      ],
-      'insurance': [
-        { productName: 'Max Life Online Term Plan Plus', value: 398650, percentage: 35 },
-        { productName: 'Tata AIA Life Insurance Sampoorna Raksha', value: 334560, percentage: 29 },
-        { productName: 'Bajaj Allianz Life Smart Protect Goal', value: 276890, percentage: 24 },
-        { productName: 'HDFC Life Click 2 Protect Plus', value: 134560, percentage: 12 }
-      ]
-    };
-    
-    return productDatabase[categoryKey] || [];
-  };
+
 
   // Metrics configuration with authentic database data
   const metricsConfig: Record<string, any> = {

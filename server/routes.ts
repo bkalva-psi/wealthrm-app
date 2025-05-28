@@ -84,34 +84,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid product category' });
       }
       
-      // Get detailed breakdown for this product category
+      // Get authentic product breakdown aggregated from customer-level data
       const productDetails = await db
         .select({
           productName: transactions.productName,
           totalValue: sql<number>`sum(${transactions.amount})`,
-          transactionCount: sql<number>`count(*)`,
-          avgTicketSize: sql<number>`avg(${transactions.amount})`
+          uniqueClients: sql<number>`count(distinct ${transactions.clientId})`,
+          totalTransactions: sql<number>`count(*)`,
+          avgInvestmentSize: sql<number>`avg(${transactions.amount})`
         })
         .from(transactions)
         .where(eq(transactions.productType, transactionType))
         .groupBy(transactions.productName)
         .orderBy(sql`sum(${transactions.amount}) desc`);
       
-      console.log('Database query result:', productDetails);
+      console.log('Authentic database aggregation:', productDetails);
       
       // Calculate total for percentage calculation
       const total = productDetails.reduce((sum, product) => sum + product.totalValue, 0);
       
-      // Format response with percentages
+      // Format response with authentic data and percentages
       const formattedDetails = productDetails.map(product => ({
         productName: product.productName,
-        value: product.totalValue,
-        count: product.transactionCount,
-        avgTicketSize: product.avgTicketSize,
+        value: Math.round(product.totalValue),
+        uniqueClients: product.uniqueClients,
+        totalTransactions: product.totalTransactions,
+        avgInvestmentSize: Math.round(product.avgInvestmentSize),
         percentage: total > 0 ? Math.round((product.totalValue / total) * 100) : 0
       }));
       
-      console.log('Formatted response:', formattedDetails);
+      console.log('Authentic response formatted:', formattedDetails);
       res.setHeader('Content-Type', 'application/json');
       res.json(formattedDetails);
     } catch (error) {
