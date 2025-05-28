@@ -47,8 +47,7 @@ export function BusinessSnapshotCard() {
     enabled: true,
   });
 
-  // Debug: Log the data to see what we're getting
-  console.log('Business Metrics Data:', businessMetrics);
+
 
   // Drill-down data query
   const { data: drillDownData, isLoading: drillDownLoading } = useQuery<DrillDownData[]>({
