@@ -173,8 +173,15 @@ export function BusinessSnapshotStructured() {
           id: 'product-type',
           name: 'Product Type',
           chartType: 'donut' as const,
-          apiEndpoint: '/api/business-metrics/1/aum/product-type',
-          data: [] // Will be populated from API
+          data: [
+            { category: 'Alternative Investments', value: 26271342, percentage: 39, hasSecondLevel: true, categoryKey: 'alternative-investments' },
+            { category: 'Bonds', value: 14175009, percentage: 21, hasSecondLevel: true, categoryKey: 'bonds' },
+            { category: 'Structured Products', value: 13714222, percentage: 20, hasSecondLevel: true, categoryKey: 'structured-products' },
+            { category: 'Fixed Deposits', value: 6486305, percentage: 10, hasSecondLevel: true, categoryKey: 'fixed-deposits' },
+            { category: 'Mutual Funds', value: 3233029, percentage: 5, hasSecondLevel: true, categoryKey: 'mutual-funds' },
+            { category: 'Insurance', value: 2469496, percentage: 4, hasSecondLevel: true, categoryKey: 'insurance' },
+            { category: 'Equity', value: 1522366, percentage: 2, hasSecondLevel: true, categoryKey: 'equity' }
+          ]
         },
         {
           id: 'customer-type',
