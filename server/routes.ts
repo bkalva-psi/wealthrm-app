@@ -2194,7 +2194,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get performance incentives
+  app.get('/api/performance/incentives/:userId', async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const { period = 'Q' } = req.query;
+      
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      const currentQuarter = Math.ceil(currentMonth / 3);
 
+      let whereConditions = [
+        eq(performanceIncentives.rmId, parseInt(userId)),
+        eq(performanceIncentives.period, period as string),
+        eq(performanceIncentives.year, currentYear)
+      ];
+
+      // Add period-specific filters
+      if (period === 'M') {
+        whereConditions.push(eq(performanceIncentives.month, currentMonth));
+      } else if (period === 'Q') {
+        whereConditions.push(eq(performanceIncentives.quarter, currentQuarter));
+      }
+
+      const [incentiveRecord] = await db
+        .select()
+        .from(performanceIncentives)
+        .where(and(...whereConditions))
+        .limit(1);
+
+      if (!incentiveRecord) {
+        // Return default structure if no data found
+        return res.json({
+          earned: 0,
+          projected: 0,
+          possible: 0,
+          breakdown: {
+            base: 0,
+            performance: 0,
+            team: 0,
+            special: 0
+          }
+        });
+      }
+
+      const response = {
+        earned: incentiveRecord.earnedAmount || 0,
+        projected: incentiveRecord.projectedAmount || 0,
+        possible: incentiveRecord.possibleAmount || 0,
+        breakdown: {
+          base: incentiveRecord.baseIncentive || 0,
+          performance: incentiveRecord.performanceBonus || 0,
+          team: incentiveRecord.teamBonus || 0,
+          special: incentiveRecord.specialIncentives || 0
+        }
+      };
+
+      res.json(response);
+    } catch (error) {
+      console.error('Error fetching incentives:', error);
+      res.status(500).json({ error: 'Failed to fetch incentives data' });
+    }
+  });
 
   const httpServer = createServer(app);
 

@@ -52,6 +52,13 @@ export function PerformanceCard() {
     select: (data: any) => data || { targets: [], actuals: [], peers: [] }
   });
 
+  // Fetch incentives data based on selected period
+  const { data: incentivesData } = useQuery({
+    queryKey: ['/api/performance/incentives', 1, selectedPeriod],
+    queryFn: () => fetch(`/api/performance/incentives/1?period=${selectedPeriod}`).then(res => res.json()),
+    select: (data: any) => data || { earned: 0, projected: 0, possible: 0, breakdown: {} }
+  });
+
   const getProgressPercentage = (actual: number, target: number) => {
     if (target === 0) return 0;
     return Math.min(Math.round((actual / target) * 100), 100);
@@ -581,6 +588,79 @@ export function PerformanceCard() {
             </div>
           </CollapsibleContent>
         </Collapsible>
+
+        {/* Incentives Section */}
+        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-slate-500" />
+              <h3 className="text-sm font-medium text-slate-700">Performance Incentives</h3>
+              <span className="text-xs text-slate-500">({selectedPeriod})</span>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-3">
+              {/* Earned */}
+              <div className="bg-white rounded-lg p-3 border border-slate-200">
+                <div className="text-xs text-slate-500 mb-1">Earned</div>
+                <div className="text-lg font-semibold text-green-700">
+                  ₹{incentivesData?.earned?.toLocaleString('en-IN') || '0'}
+                </div>
+                <div className="text-xs text-slate-600">Already received</div>
+              </div>
+              
+              {/* Projected */}
+              <div className="bg-white rounded-lg p-3 border border-slate-200">
+                <div className="text-xs text-slate-500 mb-1">Projected</div>
+                <div className="text-lg font-semibold text-blue-700">
+                  ₹{incentivesData?.projected?.toLocaleString('en-IN') || '0'}
+                </div>
+                <div className="text-xs text-slate-600">Current trend</div>
+              </div>
+              
+              {/* Possible */}
+              <div className="bg-white rounded-lg p-3 border border-slate-200">
+                <div className="text-xs text-slate-500 mb-1">Possible</div>
+                <div className="text-lg font-semibold text-orange-700">
+                  ₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}
+                </div>
+                <div className="text-xs text-slate-600">Maximum achievable</div>
+              </div>
+            </div>
+
+            {/* Incentive Breakdown */}
+            {incentivesData?.breakdown && (
+              <div className="space-y-2">
+                <div className="text-xs font-medium text-slate-600">Breakdown</div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {incentivesData.breakdown.base > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Base:</span>
+                      <span className="font-medium">₹{incentivesData.breakdown.base?.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  {incentivesData.breakdown.performance > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Performance:</span>
+                      <span className="font-medium">₹{incentivesData.breakdown.performance?.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  {incentivesData.breakdown.team > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Team:</span>
+                      <span className="font-medium">₹{incentivesData.breakdown.team?.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  {incentivesData.breakdown.special > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Special:</span>
+                      <span className="font-medium">₹{incentivesData.breakdown.special?.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </Card>
   );
