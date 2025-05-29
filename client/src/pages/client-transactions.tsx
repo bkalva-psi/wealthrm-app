@@ -455,7 +455,7 @@ export default function ClientTransactions() {
                   >
                     {client?.fullName}
                   </button>
-                  <div className="flex items-center gap-4 text-sm text-slate-600 mt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600 mt-1">
                     {client?.phone && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3" />
