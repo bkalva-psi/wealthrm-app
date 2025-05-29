@@ -658,56 +658,43 @@ export function PerformanceCard() {
                     </div>
                   </div>
                   
-                  {/* Values display */}
+                  {/* Combined Values and Percentages */}
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-green-600 rounded-full"></div>
-                      <div className="text-xs">
-                        <div className="font-medium text-slate-700">Earned</div>
-                        <div className="text-slate-600">₹{incentivesData?.earned?.toLocaleString('en-IN') || '0'}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                        <div className="text-xs font-medium text-slate-700">Earned</div>
+                      </div>
+                      <div className="text-xs text-right">
+                        <div className="font-medium text-slate-800">₹{incentivesData?.earned?.toLocaleString('en-IN') || '0'}</div>
+                        <div className="text-slate-500">
+                          {incentivesData?.possible ? Math.round((incentivesData.earned / incentivesData.possible) * 100) : 0}%
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <div className="text-xs">
-                        <div className="font-medium text-slate-700">Projected</div>
-                        <div className="text-slate-600">₹{incentivesData?.projected?.toLocaleString('en-IN') || '0'}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="text-xs font-medium text-slate-700">Projected</div>
+                      </div>
+                      <div className="text-xs text-right">
+                        <div className="font-medium text-slate-800">₹{incentivesData?.projected?.toLocaleString('en-IN') || '0'}</div>
+                        <div className="text-slate-500">
+                          {incentivesData?.possible ? Math.round((incentivesData.projected / incentivesData.possible) * 100) : 0}%
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                      <div className="text-xs">
-                        <div className="font-medium text-slate-700">Maximum</div>
-                        <div className="text-slate-600">₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}</div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                        <div className="text-xs font-medium text-slate-700">Maximum</div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Progress Indicators */}
-                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-100">
-                  <div className="text-center">
-                    <div className="w-3 h-3 bg-green-600 rounded-full mx-auto mb-1"></div>
-                    <div className="text-xs text-slate-600">Earned</div>
-                    <div className="text-xs font-medium">
-                      {incentivesData?.possible ? Math.round((incentivesData.earned / incentivesData.possible) * 100) : 0}%
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mx-auto mb-1"></div>
-                    <div className="text-xs text-slate-600">Projected</div>
-                    <div className="text-xs font-medium">
-                      {incentivesData?.possible ? Math.round((incentivesData.projected / incentivesData.possible) * 100) : 0}%
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="w-3 h-3 bg-orange-200 rounded-full mx-auto mb-1"></div>
-                    <div className="text-xs text-slate-600">Gap to Max</div>
-                    <div className="text-xs font-medium">
-                      {incentivesData?.possible && incentivesData?.projected ? 
-                        Math.round(((incentivesData.possible - incentivesData.projected) / incentivesData.possible) * 100) : 0}%
+                      <div className="text-xs text-right">
+                        <div className="font-medium text-slate-800">₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}</div>
+                        <div className="text-slate-500">100%</div>
+                      </div>
                     </div>
                   </div>
                 </div>
