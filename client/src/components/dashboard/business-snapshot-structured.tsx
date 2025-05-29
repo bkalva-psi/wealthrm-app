@@ -329,39 +329,24 @@ export function BusinessSnapshotStructured() {
   const renderChart = (dimension: Dimension) => {
     if (dimension.chartType === 'donut') {
       return (
-        <div className="space-y-3">
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie
-                data={dimension.data}
-                cx="50%"
-                cy="50%"
-                innerRadius={40}
-                outerRadius={70}
-                paddingAngle={2}
-                dataKey="value"
-              >
-                {dimension.data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value: any) => formatCurrency(value)} />
-            </PieChart>
-          </ResponsiveContainer>
-          
-          {/* Custom bottom legend */}
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
-            {dimension.data.map((entry, index) => (
-              <div key={index} className="flex items-center space-x-1">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                />
-                <span className="text-gray-700 dark:text-gray-300">{entry.category}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ResponsiveContainer width="100%" height={250}>
+          <PieChart>
+            <Pie
+              data={dimension.data}
+              cx="50%"
+              cy="50%"
+              innerRadius={50}
+              outerRadius={90}
+              paddingAngle={2}
+              dataKey="value"
+            >
+              {dimension.data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value: any) => formatCurrency(value)} />
+          </PieChart>
+        </ResponsiveContainer>
       );
     } else {
       return (
@@ -447,13 +432,13 @@ export function BusinessSnapshotStructured() {
                       
                       {isExpanded && (
                         <div className="px-3 pb-3 border-t bg-gray-50 dark:bg-gray-800/50">
-                          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-3">
-                            {/* Chart - Takes 2 columns on xl screens */}
-                            <div className="xl:col-span-2">
+                          <div className="space-y-4 mt-3">
+                            {/* Chart */}
+                            <div>
                               {renderChart(dimension)}
                             </div>
                             
-                            {/* Data Table - Takes 1 column on xl screens */}
+                            {/* Data Table */}
                             <div className="space-y-2">
                               {dimension.data.map((item, index) => (
                                 <div key={index} className="space-y-1">
