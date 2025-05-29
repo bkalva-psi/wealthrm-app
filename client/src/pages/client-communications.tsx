@@ -945,11 +945,22 @@ const ClientCommunications: React.FC = () => {
     if (isLoading) return <div className="text-sm text-gray-500">Loading action items...</div>;
     if (!actionItems || actionItems.length === 0) return null;
 
+    // Filter out blank/empty action items - only show items with actual content
+    const validActionItems = actionItems.filter((item: any) => 
+      item && 
+      item.title && 
+      item.title.trim() !== '' && 
+      item.title !== 'undefined' &&
+      item.title !== 'null'
+    );
+
+    if (validActionItems.length === 0) return null;
+
     return (
       <div>
         <h5 className="text-sm font-medium text-gray-700 mb-2">Action Items</h5>
         <div className="space-y-2">
-          {actionItems.map((item: ActionItem) => (
+          {validActionItems.map((item: ActionItem) => (
             <div key={item.id} className="p-3 bg-white border border-gray-200 rounded-lg">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -1542,7 +1553,10 @@ const ClientCommunications: React.FC = () => {
                                   </div>
                                 )}
 
-
+                                {/* Action Items - Only show if there are actual action items */}
+                                {communication.action_item_count > 0 && (
+                                  <ActionItemsDisplay communicationId={communication.id} />
+                                )}
 
                                 {/* Attachments */}
                                 {communication.attachment_count > 0 && (
