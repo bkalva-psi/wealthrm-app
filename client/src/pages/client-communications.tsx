@@ -1542,8 +1542,7 @@ const ClientCommunications: React.FC = () => {
                                   </div>
                                 )}
 
-                                {/* Action Items */}
-                                <ActionItemsDisplay communicationId={communication.id} />
+
 
                                 {/* Attachments */}
                                 {communication.attachment_count > 0 && (
