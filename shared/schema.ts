@@ -140,6 +140,8 @@ export const prospects = pgTable("prospects", {
   initials: text("initials"),
   potentialAum: text("potential_aum"),
   potentialAumValue: real("potential_aum_value"),
+  dealValue: real("deal_value"), // Deal value for closure tracking
+  expectedCloseDate: timestamp("expected_close_date"), // Expected closure date
   email: text("email"),
   phone: text("phone"),
   stage: text("stage").notNull().default("new"), // new, qualified, proposal, won, lost
