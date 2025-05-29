@@ -942,6 +942,10 @@ const ClientCommunications: React.FC = () => {
       enabled: !!communicationId,
     });
 
+    console.log('ActionItemsDisplay - communicationId:', communicationId);
+    console.log('ActionItemsDisplay - actionItems:', actionItems);
+    console.log('ActionItemsDisplay - isLoading:', isLoading);
+
     if (isLoading) return <div className="text-sm text-gray-500">Loading action items...</div>;
     if (!actionItems || actionItems.length === 0) return null;
 
@@ -953,6 +957,8 @@ const ClientCommunications: React.FC = () => {
       item.title !== 'undefined' &&
       item.title !== 'null'
     );
+
+    console.log('ActionItemsDisplay - validActionItems:', validActionItems);
 
     if (validActionItems.length === 0) return null;
 
