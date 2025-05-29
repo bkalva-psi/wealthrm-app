@@ -9,6 +9,7 @@ import {
   BarChart2,
   Package,
   Settings,
+  FileText,
 } from "lucide-react";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 import { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ const navigationItems = [
   { name: "Prospects", href: "/prospects", icon: TrendingUp },
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
+  { name: "Notes", href: "/communications", icon: FileText },
   { name: "Analytics", href: "/analytics", icon: BarChart2 },
   { name: "Products", href: "/products", icon: Package },
   { name: "Settings", href: "/settings", icon: Settings },
