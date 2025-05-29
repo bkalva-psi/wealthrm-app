@@ -329,14 +329,14 @@ export function BusinessSnapshotStructured() {
   const renderChart = (dimension: Dimension) => {
     if (dimension.chartType === 'donut') {
       return (
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={280}>
           <PieChart>
             <Pie
               data={dimension.data}
               cx="50%"
-              cy="50%"
+              cy="40%"
               innerRadius={40}
-              outerRadius={80}
+              outerRadius={70}
               paddingAngle={2}
               dataKey="value"
             >
@@ -432,13 +432,13 @@ export function BusinessSnapshotStructured() {
                       
                       {isExpanded && (
                         <div className="px-3 pb-3 border-t bg-gray-50 dark:bg-gray-800/50">
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-3">
-                            {/* Chart */}
-                            <div>
+                          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-3">
+                            {/* Chart - Takes 2 columns on xl screens */}
+                            <div className="xl:col-span-2">
                               {renderChart(dimension)}
                             </div>
                             
-                            {/* Data Table */}
+                            {/* Data Table - Takes 1 column on xl screens */}
                             <div className="space-y-2">
                               {dimension.data.map((item, index) => (
                                 <div key={index} className="space-y-1">
