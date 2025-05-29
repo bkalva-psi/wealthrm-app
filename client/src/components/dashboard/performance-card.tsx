@@ -607,59 +607,81 @@ export function PerformanceCard() {
                   <span>₹{Math.max(incentivesData?.possible || 0, 100000).toLocaleString('en-IN')}</span>
                 </div>
                 
-                {/* Single Stacked Horizontal Bar Chart */}
-                <div className="space-y-2">
-                  <div className="text-xs font-medium text-slate-700 mb-3">Incentive Progress</div>
-                  <div className="relative h-12 bg-gray-200 rounded-full overflow-hidden">
-                    {/* Earned (Green) */}
-                    <div 
-                      className="absolute left-0 top-0 h-full bg-green-600 flex items-center"
-                      style={{ 
-                        width: `${Math.min((incentivesData?.earned || 0) / Math.max(incentivesData?.possible || 1, 1) * 100, 100)}%` 
-                      }}
-                    >
-                      {(incentivesData?.earned || 0) > 0 && (
-                        <span className="text-xs font-medium text-white ml-3">
-                          ₹{incentivesData?.earned?.toLocaleString('en-IN')}
-                        </span>
-                      )}
+                {/* Thin Donut Chart */}
+                <div className="flex items-center justify-center space-x-6">
+                  <div className="relative">
+                    <svg width="120" height="120" className="transform -rotate-90">
+                      {/* Background circle */}
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        stroke="#e5e7eb"
+                        strokeWidth="8"
+                        fill="none"
+                      />
+                      
+                      {/* Earned progress (Green) */}
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        stroke="#16a34a"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${(incentivesData?.earned || 0) / Math.max(incentivesData?.possible || 1, 1) * 283} 283`}
+                        strokeLinecap="round"
+                        className="transition-all duration-500"
+                      />
+                      
+                      {/* Projected progress (Blue) */}
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="45"
+                        stroke="#3b82f6"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${((incentivesData?.projected || 0) - (incentivesData?.earned || 0)) / Math.max(incentivesData?.possible || 1, 1) * 283} 283`}
+                        strokeDashoffset={`-${(incentivesData?.earned || 0) / Math.max(incentivesData?.possible || 1, 1) * 283}`}
+                        strokeLinecap="round"
+                        className="transition-all duration-500"
+                      />
+                    </svg>
+                    
+                    {/* Center content */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="text-lg font-bold text-slate-800">
+                        {incentivesData?.possible ? Math.round((incentivesData.projected / incentivesData.possible) * 100) : 0}%
+                      </div>
+                      <div className="text-xs text-slate-600">Progress</div>
+                    </div>
+                  </div>
+                  
+                  {/* Values display */}
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                      <div className="text-xs">
+                        <div className="font-medium text-slate-700">Earned</div>
+                        <div className="text-slate-600">₹{incentivesData?.earned?.toLocaleString('en-IN') || '0'}</div>
+                      </div>
                     </div>
                     
-                    {/* Projected (Blue) - extends from earned to projected */}
-                    <div 
-                      className="absolute top-0 h-full bg-blue-500 flex items-center justify-center"
-                      style={{ 
-                        left: `${Math.min((incentivesData?.earned || 0) / Math.max(incentivesData?.possible || 1, 1) * 100, 100)}%`,
-                        width: `${Math.max(0, Math.min(((incentivesData?.projected || 0) - (incentivesData?.earned || 0)) / Math.max(incentivesData?.possible || 1, 1) * 100, 100))}%` 
-                      }}
-                    >
-                      {((incentivesData?.projected || 0) - (incentivesData?.earned || 0)) > 0 && (
-                        <span className="text-xs font-medium text-white">
-                          +₹{((incentivesData?.projected || 0) - (incentivesData?.earned || 0)).toLocaleString('en-IN')}
-                        </span>
-                      )}
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <div className="text-xs">
+                        <div className="font-medium text-slate-700">Projected</div>
+                        <div className="text-slate-600">₹{incentivesData?.projected?.toLocaleString('en-IN') || '0'}</div>
+                      </div>
                     </div>
                     
-                    {/* Possible (Light Orange) - extends from projected to possible */}
-                    <div 
-                      className="absolute top-0 h-full bg-orange-200 flex items-center justify-center"
-                      style={{ 
-                        left: `${Math.min((incentivesData?.projected || 0) / Math.max(incentivesData?.possible || 1, 1) * 100, 100)}%`,
-                        width: `${Math.max(0, Math.min(((incentivesData?.possible || 0) - (incentivesData?.projected || 0)) / Math.max(incentivesData?.possible || 1, 1) * 100, 100))}%` 
-                      }}
-                    >
-                      {((incentivesData?.possible || 0) - (incentivesData?.projected || 0)) > 0 && (
-                        <span className="text-xs font-medium text-orange-800">
-                          +₹{((incentivesData?.possible || 0) - (incentivesData?.projected || 0)).toLocaleString('en-IN')}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Total amount at the end */}
-                    <div className="absolute right-3 top-0 h-full flex items-center">
-                      <span className="text-xs font-bold text-slate-700">
-                        ₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}
-                      </span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                      <div className="text-xs">
+                        <div className="font-medium text-slate-700">Maximum</div>
+                        <div className="text-slate-600">₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
