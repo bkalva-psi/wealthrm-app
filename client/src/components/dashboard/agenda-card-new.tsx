@@ -101,10 +101,31 @@ export function AgendaCard() {
     queryKey: ['/api/portfolio-alerts'],
   });
 
-  // Fetch prospect closures for this week
-  const { data: closures, isLoading: closuresLoading } = useQuery({
-    queryKey: ['/api/prospects/closures-this-week'],
-  });
+  // Mock closures data (would come from prospects API in real implementation)
+  const closures = [
+    {
+      id: 1,
+      prospectName: "Ravi Sharma",
+      stage: "proposal",
+      potentialAumValue: 2500000,
+      probability: 85
+    },
+    {
+      id: 2,
+      prospectName: "Meera Technologies",
+      stage: "qualified", 
+      potentialAumValue: 1800000,
+      probability: 70
+    },
+    {
+      id: 3,
+      prospectName: "Deepak Agarwal",
+      stage: "proposal",
+      potentialAumValue: 1200000,
+      probability: 60
+    }
+  ];
+  const closuresLoading = false;
 
   // Process and sort tasks by urgency
   const urgentTasks = tasks ? 
