@@ -931,6 +931,94 @@ const ClientCommunications: React.FC = () => {
   const [filterChannel, setFilterChannel] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+
+  // ActionItemsDisplay component
+  const ActionItemsDisplay = ({ communicationId }: { communicationId: number }) => {
+    const { data: actionItems, isLoading } = useQuery({
+      queryKey: ['/api/communications', communicationId, 'action-items'],
+      enabled: !!communicationId,
+    });
+
+    if (isLoading) return <div className="text-sm text-gray-500">Loading action items...</div>;
+    if (!actionItems || actionItems.length === 0) return null;
+
+    return (
+      <div>
+        <h5 className="text-sm font-medium text-gray-700 mb-2">Action Items</h5>
+        <div className="space-y-2">
+          {actionItems.map((item: ActionItem) => (
+            <div key={item.id} className="p-3 bg-white border border-gray-200 rounded-lg">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h6 className="text-sm font-medium text-gray-900">{item.title}</h6>
+                  {item.description && (
+                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                  )}
+                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                    <span>Due: {format(new Date(item.due_date), 'MMM dd, yyyy')}</span>
+                    <span className={`px-2 py-0.5 rounded-full ${
+                      item.priority === 'high' ? 'bg-red-100 text-red-800' :
+                      item.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {item.priority}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full ${
+                      item.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      item.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {item.status.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+                {item.status === 'completed' && (
+                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // AttachmentsDisplay component
+  const AttachmentsDisplay = ({ communicationId }: { communicationId: number }) => {
+    const { data: attachments, isLoading } = useQuery({
+      queryKey: ['/api/communications', communicationId, 'attachments'],
+      enabled: !!communicationId,
+    });
+
+    if (isLoading) return <div className="text-sm text-gray-500">Loading attachments...</div>;
+    if (!attachments || attachments.length === 0) return null;
+
+    return (
+      <div>
+        <h5 className="text-sm font-medium text-gray-700 mb-2">Attachments</h5>
+        <div className="space-y-2">
+          {attachments.map((attachment: Attachment) => (
+            <div key={attachment.id} className="p-3 bg-white border border-gray-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Paperclip className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{attachment.file_name}</p>
+                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                    <span>{attachment.file_type.toUpperCase()}</span>
+                    <span>{(attachment.file_size / 1024).toFixed(1)} KB</span>
+                    <span>{format(new Date(attachment.created_at), 'MMM dd, yyyy')}</span>
+                  </div>
+                  {attachment.description && (
+                    <p className="text-sm text-gray-600 mt-1">{attachment.description}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
   
   // Determine if we're viewing all communications or client-specific communications
   const currentPath = window.location.hash.replace('#', '');
@@ -1443,6 +1531,16 @@ const ClientCommunications: React.FC = () => {
                                     <h5 className="text-sm font-medium text-gray-700 mb-2">Next Steps</h5>
                                     <p className="text-sm text-gray-700">{communication.next_steps}</p>
                                   </div>
+                                )}
+
+                                {/* Action Items */}
+                                {communication.action_item_count > 0 && (
+                                  <ActionItemsDisplay communicationId={communication.id} />
+                                )}
+
+                                {/* Attachments */}
+                                {communication.attachment_count > 0 && (
+                                  <AttachmentsDisplay communicationId={communication.id} />
                                 )}
 
                                 {/* Tags */}
