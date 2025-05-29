@@ -929,6 +929,7 @@ const ClientCommunications: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('details');
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterChannel, setFilterChannel] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState<boolean>(false);
   
   // Determine if we're viewing all communications or client-specific communications
   const currentPath = window.location.hash.replace('#', '');
@@ -978,6 +979,13 @@ const ClientCommunications: React.FC = () => {
       return true;
     });
   }, [communications, filterType, filterChannel]);
+
+  // Apply show more/less logic
+  const displayedCommunications = React.useMemo(() => {
+    if (!filteredCommunications) return [];
+    const limit = showAll ? filteredCommunications.length : 5;
+    return filteredCommunications.slice(0, limit);
+  }, [filteredCommunications, showAll]);
   
   const handleClearFilters = () => {
     setFilterType(null);
@@ -1135,12 +1143,12 @@ const ClientCommunications: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
           <div className="min-w-0 flex-1">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {isGlobalView ? 'All Communications' : 'Communications'}
+              {isGlobalView ? 'All Notes' : 'Notes'}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 mt-1">
               {isGlobalView 
-                ? 'View all client interactions and communication history across your portfolio'
-                : 'Track all client interactions and communication history'
+                ? 'View all client notes and interaction history across your portfolio'
+                : 'Track all client notes and interaction history'
               }
             </p>
           </div>
@@ -1269,11 +1277,11 @@ const ClientCommunications: React.FC = () => {
                   ) : filteredCommunications.length === 0 ? (
                     <EmptyState 
                       icon={<MessageCircle className="h-10 w-10 text-muted-foreground" />}
-                      title="No communications"
+                      title="No notes"
                       description={
                         filterType || filterChannel 
-                          ? "No communications match your filters."
-                          : "No communications found for this client."
+                          ? "No notes match your filters."
+                          : "No notes found for this client."
                       }
                       action={
                         filterType || filterChannel ? (
@@ -1284,15 +1292,108 @@ const ClientCommunications: React.FC = () => {
                       }
                     />
                   ) : (
-                    filteredCommunications.map((communication: Communication) => (
-                      <CommunicationItem 
-                        key={communication.id}
-                        communication={communication}
-                        isSelected={selectedCommunication?.id === communication.id}
-                        onClick={() => setSelectedCommunication(communication)}
-                        isGlobalView={isGlobalView}
-                      />
-                    ))
+                    <div className="space-y-0">
+                      {displayedCommunications.map((communication: Communication) => (
+                        <div
+                          key={communication.id}
+                          className={`p-4 border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50 ${
+                            selectedCommunication?.id === communication.id ? 'bg-blue-50 border-blue-200' : ''
+                          }`}
+                          onClick={() => setSelectedCommunication(communication)}
+                        >
+                          <div className="space-y-2">
+                            {/* Header Row - Date and Channel Icon */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className={`flex items-center gap-1 ${
+                                  communication.direction === 'outbound' ? 'text-blue-600' : 'text-green-600'
+                                }`}>
+                                  {communication.channel === 'phone' && <Phone className="h-4 w-4" />}
+                                  {communication.channel === 'email' && <Mail className="h-4 w-4" />}
+                                  {communication.channel === 'video' && <Video className="h-4 w-4" />}
+                                  {communication.channel === 'in_person' && <Users className="h-4 w-4" />}
+                                  {!['phone', 'email', 'video', 'in_person'].includes(communication.channel) && <MessageSquare className="h-4 w-4" />}
+                                </div>
+                                <span className="text-sm font-medium text-gray-900">
+                                  {format(new Date(communication.start_time), 'MMM dd, yyyy')}
+                                </span>
+                              </div>
+                              
+                              {/* Follow-up indicator */}
+                              {communication.follow_up_required && (
+                                <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                              )}
+                            </div>
+
+                            {/* Client Info for Global View */}
+                            {isGlobalView && communication.client_name && (
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <span className="text-xs font-medium text-blue-800">
+                                    {communication.client_initials}
+                                  </span>
+                                </div>
+                                <span className="text-sm text-gray-700">{communication.client_name}</span>
+                                {communication.client_tier && (
+                                  <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                    communication.client_tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
+                                    communication.client_tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {communication.client_tier}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Subject/Title */}
+                            <h4 className="font-medium text-gray-900 text-sm line-clamp-1">
+                              {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
+                            </h4>
+                            
+                            {/* Summary of activity counts */}
+                            <div className="flex items-center gap-3 text-xs text-gray-500">
+                              <span className="capitalize">{communication.communication_type.replace('_', ' ')}</span>
+                              {communication.action_item_count > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <CheckSquare className="h-3 w-3" />
+                                  <span>{communication.action_item_count} tasks</span>
+                                </div>
+                              )}
+                              {communication.attachment_count > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Paperclip className="h-3 w-3" />
+                                  <span>{communication.attachment_count} files</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Show More/Less Button */}
+                      {filteredCommunications.length > 5 && (
+                        <div className="p-4 border-b border-gray-100">
+                          <Button
+                            variant="ghost"
+                            onClick={() => setShowAll(!showAll)}
+                            className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            {showAll ? (
+                              <>
+                                <ChevronUp className="h-4 w-4 mr-2" />
+                                Show Less
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="h-4 w-4 mr-2" />
+                                Show More ({filteredCommunications.length - 5} more notes)
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </ScrollArea>
               </CardContent>
