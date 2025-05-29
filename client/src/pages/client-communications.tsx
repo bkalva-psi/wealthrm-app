@@ -85,6 +85,9 @@ interface ActionItem {
   priority: string;
   status: string;
   completed_at: string | null;
+  action_type: string;
+  deal_value: number | null;
+  expected_close_date: string | null;
 }
 
 interface Attachment {

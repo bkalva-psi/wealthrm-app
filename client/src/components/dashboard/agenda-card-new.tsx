@@ -106,13 +106,10 @@ export function AgendaCard() {
     queryKey: ['/api/complaints'],
   });
 
-  // Fetch prospects and filter for expected closures
-  const { data: allProspects, isLoading: closuresLoading } = useQuery({
-    queryKey: ['/api/prospects'],
+  // Fetch deal closure action items for expected closures
+  const { data: closures, isLoading: closuresLoading } = useQuery({
+    queryKey: ['/api/action-items/deal-closures'],
   });
-
-  // Filter prospects with positive deal values for expected closures
-  const closures = allProspects?.filter(prospect => prospect.dealValue > 0) || [];
 
   // Process and sort tasks by urgency
   const urgentTasks = tasks ? 

@@ -428,5 +428,26 @@ router.get('/api/communications/stats/rm/:rmId', async (req: Request, res: Respo
   }
 });
 
+// Get deal closure action items (for Expected Closures dashboard)
+router.get('/api/action-items/deal-closures', async (req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT cai.*, c.client_id, cl.full_name as client_name, cl.initials as client_initials
+      FROM communication_action_items cai
+      JOIN communications c ON cai.communication_id = c.id
+      JOIN clients cl ON c.client_id = cl.id
+      WHERE cai.action_type = 'deal_closure' 
+        AND cai.status = 'pending'
+        AND cai.deal_value > 0
+      ORDER BY cai.expected_close_date ASC, cai.deal_value DESC
+    `);
+    
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching deal closure action items:', error);
+    res.status(500).json({ error: 'Failed to fetch deal closure action items' });
+  }
+});
+
 // Export the router
 export default router;
