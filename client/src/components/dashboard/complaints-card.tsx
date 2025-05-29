@@ -133,7 +133,7 @@ export function ComplaintsCard() {
                     
                     <div className="flex items-center gap-1 text-xs text-slate-500 ml-2">
                       <Clock className="h-3 w-3" />
-                      <span>{format(new Date(complaint.createdAt), 'MMM d')}</span>
+                      <span>{complaint.createdAt ? format(new Date(complaint.createdAt), 'MMM d') : 'N/A'}</span>
                     </div>
                   </div>
                 </div>
