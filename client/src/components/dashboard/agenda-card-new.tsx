@@ -501,22 +501,43 @@ export function AgendaCard() {
             <div className="mt-2">
               {complaintsData && complaintsData.length > 0 ? (
                 <div className="space-y-2">
-                  {complaintsData.slice(0, 2).map((complaint) => (
-                    <div key={complaint.id} className="flex items-center justify-between text-xs bg-orange-50 p-2 rounded-md">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{complaint.title}</div>
-                        <div className="truncate text-slate-500">{complaint.clientName}</div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Badge 
-                          variant={complaint.severity === "critical" ? "destructive" : complaint.severity === "high" ? "destructive" : "secondary"} 
-                          className="text-xs"
+                  {complaintsData.slice(0, 2).map((complaint) => {
+                    const complaintKey = `complaint-${complaint.id}`;
+                    const isExpanded = expandedItems[complaintKey];
+                    return (
+                      <div key={complaint.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-2 bg-orange-50 rounded-md"
+                          onClick={() => toggleItem('complaint', complaint.id)}
                         >
-                          {complaint.severity}
-                        </Badge>
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{complaint.title}</div>
+                            <div className="truncate text-slate-500">{complaint.clientName}</div>
+                          </div>
+                          <div className="flex gap-1">
+                            <Badge 
+                              variant={complaint.severity === "critical" ? "destructive" : complaint.severity === "high" ? "destructive" : "secondary"} 
+                              className="text-xs"
+                            >
+                              {complaint.severity}
+                            </Badge>
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-orange-100 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Client:</span> {complaint.clientName}</div>
+                              <div><span className="font-medium">Severity:</span> {complaint.severity.toUpperCase()}</div>
+                              <div><span className="font-medium">Status:</span> {complaint.status}</div>
+                              <div><span className="font-medium">Category:</span> {complaint.category || "General"}</div>
+                              <div><span className="font-medium">Description:</span> {complaint.description || "Client complaint requiring attention"}</div>
+                              <div><span className="font-medium">Assigned RM:</span> {complaint.assignedRm || "Test User"}</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-xs text-slate-500">No complaints</p>
@@ -526,25 +547,46 @@ export function AgendaCard() {
             <CollapsibleContent>
               {complaintsData && complaintsData.length > 2 && (
                 <div className="space-y-2 mt-2">
-                  {complaintsData.slice(2).map((complaint) => (
-                    <div key={complaint.id} className="flex items-center justify-between text-xs bg-orange-50 p-2 rounded-md">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate font-medium">{complaint.title}</div>
-                        <div className="truncate text-slate-500">{complaint.clientName}</div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Badge 
-                          variant={complaint.severity === "critical" ? "destructive" : complaint.severity === "high" ? "destructive" : "secondary"} 
-                          className="text-xs"
+                  {complaintsData.slice(2).map((complaint) => {
+                    const complaintKey = `complaint-${complaint.id}`;
+                    const isExpanded = expandedItems[complaintKey];
+                    return (
+                      <div key={complaint.id}>
+                        <div 
+                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-2 bg-orange-50 rounded-md"
+                          onClick={() => toggleItem('complaint', complaint.id)}
                         >
-                          {complaint.severity}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {complaint.status}
-                        </Badge>
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{complaint.title}</div>
+                            <div className="truncate text-slate-500">{complaint.clientName}</div>
+                          </div>
+                          <div className="flex gap-1">
+                            <Badge 
+                              variant={complaint.severity === "critical" ? "destructive" : complaint.severity === "high" ? "destructive" : "secondary"} 
+                              className="text-xs"
+                            >
+                              {complaint.severity}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {complaint.status}
+                            </Badge>
+                          </div>
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-2 ml-6 p-2 bg-orange-100 rounded-md text-xs">
+                            <div className="space-y-1">
+                              <div><span className="font-medium">Client:</span> {complaint.clientName}</div>
+                              <div><span className="font-medium">Severity:</span> {complaint.severity.toUpperCase()}</div>
+                              <div><span className="font-medium">Status:</span> {complaint.status}</div>
+                              <div><span className="font-medium">Category:</span> {complaint.category || "General"}</div>
+                              <div><span className="font-medium">Description:</span> {complaint.description || "Client complaint requiring attention"}</div>
+                              <div><span className="font-medium">Assigned RM:</span> {complaint.assignedRm || "Test User"}</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CollapsibleContent>
