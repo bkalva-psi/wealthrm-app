@@ -930,6 +930,7 @@ const ClientCommunications: React.FC = () => {
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterChannel, setFilterChannel] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
+  const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   
   // Determine if we're viewing all communications or client-specific communications
   const currentPath = window.location.hash.replace('#', '');
@@ -990,6 +991,16 @@ const ClientCommunications: React.FC = () => {
   const handleClearFilters = () => {
     setFilterType(null);
     setFilterChannel(null);
+  };
+
+  const toggleNoteExpansion = (noteId: number) => {
+    const newExpanded = new Set(expandedNotes);
+    if (newExpanded.has(noteId)) {
+      newExpanded.delete(noteId);
+    } else {
+      newExpanded.add(noteId);
+    }
+    setExpandedNotes(newExpanded);
   };
   
   // Don't show error for global view when there's no client ID
@@ -1296,12 +1307,13 @@ const ClientCommunications: React.FC = () => {
                       {displayedCommunications.map((communication: Communication) => (
                         <div
                           key={communication.id}
-                          className={`p-4 border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50 ${
-                            selectedCommunication?.id === communication.id ? 'bg-blue-50 border-blue-200' : ''
+                          className={`border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50 ${
+                            expandedNotes.has(communication.id) ? 'bg-blue-50 border-blue-200' : ''
                           }`}
-                          onClick={() => setSelectedCommunication(communication)}
+                          onClick={() => toggleNoteExpansion(communication.id)}
                         >
-                          <div className="space-y-2">
+                          {/* Brief view */}
+                          <div className="p-4 space-y-2">
                             {/* Subject/Title */}
                             <h4 className="font-medium text-gray-900 text-sm line-clamp-1">
                               {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
@@ -1323,12 +1335,132 @@ const ClientCommunications: React.FC = () => {
                                 <div></div>
                               )}
                               
-                              {/* Date */}
-                              <span className="text-sm text-gray-500">
-                                {format(new Date(communication.start_time), 'MMM dd, yyyy')}
-                              </span>
+                              {/* Date and expand indicator */}
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-500">
+                                  {format(new Date(communication.start_time), 'MMM dd, yyyy')}
+                                </span>
+                                {expandedNotes.has(communication.id) ? (
+                                  <ChevronUp className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                                )}
+                              </div>
                             </div>
                           </div>
+
+                          {/* Expanded details */}
+                          {expandedNotes.has(communication.id) && (
+                            <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50">
+                              <div className="pt-4 space-y-4">
+                                {/* Communication details */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <h5 className="text-sm font-medium text-gray-700 mb-2">Communication Details</h5>
+                                    <div className="space-y-2 text-sm">
+                                      <div className="flex items-center gap-2">
+                                        {communication.channel === 'phone' && <Phone className="h-4 w-4 text-blue-600" />}
+                                        {communication.channel === 'email' && <Mail className="h-4 w-4 text-blue-600" />}
+                                        {communication.channel === 'video' && <Video className="h-4 w-4 text-blue-600" />}
+                                        {communication.channel === 'in_person' && <Users className="h-4 w-4 text-blue-600" />}
+                                        <span className="capitalize">{communication.channel.replace('_', ' ')}</span>
+                                        <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                          communication.direction === 'outbound' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                          {communication.direction}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">Type:</span> {communication.communication_type.replace('_', ' ')}
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">Duration:</span> {communication.duration ? `${Math.round(communication.duration / 60)} min` : 'N/A'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <h5 className="text-sm font-medium text-gray-700 mb-2">Status</h5>
+                                    <div className="space-y-2 text-sm">
+                                      {communication.sentiment && (
+                                        <div>
+                                          <span className="text-gray-500">Sentiment:</span> 
+                                          <span className={`ml-1 px-2 py-0.5 text-xs rounded-full ${
+                                            communication.sentiment === 'positive' ? 'bg-green-100 text-green-800' :
+                                            communication.sentiment === 'negative' ? 'bg-red-100 text-red-800' :
+                                            'bg-gray-100 text-gray-800'
+                                          }`}>
+                                            {communication.sentiment}
+                                          </span>
+                                        </div>
+                                      )}
+                                      {communication.follow_up_required && (
+                                        <div className="flex items-center gap-1 text-amber-600">
+                                          <AlertCircle className="h-4 w-4" />
+                                          <span>Follow-up required</span>
+                                        </div>
+                                      )}
+                                      <div className="flex items-center gap-3">
+                                        {communication.action_item_count > 0 && (
+                                          <div className="flex items-center gap-1">
+                                            <CheckSquare className="h-4 w-4 text-blue-600" />
+                                            <span>{communication.action_item_count} tasks</span>
+                                          </div>
+                                        )}
+                                        {communication.attachment_count > 0 && (
+                                          <div className="flex items-center gap-1">
+                                            <Paperclip className="h-4 w-4 text-gray-600" />
+                                            <span>{communication.attachment_count} files</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Summary and Notes */}
+                                {(communication.summary || communication.notes) && (
+                                  <div>
+                                    <h5 className="text-sm font-medium text-gray-700 mb-2">Summary & Notes</h5>
+                                    {communication.summary && (
+                                      <div className="mb-2">
+                                        <span className="text-xs text-gray-500 uppercase tracking-wide">Summary</span>
+                                        <p className="text-sm text-gray-700 mt-1">{communication.summary}</p>
+                                      </div>
+                                    )}
+                                    {communication.notes && (
+                                      <div>
+                                        <span className="text-xs text-gray-500 uppercase tracking-wide">Notes</span>
+                                        <p className="text-sm text-gray-700 mt-1">{communication.notes}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Next Steps */}
+                                {communication.next_steps && (
+                                  <div>
+                                    <h5 className="text-sm font-medium text-gray-700 mb-2">Next Steps</h5>
+                                    <p className="text-sm text-gray-700">{communication.next_steps}</p>
+                                  </div>
+                                )}
+
+                                {/* Tags */}
+                                {communication.tags && communication.tags.length > 0 && (
+                                  <div>
+                                    <h5 className="text-sm font-medium text-gray-700 mb-2">Tags</h5>
+                                    <div className="flex flex-wrap gap-1">
+                                      {communication.tags.map((tag, index) => (
+                                        <span key={index} className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
 
