@@ -938,13 +938,9 @@ const ClientCommunications: React.FC = () => {
   // ActionItemsDisplay component
   const ActionItemsDisplay = ({ communicationId }: { communicationId: number }) => {
     const { data: actionItems, isLoading } = useQuery({
-      queryKey: ['/api/communications', communicationId, 'action-items'],
+      queryKey: [`/api/communications/${communicationId}/action-items`],
       enabled: !!communicationId,
     });
-
-    console.log('ActionItemsDisplay - communicationId:', communicationId);
-    console.log('ActionItemsDisplay - actionItems:', actionItems);
-    console.log('ActionItemsDisplay - isLoading:', isLoading);
 
     if (isLoading) return <div className="text-sm text-gray-500">Loading action items...</div>;
     if (!actionItems || actionItems.length === 0) return null;
@@ -957,8 +953,6 @@ const ClientCommunications: React.FC = () => {
       item.title !== 'undefined' &&
       item.title !== 'null'
     );
-
-    console.log('ActionItemsDisplay - validActionItems:', validActionItems);
 
     if (validActionItems.length === 0) return null;
 
