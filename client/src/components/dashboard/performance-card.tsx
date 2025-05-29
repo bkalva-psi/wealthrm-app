@@ -48,6 +48,7 @@ export function PerformanceCard() {
   // Fetch performance data based on selected period
   const { data: performanceData, isLoading } = useQuery({
     queryKey: ['/api/performance', selectedPeriod],
+    queryFn: () => fetch(`/api/performance?period=${selectedPeriod}`).then(res => res.json()),
     select: (data: any) => data || { targets: [], actuals: [], peers: [] }
   });
 

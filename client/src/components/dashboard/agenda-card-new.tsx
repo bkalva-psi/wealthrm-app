@@ -515,6 +515,11 @@ export function AgendaCard() {
                           <div className="flex-1 min-w-0">
                             <div className="truncate font-medium">{closure.fullName}</div>
                             <div className="text-slate-500 capitalize">{closure.stage}</div>
+                            {closure.expectedCloseDate && (
+                              <div className="text-xs text-orange-600 mt-0.5">
+                                Due: {new Date(closure.expectedCloseDate).toLocaleDateString()}
+                              </div>
+                            )}
                           </div>
                           <div className="text-right">
                             <div className="text-purple-600 font-medium">₹{closure.dealValue ? (closure.dealValue / 100000).toFixed(1) : '0'}L</div>
@@ -557,12 +562,17 @@ export function AgendaCard() {
                           onClick={() => toggleItem('closure', closure.id)}
                         >
                           <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium">{closure.prospectName}</div>
-                            <div className="text-slate-500">{closure.stage}</div>
+                            <div className="truncate font-medium">{closure.fullName}</div>
+                            <div className="text-slate-500 capitalize">{closure.stage}</div>
+                            {closure.expectedCloseDate && (
+                              <div className="text-xs text-orange-600 mt-0.5">
+                                Due: {new Date(closure.expectedCloseDate).toLocaleDateString()}
+                              </div>
+                            )}
                           </div>
                           <div className="text-right">
-                            <div className="text-purple-600 font-medium">₹{(closure.potentialAumValue / 100000).toFixed(1)}L</div>
-                            <div className="text-slate-500">{closure.probability}%</div>
+                            <div className="text-purple-600 font-medium">₹{closure.dealValue ? (closure.dealValue / 100000).toFixed(1) : '0'}L</div>
+                            <div className="text-slate-500">{closure.probabilityScore}%</div>
                           </div>
                         </div>
                         {isExpanded && (
