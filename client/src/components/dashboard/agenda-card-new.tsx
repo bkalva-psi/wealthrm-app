@@ -591,9 +591,8 @@ export function AgendaCard() {
           </div>
         </Collapsible>
 
-        {/* Expected Closures section temporarily disabled for debugging */}
-        {false && (
-          <Collapsible open={expandedSections.closures} onOpenChange={() => toggleSection('closures')}>
+        {/* 5. Expected Closures Section */}
+        <Collapsible open={expandedSections.closures} onOpenChange={() => toggleSection('closures')}>
           <div className="px-4 py-3">
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
@@ -715,9 +714,8 @@ export function AgendaCard() {
             </CollapsibleContent>
           </div>
         </Collapsible>
-        )}
 
-        {/* 5. Recent Customer Emails Section */}
+        {/* 6. Recent Customer Emails Section */}
         <Collapsible open={expandedSections.emails} onOpenChange={() => toggleSection('emails')}>
           <div className="px-4 py-3">
             <CollapsibleTrigger asChild>
