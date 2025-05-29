@@ -16,7 +16,7 @@ import {
   communicationTemplates, CommunicationTemplate, InsertCommunicationTemplate,
   communicationAnalytics, CommunicationAnalytic, InsertCommunicationAnalytic
 } from "@shared/schema";
-import { eq, and, gte, lt, lte, desc } from "drizzle-orm";
+import { eq, and, gte, lt, lte, desc, sql } from "drizzle-orm";
 import { db } from "./db";
 
 // modify the interface with any CRUD methods
@@ -1225,18 +1225,66 @@ export class DatabaseStorage implements IStorage {
     return task || undefined;
   }
 
-  async getTasks(assignedTo?: number, completed?: boolean): Promise<Task[]> {
-    let query = db.select().from(tasks);
+  async getTasks(assignedTo?: number, completed?: boolean): Promise<any[]> {
+    // Build the SQL query with proper filtering
+    let regularTasksSQL = `
+      SELECT 
+        t.id, t.title, t.description, t.due_date as "dueDate", t.completed,
+        t.client_id as "clientId", t.prospect_id as "prospectId", t.assigned_to as "assignedTo",
+        'medium' as priority, 'task' as source, NULL as "communicationId", 'task' as "actionType",
+        COALESCE(c.full_name, p.name) as "clientName"
+      FROM tasks t
+      LEFT JOIN clients c ON t.client_id = c.id
+      LEFT JOIN prospects p ON t.prospect_id = p.id
+      WHERE 1=1
+    `;
     
-    if (assignedTo) {
-      query = query.where(eq(tasks.assignedTo, assignedTo));
+    let actionItemsSQL = `
+      SELECT 
+        cai.id, cai.title, cai.description, cai.due_date as "dueDate",
+        CASE WHEN cai.completed_at IS NOT NULL THEN true ELSE false END as completed,
+        comm.client_id as "clientId", NULL as "prospectId", cai.assigned_to as "assignedTo",
+        cai.priority, 'action_item' as source, cai.communication_id as "communicationId", 
+        cai.action_type as "actionType", cl.full_name as "clientName"
+      FROM communication_action_items cai
+      JOIN communications comm ON cai.communication_id = comm.id
+      LEFT JOIN clients cl ON comm.client_id = cl.id
+      WHERE cai.action_type = 'task' AND cai.status = 'pending'
+    `;
+    
+    const params: any[] = [];
+    let paramIndex = 1;
+    
+    if (assignedTo !== undefined) {
+      regularTasksSQL += ` AND t.assigned_to = $${paramIndex}`;
+      actionItemsSQL += ` AND cai.assigned_to = $${paramIndex}`;
+      params.push(assignedTo);
+      paramIndex++;
     }
     
     if (completed !== undefined) {
-      query = query.where(eq(tasks.completed, completed));
+      regularTasksSQL += ` AND t.completed = $${paramIndex}`;
+      if (completed) {
+        actionItemsSQL += ` AND cai.completed_at IS NOT NULL`;
+      } else {
+        actionItemsSQL += ` AND cai.completed_at IS NULL`;
+      }
+      params.push(completed);
+      paramIndex++;
     }
     
-    return query;
+    // Execute both queries
+    const { rows: regularTasks } = await db.$client.query(regularTasksSQL, params);
+    const { rows: actionItems } = await db.$client.query(actionItemsSQL, params);
+    
+    // Combine and sort by due date
+    const allTasks = [...regularTasks, ...actionItems].sort((a, b) => {
+      const dateA = a.dueDate ? new Date(a.dueDate) : new Date('9999-12-31');
+      const dateB = b.dueDate ? new Date(b.dueDate) : new Date('9999-12-31');
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return allTasks;
   }
 
   async createTask(insertTask: InsertTask): Promise<Task> {
