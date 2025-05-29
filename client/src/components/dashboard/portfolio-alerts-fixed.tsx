@@ -116,7 +116,7 @@ export function PortfolioAlertsFixed() {
             ))
           ) : alerts && alerts.length > 0 ? (
             alerts.slice(0, 3).map((alert) => {
-              const isUrgent = alert.priority === 'urgent';
+              const isUrgent = alert.severity === 'critical';
               
               return (
                 <div key={alert.id} className={`px-4 py-3 transition-colors ${alert.read ? 'bg-slate-50' : 'bg-white hover:bg-slate-50'}`}>
@@ -141,21 +141,17 @@ export function PortfolioAlertsFixed() {
                         >
                           {alert.severity ? alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1) : 'Unknown'}
                         </Badge>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs px-2 py-0.5 ${priorityColors[alert.priority] || 'bg-gray-100 text-gray-800 border-gray-200'}`}
-                        >
-                          {alert.priority ? alert.priority.charAt(0).toUpperCase() + alert.priority.slice(1) : 'Normal'}
-                        </Badge>
-                        {alert.clientName && (
-                          <span className="text-xs text-slate-500">• {alert.clientName}</span>
+                        {alert.actionRequired && (
+                          <Badge variant="outline" className="text-xs px-2 py-0.5 text-orange-600 border-orange-200">
+                            Action Required
+                          </Badge>
                         )}
                       </div>
                     </div>
                     
                     <div className="flex flex-col items-end gap-1 ml-3">
                       <span className="text-xs text-slate-500">
-                        {alert.timestamp ? formatDistanceToNow(new Date(alert.timestamp), { addSuffix: true }) : 'Unknown time'}
+                        {alert.createdAt ? formatDistanceToNow(new Date(alert.createdAt), { addSuffix: true }) : 'Unknown time'}
                       </span>
                       {!alert.read && (
                         <Button
