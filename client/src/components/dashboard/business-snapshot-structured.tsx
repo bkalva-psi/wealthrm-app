@@ -55,6 +55,7 @@ export function BusinessSnapshotStructured() {
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   const [expandedSecondLevel, setExpandedSecondLevel] = useState<Set<string>>(new Set());
   const [secondLevelData, setSecondLevelData] = useState<Record<string, SecondLevelData[]>>({});
+  const [showAllSecondLevel, setShowAllSecondLevel] = useState<Set<string>>(new Set());
 
   // Main business metrics query
   const { data: businessMetrics, isLoading } = useQuery<BusinessMetrics>({
@@ -147,6 +148,17 @@ export function BusinessSnapshotStructured() {
     }
     
     setExpandedSecondLevel(newExpanded);
+  };
+
+  // Toggle show more/less for second level data
+  const toggleShowAllSecondLevel = (key: string) => {
+    const newShowAll = new Set(showAllSecondLevel);
+    if (newShowAll.has(key)) {
+      newShowAll.delete(key);
+    } else {
+      newShowAll.add(key);
+    }
+    setShowAllSecondLevel(newShowAll);
   };
 
 
@@ -454,15 +466,44 @@ export function BusinessSnapshotStructured() {
                                   {item.hasSecondLevel && item.categoryKey && expandedSecondLevel.has(item.categoryKey) && (
                                     <div className="ml-4 pl-2 border-l-2 border-gray-200 dark:border-gray-600 space-y-1">
                                       {secondLevelData[item.categoryKey] && secondLevelData[item.categoryKey].length > 0 ? (
-                                        secondLevelData[item.categoryKey].map((product, productIndex) => (
-                                          <div key={productIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                                            <span className="truncate max-w-32">{product.productName}</span>
-                                            <div className="text-right">
-                                              <div className="font-medium">{formatCurrency(product.value)}</div>
-                                              <div className="text-gray-400">{product.percentage}%</div>
-                                            </div>
-                                          </div>
-                                        ))
+                                        <>
+                                          {(() => {
+                                            const products = secondLevelData[item.categoryKey];
+                                            const showAll = showAllSecondLevel.has(item.categoryKey);
+                                            const displayProducts = showAll ? products : products.slice(0, 5);
+                                            
+                                            return (
+                                              <>
+                                                {displayProducts.map((product, productIndex) => (
+                                                  <div key={productIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                                                    <span className="truncate max-w-32">{product.productName}</span>
+                                                    <div className="text-right">
+                                                      <div className="font-medium">{formatCurrency(product.value)}</div>
+                                                      <div className="text-gray-400">{product.percentage}%</div>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                                
+                                                {products.length > 5 && (
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      toggleShowAllSecondLevel(item.categoryKey);
+                                                    }}
+                                                    className="text-xs text-blue-500 hover:text-blue-700 mt-1 flex items-center space-x-1"
+                                                  >
+                                                    <span>{showAll ? 'Show Less' : `Show More (${products.length - 5} more)`}</span>
+                                                    {showAll ? (
+                                                      <ChevronUp className="h-3 w-3" />
+                                                    ) : (
+                                                      <ChevronDown className="h-3 w-3" />
+                                                    )}
+                                                  </button>
+                                                )}
+                                              </>
+                                            );
+                                          })()}
+                                        </>
                                       ) : (
                                         <div className="text-xs text-gray-500 italic">
                                           {secondLevelData[item.categoryKey] ? 'No products found' : 'Loading products...'}
