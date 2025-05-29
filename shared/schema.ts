@@ -488,6 +488,49 @@ export const pipelineAnalysis = pgTable("pipeline_analysis", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Client Complaints - for tracking customer service issues
+export const clientComplaints = pgTable("client_complaints", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  assignedTo: integer("assigned_to").references(() => users.id).notNull(),
+  
+  // Complaint details
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // service_quality, transaction_issue, product_complaint, documentation, fees_charges, others
+  subcategory: text("subcategory"), // delayed_execution, wrong_advice, mis_selling, etc.
+  
+  // Severity and status
+  severity: text("severity").notNull(), // critical, high, medium, low
+  status: text("status").notNull().default("open"), // open, in_progress, resolved, closed
+  priority: text("priority").notNull(), // urgent, high, normal, low
+  
+  // Resolution details
+  resolutionDetails: text("resolution_details"),
+  resolutionDate: timestamp("resolution_date"),
+  resolutionBy: integer("resolution_by").references(() => users.id),
+  
+  // Regulatory compliance
+  isRegulatory: boolean("is_regulatory").notNull().default(false), // SEBI/RBI reportable
+  regulatoryRefNumber: text("regulatory_ref_number"),
+  
+  // Timeline tracking
+  reportedDate: timestamp("reported_date").notNull().defaultNow(),
+  acknowledgmentDate: timestamp("acknowledgment_date"),
+  targetResolutionDate: timestamp("target_resolution_date"),
+  
+  // Source and channel
+  reportedVia: text("reported_via"), // phone, email, branch, online, mobile_app
+  escalationLevel: integer("escalation_level").notNull().default(1), // 1=L1, 2=L2, etc.
+  
+  // Customer satisfaction
+  resolutionRating: integer("resolution_rating"), // 1-5 scale
+  customerFeedback: text("customer_feedback"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Create insert schemas for the new tables
 export const insertClientPortfolioBreakdownSchema = createInsertSchema(clientPortfolioBreakdowns).omit({
   id: true,
@@ -498,6 +541,15 @@ export const insertRmBusinessMetricSchema = createInsertSchema(rmBusinessMetrics
   id: true,
   createdAt: true,
 });
+
+export const insertClientComplaintSchema = createInsertSchema(clientComplaints).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Complaint = typeof clientComplaints.$inferSelect;
+export type InsertComplaint = z.infer<typeof insertClientComplaintSchema>;
 
 export const insertProductRevenueSchema = createInsertSchema(productRevenue).omit({
   id: true,

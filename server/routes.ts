@@ -348,6 +348,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+
+  // Client Complaints routes
+  app.get("/api/complaints", async (req, res) => {
+    try {
+      // For testing purposes - create automatic authentication if not authenticated
+      if (!req.session.userId) {
+        req.session.userId = 1;
+        req.session.userRole = "admin";
+      }
+
+      const complaints = await db
+        .select({
+          id: clientComplaints.id,
+          clientId: clientComplaints.clientId,
+          clientName: clients.fullName,
+          title: clientComplaints.title,
+          description: clientComplaints.description,
+          category: clientComplaints.category,
+          subcategory: clientComplaints.subcategory,
+          severity: clientComplaints.severity,
+          status: clientComplaints.status,
+          priority: clientComplaints.priority,
+          reportedDate: clientComplaints.reportedDate,
+          targetResolutionDate: clientComplaints.targetResolutionDate,
+          reportedVia: clientComplaints.reportedVia,
+          escalationLevel: clientComplaints.escalationLevel,
+          isRegulatory: clientComplaints.isRegulatory,
+          resolutionRating: clientComplaints.resolutionRating
+        })
+        .from(clientComplaints)
+        .leftJoin(clients, eq(clientComplaints.clientId, clients.id))
+        .where(eq(clientComplaints.assignedTo, req.session.userId as number))
+        .orderBy(desc(clientComplaints.reportedDate));
+
+      res.json(complaints);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+      res.status(500).json({ error: "Failed to fetch complaints" });
+    }
+  });
   
   app.get("/api/clients/recent", async (req, res) => {
     // For testing purposes - create automatic authentication if not authenticated
