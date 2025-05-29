@@ -1284,8 +1284,8 @@ const ClientCommunications: React.FC = () => {
       </div>
 
       <div className="container mx-auto py-6">        
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="md:col-span-1">
+        <div className="max-w-4xl mx-auto">
+          <div>
             <Card className="mb-4">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
