@@ -16,7 +16,7 @@ router.get('/api/communications', async (req: Request, res: Response) => {
         (SELECT COUNT(*) FROM communication_action_items cai WHERE cai.communication_id = c.id) as action_item_count,
         (SELECT COUNT(*) FROM communication_attachments ca WHERE ca.communication_id = c.id) as attachment_count
       FROM communications c
-      JOIN customers cl ON c.client_id = cl.id
+      JOIN clients cl ON c.client_id = cl.id
       ORDER BY c.start_time DESC
     `);
     
