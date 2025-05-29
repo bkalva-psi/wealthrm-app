@@ -43,7 +43,6 @@ interface Complaint {
 export function PortfolioAlerts() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [complaintsOpen, setComplaintsOpen] = useState(true);
   
   const { data: alerts, isLoading } = useQuery<PortfolioAlert[]>({
     queryKey: ['/api/portfolio-alerts'],
