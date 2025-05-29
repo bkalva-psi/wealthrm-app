@@ -45,12 +45,10 @@ export default function Dashboard() {
           <BusinessSnapshotStructured />
         </div>
         
-        {/* Column 3: Talking Points + Announcements + Alerts + Complaints */}
+        {/* Column 3: Talking Points + Announcements */}
         <div className="space-y-4 sm:space-y-6">
           <TalkingPointsCard />
           <AnnouncementsCard />
-          <PortfolioAlertsClean />
-          <SimpleComplaints />
         </div>
       </div>
     </div>

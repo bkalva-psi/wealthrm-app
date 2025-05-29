@@ -102,6 +102,10 @@ export function AgendaCard() {
     queryKey: ['/api/portfolio-alerts'],
   });
 
+  const { data: complaintsData, isLoading: complaintsLoading } = useQuery({
+    queryKey: ['/api/complaints'],
+  });
+
   // Fetch prospects and filter for expected closures
   const { data: allProspects, isLoading: closuresLoading } = useQuery({
     queryKey: ['/api/prospects'],
@@ -477,7 +481,77 @@ export function AgendaCard() {
           </div>
         </Collapsible>
 
-        {/* 4. Expected Closures Section */}
+        {/* 4. Client Complaints Section */}
+        <Collapsible open={expandedSections.complaints} onOpenChange={() => toggleSection('complaints')}>
+          <div className="px-4 py-3">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
+                <div className="flex items-center gap-2 w-full">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Client Complaints</h3>
+                  {expandedSections.complaints ? (
+                    <ChevronDown className="h-3 w-3 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 text-slate-400" />
+                  )}
+                </div>
+              </Button>
+            </CollapsibleTrigger>
+            
+            <div className="mt-2">
+              {complaintsData && complaintsData.length > 0 ? (
+                <div className="space-y-2">
+                  {complaintsData.slice(0, 2).map((complaint) => (
+                    <div key={complaint.id} className="flex items-center justify-between text-xs bg-orange-50 p-2 rounded-md">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{complaint.title}</div>
+                        <div className="truncate text-slate-500">{complaint.clientName}</div>
+                      </div>
+                      <div className="flex gap-1">
+                        <Badge 
+                          variant={complaint.severity === "critical" ? "destructive" : complaint.severity === "high" ? "destructive" : "secondary"} 
+                          className="text-xs"
+                        >
+                          {complaint.severity}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500">No complaints</p>
+              )}
+            </div>
+            
+            <CollapsibleContent>
+              {complaintsData && complaintsData.length > 2 && (
+                <div className="space-y-2 mt-2">
+                  {complaintsData.slice(2).map((complaint) => (
+                    <div key={complaint.id} className="flex items-center justify-between text-xs bg-orange-50 p-2 rounded-md">
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{complaint.title}</div>
+                        <div className="truncate text-slate-500">{complaint.clientName}</div>
+                      </div>
+                      <div className="flex gap-1">
+                        <Badge 
+                          variant={complaint.severity === "critical" ? "destructive" : complaint.severity === "high" ? "destructive" : "secondary"} 
+                          className="text-xs"
+                        >
+                          {complaint.severity}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {complaint.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+
+        {/* 5. Expected Closures Section */}
         <Collapsible open={expandedSections.closures} onOpenChange={() => toggleSection('closures')}>
           <div className="px-4 py-3">
             <CollapsibleTrigger asChild>
