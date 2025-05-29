@@ -57,6 +57,10 @@ interface Communication {
   next_steps: string | null;
   action_item_count: number;
   attachment_count: number;
+  // Additional fields for global view
+  client_name?: string;
+  client_initials?: string;
+  client_tier?: string;
 }
 
 interface CommunicationPreference {
@@ -111,8 +115,9 @@ interface Template {
 const CommunicationItem: React.FC<{ 
   communication: Communication, 
   isSelected: boolean, 
-  onClick: () => void 
-}> = ({ communication, isSelected, onClick }) => {
+  onClick: () => void,
+  isGlobalView?: boolean
+}> = ({ communication, isSelected, onClick, isGlobalView = false }) => {
   const channelIcon = () => {
     switch (communication.channel) {
       case 'phone':
@@ -140,6 +145,21 @@ const CommunicationItem: React.FC<{
               {channelIcon()}
             </div>
             <div>
+              {isGlobalView && communication.client_name && (
+                <div className="flex items-center gap-2 mb-1">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage 
+                      src={svgToDataURL(generateAvatar(communication.client_initials || getInitials(communication.client_name)))} 
+                      alt={communication.client_name} 
+                    />
+                    <AvatarFallback>{communication.client_initials || getInitials(communication.client_name)}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-slate-700">{communication.client_name}</span>
+                  {communication.client_tier && (
+                    <div className={`w-2 h-2 rounded-full ${getTierColor(communication.client_tier).bg}`}></div>
+                  )}
+                </div>
+              )}
               <h4 className="font-medium">
                 {communication.subject || 
                  `${communication.communication_type.replace('_', ' ')} (${format(new Date(communication.start_time), 'dd MMM yyyy')})`}
@@ -1270,6 +1290,7 @@ const ClientCommunications: React.FC = () => {
                         communication={communication}
                         isSelected={selectedCommunication?.id === communication.id}
                         onClick={() => setSelectedCommunication(communication)}
+                        isGlobalView={isGlobalView}
                       />
                     ))
                   )}
@@ -1277,7 +1298,7 @@ const ClientCommunications: React.FC = () => {
               </CardContent>
             </Card>
             
-            <ClientPreferences clientId={clientId} />
+            {!isGlobalView && <ClientPreferences clientId={clientId!} />}
           </div>
           
           <div className="md:col-span-2">

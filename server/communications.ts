@@ -4,6 +4,29 @@ import { pool } from './db';
 // Create a router to handle communication-related routes
 const router = Router();
 
+// Get all communications (for global view)
+router.get('/api/communications', async (req: Request, res: Response) => {
+  try {
+    // Query to get all communications with client names and their action items and attachments
+    const { rows: communications } = await pool.query(`
+      SELECT c.*, 
+        cl.full_name as client_name,
+        cl.initials as client_initials,
+        cl.tier as client_tier,
+        (SELECT COUNT(*) FROM communication_action_items cai WHERE cai.communication_id = c.id) as action_item_count,
+        (SELECT COUNT(*) FROM communication_attachments ca WHERE ca.communication_id = c.id) as attachment_count
+      FROM communications c
+      JOIN customers cl ON c.client_id = cl.id
+      ORDER BY c.start_time DESC
+    `);
+    
+    res.json(communications);
+  } catch (error) {
+    console.error('Error fetching all communications:', error);
+    res.status(500).json({ error: 'Failed to fetch communications' });
+  }
+});
+
 // Get all communications for a specific client
 router.get('/api/communications/:clientId', async (req: Request, res: Response) => {
   try {
