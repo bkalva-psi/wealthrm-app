@@ -615,14 +615,13 @@ export const insertCommunicationSchema = createInsertSchema(communications).omit
 export const communicationActionItems = pgTable("communication_action_items", {
   id: serial("id").primaryKey(),
   communicationId: integer("communication_id").references(() => communications.id).notNull(),
-  description: text("description").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  assignedTo: integer("assigned_to").references(() => users.id),
   dueDate: timestamp("due_date"),
   priority: text("priority").default("medium"), // low, medium, high
   status: text("status").default("pending"), // pending, in-progress, completed, cancelled
-  assignedTo: integer("assigned_to").references(() => users.id).notNull(),
   completedAt: timestamp("completed_at"),
-  notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertCommunicationActionItemSchema = createInsertSchema(communicationActionItems).omit({
