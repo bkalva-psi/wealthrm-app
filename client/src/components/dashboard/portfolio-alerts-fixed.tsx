@@ -13,10 +13,10 @@ interface PortfolioAlert {
   title: string;
   description: string;
   severity: 'critical' | 'high' | 'medium' | 'low';
-  priority: 'urgent' | 'high' | 'normal' | 'low';
-  timestamp: string;
+  clientId?: number;
   read: boolean;
-  clientName?: string;
+  actionRequired: boolean;
+  createdAt: string;
 }
 
 interface Complaint {
@@ -137,15 +137,15 @@ export function PortfolioAlertsFixed() {
                       <div className="flex gap-2 items-center">
                         <Badge 
                           variant={alert.severity === 'critical' ? 'destructive' : 'secondary'} 
-                          className={`text-xs px-2 py-0.5 ${severityColors[alert.severity]}`}
+                          className={`text-xs px-2 py-0.5 ${severityColors[alert.severity] || 'bg-gray-100 text-gray-800 border-gray-200'}`}
                         >
-                          {alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1)}
+                          {alert.severity ? alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1) : 'Unknown'}
                         </Badge>
                         <Badge 
                           variant="outline" 
-                          className={`text-xs px-2 py-0.5 ${priorityColors[alert.priority]}`}
+                          className={`text-xs px-2 py-0.5 ${priorityColors[alert.priority] || 'bg-gray-100 text-gray-800 border-gray-200'}`}
                         >
-                          {alert.priority.charAt(0).toUpperCase() + alert.priority.slice(1)}
+                          {alert.priority ? alert.priority.charAt(0).toUpperCase() + alert.priority.slice(1) : 'Normal'}
                         </Badge>
                         {alert.clientName && (
                           <span className="text-xs text-slate-500">• {alert.clientName}</span>
@@ -155,7 +155,7 @@ export function PortfolioAlertsFixed() {
                     
                     <div className="flex flex-col items-end gap-1 ml-3">
                       <span className="text-xs text-slate-500">
-                        {formatDistanceToNow(new Date(alert.timestamp), { addSuffix: true })}
+                        {alert.timestamp ? formatDistanceToNow(new Date(alert.timestamp), { addSuffix: true }) : 'Unknown time'}
                       </span>
                       {!alert.read && (
                         <Button
@@ -242,21 +242,21 @@ export function PortfolioAlertsFixed() {
                       <div className="flex gap-2 items-center flex-wrap">
                         <Badge 
                           variant={complaint.severity === 'critical' ? 'destructive' : 'secondary'} 
-                          className={`text-xs px-2 py-0.5 ${severityColors[complaint.severity]}`}
+                          className={`text-xs px-2 py-0.5 ${severityColors[complaint.severity] || 'bg-gray-100 text-gray-800 border-gray-200'}`}
                         >
-                          {complaint.severity.charAt(0).toUpperCase() + complaint.severity.slice(1)}
+                          {complaint.severity ? complaint.severity.charAt(0).toUpperCase() + complaint.severity.slice(1) : 'Unknown'}
                         </Badge>
                         <Badge 
                           variant="outline" 
-                          className={`text-xs px-2 py-0.5 ${priorityColors[complaint.priority]}`}
+                          className={`text-xs px-2 py-0.5 ${priorityColors[complaint.priority] || 'bg-gray-100 text-gray-800 border-gray-200'}`}
                         >
-                          {complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1)}
+                          {complaint.priority ? complaint.priority.charAt(0).toUpperCase() + complaint.priority.slice(1) : 'Normal'}
                         </Badge>
                         <Badge 
                           variant={complaint.status === 'open' ? 'destructive' : complaint.status === 'in_progress' ? 'default' : 'secondary'}
                           className="text-xs px-2 py-0.5"
                         >
-                          {complaint.status.replace('_', ' ').charAt(0).toUpperCase() + complaint.status.replace('_', ' ').slice(1)}
+                          {complaint.status ? complaint.status.replace('_', ' ').charAt(0).toUpperCase() + complaint.status.replace('_', ' ').slice(1) : 'Unknown'}
                         </Badge>
                         {complaint.escalationLevel > 1 && (
                           <Badge variant="outline" className="text-xs px-2 py-0.5 text-red-600 border-red-200">
@@ -273,10 +273,10 @@ export function PortfolioAlertsFixed() {
                     
                     <div className="flex flex-col items-end gap-1 ml-3">
                       <span className="text-xs text-slate-500">
-                        {formatDistanceToNow(new Date(complaint.reportedDate), { addSuffix: true })}
+                        {complaint.reportedDate ? formatDistanceToNow(new Date(complaint.reportedDate), { addSuffix: true }) : 'Unknown date'}
                       </span>
                       <span className="text-xs text-slate-500">
-                        Due: {formatDistanceToNow(new Date(complaint.targetResolutionDate), { addSuffix: true })}
+                        Due: {complaint.targetResolutionDate ? formatDistanceToNow(new Date(complaint.targetResolutionDate), { addSuffix: true }) : 'Unknown date'}
                       </span>
                     </div>
                   </div>
