@@ -955,7 +955,13 @@ const ClientCommunications: React.FC = () => {
                     <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                   )}
                   <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                    <span>Due: {format(new Date(item.due_date), 'MMM dd, yyyy')}</span>
+                    <span>Due: {(() => {
+                      try {
+                        return item.due_date ? format(new Date(item.due_date), 'MMM dd, yyyy') : 'No due date';
+                      } catch (error) {
+                        return 'Invalid date';
+                      }
+                    })()}</span>
                     <span className={`px-2 py-0.5 rounded-full ${
                       item.priority === 'high' ? 'bg-red-100 text-red-800' :
                       item.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
