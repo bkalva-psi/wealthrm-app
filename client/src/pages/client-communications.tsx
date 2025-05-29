@@ -1302,70 +1302,31 @@ const ClientCommunications: React.FC = () => {
                           onClick={() => setSelectedCommunication(communication)}
                         >
                           <div className="space-y-2">
-                            {/* Header Row - Date and Channel Icon */}
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <div className={`flex items-center gap-1 ${
-                                  communication.direction === 'outbound' ? 'text-blue-600' : 'text-green-600'
-                                }`}>
-                                  {communication.channel === 'phone' && <Phone className="h-4 w-4" />}
-                                  {communication.channel === 'email' && <Mail className="h-4 w-4" />}
-                                  {communication.channel === 'video' && <Video className="h-4 w-4" />}
-                                  {communication.channel === 'in_person' && <Users className="h-4 w-4" />}
-                                  {!['phone', 'email', 'video', 'in_person'].includes(communication.channel) && <MessageSquare className="h-4 w-4" />}
-                                </div>
-                                <span className="text-sm font-medium text-gray-900">
-                                  {format(new Date(communication.start_time), 'MMM dd, yyyy')}
-                                </span>
-                              </div>
-                              
-                              {/* Follow-up indicator */}
-                              {communication.follow_up_required && (
-                                <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                              )}
-                            </div>
-
-                            {/* Client Info for Global View */}
-                            {isGlobalView && communication.client_name && (
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <span className="text-xs font-medium text-blue-800">
-                                    {communication.client_initials}
-                                  </span>
-                                </div>
-                                <span className="text-sm text-gray-700">{communication.client_name}</span>
-                                {communication.client_tier && (
-                                  <span className={`px-2 py-0.5 text-xs rounded-full ${
-                                    communication.client_tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
-                                    communication.client_tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-gray-100 text-gray-800'
-                                  }`}>
-                                    {communication.client_tier}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-
                             {/* Subject/Title */}
                             <h4 className="font-medium text-gray-900 text-sm line-clamp-1">
                               {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
                             </h4>
                             
-                            {/* Summary of activity counts */}
-                            <div className="flex items-center gap-3 text-xs text-gray-500">
-                              <span className="capitalize">{communication.communication_type.replace('_', ' ')}</span>
-                              {communication.action_item_count > 0 && (
-                                <div className="flex items-center gap-1">
-                                  <CheckSquare className="h-3 w-3" />
-                                  <span>{communication.action_item_count} tasks</span>
+                            {/* Client name and date */}
+                            <div className="flex items-center justify-between">
+                              {/* Client Info */}
+                              {isGlobalView && communication.client_name ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span className="text-xs font-medium text-blue-800">
+                                      {communication.client_initials}
+                                    </span>
+                                  </div>
+                                  <span className="text-sm text-gray-600">{communication.client_name}</span>
                                 </div>
+                              ) : (
+                                <div></div>
                               )}
-                              {communication.attachment_count > 0 && (
-                                <div className="flex items-center gap-1">
-                                  <Paperclip className="h-3 w-3" />
-                                  <span>{communication.attachment_count} files</span>
-                                </div>
-                              )}
+                              
+                              {/* Date */}
+                              <span className="text-sm text-gray-500">
+                                {format(new Date(communication.start_time), 'MMM dd, yyyy')}
+                              </span>
                             </div>
                           </div>
                         </div>
