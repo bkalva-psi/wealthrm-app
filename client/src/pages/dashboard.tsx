@@ -7,7 +7,7 @@ import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
 import { BusinessSnapshotStructured } from "@/components/dashboard/business-snapshot-structured";
 import { PortfolioAlertsClean } from "@/components/dashboard/portfolio-alerts-clean";
-import { ComplaintsCard } from "@/components/dashboard/complaints-card";
+import { SimpleComplaints } from "@/components/dashboard/simple-complaints";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
 
@@ -50,7 +50,7 @@ export default function Dashboard() {
           <TalkingPointsCard />
           <AnnouncementsCard />
           <PortfolioAlertsClean />
-          <ComplaintsCard />
+          <SimpleComplaints />
         </div>
       </div>
     </div>
