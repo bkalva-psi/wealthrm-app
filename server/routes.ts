@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { pool } from "./db";
 import { db } from "./db";
-import { eq, sql, and } from "drizzle-orm";
+import { eq, sql, and, gt } from "drizzle-orm";
 import { clients, prospects, transactions } from "@shared/schema";
 import communicationsRouter from "./communications";
 import session from "express-session";
@@ -2077,5 +2077,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  // Get expected closures with positive deal values
+  app.get('/api/prospects/expected-closures', async (req: Request, res: Response) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    try {
+      const closures = await db
+        .select()
+        .from(prospects)
+        .where(
+          and(
+            eq(prospects.assignedTo, req.session.userId),
+            gt(prospects.dealValue, 0)
+          )
+        )
+        .orderBy(prospects.expectedCloseDate);
+
+      res.json(closures);
+    } catch (error) {
+      console.error('Error fetching expected closures:', error);
+      res.status(500).json({ error: 'Failed to fetch expected closures' });
+    }
+  });
+
   return httpServer;
 }

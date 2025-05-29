@@ -101,31 +101,10 @@ export function AgendaCard() {
     queryKey: ['/api/portfolio-alerts'],
   });
 
-  // Mock closures data (would come from prospects API in real implementation)
-  const closures = [
-    {
-      id: 1,
-      prospectName: "Ravi Sharma",
-      stage: "proposal",
-      potentialAumValue: 2500000,
-      probability: 85
-    },
-    {
-      id: 2,
-      prospectName: "Meera Technologies",
-      stage: "qualified", 
-      potentialAumValue: 1800000,
-      probability: 70
-    },
-    {
-      id: 3,
-      prospectName: "Deepak Agarwal",
-      stage: "proposal",
-      potentialAumValue: 1200000,
-      probability: 60
-    }
-  ];
-  const closuresLoading = false;
+  // Fetch expected closures with positive deal values
+  const { data: closures, isLoading: closuresLoading } = useQuery({
+    queryKey: ['/api/prospects/expected-closures'],
+  });
 
   // Process and sort tasks by urgency
   const urgentTasks = tasks ? 
@@ -494,14 +473,14 @@ export function AgendaCard() {
           </div>
         </Collapsible>
 
-        {/* 4. Closures This Week Section */}
+        {/* 4. Expected Closures Section */}
         <Collapsible open={expandedSections.closures} onOpenChange={() => toggleSection('closures')}>
           <div className="px-4 py-3">
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
                 <div className="flex items-center gap-2 w-full">
                   <CheckCircle className="h-4 w-4 text-purple-600" />
-                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Closures This Week</h3>
+                  <h3 className="text-xs font-medium text-slate-600 uppercase tracking-wide flex-1 text-left">Expected Closures</h3>
                   {expandedSections.closures ? (
                     <ChevronDown className="h-3 w-3 text-slate-400" />
                   ) : (
@@ -512,15 +491,15 @@ export function AgendaCard() {
             </CollapsibleTrigger>
             
             <div className="mt-2">
-              {isLoading ? (
+              {closuresLoading ? (
                 <div className="space-y-2">
                   {Array(2).fill(0).map((_, i) => (
                     <Skeleton key={i} className="h-8 w-full" />
                   ))}
                 </div>
-              ) : topClosures && topClosures.length > 0 ? (
+              ) : closures && closures.length > 0 ? (
                 <div className="space-y-2">
-                  {topClosures.slice(0, 2).map((closure) => {
+                  {closures.slice(0, showMoreClosures ? closures.length : 2).map((closure) => {
                     const closureKey = `closure-${closure.id}`;
                     const isExpanded = expandedItems[closureKey];
                     return (
@@ -530,21 +509,24 @@ export function AgendaCard() {
                           onClick={() => toggleItem('closure', closure.id)}
                         >
                           <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium">{closure.prospectName}</div>
-                            <div className="text-slate-500">{closure.stage}</div>
+                            <div className="truncate font-medium">{closure.fullName}</div>
+                            <div className="text-slate-500 capitalize">{closure.stage}</div>
                           </div>
                           <div className="text-right">
-                            <div className="text-purple-600 font-medium">₹{(closure.potentialAumValue / 100000).toFixed(1)}L</div>
-                            <div className="text-slate-500">{closure.probability}%</div>
+                            <div className="text-purple-600 font-medium">₹{closure.dealValue ? (closure.dealValue / 100000).toFixed(1) : '0'}L</div>
+                            <div className="text-slate-500">{closure.probabilityScore}%</div>
                           </div>
                         </div>
                         {isExpanded && (
                           <div className="mt-2 ml-6 p-2 bg-purple-50 rounded-md text-xs">
                             <div className="space-y-1">
-                              <div><span className="font-medium">Prospect:</span> {closure.prospectName}</div>
+                              <div><span className="font-medium">Prospect:</span> {closure.fullName}</div>
                               <div><span className="font-medium">Stage:</span> {closure.stage}</div>
-                              <div><span className="font-medium">Potential AUM:</span> ₹{(closure.potentialAumValue / 100000).toFixed(1)} Lakhs</div>
-                              <div><span className="font-medium">Probability:</span> {closure.probability}%</div>
+                              <div><span className="font-medium">Deal Value:</span> ₹{closure.dealValue ? (closure.dealValue / 100000).toFixed(1) : '0'} Lakhs</div>
+                              <div><span className="font-medium">Probability:</span> {closure.probabilityScore}%</div>
+                              {closure.expectedCloseDate && (
+                                <div><span className="font-medium">Expected Close:</span> {new Date(closure.expectedCloseDate).toLocaleDateString()}</div>
+                              )}
                               <div><span className="font-medium">Action:</span> Follow up on proposal and schedule closing meeting</div>
                             </div>
                           </div>
