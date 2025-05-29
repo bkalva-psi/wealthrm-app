@@ -834,3 +834,39 @@ export type InsertPerformanceActual = z.infer<typeof insertPerformanceActualSche
 
 export type PerformancePeerRanking = typeof performancePeerRankings.$inferSelect;
 export type InsertPerformancePeerRanking = z.infer<typeof insertPerformancePeerRankingSchema>;
+
+// Performance Incentives - earned, projected, and possible incentives
+export const performanceIncentives = pgTable("performance_incentives", {
+  id: serial("id").primaryKey(),
+  rmId: integer("rm_id").references(() => users.id).notNull(),
+  period: text("period").notNull(), // M, Q, HY, Y
+  year: integer("year").notNull(),
+  quarter: integer("quarter"), // 1-4 for quarterly, null for others
+  month: integer("month"), // 1-12 for monthly, null for others
+  
+  // Incentive amounts in rupees
+  earnedAmount: doublePrecision("earned_amount").default(0), // Already earned
+  projectedAmount: doublePrecision("projected_amount").default(0), // Projected for full period
+  possibleAmount: doublePrecision("possible_amount").default(0), // Maximum possible
+  
+  // Target achievement percentages
+  targetAchievementPercent: doublePrecision("target_achievement_percent").default(0),
+  
+  // Incentive breakdown by category
+  baseIncentive: doublePrecision("base_incentive").default(0),
+  performanceBonus: doublePrecision("performance_bonus").default(0),
+  teamBonus: doublePrecision("team_bonus").default(0),
+  specialIncentives: doublePrecision("special_incentives").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPerformanceIncentiveSchema = createInsertSchema(performanceIncentives).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type PerformanceIncentive = typeof performanceIncentives.$inferSelect;
+export type InsertPerformanceIncentive = z.infer<typeof insertPerformanceIncentiveSchema>;

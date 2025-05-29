@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { pool } from "./db";
 import { db } from "./db";
 import { eq, sql, and, gt } from "drizzle-orm";
-import { clients, prospects, transactions } from "@shared/schema";
+import { clients, prospects, transactions, performanceIncentives } from "@shared/schema";
 import communicationsRouter from "./communications";
 import session from "express-session";
 import MemoryStore from "memorystore";
