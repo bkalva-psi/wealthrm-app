@@ -626,30 +626,36 @@ export function AgendaCard() {
                           onClick={() => toggleItem('closure', closure.id)}
                         >
                           <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium">{closure.fullName}</div>
-                            <div className="text-slate-500 capitalize">{closure.stage}</div>
-                            {closure.expectedCloseDate && (
+                            <div className="truncate font-medium">{closure.client_name}</div>
+                            <div className="text-slate-500">{closure.title}</div>
+                            {closure.expected_close_date && (
                               <div className="text-xs text-orange-600 mt-0.5">
-                                Due: {new Date(closure.expectedCloseDate).toLocaleDateString()}
+                                Expected: {new Date(closure.expected_close_date).toLocaleDateString()}
                               </div>
                             )}
                           </div>
                           <div className="text-right">
-                            <div className="text-purple-600 font-medium">₹{closure.dealValue ? (closure.dealValue / 100000).toFixed(1) : '0'}L</div>
-                            <div className="text-slate-500">{closure.probabilityScore}%</div>
+                            <div className="text-purple-600 font-medium">₹{closure.deal_value ? (closure.deal_value / 100000).toFixed(1) : '0'}L</div>
+                            <div className="text-slate-500">{closure.priority}</div>
                           </div>
                         </div>
                         {isExpanded && (
                           <div className="mt-2 ml-6 p-2 bg-purple-50 rounded-md text-xs">
                             <div className="space-y-1">
-                              <div><span className="font-medium">Prospect:</span> {closure.fullName}</div>
-                              <div><span className="font-medium">Stage:</span> {closure.stage}</div>
-                              <div><span className="font-medium">Deal Value:</span> ₹{closure.dealValue ? (closure.dealValue / 100000).toFixed(1) : '0'} Lakhs</div>
-                              <div><span className="font-medium">Probability:</span> {closure.probabilityScore}%</div>
-                              {closure.expectedCloseDate && (
-                                <div><span className="font-medium">Expected Close:</span> {new Date(closure.expectedCloseDate).toLocaleDateString()}</div>
+                              <div><span className="font-medium">Client:</span> {closure.client_name}</div>
+                              <div><span className="font-medium">Action:</span> {closure.title}</div>
+                              {closure.description && (
+                                <div><span className="font-medium">Description:</span> {closure.description}</div>
                               )}
-                              <div><span className="font-medium">Action:</span> Follow up on proposal and schedule closing meeting</div>
+                              <div><span className="font-medium">Deal Value:</span> ₹{closure.deal_value ? (closure.deal_value / 100000).toFixed(1) : '0'} Lakhs</div>
+                              <div><span className="font-medium">Priority:</span> {closure.priority}</div>
+                              <div><span className="font-medium">Status:</span> {closure.status}</div>
+                              {closure.due_date && (
+                                <div><span className="font-medium">Due Date:</span> {new Date(closure.due_date).toLocaleDateString()}</div>
+                              )}
+                              {closure.expected_close_date && (
+                                <div><span className="font-medium">Expected Close:</span> {new Date(closure.expected_close_date).toLocaleDateString()}</div>
+                              )}
                             </div>
                           </div>
                         )}
