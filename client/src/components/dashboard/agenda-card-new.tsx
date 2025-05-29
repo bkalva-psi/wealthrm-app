@@ -114,8 +114,9 @@ export function AgendaCard() {
   // Process and sort tasks by urgency
   const urgentTasks = tasks ? 
     [...tasks]
+      .filter(task => !task.completed) // Only show uncompleted tasks
       .sort((a, b) => getTaskUrgencyScore(b) - getTaskUrgencyScore(a))
-      .slice(0, 3) : [];
+      .slice(0, 6) : []; // Show more tasks to ensure visibility
 
   // Sort appointments by time
   const todayAppointments = appointments ? 
@@ -196,7 +197,7 @@ export function AgendaCard() {
                     <Skeleton key={i} className="h-8 w-full" />
                   ))}
                 </div>
-              ) : urgentTasks.length > 0 ? (
+              ) : urgentTasks && urgentTasks.length > 0 ? (
                 <div className="space-y-2">
                   {urgentTasks.slice(0, 2).map((task) => {
                     const taskKey = `task-${task.id}`;
@@ -590,8 +591,9 @@ export function AgendaCard() {
           </div>
         </Collapsible>
 
-        {/* 5. Expected Closures Section */}
-        <Collapsible open={expandedSections.closures} onOpenChange={() => toggleSection('closures')}>
+        {/* Expected Closures section temporarily disabled for debugging */}
+        {false && (
+          <Collapsible open={expandedSections.closures} onOpenChange={() => toggleSection('closures')}>
           <div className="px-4 py-3">
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
@@ -713,6 +715,7 @@ export function AgendaCard() {
             </CollapsibleContent>
           </div>
         </Collapsible>
+        )}
 
         {/* 5. Recent Customer Emails Section */}
         <Collapsible open={expandedSections.emails} onOpenChange={() => toggleSection('emails')}>
