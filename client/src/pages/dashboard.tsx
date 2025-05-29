@@ -6,7 +6,8 @@ import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
 import { BusinessSnapshotStructured } from "@/components/dashboard/business-snapshot-structured";
-import { PortfolioAlertsFixed } from "@/components/dashboard/portfolio-alerts-fixed";
+import { PortfolioAlertsClean } from "@/components/dashboard/portfolio-alerts-clean";
+import { ComplaintsCard } from "@/components/dashboard/complaints-card";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
 
@@ -44,11 +45,12 @@ export default function Dashboard() {
           <BusinessSnapshotStructured />
         </div>
         
-        {/* Column 3: Talking Points + Announcements + Alerts */}
+        {/* Column 3: Talking Points + Announcements + Alerts + Complaints */}
         <div className="space-y-4 sm:space-y-6">
           <TalkingPointsCard />
           <AnnouncementsCard />
-          <PortfolioAlertsFixed />
+          <PortfolioAlertsClean />
+          <ComplaintsCard />
         </div>
       </div>
     </div>
