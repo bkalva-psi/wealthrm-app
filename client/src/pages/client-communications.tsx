@@ -1558,10 +1558,7 @@ const ClientCommunications: React.FC = () => {
                                   <ActionItemsDisplay communicationId={communication.id} />
                                 )}
 
-                                {/* Attachments */}
-                                {communication.attachment_count > 0 && (
-                                  <AttachmentsDisplay communicationId={communication.id} />
-                                )}
+
 
                                 {/* Tags */}
                                 {communication.tags && communication.tags.length > 0 && (
