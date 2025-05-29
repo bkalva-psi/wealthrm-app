@@ -116,17 +116,44 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             </div>
           )}
           
-          {/* Personal details section - navigates to personal info page */}
-          <div 
-            className="flex-1 overflow-hidden cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'personal')}
-            title="View client personal information"
-          >
-            <div className="flex items-center">
-              <h3 className="font-medium text-slate-800 truncate">{client.fullName}</h3>
+          {/* Personal details section */}
+          <div className="flex-1 overflow-hidden">
+            {/* Client name - navigates to personal info page */}
+            <div 
+              className="cursor-pointer"
+              onClick={(e) => handleSectionClick(e, 'personal')}
+              title="View client personal information"
+            >
+              <h3 className="font-medium text-slate-800 truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
             </div>
-            <div className="text-xs text-slate-500">{client.phone}</div>
-            <div className="text-xs text-slate-500 truncate">{client.email}</div>
+            
+            {/* Phone - clickable to dial */}
+            {client.phone && (
+              <div className="text-xs text-slate-500 mt-1">
+                <a 
+                  href={`tel:${client.phone}`}
+                  className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                  title="Call client"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {client.phone}
+                </a>
+              </div>
+            )}
+            
+            {/* Email - clickable to send email */}
+            {client.email && (
+              <div className="text-xs text-slate-500 mt-1">
+                <a 
+                  href={`mailto:${client.email}`}
+                  className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
+                  title="Send email to client"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {client.email}
+                </a>
+              </div>
+            )}
           </div>
         </div>
         
