@@ -1232,7 +1232,7 @@ export class DatabaseStorage implements IStorage {
         t.id, t.title, t.description, t.due_date as "dueDate", t.completed,
         t.client_id as "clientId", t.prospect_id as "prospectId", t.assigned_to as "assignedTo",
         'medium' as priority, 'task' as source, NULL as "communicationId", 'task' as "actionType",
-        COALESCE(c.full_name, p.name) as "clientName"
+        COALESCE(c.full_name, p.full_name) as "clientName"
       FROM tasks t
       LEFT JOIN clients c ON t.client_id = c.id
       LEFT JOIN prospects p ON t.prospect_id = p.id
