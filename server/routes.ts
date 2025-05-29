@@ -2001,7 +2001,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Duplicate endpoint removed - API moved to top of file
+  // Third-level drill-down: Get clients holding a specific product
+  app.get('/api/business-metrics/:userId/product/:productName/clients', async (req: Request, res: Response) => {
+    try {
+      const { productName } = req.params;
+      const userId = req.session.userId;
+      
+      const clientHoldings = await db
+        .select({
+          clientName: clients.fullName,
+          clientId: clients.id,
+          value: sql<number>`sum(${transactions.totalAmount})`,
+          transactionCount: sql<number>`count(*)`,
+          avgInvestmentSize: sql<number>`round(avg(${transactions.totalAmount}))`,
+          percentage: sql<number>`cast(sum(${transactions.totalAmount}) * 100.0 / nullif((select sum(total_amount) from ${transactions} where product_name = ${productName}), 0) as integer)`
+        })
+        .from(transactions)
+        .innerJoin(clients, eq(transactions.clientId, clients.id))
+        .where(
+          and(
+            eq(transactions.productName, productName),
+            eq(clients.assignedTo, userId)
+          )
+        )
+        .groupBy(clients.id, clients.fullName)
+        .orderBy(sql`sum(${transactions.totalAmount}) desc`);
+
+      console.log(`Client holdings for ${productName}:`, clientHoldings);
+      res.json(clientHoldings);
+    } catch (error) {
+      console.error("Error fetching client holdings:", error);
+      res.status(500).json({ error: "Failed to fetch client holdings" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

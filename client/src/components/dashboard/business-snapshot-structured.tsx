@@ -29,6 +29,15 @@ interface SecondLevelData {
   percentage: number;
 }
 
+interface ThirdLevelData {
+  clientName: string;
+  clientId: number;
+  value: number;
+  transactionCount: number;
+  avgInvestmentSize: number;
+  percentage: number;
+}
+
 interface Dimension {
   id: string;
   name: string;
@@ -54,8 +63,11 @@ export function BusinessSnapshotStructured() {
   const [expandedMetrics, setExpandedMetrics] = useState<Set<string>>(new Set());
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
   const [expandedSecondLevel, setExpandedSecondLevel] = useState<Set<string>>(new Set());
+  const [expandedThirdLevel, setExpandedThirdLevel] = useState<Set<string>>(new Set());
   const [secondLevelData, setSecondLevelData] = useState<Record<string, SecondLevelData[]>>({});
+  const [thirdLevelData, setThirdLevelData] = useState<Record<string, ThirdLevelData[]>>({});
   const [showAllSecondLevel, setShowAllSecondLevel] = useState<Set<string>>(new Set());
+  const [showAllThirdLevel, setShowAllThirdLevel] = useState<Set<string>>(new Set());
 
   // Main business metrics query
   const { data: businessMetrics, isLoading } = useQuery<BusinessMetrics>({
@@ -159,6 +171,53 @@ export function BusinessSnapshotStructured() {
       newShowAll.add(key);
     }
     setShowAllSecondLevel(newShowAll);
+  };
+
+  // Toggle show more/less for third level data
+  const toggleShowAllThirdLevel = (key: string) => {
+    const newShowAll = new Set(showAllThirdLevel);
+    if (newShowAll.has(key)) {
+      newShowAll.delete(key);
+    } else {
+      newShowAll.add(key);
+    }
+    setShowAllThirdLevel(newShowAll);
+  };
+
+  // Handle third-level drill-down (product → clients)
+  const handleThirdLevelClick = async (productName: string) => {
+    const thirdLevelKey = productName;
+    const newExpanded = new Set(expandedThirdLevel);
+    
+    if (newExpanded.has(thirdLevelKey)) {
+      newExpanded.delete(thirdLevelKey);
+    } else {
+      newExpanded.add(thirdLevelKey);
+      
+      // Fetch client holdings for this product
+      if (!thirdLevelData[thirdLevelKey]) {
+        try {
+          const response = await fetch(`/api/business-metrics/1/product/${encodeURIComponent(productName)}/clients`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setThirdLevelData(prev => ({
+              ...prev,
+              [thirdLevelKey]: data
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching client holdings:', error);
+        }
+      }
+    }
+    
+    setExpandedThirdLevel(newExpanded);
   };
 
 
@@ -475,12 +534,73 @@ export function BusinessSnapshotStructured() {
                                             return (
                                               <>
                                                 {displayProducts.map((product, productIndex) => (
-                                                  <div key={productIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                                                    <span className="truncate max-w-32">{product.productName}</span>
-                                                    <div className="text-right">
-                                                      <div className="font-medium">{formatCurrency(product.value)}</div>
-                                                      <div className="text-gray-400">{product.percentage}%</div>
+                                                  <div key={productIndex} className="space-y-1">
+                                                    <div 
+                                                      className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-1"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleThirdLevelClick(product.productName);
+                                                      }}
+                                                    >
+                                                      <span className="truncate max-w-32 flex items-center">
+                                                        {product.productName}
+                                                        <span className="ml-1 text-blue-500">↗</span>
+                                                      </span>
+                                                      <div className="text-right">
+                                                        <div className="font-medium">{formatCurrency(product.value)}</div>
+                                                        <div className="text-gray-400">{product.percentage}%</div>
+                                                      </div>
                                                     </div>
+                                                    
+                                                    {/* Third-level drill-down: Clients holding this product */}
+                                                    {expandedThirdLevel.has(product.productName) && thirdLevelData[product.productName] && (
+                                                      <div className="ml-4 pl-2 border-l-2 border-blue-200 dark:border-blue-600 space-y-1">
+                                                        {thirdLevelData[product.productName].length > 0 ? (
+                                                          <>
+                                                            {(() => {
+                                                              const clients = thirdLevelData[product.productName];
+                                                              const showAll = showAllThirdLevel.has(product.productName);
+                                                              const displayClients = showAll ? clients : clients.slice(0, 5);
+                                                              
+                                                              return (
+                                                                <>
+                                                                  {displayClients.map((client, clientIndex) => (
+                                                                    <div key={clientIndex} className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                                                                      <span className="truncate max-w-32">{client.clientName}</span>
+                                                                      <div className="text-right">
+                                                                        <div className="font-medium">{formatCurrency(client.value)}</div>
+                                                                        <div className="text-gray-400">{client.percentage}%</div>
+                                                                      </div>
+                                                                    </div>
+                                                                  ))}
+                                                                  
+                                                                  {clients.length > 5 && (
+                                                                    <button
+                                                                      onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        toggleShowAllThirdLevel(product.productName);
+                                                                      }}
+                                                                      className="text-xs text-blue-500 hover:text-blue-700 mt-1 flex items-center space-x-1"
+                                                                    >
+                                                                      <span>{showAll ? 'Show Less' : `Show More (${clients.length - 5} more)`}</span>
+                                                                      {showAll ? (
+                                                                        <ChevronUp className="h-3 w-3" />
+                                                                      ) : (
+                                                                        <ChevronDown className="h-3 w-3" />
+                                                                      )}
+                                                                    </button>
+                                                                  )}
+                                                                </>
+                                                              );
+                                                            })()}
+                                                          </>
+                                                        ) : (
+                                                          <div className="text-xs text-gray-500 italic">
+                                                            {thirdLevelData[product.productName] ? 'No clients found' : 'Loading clients...'}
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 ))}
                                                 
