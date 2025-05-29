@@ -903,28 +903,35 @@ const NewCommunicationDialog: React.FC<{
 // Main ClientCommunications component
 const ClientCommunications: React.FC = () => {
   const params = useParams();
-  // The URL format is /clients/:id/communications, so we need to get the id parameter
-  const id = params.id || window.location.hash.split('/')[2];
-  const clientId = parseInt(id as string);
+  
+  // Always declare state hooks first
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
   const [filterType, setFilterType] = useState<string | null>(null);
   const [filterChannel, setFilterChannel] = useState<string | null>(null);
   
-  // Fetch client data
+  // Determine if we're viewing all communications or client-specific communications
+  const currentPath = window.location.hash.replace('#', '');
+  const isGlobalView = currentPath === '/communications';
+  
+  // Extract client ID only if we're not in global view
+  const id = isGlobalView ? null : (params.id || window.location.hash.split('/')[2]);
+  const clientId = id ? parseInt(id as string) : null;
+  
+  // Always call useQuery hooks, but control them with enabled
   const { data: client, isLoading: isClientLoading } = useQuery({
     queryKey: [`/api/clients/${clientId}`],
-    enabled: !!clientId
+    enabled: !!clientId && !isGlobalView && !isNaN(clientId!)
   });
 
-  // Query to fetch client communications
+  // Query to fetch communications - either all or client-specific
   const { 
     data: communications, 
     isLoading,
     refetch: refetchCommunications
   } = useQuery({
-    queryKey: [`/api/communications/${clientId}`],
-    enabled: !isNaN(clientId)
+    queryKey: isGlobalView ? ['/api/communications'] : [`/api/communications/${clientId}`],
+    enabled: isGlobalView || (!!clientId && !isNaN(clientId!))
   });
   
   // Query to fetch client data - removed duplicate declaration
@@ -957,7 +964,8 @@ const ClientCommunications: React.FC = () => {
     setFilterChannel(null);
   };
   
-  if (isNaN(clientId)) {
+  // Don't show error for global view when there's no client ID
+  if (!isGlobalView && (isNaN(clientId) || !clientId)) {
     return (
       <div className="p-4">
         <p>Invalid client ID</p>
@@ -969,11 +977,12 @@ const ClientCommunications: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Set page title */}
       {React.useEffect(() => {
-        document.title = `${client?.fullName || 'Client'} - Communications | Wealth RM`;
-      }, [client?.fullName])}
+        document.title = isGlobalView ? 'All Communications | Wealth RM' : `${client?.fullName || 'Client'} - Communications | Wealth RM`;
+      }, [client?.fullName, isGlobalView])}
 
-      {/* Harmonized header band - Mobile Optimized */}
-      <div className={`bg-white border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+      {/* Harmonized header band - Mobile Optimized - Only show for client-specific view */}
+      {!isGlobalView && (
+        <div className={`bg-white border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           {/* Left side - Back arrow and client name */}
           <div className="flex items-center min-w-0 flex-1">
@@ -1098,24 +1107,32 @@ const ClientCommunications: React.FC = () => {
             </Button>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Page Description - Mobile Optimized */}
       <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
           <div className="min-w-0 flex-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Communications</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {isGlobalView ? 'All Communications' : 'Communications'}
+            </h2>
             <p className="text-sm sm:text-base text-gray-600 mt-1">
-              Track all client interactions and communication history
+              {isGlobalView 
+                ? 'View all client interactions and communication history across your portfolio'
+                : 'Track all client interactions and communication history'
+              }
             </p>
           </div>
           
-          <div className="flex-shrink-0">
-            <NewCommunicationDialog 
-              clientId={clientId}
-              onSuccess={refetchCommunications}
-            />
-          </div>
+          {!isGlobalView && (
+            <div className="flex-shrink-0">
+              <NewCommunicationDialog 
+                clientId={clientId!}
+                onSuccess={refetchCommunications}
+              />
+            </div>
+          )}
         </div>
       </div>
 
