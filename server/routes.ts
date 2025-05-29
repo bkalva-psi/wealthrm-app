@@ -2076,22 +2076,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  // Get expected closures with positive deal values
-  app.get('/api/prospects/expected-closures', async (req: Request, res: Response) => {
-    try {
-      const closures = await db
-        .select()
-        .from(prospects)
-        .where(gt(prospects.dealValue, 0))
-        .orderBy(prospects.expectedCloseDate);
 
-      res.json(closures);
-    } catch (error) {
-      console.error('Error fetching expected closures:', error);
-      res.status(500).json({ error: 'Failed to fetch expected closures' });
-    }
-  });
+
+  const httpServer = createServer(app);
 
   return httpServer;
 }

@@ -70,6 +70,7 @@ function getPriorityBadge(priority: string) {
 export function AgendaCard() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+  const [showMoreClosures, setShowMoreClosures] = useState(false);
   const today = new Date();
   const formattedDate = format(today, "EEEE, MMMM d");
   
@@ -101,10 +102,13 @@ export function AgendaCard() {
     queryKey: ['/api/portfolio-alerts'],
   });
 
-  // Fetch expected closures with positive deal values
-  const { data: closures, isLoading: closuresLoading } = useQuery({
-    queryKey: ['/api/prospects/expected-closures'],
+  // Fetch prospects and filter for expected closures
+  const { data: allProspects, isLoading: closuresLoading } = useQuery({
+    queryKey: ['/api/prospects'],
   });
+
+  // Filter prospects with positive deal values for expected closures
+  const closures = allProspects?.filter(prospect => prospect.dealValue > 0) || [];
 
   // Process and sort tasks by urgency
   const urgentTasks = tasks ? 
