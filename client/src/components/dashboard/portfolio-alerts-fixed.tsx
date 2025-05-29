@@ -214,7 +214,7 @@ export function PortfolioAlertsFixed() {
             ))
           ) : complaints && complaints.length > 0 ? (
             complaints.slice(0, 3).map((complaint) => {
-              const isUrgent = complaint.priority === 'urgent';
+              const isUrgent = complaint.severity === 'critical';
               
               return (
                 <div key={complaint.id} className="px-4 py-3 transition-colors bg-white hover:bg-slate-50">
