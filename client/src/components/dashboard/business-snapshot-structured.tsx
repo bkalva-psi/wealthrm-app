@@ -329,24 +329,39 @@ export function BusinessSnapshotStructured() {
   const renderChart = (dimension: Dimension) => {
     if (dimension.chartType === 'donut') {
       return (
-        <ResponsiveContainer width="100%" height={280}>
-          <PieChart>
-            <Pie
-              data={dimension.data}
-              cx="50%"
-              cy="40%"
-              innerRadius={40}
-              outerRadius={70}
-              paddingAngle={2}
-              dataKey="value"
-            >
-              {dimension.data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value: any) => formatCurrency(value)} />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="space-y-3">
+          <ResponsiveContainer width="100%" height={220}>
+            <PieChart>
+              <Pie
+                data={dimension.data}
+                cx="50%"
+                cy="50%"
+                innerRadius={40}
+                outerRadius={70}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {dimension.data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value: any) => formatCurrency(value)} />
+            </PieChart>
+          </ResponsiveContainer>
+          
+          {/* Custom bottom legend */}
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
+            {dimension.data.map((entry, index) => (
+              <div key={index} className="flex items-center space-x-1">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                />
+                <span className="text-gray-700 dark:text-gray-300">{entry.category}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       );
     } else {
       return (
