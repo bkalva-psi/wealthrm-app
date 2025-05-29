@@ -140,8 +140,6 @@ export const prospects = pgTable("prospects", {
   initials: text("initials"),
   potentialAum: text("potential_aum"),
   potentialAumValue: real("potential_aum_value"),
-  dealValue: real("deal_value"), // Deal value for closure tracking
-  expectedCloseDate: timestamp("expected_close_date"), // Expected closure date
   email: text("email"),
   phone: text("phone"),
   stage: text("stage").notNull().default("new"), // new, qualified, proposal, won, lost
@@ -622,6 +620,9 @@ export const communicationActionItems = pgTable("communication_action_items", {
   priority: text("priority").default("medium"), // low, medium, high
   status: text("status").default("pending"), // pending, in-progress, completed, cancelled
   completedAt: timestamp("completed_at"),
+  actionType: text("action_type").default("task"), // task, deal_closure, follow_up
+  dealValue: real("deal_value"), // monetary value for deal_closure type
+  expectedCloseDate: timestamp("expected_close_date"), // expected closure date for deals
 });
 
 export const insertCommunicationActionItemSchema = createInsertSchema(communicationActionItems).omit({
