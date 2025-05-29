@@ -164,14 +164,17 @@ export function PerformanceCard() {
     ];
   };
 
-  const metrics = getMetricsForPeriod(selectedPeriod);
+  // Use API data for metrics and peer comparison
+  const metrics = performanceData?.targets || [];
+  const peersData = performanceData?.peers || [];
+  const overallPercentile = performanceData?.overallPercentile || 0;
 
-  // Prepare spider chart data for peer comparison
-  const spiderChartData = metrics.map((metric) => ({
-    metric: metric.name.split(' ')[0], // Use short names for the chart
-    fullName: metric.name, // Full name for tooltip
-    percentile: metric.percentile || 0,
-    rank: metric.rank,
+  // Prepare spider chart data for peer comparison using API data
+  const spiderChartData = peersData.map((peer) => ({
+    metric: peer.name.split(' ')[0], // Use short names for the chart
+    fullName: peer.name, // Full name for tooltip
+    percentile: peer.percentile || 0,
+    rank: peer.rank,
     fullWidth: 100 // For reference circle
   }));
 
@@ -215,10 +218,8 @@ export function PerformanceCard() {
     return [Math.max(0, minValue - padding), maxValue + padding];
   };
 
-  // Calculate overall average percentile
-  const overallAveragePercentile = Math.round(
-    metrics.reduce((sum, metric) => sum + (metric.percentile || 0), 0) / metrics.length
-  );
+  // Use overall percentile from API data
+  const overallAveragePercentile = overallPercentile || 0;
 
   // Custom tooltip component for desktop hover
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -437,26 +438,26 @@ export function PerformanceCard() {
               <div className="space-y-3">
                 <div className="text-xs font-medium text-slate-600">Individual Performance Metrics</div>
                 <div className="grid grid-cols-1 gap-2">
-                  {metrics.map((metric) => {
-                    const medal = getRankMedal(metric.rank || 0);
+                  {peersData.map((peer) => {
+                    const medal = getRankMedal(peer.rank || 0);
                     return (
-                      <div key={metric.name} className="flex items-center justify-between bg-slate-50 rounded-lg p-3">
+                      <div key={peer.name} className="flex items-center justify-between bg-slate-50 rounded-lg p-3">
                         <div className="flex items-center gap-3">
                           <div className="w-6 text-center text-sm">
-                            {medal || `#${metric.rank}`}
+                            {medal || `#${peer.rank}`}
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-slate-900">{metric.name}</div>
+                            <div className="text-sm font-medium text-slate-900">{peer.name}</div>
                             <div className="text-xs text-slate-500">
-                              Rank {metric.rank} of {metric.totalRMs} RMs
+                              Rank {peer.rank} of {peer.totalRMs} RMs
                             </div>
                           </div>
                         </div>
                         <Badge 
                           variant="outline" 
-                          className={cn("text-xs", getPercentileColor(metric.percentile || 0))}
+                          className={cn("text-xs", getPercentileColor(peer.percentile || 0))}
                         >
-                          {metric.percentile}%ile
+                          {peer.percentile}%ile
                         </Badge>
                       </div>
                     );
