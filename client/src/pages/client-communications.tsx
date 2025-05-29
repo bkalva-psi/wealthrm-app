@@ -974,7 +974,7 @@ const ClientCommunications: React.FC = () => {
                       item.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {item.status.replace('_', ' ')}
+                      {item.status ? item.status.replace('_', ' ') : 'pending'}
                     </span>
                   </div>
                 </div>
