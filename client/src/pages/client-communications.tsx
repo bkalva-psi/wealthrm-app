@@ -78,6 +78,7 @@ interface CommunicationPreference {
 interface ActionItem {
   id: number;
   communication_id: number;
+  title: string;
   description: string | null;
   assigned_to: number;
   due_date: string;
@@ -949,7 +950,10 @@ const ClientCommunications: React.FC = () => {
             <div key={item.id} className="p-3 bg-white border border-gray-200 rounded-lg">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h6 className="text-sm font-medium text-gray-900">{item.description}</h6>
+                  <h6 className="text-sm font-medium text-gray-900">{item.title}</h6>
+                  {item.description && (
+                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                  )}
                   <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                     <span>Due: {(() => {
                       try {
