@@ -2001,6 +2001,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get prospect closures for this week
+  app.get('/api/prospects/closures-this-week', async (req: Request, res: Response) => {
+    try {
+      const userId = req.session.userId;
+      
+      // Get start and end of current week
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay()); // Start of Sunday
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6); // End of Saturday
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      const closuresThisWeek = await db
+        .select({
+          id: prospects.id,
+          prospectName: prospects.fullName,
+          potentialAumValue: prospects.potentialAumValue,
+          stage: prospects.stage,
+          probability: prospects.probabilityScore,
+          lastContactDate: prospects.lastContactDate
+        })
+        .from(prospects)
+        .where(
+          and(
+            eq(prospects.assignedTo, userId),
+            inArray(prospects.stage, ['proposal', 'qualified'])
+          )
+        )
+        .orderBy(desc(prospects.potentialAumValue));
+
+      console.log(`Found ${closuresThisWeek.length} potential closures this week`);
+      res.json(closuresThisWeek);
+    } catch (error) {
+      console.error("Error fetching closures this week:", error);
+      res.status(500).json({ error: "Failed to fetch closures this week" });
+    }
+  });
+
   // Third-level drill-down: Get clients holding a specific product
   app.get('/api/business-metrics/:userId/product/:productName/clients', async (req: Request, res: Response) => {
     try {
