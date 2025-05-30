@@ -271,6 +271,7 @@ export default function CalendarPage() {
         <Button
           size="icon" 
           className="rounded-full"
+          aria-label="Add new appointment"
         >
           <Plus className="h-4 w-4" />
         </Button>
