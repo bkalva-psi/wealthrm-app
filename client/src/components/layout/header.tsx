@@ -20,6 +20,7 @@ export function Header() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Get unread portfolio alerts count
   const { data: portfolioAlerts } = useQuery({
@@ -40,7 +41,7 @@ export function Header() {
       <div className="flex items-center justify-between px-4 py-3">
         {/* Mobile Menu Button */}
         <div className="flex items-center">
-          <Sheet>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden text-slate-500 hover:text-slate-600">
                 <Menu className="h-6 w-6" />
@@ -55,7 +56,7 @@ export function Header() {
                   <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM</span>
                 </div>
               </div>
-              <Sidebar mobile={true} />
+              <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
             </SheetContent>
           </Sheet>
           

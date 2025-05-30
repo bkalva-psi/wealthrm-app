@@ -26,7 +26,7 @@ const navigationItems = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar({ mobile = false }: { mobile?: boolean }) {
+export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
   const { user } = useAuth();
   const [currentPath, setCurrentPath] = useState(window.location.hash.replace(/^#/, '') || '/');
   
@@ -43,6 +43,10 @@ export function Sidebar({ mobile = false }: { mobile?: boolean }) {
   const handleNavigation = (path: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     window.location.hash = path;
+    // Close mobile menu if callback is provided
+    if (onNavigate) {
+      onNavigate();
+    }
   };
   
   const sidebarContent = (
