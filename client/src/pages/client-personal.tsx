@@ -216,9 +216,6 @@ export default function ClientPersonalPage() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Personal Profile</h2>
-          <p className="text-gray-600 mt-1">
-            Complete client information and personal details
-          </p>
         </div>
       </div>
       
