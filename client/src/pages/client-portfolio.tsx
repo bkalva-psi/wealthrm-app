@@ -638,7 +638,7 @@ export default function ClientPortfolioPage() {
                   )}
                   
                   {/* Line 4: Navigation Icons */}
-                  <div className="flex items-center justify-evenly mt-2 w-full px-2">
+                  <div className="grid grid-cols-7 gap-1 mt-2 w-full">
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/personal`}
                       className="p-2 hover:bg-slate-100 rounded"
