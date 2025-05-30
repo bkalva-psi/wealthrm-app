@@ -49,6 +49,11 @@ function useHashRouter() {
   });
   
   useEffect(() => {
+    // Disable scroll restoration for hash navigation
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
     // Set initial hash if it's empty
     if (!window.location.hash) {
       window.location.hash = '/';
@@ -58,6 +63,13 @@ function useHashRouter() {
       const path = window.location.hash.replace(/^#/, '') || '/';
       console.log('Hash changed to:', path);
       setCurrentRoute(path);
+      
+      // Force scroll to top on every route change
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 0);
     };
     
     window.addEventListener('hashchange', handleHashChange);

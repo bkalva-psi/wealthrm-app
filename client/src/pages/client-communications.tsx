@@ -1067,29 +1067,10 @@ const ClientCommunications: React.FC = () => {
   
   // Query to fetch client data - removed duplicate declaration
   
-  // Reset selected communication when clientId changes and scroll to top
+  // Reset selected communication when clientId changes
   useEffect(() => {
     setSelectedCommunication(null);
-    // Force scroll to top with multiple attempts to override browser behavior
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    
-    // Also try after a brief delay
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 50);
   }, [clientId]);
-
-  // Also scroll to top when component first mounts
-  useEffect(() => {
-    // Force scroll to top on mount
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, []);
   
   // Select first communication when data loads if none selected
   useEffect(() => {
