@@ -205,14 +205,13 @@ export function AgendaCard() {
                     return (
                       <div key={task.id}>
                         <div 
-                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                          className="flex items-center text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
                           onClick={() => toggleItem('task', task.id)}
                         >
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             {getTaskStatusIcon(task.status)}
                             <span className="truncate">{task.title}</span>
                           </div>
-                          {getPriorityBadge(task.priority)}
                         </div>
                         {isExpanded && (
                           <div className="mt-2 ml-6 p-2 bg-orange-50 rounded-md text-xs">
@@ -242,15 +241,13 @@ export function AgendaCard() {
                     return (
                       <div key={task.id}>
                         <div 
-                          className="flex items-center justify-between text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
+                          className="flex items-center text-xs cursor-pointer hover:bg-slate-50 p-1 rounded"
                           onClick={() => toggleItem('task', task.id)}
                         >
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             {getTaskStatusIcon(task.status)}
                             <span className="truncate">{task.title}</span>
-                            <span className="text-slate-400 text-xs">Due: {task.dueDate ? format(new Date(task.dueDate), "MMM d") : "No date"}</span>
                           </div>
-                          {getPriorityBadge(task.priority)}
                         </div>
                         {isExpanded && (
                           <div className="mt-2 ml-6 p-2 bg-orange-50 rounded-md text-xs">
