@@ -58,6 +58,26 @@ export default function ClientPersonalPage() {
     });
   };
 
+  // Calculate relationship duration
+  const calculateDuration = (startDate?: string | Date | null) => {
+    if (!startDate) return "N/A";
+    
+    const start = new Date(startDate);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) {
+      return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return `${months} ${months === 1 ? 'month' : 'months'}`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      return `${years} ${years === 1 ? 'year' : 'years'}`;
+    }
+  };
+
   // Parse JSON data
   const parseJsonData = (jsonString?: string | null) => {
     if (!jsonString) return null;
@@ -278,7 +298,7 @@ export default function ClientPersonalPage() {
                       <Clock className="h-5 w-5 text-slate-400" />
                       <div>
                         <p className="text-sm text-slate-500">Relationship Duration</p>
-                        <p>{client.createdAt ? `${Math.floor((new Date().getTime() - new Date(client.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365))} years` : "N/A"}</p>
+                        <p>{calculateDuration(client.createdAt)}</p>
                       </div>
                     </div>
                     
