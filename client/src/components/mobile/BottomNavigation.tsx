@@ -87,7 +87,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) =
   const NotificationDot = ({ show, className = '' }: { show: boolean; className?: string }) => {
     if (!show) return null;
     return (
-      <div className={`absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full ${className}`} />
+      <div className={`absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full ${className}`} />
     );
   };
 
@@ -95,7 +95,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) =
     <div className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-50 ${className}`}>
       <button 
         onClick={() => navigateTo('/')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/') ? 'text-ujjivan-primary' : 'text-gray-500'} relative`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
         aria-label="Home"
       >
         <Home size={24} />
@@ -104,32 +104,44 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) =
       
       <button 
         onClick={() => navigateTo('/calendar')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/calendar') ? 'text-ujjivan-primary' : 'text-gray-500'} relative`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/calendar') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
         aria-label="Calendar"
       >
-        <Calendar size={24} />
+        <div className="relative">
+          <Calendar size={24} />
+          {hasAppointmentsToday && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+          )}
+        </div>
         <span className="text-xs mt-1">Calendar</span>
-        <NotificationDot show={Boolean(hasAppointmentsToday)} />
       </button>
       
       <button 
         onClick={() => navigateTo('/tasks')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/tasks') ? 'text-ujjivan-primary' : 'text-gray-500'} relative`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/tasks') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
         aria-label="Tasks"
       >
-        <CheckSquare size={24} />
+        <div className="relative">
+          <CheckSquare size={24} />
+          {hasOverdueTasks && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+          )}
+        </div>
         <span className="text-xs mt-1">Tasks</span>
-        <NotificationDot show={Boolean(hasOverdueTasks)} />
       </button>
       
       <button 
         onClick={() => navigateTo('/talking-points')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/talking-points') ? 'text-ujjivan-primary' : 'text-gray-500'} relative`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/talking-points') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
         aria-label="Talking Points"
       >
-        <Lightbulb size={24} />
+        <div className="relative">
+          <Lightbulb size={24} />
+          {hasRecentTalkingPoints && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full" />
+          )}
+        </div>
         <span className="text-xs mt-1">Points</span>
-        <NotificationDot show={Boolean(hasRecentTalkingPoints)} className="bg-blue-500" />
       </button>
       
       <button 

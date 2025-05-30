@@ -146,22 +146,24 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
               )}
             >
               <div className="flex items-center">
-                <item.icon
-                  className={cn(
-                    "mr-3 h-5 w-5",
-                    isActive ? "text-white" : "text-slate-400 group-hover:text-slate-500"
+                <div className="relative mr-3">
+                  <item.icon
+                    className={cn(
+                      "h-5 w-5",
+                      isActive ? "text-white" : "text-slate-400 group-hover:text-slate-500"
+                    )}
+                  />
+                  {hasNotification && (
+                    <div className={cn(
+                      "absolute -top-1 -right-1 w-2 h-2 rounded-full",
+                      item.href === '/talking-points' || item.href === '/announcements' 
+                        ? "bg-blue-500" 
+                        : "bg-red-500"
+                    )} />
                   )}
-                />
+                </div>
                 {item.name}
               </div>
-              {hasNotification && (
-                <div className={cn(
-                  "w-2 h-2 rounded-full",
-                  item.href === '/talking-points' || item.href === '/announcements' 
-                    ? "bg-blue-500" 
-                    : "bg-red-500"
-                )} />
-              )}
             </a>
           );
         })}
