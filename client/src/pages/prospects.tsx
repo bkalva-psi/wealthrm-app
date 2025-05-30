@@ -498,8 +498,8 @@ export default function Prospects() {
   
   return (
     <div className="p-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-2 sm:mb-0">Prospects</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Prospects</h1>
         <Button 
           onClick={handleAddProspectClick}
           size="icon" 
