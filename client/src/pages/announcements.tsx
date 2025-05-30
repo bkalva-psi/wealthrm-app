@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Megaphone, Calendar, User, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Megaphone, Calendar, User, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
+import { useState } from "react";
 
 interface Announcement {
   id: number;
@@ -22,6 +24,9 @@ interface Announcement {
 }
 
 export default function AnnouncementsPage() {
+  const [showAll, setShowAll] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+
   const { data: announcements, isLoading } = useQuery<Announcement[]>({
     queryKey: ['/api/announcements'],
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -36,6 +41,17 @@ export default function AnnouncementsPage() {
   }
 
   const activeAnnouncements = announcements?.filter(announcement => announcement.is_active) || [];
+  const displayedAnnouncements = showAll ? activeAnnouncements : activeAnnouncements.slice(0, 3);
+
+  const toggleExpanded = (id: number) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedItems(newExpanded);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -70,79 +86,123 @@ export default function AnnouncementsPage() {
         Important updates, campaigns, and communications from the product team
       </p>
 
-      <div className="grid gap-6">
-        {activeAnnouncements.map((announcement) => (
-          <Card key={announcement.id} className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge className={getPriorityColor(announcement.priority)} variant="outline">
-                      {announcement.priority.toUpperCase()}
-                    </Badge>
-                    <Badge className={getTypeColor(announcement.type)} variant="secondary">
-                      {announcement.type.charAt(0).toUpperCase() + announcement.type.slice(1)}
-                    </Badge>
-                    {announcement.action_required && (
-                      <Badge variant="destructive" className="flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        Action Required
-                      </Badge>
-                    )}
+      {activeAnnouncements.length > 0 ? (
+        <Card>
+          <CardContent className="p-0">
+            {displayedAnnouncements.map((announcement, index) => {
+              const isExpanded = expandedItems.has(announcement.id);
+              return (
+                <div
+                  key={announcement.id}
+                  className={`p-4 cursor-pointer hover:bg-slate-50 transition-colors ${
+                    index !== displayedAnnouncements.length - 1 ? 'border-b border-slate-100' : ''
+                  }`}
+                  onClick={() => toggleExpanded(announcement.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className={getPriorityColor(announcement.priority)} variant="outline">
+                          {announcement.priority.toUpperCase()}
+                        </Badge>
+                        <Badge className={getTypeColor(announcement.type)} variant="secondary">
+                          {announcement.type.charAt(0).toUpperCase() + announcement.type.slice(1)}
+                        </Badge>
+                        {announcement.action_required && (
+                          <Badge variant="destructive" className="flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Action Required
+                          </Badge>
+                        )}
+                      </div>
+                      <h3 className="font-medium text-slate-900 mb-1">
+                        {announcement.title}
+                      </h3>
+                      <div className="flex items-center gap-4 text-sm text-slate-500">
+                        <span>{announcement.author}</span>
+                        <span>{format(new Date(announcement.created_at), 'MMM dd')}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-slate-400" />
+                      )}
+                    </div>
                   </div>
-                  <CardTitle className="text-lg font-semibold text-slate-900">
-                    {announcement.title}
-                  </CardTitle>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              <div className="prose prose-sm text-slate-700">
-                <p className="whitespace-pre-wrap">{announcement.content}</p>
-              </div>
-              
-              {announcement.action_required && announcement.action_deadline && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-red-800">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="font-medium">Action Deadline:</span>
-                    <span>{format(new Date(announcement.action_deadline), 'MMM dd, yyyy')}</span>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100">
-                <div className="flex items-center text-sm text-slate-500">
-                  <User className="h-4 w-4 mr-1" />
-                  By: <span className="font-medium ml-1">{announcement.author}</span>
-                </div>
-                
-                <div className="flex items-center text-sm text-slate-500">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  Valid until: {format(new Date(announcement.valid_until), 'MMM dd, yyyy')}
-                </div>
-                
-                <div className="flex items-center text-sm text-slate-500">
-                  Target: <span className="font-medium ml-1 capitalize">{announcement.target_audience.replace('_', ' ')}</span>
-                </div>
-              </div>
-              
-              {announcement.tags && announcement.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {announcement.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
-      {activeAnnouncements.length === 0 && (
+                  {isExpanded && (
+                    <div className="mt-4 space-y-4">
+                      <div className="prose prose-sm text-slate-700">
+                        <p className="whitespace-pre-wrap">{announcement.content}</p>
+                      </div>
+                      
+                      {announcement.action_required && announcement.action_deadline && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                          <div className="flex items-center gap-2 text-red-800">
+                            <AlertCircle className="h-4 w-4" />
+                            <span className="font-medium">Action Deadline:</span>
+                            <span>{format(new Date(announcement.action_deadline), 'MMM dd, yyyy')}</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-100">
+                        <div className="flex items-center text-sm text-slate-500">
+                          <User className="h-4 w-4 mr-1" />
+                          By: <span className="font-medium ml-1">{announcement.author}</span>
+                        </div>
+                        
+                        <div className="flex items-center text-sm text-slate-500">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          Valid until: {format(new Date(announcement.valid_until), 'MMM dd, yyyy')}
+                        </div>
+                        
+                        <div className="flex items-center text-sm text-slate-500">
+                          Target: <span className="font-medium ml-1 capitalize">{announcement.target_audience.replace('_', ' ')}</span>
+                        </div>
+                      </div>
+                      
+                      {announcement.tags && announcement.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {announcement.tags.map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {activeAnnouncements.length > 3 && (
+              <div className="p-4 border-t border-slate-100">
+                <Button
+                  variant="ghost"
+                  className="w-full text-slate-600 hover:text-slate-900"
+                  onClick={() => setShowAll(!showAll)}
+                >
+                  {showAll ? (
+                    <>
+                      <ChevronUp className="h-4 w-4 mr-2" />
+                      Show Less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4 mr-2" />
+                      Show More ({activeAnnouncements.length - 3} more)
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
         <Card>
           <CardContent className="flex items-center justify-center py-12">
             <div className="text-center">
