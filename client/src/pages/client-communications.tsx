@@ -1071,8 +1071,13 @@ const ClientCommunications: React.FC = () => {
   useEffect(() => {
     setSelectedCommunication(null);
     // Scroll to top when navigating to a new client's notes
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [clientId]);
+
+  // Also scroll to top when component first mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
   
   // Select first communication when data loads if none selected
   useEffect(() => {
