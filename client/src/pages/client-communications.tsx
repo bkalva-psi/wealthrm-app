@@ -1422,15 +1422,14 @@ const ClientCommunications: React.FC = () => {
                         >
                           {/* Brief view */}
                           <div className="p-4 space-y-2">
-                            {/* Client name and date */}
-                            <div className="flex items-center justify-between">
-                              {/* Subject/Title */}
-                              <h4 className="font-medium text-gray-900 text-sm line-clamp-1 flex-1">
+                            {/* Subject/Title row */}
+                            <div className="flex items-start justify-between">
+                              <h4 className="font-medium text-gray-900 text-sm line-clamp-1 flex-1 pr-4">
                                 {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
                               </h4>
                               
                               {/* Date and expand indicator */}
-                              <div className="flex items-center gap-2 ml-4">
+                              <div className="flex items-center gap-2 flex-shrink-0">
                                 <span className="text-sm text-gray-500">
                                   {format(new Date(communication.start_time), 'MMM dd, yyyy')}
                                 </span>
@@ -1444,7 +1443,7 @@ const ClientCommunications: React.FC = () => {
                             
                             {/* Client name row (only show if global view) */}
                             {isGlobalView && communication.client_name && (
-                              <div className="flex items-center">
+                              <div>
                                 <span className="text-sm text-gray-600">{communication.client_name}</span>
                               </div>
                             )}
