@@ -1422,24 +1422,15 @@ const ClientCommunications: React.FC = () => {
                         >
                           {/* Brief view */}
                           <div className="p-4 space-y-2">
-                            {/* Subject/Title */}
-                            <h4 className="font-medium text-gray-900 text-sm line-clamp-1">
-                              {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
-                            </h4>
-                            
                             {/* Client name and date */}
                             <div className="flex items-center justify-between">
-                              {/* Client Info */}
-                              {isGlobalView && communication.client_name ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm text-gray-600">{communication.client_name}</span>
-                                </div>
-                              ) : (
-                                <div></div>
-                              )}
+                              {/* Subject/Title */}
+                              <h4 className="font-medium text-gray-900 text-sm line-clamp-1 flex-1">
+                                {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
+                              </h4>
                               
                               {/* Date and expand indicator */}
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 ml-4">
                                 <span className="text-sm text-gray-500">
                                   {format(new Date(communication.start_time), 'MMM dd, yyyy')}
                                 </span>
@@ -1450,6 +1441,13 @@ const ClientCommunications: React.FC = () => {
                                 )}
                               </div>
                             </div>
+                            
+                            {/* Client name row (only show if global view) */}
+                            {isGlobalView && communication.client_name && (
+                              <div className="flex items-center">
+                                <span className="text-sm text-gray-600">{communication.client_name}</span>
+                              </div>
+                            )}
                           </div>
 
                           {/* Expanded details */}
