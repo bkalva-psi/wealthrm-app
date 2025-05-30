@@ -445,30 +445,32 @@ export default function ClientPersonalPage() {
                   
                   <div>
                     <h3 className="font-medium mb-3">Professional Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Profession</p>
-                        <p className="font-medium">{client.profession || "Not specified"}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Designation</p>
-                        <p className="font-medium">{client.designation || "Not specified"}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Work Experience</p>
-                        <p className="font-medium">{client.workExperience ? `${client.workExperience} years` : "Not specified"}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Company</p>
-                        <p className="font-medium">{client.companyName || "Not specified"}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Sector</p>
-                        <p className="font-medium">{client.sectorOfEmployment || "Not specified"}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Annual Income</p>
-                        <p className="font-medium">{client.annualIncome || "Not specified"}</p>
+                    <div className="bg-slate-50 p-4 rounded-lg">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                        <div>
+                          <p className="text-sm text-slate-500">Profession</p>
+                          <p className="font-medium">{client.profession || "Not specified"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500">Designation</p>
+                          <p className="font-medium">{client.designation || "Not specified"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500">Company</p>
+                          <p className="font-medium">{client.companyName || "Not specified"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500">Work Experience</p>
+                          <p className="font-medium">{client.workExperience ? `${client.workExperience} years` : "Not specified"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500">Sector</p>
+                          <p className="font-medium">{client.sectorOfEmployment || "Not specified"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500">Annual Income</p>
+                          <p className="font-medium">{client.annualIncome || "Not specified"}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
