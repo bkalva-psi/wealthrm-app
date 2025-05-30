@@ -194,7 +194,6 @@ export default function Tasks() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
-          <p className="text-sm text-slate-600">Manage your tasks and to-dos</p>
         </div>
         <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
           <DialogTrigger asChild>

@@ -853,9 +853,6 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
-            <p className="text-gray-600 mt-1">
-              View and manage appointment schedule for this client
-            </p>
           </div>
           
           <Button 

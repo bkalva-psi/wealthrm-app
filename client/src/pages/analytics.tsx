@@ -155,7 +155,7 @@ export default function Analytics() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-slate-800">Analytics Dashboard</h1>
-        <p className="text-sm text-slate-600">Track your performance metrics and business insights</p>
+
       </div>
       
       {/* KPI Summary Cards */}
