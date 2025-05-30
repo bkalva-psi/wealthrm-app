@@ -376,9 +376,12 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           description="There are no appointments scheduled with this client."
           icon={<CalendarIcon className="h-12 w-12 text-slate-300" />}
           action={
-            <Button onClick={() => setIsNewAppointmentDialogOpen(true)}>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Schedule Appointment
+            <Button 
+              size="icon" 
+              className="rounded-full"
+              onClick={() => setIsNewAppointmentDialogOpen(true)}
+            >
+              <PlusCircle className="h-4 w-4" />
             </Button>
           }
         />
@@ -855,9 +858,12 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             </p>
           </div>
           
-          <Button onClick={() => setIsNewAppointmentDialogOpen(true)}>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Appointment
+          <Button 
+            size="icon" 
+            className="rounded-full"
+            onClick={() => setIsNewAppointmentDialogOpen(true)}
+          >
+            <PlusCircle className="h-4 w-4" />
           </Button>
         </div>
       </div>

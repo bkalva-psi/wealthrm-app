@@ -195,9 +195,8 @@ export default function CalendarPage() {
           <h2 className="text-lg font-semibold text-slate-800">
             {format(days[0], "MMMM d")} - {format(days[6], "MMMM d, yyyy")}
           </h2>
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Button variant="outline" size="icon" className="rounded-full">
             <Plus className="h-4 w-4" />
-            Add Event
           </Button>
         </div>
         
