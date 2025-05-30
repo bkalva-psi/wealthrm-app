@@ -6,7 +6,7 @@ import {
   ChevronRightIcon, 
   Clock, 
   MapPin, 
-  PlusCircle,
+  Plus,
   User,
   ArrowLeft,
   Phone,
@@ -381,7 +381,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               className="rounded-full"
               onClick={() => setIsNewAppointmentDialogOpen(true)}
             >
-              <PlusCircle className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
             </Button>
           }
         />
@@ -863,7 +863,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             className="rounded-full"
             onClick={() => setIsNewAppointmentDialogOpen(true)}
           >
-            <PlusCircle className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
