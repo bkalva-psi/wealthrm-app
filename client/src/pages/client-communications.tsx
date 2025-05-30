@@ -1424,9 +1424,9 @@ const ClientCommunications: React.FC = () => {
                           <div className="p-4">
                             {/* Title and date on same row */}
                             <div className="flex items-start justify-between mb-1">
-                              <h4 className="font-medium text-gray-900 text-sm line-clamp-1 flex-1 pr-4">
+                              <div className="font-medium text-gray-900 text-sm line-clamp-1 flex-1 pr-4">
                                 {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
-                              </h4>
+                              </div>
                               
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 <span className="text-sm text-gray-500">
@@ -1440,7 +1440,7 @@ const ClientCommunications: React.FC = () => {
                               </div>
                             </div>
                             
-                            {/* Client name row - same left alignment as title */}
+                            {/* Client name row - exact same positioning as title */}
                             {isGlobalView && communication.client_name && (
                               <div className="text-sm text-gray-600">
                                 {communication.client_name}
