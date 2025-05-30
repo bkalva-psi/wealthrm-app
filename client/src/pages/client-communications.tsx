@@ -930,8 +930,9 @@ const ClientCommunications: React.FC = () => {
   // Always declare state hooks first
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
-  const [filterType, setFilterType] = useState<string | null>(null);
-  const [filterChannel, setFilterChannel] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({ from: null, to: null });
+  const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
 
@@ -1078,16 +1079,45 @@ const ClientCommunications: React.FC = () => {
     }
   }, [communications, selectedCommunication]);
   
-  // Filter communications based on selected filters
+  // Filter communications based on search criteria
   const filteredCommunications = React.useMemo(() => {
     if (!communications) return [];
     
     return communications.filter((comm: Communication) => {
-      if (filterType && filterType !== "all_types" && comm.communication_type !== filterType) return false;
-      if (filterChannel && filterChannel !== "all_channels" && comm.channel !== filterChannel) return false;
+      // Text search in subject/title
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        const subject = comm.subject || `${comm.communication_type.replace('_', ' ')} - ${comm.channel}`;
+        if (!subject.toLowerCase().includes(searchLower)) {
+          return false;
+        }
+      }
+      
+      // Customer filter (only in global view)
+      if (isGlobalView && selectedCustomer && selectedCustomer !== 'all_customers') {
+        if (comm.client_name !== selectedCustomer) {
+          return false;
+        }
+      }
+      
+      // Date range filter
+      if (dateRange.from) {
+        const commDate = new Date(comm.start_time);
+        if (commDate < dateRange.from) {
+          return false;
+        }
+      }
+      
+      if (dateRange.to) {
+        const commDate = new Date(comm.start_time);
+        if (commDate > dateRange.to) {
+          return false;
+        }
+      }
+      
       return true;
     });
-  }, [communications, filterType, filterChannel]);
+  }, [communications, searchText, selectedCustomer, dateRange, isGlobalView]);
 
   // Apply show more/less logic
   const displayedCommunications = React.useMemo(() => {
@@ -1097,8 +1127,9 @@ const ClientCommunications: React.FC = () => {
   }, [filteredCommunications, showAll]);
   
   const handleClearFilters = () => {
-    setFilterType(null);
-    setFilterChannel(null);
+    setSearchText('');
+    setSelectedCustomer(null);
+    setDateRange({ from: null, to: null });
   };
 
   const toggleNoteExpansion = (noteId: number) => {
@@ -1300,50 +1331,68 @@ const ClientCommunications: React.FC = () => {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
-                        <DialogTitle>Filter Communications</DialogTitle>
+                        <DialogTitle>Filter Notes</DialogTitle>
                       </DialogHeader>
                       <div className="py-4 space-y-4">
                         <div className="space-y-2">
-                          <Label>Communication Type</Label>
-                          <Select 
-                            value={filterType || ""} 
-                            onValueChange={(value) => setFilterType(value || null)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="All Types" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all_types">All Types</SelectItem>
-                              <SelectItem value="portfolio_review">Portfolio Review</SelectItem>
-                              <SelectItem value="market_update">Market Update</SelectItem>
-                              <SelectItem value="investment_advice">Investment Advice</SelectItem>
-                              <SelectItem value="onboarding">Onboarding</SelectItem>
-                              <SelectItem value="complaint_handling">Complaint Handling</SelectItem>
-                              <SelectItem value="relationship_building">Relationship Building</SelectItem>
-                              <SelectItem value="service_request">Service Request</SelectItem>
-                              <SelectItem value="product_information">Product Information</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Label>Search Subject</Label>
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Type to search in note subjects..."
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                          />
                         </div>
                         
+                        {isGlobalView && (
+                          <div className="space-y-2">
+                            <Label>Customer</Label>
+                            <Select 
+                              value={selectedCustomer || ""} 
+                              onValueChange={(value) => setSelectedCustomer(value || null)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="All Customers" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all_customers">All Customers</SelectItem>
+                                {communications && [...new Set(communications.map((c: any) => c.client_name).filter(Boolean))].map((name: string) => (
+                                  <SelectItem key={name} value={name}>{name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        
                         <div className="space-y-2">
-                          <Label>Channel</Label>
-                          <Select 
-                            value={filterChannel || ""} 
-                            onValueChange={(value) => setFilterChannel(value || null)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="All Channels" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all_channels">All Channels</SelectItem>
-                              <SelectItem value="phone">Phone</SelectItem>
-                              <SelectItem value="email">Email</SelectItem>
-                              <SelectItem value="in_person">In Person</SelectItem>
-                              <SelectItem value="video">Video Call</SelectItem>
-                              <SelectItem value="chat">Chat</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Label>Date Range</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs">From</Label>
+                              <input
+                                type="date"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={dateRange.from ? dateRange.from.toISOString().split('T')[0] : ''}
+                                onChange={(e) => setDateRange(prev => ({ 
+                                  ...prev, 
+                                  from: e.target.value ? new Date(e.target.value) : null 
+                                }))}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">To</Label>
+                              <input
+                                type="date"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={dateRange.to ? dateRange.to.toISOString().split('T')[0] : ''}
+                                onChange={(e) => setDateRange(prev => ({ 
+                                  ...prev, 
+                                  to: e.target.value ? new Date(e.target.value) : null 
+                                }))}
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <DialogFooter>
@@ -1358,24 +1407,35 @@ const ClientCommunications: React.FC = () => {
                   </Dialog>
                 </div>
                 
-                {(filterType || filterChannel) && (
+                {(searchText || selectedCustomer || dateRange.from || dateRange.to) && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {filterType && (
+                    {searchText && (
                       <Badge variant="secondary" className="flex items-center gap-1">
-                        Type: {filterType.replace('_', ' ')}
+                        Subject: "{searchText}"
                         <button 
-                          onClick={() => setFilterType(null)}
+                          onClick={() => setSearchText('')}
                           className="ml-1 hover:bg-muted-foreground/20 rounded-full h-4 w-4 inline-flex items-center justify-center"
                         >
                           ×
                         </button>
                       </Badge>
                     )}
-                    {filterChannel && (
+                    {selectedCustomer && selectedCustomer !== 'all_customers' && (
                       <Badge variant="secondary" className="flex items-center gap-1">
-                        Channel: {filterChannel.replace('_', ' ')}
+                        Customer: {selectedCustomer}
                         <button 
-                          onClick={() => setFilterChannel(null)}
+                          onClick={() => setSelectedCustomer(null)}
+                          className="ml-1 hover:bg-muted-foreground/20 rounded-full h-4 w-4 inline-flex items-center justify-center"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    )}
+                    {(dateRange.from || dateRange.to) && (
+                      <Badge variant="secondary" className="flex items-center gap-1">
+                        Date: {dateRange.from ? dateRange.from.toLocaleDateString() : 'Start'} - {dateRange.to ? dateRange.to.toLocaleDateString() : 'End'}
+                        <button 
+                          onClick={() => setDateRange({ from: null, to: null })}
                           className="ml-1 hover:bg-muted-foreground/20 rounded-full h-4 w-4 inline-flex items-center justify-center"
                         >
                           ×
@@ -1398,12 +1458,12 @@ const ClientCommunications: React.FC = () => {
                       icon={<MessageCircle className="h-10 w-10 text-muted-foreground" />}
                       title="No notes"
                       description={
-                        filterType || filterChannel 
+                        searchText || selectedCustomer || dateRange.from || dateRange.to
                           ? "No notes match your filters."
                           : "No notes found for this client."
                       }
                       action={
-                        filterType || filterChannel ? (
+                        searchText || selectedCustomer || dateRange.from || dateRange.to ? (
                           <Button onClick={handleClearFilters}>
                             Clear Filters
                           </Button>
