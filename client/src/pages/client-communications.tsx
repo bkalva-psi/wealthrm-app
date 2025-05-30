@@ -931,7 +931,7 @@ const ClientCommunications: React.FC = () => {
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
   const [searchText, setSearchText] = useState<string>('');
-  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({ from: null, to: null });
+  const [dateRangeFilter, setDateRangeFilter] = useState<string>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
@@ -1079,6 +1079,27 @@ const ClientCommunications: React.FC = () => {
     }
   }, [communications, selectedCommunication]);
   
+  // Calculate date range based on filter selection
+  const getDateRange = (filter: string) => {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (filter) {
+      case '1week':
+        return new Date(startOfDay.getTime() - 7 * 24 * 60 * 60 * 1000);
+      case '2weeks':
+        return new Date(startOfDay.getTime() - 14 * 24 * 60 * 60 * 1000);
+      case '1month':
+        return new Date(startOfDay.getTime() - 30 * 24 * 60 * 60 * 1000);
+      case '3months':
+        return new Date(startOfDay.getTime() - 90 * 24 * 60 * 60 * 1000);
+      case '6months':
+        return new Date(startOfDay.getTime() - 180 * 24 * 60 * 60 * 1000);
+      default:
+        return null;
+    }
+  };
+
   // Filter communications based on search criteria
   const filteredCommunications = React.useMemo(() => {
     if (!communications) return [];
@@ -1101,23 +1122,19 @@ const ClientCommunications: React.FC = () => {
       }
       
       // Date range filter
-      if (dateRange.from) {
-        const commDate = new Date(comm.start_time);
-        if (commDate < dateRange.from) {
-          return false;
-        }
-      }
-      
-      if (dateRange.to) {
-        const commDate = new Date(comm.start_time);
-        if (commDate > dateRange.to) {
-          return false;
+      if (dateRangeFilter !== 'all') {
+        const filterDate = getDateRange(dateRangeFilter);
+        if (filterDate) {
+          const commDate = new Date(comm.start_time);
+          if (commDate < filterDate) {
+            return false;
+          }
         }
       }
       
       return true;
     });
-  }, [communications, searchText, selectedCustomer, dateRange, isGlobalView]);
+  }, [communications, searchText, selectedCustomer, dateRangeFilter, isGlobalView]);
 
   // Apply show more/less logic
   const displayedCommunications = React.useMemo(() => {
@@ -1129,7 +1146,7 @@ const ClientCommunications: React.FC = () => {
   const handleClearFilters = () => {
     setSearchText('');
     setSelectedCustomer(null);
-    setDateRange({ from: null, to: null });
+    setDateRangeFilter('all');
   };
 
   const toggleNoteExpansion = (noteId: number) => {
@@ -1365,32 +1382,51 @@ const ClientCommunications: React.FC = () => {
                           </div>
                         )}
                         
-                        <div className="space-y-2">
-                          <Label>Date Range</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <Label className="text-xs">From</Label>
+                        <div className="space-y-3">
+                          <Label>Time Period</Label>
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-2 text-xs text-gray-600">
+                              <span>Recent</span>
+                              <span className="text-center">Medium</span>
+                              <span className="text-right">All Time</span>
+                            </div>
+                            <div className="relative">
                               <input
-                                type="date"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={dateRange.from ? dateRange.from.toISOString().split('T')[0] : ''}
-                                onChange={(e) => setDateRange(prev => ({ 
-                                  ...prev, 
-                                  from: e.target.value ? new Date(e.target.value) : null 
-                                }))}
+                                type="range"
+                                min="0"
+                                max="5"
+                                step="1"
+                                value={
+                                  dateRangeFilter === 'all' ? 5 :
+                                  dateRangeFilter === '1week' ? 0 :
+                                  dateRangeFilter === '2weeks' ? 1 :
+                                  dateRangeFilter === '1month' ? 2 :
+                                  dateRangeFilter === '3months' ? 3 :
+                                  dateRangeFilter === '6months' ? 4 : 5
+                                }
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value);
+                                  const filterMap = ['1week', '2weeks', '1month', '3months', '6months', 'all'];
+                                  setDateRangeFilter(filterMap[value]);
+                                }}
+                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                               />
                             </div>
-                            <div>
-                              <Label className="text-xs">To</Label>
-                              <input
-                                type="date"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={dateRange.to ? dateRange.to.toISOString().split('T')[0] : ''}
-                                onChange={(e) => setDateRange(prev => ({ 
-                                  ...prev, 
-                                  to: e.target.value ? new Date(e.target.value) : null 
-                                }))}
-                              />
+                            <div className="grid grid-cols-6 gap-1 text-xs text-gray-500">
+                              <span>1W</span>
+                              <span>2W</span>
+                              <span>1M</span>
+                              <span>3M</span>
+                              <span>6M</span>
+                              <span>All</span>
+                            </div>
+                            <div className="text-center text-sm font-medium text-gray-700">
+                              {dateRangeFilter === 'all' ? 'All Time' :
+                               dateRangeFilter === '1week' ? 'Past Week' :
+                               dateRangeFilter === '2weeks' ? 'Past 2 Weeks' :
+                               dateRangeFilter === '1month' ? 'Past Month' :
+                               dateRangeFilter === '3months' ? 'Past 3 Months' :
+                               'Past 6 Months'}
                             </div>
                           </div>
                         </div>
@@ -1407,7 +1443,7 @@ const ClientCommunications: React.FC = () => {
                   </Dialog>
                 </div>
                 
-                {(searchText || selectedCustomer || dateRange.from || dateRange.to) && (
+                {(searchText || selectedCustomer || dateRangeFilter !== 'all') && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {searchText && (
                       <Badge variant="secondary" className="flex items-center gap-1">
@@ -1431,11 +1467,15 @@ const ClientCommunications: React.FC = () => {
                         </button>
                       </Badge>
                     )}
-                    {(dateRange.from || dateRange.to) && (
+                    {dateRangeFilter !== 'all' && (
                       <Badge variant="secondary" className="flex items-center gap-1">
-                        Date: {dateRange.from ? dateRange.from.toLocaleDateString() : 'Start'} - {dateRange.to ? dateRange.to.toLocaleDateString() : 'End'}
+                        Time: {dateRangeFilter === '1week' ? 'Past Week' :
+                               dateRangeFilter === '2weeks' ? 'Past 2 Weeks' :
+                               dateRangeFilter === '1month' ? 'Past Month' :
+                               dateRangeFilter === '3months' ? 'Past 3 Months' :
+                               'Past 6 Months'}
                         <button 
-                          onClick={() => setDateRange({ from: null, to: null })}
+                          onClick={() => setDateRangeFilter('all')}
                           className="ml-1 hover:bg-muted-foreground/20 rounded-full h-4 w-4 inline-flex items-center justify-center"
                         >
                           ×
@@ -1458,12 +1498,12 @@ const ClientCommunications: React.FC = () => {
                       icon={<MessageCircle className="h-10 w-10 text-muted-foreground" />}
                       title="No notes"
                       description={
-                        searchText || selectedCustomer || dateRange.from || dateRange.to
+                        searchText || selectedCustomer || dateRangeFilter !== 'all'
                           ? "No notes match your filters."
                           : "No notes found for this client."
                       }
                       action={
-                        searchText || selectedCustomer || dateRange.from || dateRange.to ? (
+                        searchText || selectedCustomer || dateRangeFilter !== 'all' ? (
                           <Button onClick={handleClearFilters}>
                             Clear Filters
                           </Button>
