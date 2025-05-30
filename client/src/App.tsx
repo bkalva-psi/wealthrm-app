@@ -22,6 +22,8 @@ import Tasks from "@/pages/tasks";
 import Analytics from "@/pages/analytics";
 import Products from "@/pages/products";
 import Settings from "@/pages/settings";
+import TalkingPoints from "@/pages/talking-points";
+import Announcements from "@/pages/announcements";
 import NotFound from "@/pages/not-found";
 import ClientActions from "@/pages/client-actions";
 import ClientPersonal from "@/pages/client-personal";
@@ -223,6 +225,10 @@ function AuthenticatedApp() {
         return <Tasks />;
       case currentRoute === '/communications':
         return <ClientCommunications />;
+      case currentRoute === '/talking-points':
+        return <TalkingPoints />;
+      case currentRoute === '/announcements':
+        return <Announcements />;
       case currentRoute === '/analytics':
         return <Analytics />;
       case currentRoute === '/products':

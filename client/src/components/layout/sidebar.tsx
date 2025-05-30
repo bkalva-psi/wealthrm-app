@@ -10,6 +10,8 @@ import {
   Package,
   Settings,
   FileText,
+  Lightbulb,
+  Megaphone,
 } from "lucide-react";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 import { useEffect, useState } from "react";
@@ -21,6 +23,8 @@ const navigationItems = [
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
   { name: "Notes", href: "/communications", icon: FileText },
+  { name: "Talking Points", href: "/talking-points", icon: Lightbulb },
+  { name: "Announcements", href: "/announcements", icon: Megaphone },
   { name: "Analytics", href: "/analytics", icon: BarChart2 },
   { name: "Products", href: "/products", icon: Package },
   { name: "Settings", href: "/settings", icon: Settings },
