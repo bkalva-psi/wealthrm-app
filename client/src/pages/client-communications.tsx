@@ -1067,9 +1067,11 @@ const ClientCommunications: React.FC = () => {
   
   // Query to fetch client data - removed duplicate declaration
   
-  // Reset selected communication when clientId changes
+  // Reset selected communication when clientId changes and scroll to top
   useEffect(() => {
     setSelectedCommunication(null);
+    // Scroll to top when navigating to a new client's notes
+    window.scrollTo(0, 0);
   }, [clientId]);
   
   // Select first communication when data loads if none selected
