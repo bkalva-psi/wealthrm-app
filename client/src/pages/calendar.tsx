@@ -144,9 +144,8 @@ export default function CalendarPage() {
           <h2 className="text-lg font-semibold text-slate-800">
             {format(selectedDate, "EEEE, MMMM d, yyyy")}
           </h2>
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Button variant="outline" size="icon" className="rounded-full">
             <Plus className="h-4 w-4" />
-            Add Event
           </Button>
         </div>
         
@@ -270,10 +269,10 @@ export default function CalendarPage() {
           <p className="text-sm text-slate-600">Manage your meetings and appointments</p>
         </div>
         <Button
-          className="flex items-center gap-2"
+          size="icon" 
+          className="rounded-full"
         >
           <Plus className="h-4 w-4" />
-          New Appointment
         </Button>
       </div>
       
