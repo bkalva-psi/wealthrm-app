@@ -176,49 +176,49 @@ export default function ClientPersonalPage() {
                   )}
                   
                   {/* Line 4: Navigation Icons */}
-                  <div className="flex items-center justify-evenly mt-2 w-full px-2">
+                  <div className="grid grid-cols-7 gap-1 mt-2 w-full">
                     <button 
-                      className="p-2 bg-blue-100 rounded"
+                      className="p-2 bg-blue-100 rounded flex items-center justify-center"
                       title="Personal Profile"
                     >
                       <BarChart4 className="h-5 w-5 text-slate-400" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                      className="p-2 hover:bg-slate-100 rounded"
+                      className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Portfolio"
                     >
                       <Wallet className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                      className="p-2 hover:bg-slate-100 rounded"
+                      className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Transactions"
                     >
                       <ArrowUpDown className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-                      className="p-2 hover:bg-slate-100 rounded"
+                      className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Appointments"
                     >
                       <Calendar className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                      className="p-2 hover:bg-slate-100 rounded"
+                      className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Communications"
                     >
                       <MessageCircle className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
-                      className="p-2 hover:bg-slate-100 rounded"
+                      className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Portfolio Report"
                     >
                       <FileText className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
-                      className="p-2 hover:bg-slate-100 rounded"
+                      className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Investment Recommendations"
                     >
                       <Target className="h-5 w-5 text-slate-600" />
@@ -228,8 +228,6 @@ export default function ClientPersonalPage() {
               )}
             </div>
           </div>
-
-
         </div>
       </div>
 
