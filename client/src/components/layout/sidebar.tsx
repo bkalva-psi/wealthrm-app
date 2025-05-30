@@ -34,6 +34,64 @@ const navigationItems = [
 export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
   const { user } = useAuth();
   const [currentPath, setCurrentPath] = useState(window.location.hash.replace(/^#/, '') || '/');
+
+  // Fetch data for notification dots
+  const { data: appointments } = useQuery({
+    queryKey: ['/api/appointments/today'],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: tasks } = useQuery({
+    queryKey: ['/api/tasks'],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: talkingPoints } = useQuery({
+    queryKey: ['/api/talking-points'],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: announcements } = useQuery({
+    queryKey: ['/api/announcements'],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Calculate notification indicators
+  const hasAppointmentsToday = Array.isArray(appointments) && appointments.length > 0;
+  const hasOverdueTasks = Array.isArray(tasks) && tasks.some((task: any) => {
+    const dueDate = new Date(task.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return dueDate <= today && task.status !== 'completed';
+  });
+  const hasRecentTalkingPoints = Array.isArray(talkingPoints) && talkingPoints.some((point: any) => {
+    const createdDate = new Date(point.created_at);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    return createdDate >= threeDaysAgo && point.is_active;
+  });
+  const hasRecentAnnouncements = Array.isArray(announcements) && announcements.some((announcement: any) => {
+    const createdDate = new Date(announcement.created_at);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    return createdDate >= threeDaysAgo && announcement.is_active;
+  });
+
+  // Notification dot helper function
+  const getNotificationStatus = (href: string) => {
+    switch (href) {
+      case '/calendar':
+        return hasAppointmentsToday;
+      case '/tasks':
+        return hasOverdueTasks;
+      case '/talking-points':
+        return hasRecentTalkingPoints;
+      case '/announcements':
+        return hasRecentAnnouncements;
+      default:
+        return false;
+    }
+  };
   
   // Update currentPath when hash changes
   useEffect(() => {
@@ -73,6 +131,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
       <nav className="flex-1 px-2 py-4 bg-white space-y-1 overflow-y-auto">
         {navigationItems.map((item) => {
           const isActive = currentPath === item.href;
+          const hasNotification = getNotificationStatus(item.href);
           
           return (
             <a
@@ -80,19 +139,29 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
               href={`#${item.href}`}
               onClick={handleNavigation(item.href)}
               className={cn(
-                "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                "group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md relative",
                 isActive
                   ? "bg-ujjivan-primary text-white font-semibold"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
-              <item.icon
-                className={cn(
-                  "mr-3 h-5 w-5",
-                  isActive ? "text-white" : "text-slate-400 group-hover:text-slate-500"
-                )}
-              />
-              {item.name}
+              <div className="flex items-center">
+                <item.icon
+                  className={cn(
+                    "mr-3 h-5 w-5",
+                    isActive ? "text-white" : "text-slate-400 group-hover:text-slate-500"
+                  )}
+                />
+                {item.name}
+              </div>
+              {hasNotification && (
+                <div className={cn(
+                  "w-2 h-2 rounded-full",
+                  item.href === '/talking-points' || item.href === '/announcements' 
+                    ? "bg-blue-500" 
+                    : "bg-red-500"
+                )} />
+              )}
             </a>
           );
         })}
