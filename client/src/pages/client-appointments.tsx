@@ -804,52 +804,52 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     )}
                     
                     {/* Line 4: Navigation Icons */}
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <div className="flex items-center justify-between mt-2 w-full pr-4">
                       <button 
                         onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-2 hover:bg-slate-100 rounded"
                         title="Personal Profile"
                       >
-                        <BarChart4 className="h-4 w-4 text-slate-600" />
+                        <BarChart4 className="h-5 w-5 text-slate-600" />
                       </button>
                       <button 
                         onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-2 hover:bg-slate-100 rounded"
                         title="Portfolio"
                       >
-                        <Wallet className="h-4 w-4 text-slate-600" />
+                        <Wallet className="h-5 w-5 text-slate-600" />
                       </button>
                       <button 
                         onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-2 hover:bg-slate-100 rounded"
                         title="Transactions"
                       >
-                        <ArrowUpDown className="h-4 w-4 text-slate-600" />
+                        <ArrowUpDown className="h-5 w-5 text-slate-600" />
                       </button>
                       <button 
-                        className="p-1 bg-blue-100 rounded"
+                        className="p-2 bg-blue-100 rounded"
                         title="Appointments"
                       >
-                        <Calendar className="h-4 w-4 text-slate-400" />
+                        <Calendar className="h-5 w-5 text-slate-400" />
                       </button>
                       <button 
                         onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-2 hover:bg-slate-100 rounded"
                         title="Communications"
                       >
-                        <MessageCircle className="h-4 w-4 text-slate-600" />
+                        <MessageCircle className="h-5 w-5 text-slate-600" />
                       </button>
                       <button 
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-2 hover:bg-slate-100 rounded"
                         title="Portfolio Report"
                       >
-                        <FileText className="h-4 w-4 text-slate-600" />
+                        <FileText className="h-5 w-5 text-slate-600" />
                       </button>
                       <button 
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-2 hover:bg-slate-100 rounded"
                         title="Investment Recommendations"
                       >
-                        <Target className="h-4 w-4 text-slate-600" />
+                        <Target className="h-5 w-5 text-slate-600" />
                       </button>
                     </div>
                   </div>
