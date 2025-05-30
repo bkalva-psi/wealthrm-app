@@ -62,14 +62,28 @@ function useHashRouter() {
     const handleHashChange = () => {
       const path = window.location.hash.replace(/^#/, '') || '/';
       console.log('Hash changed to:', path);
-      setCurrentRoute(path);
       
-      // Force scroll to top on every route change
-      setTimeout(() => {
+      // Scroll both window and main container
+      const scrollToTop = () => {
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
-      }, 0);
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+          mainContent.scrollTop = 0;
+        }
+      };
+      
+      // Immediate scroll
+      scrollToTop();
+      
+      setCurrentRoute(path);
+      
+      // Multiple delayed attempts to override any browser restoration
+      setTimeout(scrollToTop, 10);
+      setTimeout(scrollToTop, 50);
+      setTimeout(scrollToTop, 100);
+      setTimeout(scrollToTop, 200);
     };
     
     window.addEventListener('hashchange', handleHashChange);
@@ -159,6 +173,13 @@ function AuthenticatedApp() {
   const renderComponent = () => {
     console.log('Rendering component for route:', currentRoute);
     
+    // Force scroll to top when rendering any component
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
+    
     switch(true) {
       case currentRoute === '/':
         return <Dashboard />;
@@ -226,7 +247,7 @@ function AuthenticatedApp() {
           </div>
         )}
         
-        <main className="flex-1 overflow-y-auto bg-slate-50 pb-mobile-nav">
+        <main className="flex-1 overflow-y-auto bg-slate-50 pb-mobile-nav" id="main-content">
           {renderComponent()}
         </main>
         
