@@ -133,7 +133,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) =
       <button 
         onClick={() => navigateTo('/talking-points')}
         className={`flex flex-col items-center justify-center w-full h-full ${isActive('/talking-points') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
-        aria-label="Talking Points"
+        aria-label="Insights"
       >
         <div className="relative">
           <Lightbulb size={24} />
@@ -141,7 +141,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) =
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full" />
           )}
         </div>
-        <span className="text-xs mt-1">Points</span>
+        <span className="text-xs mt-1">Insights</span>
       </button>
       
       <button 

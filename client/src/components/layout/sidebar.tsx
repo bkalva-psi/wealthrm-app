@@ -24,7 +24,7 @@ const navigationItems = [
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
   { name: "Notes", href: "/communications", icon: FileText },
-  { name: "Talking Points", href: "/talking-points", icon: Lightbulb },
+  { name: "Insights", href: "/talking-points", icon: Lightbulb },
   { name: "Announcements", href: "/announcements", icon: Megaphone },
   { name: "Analytics", href: "/analytics", icon: BarChart2 },
   { name: "Products", href: "/products", icon: Package },

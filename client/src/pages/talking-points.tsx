@@ -54,7 +54,7 @@ export default function TalkingPointsPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center space-x-3">
         <Lightbulb className="h-6 w-6 text-ujjivan-primary" />
-        <h1 className="text-2xl font-bold text-slate-900">Talking Points</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Insights</h1>
         <Badge variant="secondary" className="ml-auto">
           {activeTalkingPoints.length} Active
         </Badge>
@@ -161,7 +161,7 @@ export default function TalkingPointsPage() {
           <CardContent className="flex items-center justify-center py-12">
             <div className="text-center">
               <Lightbulb className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">No Active Talking Points</h3>
+              <h3 className="text-lg font-medium text-slate-900 mb-2">No Active Insights</h3>
               <p className="text-slate-500">Check back later for new market insights and conversation starters.</p>
             </div>
           </CardContent>
