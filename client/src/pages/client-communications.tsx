@@ -1209,7 +1209,8 @@ const ClientCommunications: React.FC = () => {
                   
                   {/* Line 2: Phone Number */}
                   {client.phone && (
-                    <div className="mt-1">
+                    <div className="mt-1 flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-slate-400" />
                       <a 
                         href={`tel:${client.phone}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -1222,7 +1223,8 @@ const ClientCommunications: React.FC = () => {
                   
                   {/* Line 3: Email */}
                   {client.email && (
-                    <div className="mt-1">
+                    <div className="mt-1 flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-slate-400" />
                       <a 
                         href={`mailto:${client.email}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -1233,14 +1235,15 @@ const ClientCommunications: React.FC = () => {
                     </div>
                   )}
                   
-                  {/* Line 4: Icons */}
+                  {/* Line 4: Navigation Icons */}
                   <div className="flex items-center gap-2 mt-2">
-                    <Badge className={`${getTierColor(client.tier).bg} ${getTierColor(client.tier).text} text-xs`}>
-                      {client.tier?.toUpperCase()} TIER
-                    </Badge>
-                    <Phone className="h-4 w-4 text-slate-400" />
-                    <Mail className="h-4 w-4 text-slate-400" />
+                    <BarChart4 className="h-4 w-4 text-slate-400" />
+                    <Wallet className="h-4 w-4 text-slate-400" />
+                    <ArrowUpDown className="h-4 w-4 text-slate-400" />
+                    <Calendar className="h-4 w-4 text-slate-400" />
                     <MessageCircle className="h-4 w-4 text-slate-400" />
+                    <FileText className="h-4 w-4 text-slate-400" />
+                    <Target className="h-4 w-4 text-slate-400" />
                   </div>
                 </>
               ) : (
