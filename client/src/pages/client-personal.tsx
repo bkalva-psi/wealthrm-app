@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Briefcase, Home, Building, 
   CreditCard, Shield, Users, Wallet, BarChart4, MessageCircle, Clock, Heart,
-  FileText, CheckCircle, XCircle, AlertCircle, Target
+  FileText, CheckCircle, XCircle, AlertCircle, Target, ArrowUpDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -176,46 +176,52 @@ export default function ClientPersonalPage() {
                   )}
                   
                   {/* Line 4: Navigation Icons */}
-                  <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <button 
+                      className="p-1 bg-blue-100 rounded"
+                      title="Personal Profile"
+                    >
+                      <BarChart4 className="h-4 w-4 text-slate-400" />
+                    </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
                       className="p-1 hover:bg-slate-100 rounded"
                       title="Portfolio"
                     >
-                      <BarChart4 className="h-5 w-5 text-slate-600" />
+                      <Wallet className="h-4 w-4 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
                       className="p-1 hover:bg-slate-100 rounded"
                       title="Transactions"
                     >
-                      <Wallet className="h-5 w-5 text-slate-600" />
+                      <ArrowUpDown className="h-4 w-4 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
                       className="p-1 hover:bg-slate-100 rounded"
                       title="Appointments"
                     >
-                      <Calendar className="h-5 w-5 text-slate-600" />
+                      <Calendar className="h-4 w-4 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/communications`}
                       className="p-1 hover:bg-slate-100 rounded"
                       title="Communications"
                     >
-                      <MessageCircle className="h-5 w-5 text-slate-600" />
+                      <MessageCircle className="h-4 w-4 text-slate-600" />
                     </button>
                     <button 
                       className="p-1 hover:bg-slate-100 rounded"
                       title="Portfolio Report"
                     >
-                      <FileText className="h-5 w-5 text-slate-600" />
+                      <FileText className="h-4 w-4 text-slate-600" />
                     </button>
                     <button 
                       className="p-1 hover:bg-slate-100 rounded"
                       title="Investment Recommendations"
                     >
-                      <Target className="h-5 w-5 text-slate-600" />
+                      <Target className="h-4 w-4 text-slate-600" />
                     </button>
                   </div>
                 </>
