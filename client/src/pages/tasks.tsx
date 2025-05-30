@@ -198,9 +198,8 @@ export default function Tasks() {
         </div>
         <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
+            <Button size="icon" className="rounded-full">
               <Plus className="h-4 w-4" />
-              New Task
             </Button>
           </DialogTrigger>
           <DialogContent>

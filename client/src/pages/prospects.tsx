@@ -502,10 +502,10 @@ export default function Prospects() {
         <h1 className="text-2xl font-bold mb-2 sm:mb-0">Prospects</h1>
         <Button 
           onClick={handleAddProspectClick}
-          className="flex items-center gap-2"
+          size="icon" 
+          className="rounded-full"
         >
           <UserPlus className="h-4 w-4" />
-          Add Prospect
         </Button>
       </div>
       
