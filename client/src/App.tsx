@@ -98,6 +98,7 @@ function useHashRouter() {
 function AuthenticatedApp() {
   const currentRoute = useHashRouter();
   const [isOffline, setIsOffline] = useState(!isOnline());
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Log current route for debugging
   console.log('Current route:', currentRoute);
@@ -244,7 +245,10 @@ function AuthenticatedApp() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header />
+        <Header 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
         
         {/* Offline indicator */}
         {isOffline && (
@@ -257,7 +261,9 @@ function AuthenticatedApp() {
           {renderComponent()}
         </main>
         
-        <BottomNavigation />
+        <BottomNavigation 
+          onMoreClick={() => setIsMobileMenuOpen(true)}
+        />
       </div>
     </div>
   );

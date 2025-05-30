@@ -5,9 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 
 interface BottomNavigationProps {
   className?: string;
+  onMoreClick?: () => void;
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) => {
+const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onMoreClick }) => {
   const [currentPath, setCurrentPath] = useState<string>('');
   const isMobile = useMediaQuery('(max-width: 768px)');
 
@@ -145,7 +146,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '' }) =
       </button>
       
       <button 
-        onClick={() => navigateTo('/settings')}
+        onClick={onMoreClick || (() => navigateTo('/settings'))}
         className={`flex flex-col items-center justify-center w-full h-full ${isActive('/menu') ? 'text-ujjivan-primary' : 'text-gray-500'} relative`}
         aria-label="More"
       >

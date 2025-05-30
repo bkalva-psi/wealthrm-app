@@ -16,11 +16,18 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 
-export function Header() {
+interface HeaderProps {
+  isMobileMenuOpen?: boolean;
+  setIsMobileMenuOpen?: (open: boolean) => void;
+}
+
+export function Header({ 
+  isMobileMenuOpen = false, 
+  setIsMobileMenuOpen = () => {} 
+}: HeaderProps = {}) {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Get unread portfolio alerts count
   const { data: portfolioAlerts } = useQuery({
