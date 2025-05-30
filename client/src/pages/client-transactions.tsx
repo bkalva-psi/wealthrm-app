@@ -455,92 +455,90 @@ export default function ClientTransactions() {
                   >
                     {client?.fullName}
                   </button>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600 mt-1">
-                    {client?.phone && (
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        <a 
-                          href={`tel:${client.phone}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                          title="Call client"
-                        >
-                          {client.phone}
-                        </a>
-                      </div>
-                    )}
-                    {client?.email && (
-                      <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        <a 
-                          href={`mailto:${client.email}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                          title="Send email to client"
-                        >
-                          {client.email}
-                        </a>
-                      </div>
-                    )}
+                  {/* Line 2: Phone Number */}
+                  {client?.phone && (
+                    <div className="mt-1 flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-slate-400" />
+                      <a 
+                        href={`tel:${client.phone}`}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        title="Call client"
+                      >
+                        {client.phone}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {/* Line 3: Email */}
+                  {client?.email && (
+                    <div className="mt-1 flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-slate-400" />
+                      <a 
+                        href={`mailto:${client.email}`}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        title="Send email to client"
+                      >
+                        {client.email}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {/* Line 4: Navigation Icons */}
+                  <div className="flex items-center gap-4 mt-2">
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Personal Profile"
+                    >
+                      <BarChart4 className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Portfolio"
+                    >
+                      <Wallet className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+                      className="p-1 hover:bg-slate-100 rounded bg-blue-50"
+                      title="Transactions"
+                    >
+                      <ArrowUpDown className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Appointments"
+                    >
+                      <CalendarIconNav className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Communications"
+                    >
+                      <MessageCircle className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Portfolio Report"
+                    >
+                      <FileText className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Investment Recommendations"
+                    >
+                      <Target className="h-5 w-5 text-slate-600" />
+                    </button>
                   </div>
                 </>
               )}
             </div>
           </div>
 
-          {/* Right side - Navigation icons */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Personal Profile"
-              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-            >
-              <BarChart4 className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-              className="p-2"
-              title="Portfolio"
-            >
-              <Wallet className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-              className="p-2"
-              title="Appointments"
-            >
-              <CalendarIconNav className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-              className="p-2"
-              title="Communications"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Portfolio Report"
-            >
-              <FileText className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Investment Recommendations"
-            >
-              <Target className="h-5 w-5" />
-            </Button>
-          </div>
+
         </div>
       </div>
 
