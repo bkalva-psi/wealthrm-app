@@ -1289,7 +1289,7 @@ const ClientCommunications: React.FC = () => {
             <Card className="mb-4">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
-                  <CardTitle>Communications</CardTitle>
+                  <CardTitle>My Notes</CardTitle>
                   
                   <Dialog>
                     <DialogTrigger asChild>
