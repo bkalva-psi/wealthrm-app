@@ -1432,11 +1432,6 @@ const ClientCommunications: React.FC = () => {
                               {/* Client Info */}
                               {isGlobalView && communication.client_name ? (
                                 <div className="flex items-center gap-2">
-                                  <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <span className="text-xs font-medium text-blue-800">
-                                      {communication.client_initials}
-                                    </span>
-                                  </div>
                                   <span className="text-sm text-gray-600">{communication.client_name}</span>
                                 </div>
                               ) : (
