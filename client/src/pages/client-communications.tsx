@@ -1262,7 +1262,7 @@ const ClientCommunications: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
           <div className="min-w-0 flex-1">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {isGlobalView ? 'All Notes' : 'Notes'}
+              My Notes
             </h2>
             <p className="text-sm sm:text-base text-gray-600 mt-1">
               {isGlobalView 
