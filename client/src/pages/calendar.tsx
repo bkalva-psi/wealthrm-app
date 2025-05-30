@@ -333,6 +333,7 @@ export default function CalendarPage() {
                   const today = new Date();
                   setSelectedDate(today);
                   setCalendarDate(today);
+                  setSelectedView("day");
                 }}
               >
                 Today
