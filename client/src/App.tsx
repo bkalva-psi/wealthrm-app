@@ -219,9 +219,9 @@ function AuthenticatedApp() {
         return <ClientAppointments />;
       
       case currentRoute === '/calendar':
-        return <ClientAppointments clientId="all" />;
-      case currentRoute === '/appointments':
         return <Calendar />;
+      case currentRoute === '/appointments':
+        return <ClientAppointments clientId="all" />;
       case currentRoute === '/tasks':
         return <Tasks />;
       case currentRoute === '/communications':
