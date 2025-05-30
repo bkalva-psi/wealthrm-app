@@ -176,74 +176,54 @@ export default function ClientPersonalPage() {
                   )}
                   
                   {/* Line 4: Navigation Icons */}
-                  <div className="flex items-center gap-2 mt-2">
-                    <BarChart4 className="h-4 w-4 text-slate-400" />
-                    <Wallet className="h-4 w-4 text-slate-400" />
-                    <Calendar className="h-4 w-4 text-slate-400" />
-                    <MessageCircle className="h-4 w-4 text-slate-400" />
-                    <FileText className="h-4 w-4 text-slate-400" />
-                    <Target className="h-4 w-4 text-slate-400" />
+                  <div className="flex items-center gap-4 mt-2">
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Portfolio"
+                    >
+                      <BarChart4 className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Transactions"
+                    >
+                      <Wallet className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Appointments"
+                    >
+                      <Calendar className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Communications"
+                    >
+                      <MessageCircle className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Portfolio Report"
+                    >
+                      <FileText className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <button 
+                      className="p-1 hover:bg-slate-100 rounded"
+                      title="Investment Recommendations"
+                    >
+                      <Target className="h-5 w-5 text-slate-600" />
+                    </button>
                   </div>
                 </>
               )}
             </div>
           </div>
 
-          {/* Right side - Navigation icons */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-              className="p-2"
-              title="Portfolio"
-            >
-              <BarChart4 className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-              className="p-2"
-              title="Transactions"
-            >
-              <Wallet className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-              className="p-2"
-              title="Appointments"
-            >
-              <Calendar className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-              className="p-2"
-              title="Communications"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Portfolio Report"
-            >
-              <FileText className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Investment Recommendations"
-            >
-              <Target className="h-5 w-5" />
-            </Button>
-          </div>
+
         </div>
       </div>
 
