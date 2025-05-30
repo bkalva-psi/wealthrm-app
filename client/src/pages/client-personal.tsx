@@ -134,40 +134,53 @@ export default function ClientPersonalPage() {
                 <div className="space-y-1">
                   <Skeleton className="h-6 w-40" />
                   <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-32" />
                 </div>
               ) : (
                 <>
+                  {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
                     className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-slate-600 mt-1">
-                    {client?.phone && (
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        <a 
-                          href={`tel:${client.phone}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                          title="Call client"
-                        >
-                          {client.phone}
-                        </a>
-                      </div>
-                    )}
-                    {client?.email && (
-                      <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        <a 
-                          href={`mailto:${client.email}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                          title="Send email to client"
-                        >
-                          {client.email}
-                        </a>
-                      </div>
-                    )}
+                  
+                  {/* Line 2: Phone Number */}
+                  {client?.phone && (
+                    <div className="mt-1">
+                      <a 
+                        href={`tel:${client.phone}`}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        title="Call client"
+                      >
+                        {client.phone}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {/* Line 3: Email */}
+                  {client?.email && (
+                    <div className="mt-1">
+                      <a 
+                        href={`mailto:${client.email}`}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        title="Send email to client"
+                      >
+                        {client.email}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {/* Line 4: Icons */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge className={`${getTierColor(client.tier).bg} ${getTierColor(client.tier).text} text-xs`}>
+                      {client.tier?.toUpperCase()} TIER
+                    </Badge>
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    <Mail className="h-4 w-4 text-slate-400" />
+                    <User className="h-4 w-4 text-slate-400" />
                   </div>
                 </>
               )}
