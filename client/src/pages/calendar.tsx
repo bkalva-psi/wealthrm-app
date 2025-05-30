@@ -48,7 +48,7 @@ interface Appointment {
 
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedView, setSelectedView] = useState<string>("month");
+  const [selectedView, setSelectedView] = useState<string>("day");
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   
   // Set page title
@@ -327,7 +327,16 @@ export default function CalendarPage() {
                   <SelectItem value="month">Month</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="default">Today</Button>
+              <Button 
+                variant="default" 
+                onClick={() => {
+                  const today = new Date();
+                  setSelectedDate(today);
+                  setCalendarDate(today);
+                }}
+              >
+                Today
+              </Button>
             </div>
           </div>
         </CardContent>
