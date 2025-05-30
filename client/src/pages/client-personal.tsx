@@ -176,7 +176,7 @@ export default function ClientPersonalPage() {
                   )}
                   
                   {/* Line 4: Navigation Icons */}
-                  <div className="flex items-center justify-between mt-2 w-full pr-4">
+                  <div className="flex items-center justify-evenly mt-2 w-full px-2">
                     <button 
                       className="p-2 bg-blue-100 rounded"
                       title="Personal Profile"

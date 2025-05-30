@@ -484,7 +484,7 @@ export default function ClientTransactions() {
                   )}
                   
                   {/* Line 4: Navigation Icons */}
-                  <div className="flex items-center justify-between mt-2 w-full pr-4">
+                  <div className="flex items-center justify-evenly mt-2 w-full px-2">
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/personal`}
                       className="p-2 hover:bg-slate-100 rounded"
