@@ -745,9 +745,8 @@ const NewCommunicationDialog: React.FC<{
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <MessageCircle className="h-4 w-4 mr-2" />
-          New Communication
+        <Button size="icon" className="rounded-full">
+          <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
@@ -1312,12 +1311,6 @@ const ClientCommunications: React.FC = () => {
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
               My Notes
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 mt-1">
-              {isGlobalView 
-                ? 'View all client notes and interaction history across your portfolio'
-                : 'Track all client notes and interaction history'
-              }
-            </p>
           </div>
           
           {!isGlobalView && (
