@@ -52,6 +52,7 @@ import AumTrendChart from "../components/charts/AumTrendChart";
 import BenchmarkComparisonChart from "../components/charts/BenchmarkComparisonChart";
 import FixedTooltipChart from "../components/charts/FixedTooltipChart";
 import PerformanceComparisonChart from "../components/charts/PerformanceComparisonChart";
+import { RetirementProjectionChart } from "../components/charts/RetirementProjectionChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -1561,12 +1562,15 @@ export default function ClientPortfolioPage() {
                 <CardTitle className="text-lg">Retirement Projections</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-60 flex items-center justify-center bg-slate-50 rounded-lg mb-4">
-                  <div className="text-center">
-                    <LineChart className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                    <p className="text-sm text-slate-500">Retirement projection chart</p>
-                  </div>
-                </div>
+                <RetirementProjectionChart
+                  currentAge={35}
+                  retirementAge={60}
+                  currentCorpus={3750000}
+                  monthlyContribution={25000}
+                  expectedReturn={0.12}
+                  monthlyExpenseAfterRetirement={85000}
+                  inflationRate={0.06}
+                />
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-slate-50 rounded-lg">
