@@ -681,55 +681,7 @@ export default function ClientTransactions() {
             </DialogContent>
           </Dialog>
       
-      {/* Period Filter Bar */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Time Period</span>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={exportToCSV}
-              className="ml-2"
-            >
-              <Download className="h-4 w-4 mr-1" />
-              Export CSV
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2">
-            <Button 
-              variant={selectedPeriod === 'all' ? 'default' : 'outline'}
-              onClick={() => handlePeriodFilter('all')}
-              className="flex-1"
-            >
-              All
-            </Button>
-            <Button 
-              variant={selectedPeriod === '1w' ? 'default' : 'outline'}
-              onClick={() => handlePeriodFilter('1w')}
-              className="flex-1"
-            >
-              1W
-            </Button>
-            <Button 
-              variant={selectedPeriod === '1m' ? 'default' : 'outline'}
-              onClick={() => handlePeriodFilter('1m')}
-              className="flex-1"
-            >
-              1M
-            </Button>
-            <Button 
-              variant={selectedPeriod === '3m' ? 'default' : 'outline'}
-              onClick={() => handlePeriodFilter('3m')}
-              className="flex-1"
-            >
-              3M
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Filters - Collapsible */}
       <Card className="overflow-hidden">
@@ -741,6 +693,18 @@ export default function ClientTransactions() {
             <div className="flex items-center space-x-2">
               <Filter className="h-5 w-5 text-gray-600" />
               <span className="font-medium text-gray-900">Filters</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  exportToCSV();
+                }}
+                className="ml-4"
+              >
+                <Download className="h-4 w-4 mr-1" />
+                Export CSV
+              </Button>
               {(selectedPeriod !== 'all' || transactionType !== 'all' || productType !== 'all' || securityFilter !== 'all') && (
                 <div className="flex items-center space-x-2 ml-2">
                   {selectedPeriod !== 'all' && (
