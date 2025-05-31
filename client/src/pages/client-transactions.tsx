@@ -134,7 +134,7 @@ export default function ClientTransactions() {
   
   // Date filter state
   const [selectedPeriod, setSelectedPeriod] = useState<'1w' | '1m' | '3m' | 'all'>('all');
-  const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 3));
+  const [startDate, setStartDate] = useState<Date>(new Date(0)); // Start with very old date for "all"
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [transactionType, setTransactionType] = useState<string>('all');
   const [productType, setProductType] = useState<string>('all');
@@ -298,7 +298,7 @@ export default function ClientTransactions() {
       totalValue: 0,
       buyCount: 0,
       sellCount: 0,
-      averageTransactionValue: 0,
+      lastTransactionDate: null,
       totalFees: 0,
       largestTransaction: 0
     };
@@ -307,7 +307,13 @@ export default function ClientTransactions() {
     const totalValue = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
     const buyCount = filteredTransactions.filter(t => t.transactionType === 'buy').length;
     const sellCount = filteredTransactions.filter(t => t.transactionType === 'sell').length;
-    const averageTransactionValue = totalTransactions > 0 ? totalValue / totalTransactions : 0;
+    
+    // Find the most recent transaction date
+    const sortedByDate = [...filteredTransactions].sort((a, b) => 
+      new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime()
+    );
+    const lastTransactionDate = sortedByDate.length > 0 ? sortedByDate[0].transactionDate : null;
+    
     const totalFees = filteredTransactions.reduce((sum, t) => sum + (t.fees || 0) + (t.taxes || 0), 0);
     const largestTransaction = Math.max(...filteredTransactions.map(t => t.amount));
     
@@ -316,7 +322,7 @@ export default function ClientTransactions() {
       totalValue,
       buyCount,
       sellCount,
-      averageTransactionValue,
+      lastTransactionDate,
       totalFees,
       largestTransaction
     };
@@ -811,12 +817,12 @@ export default function ClientTransactions() {
         </div>
         
         <div className="bg-muted rounded-md p-3 flex flex-col">
-          <span className="text-xs text-muted-foreground">Avg. Value</span>
+          <span className="text-xs text-muted-foreground">Last Transaction</span>
           <span className="text-lg font-semibold">
             {isTransactionsLoading ? (
               <Skeleton className="h-6 w-20" />
             ) : (
-              formatCurrency(metrics.averageTransactionValue)
+              metrics.lastTransactionDate ? format(new Date(metrics.lastTransactionDate), 'dd MMM') : 'N/A'
             )}
           </span>
         </div>
