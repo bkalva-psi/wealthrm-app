@@ -191,6 +191,7 @@ const ClientCommunications: React.FC = () => {
     notes: '',
     outcome: 'completed',
     duration_minutes: 15,
+    location: '',
     tags: [] as string[]
   });
   
@@ -223,6 +224,7 @@ const ClientCommunications: React.FC = () => {
         endTime: new Date(Date.now() + (noteData.duration_minutes * 60 * 1000)).toISOString(),
         duration: noteData.duration_minutes,
         channel: noteData.channel,
+        location: noteData.location || null,
         sentiment: 'neutral',
         followupRequired: false,
         hasAttachments: false,
@@ -246,7 +248,8 @@ const ClientCommunications: React.FC = () => {
         notes: '',
         outcome: 'completed',
         duration_minutes: 15,
-        tags: []
+        location: '',
+        tags: [] as string[]
       });
       toast({
         title: "Note created",
@@ -621,6 +624,18 @@ const ClientCommunications: React.FC = () => {
                   required
                 />
               </div>
+
+              {newNoteData.channel === 'in_person' && (
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={newNoteData.location || ''}
+                    onChange={(e) => setNewNoteData(prev => ({ ...prev, location: e.target.value }))}
+                    placeholder="Meeting location"
+                  />
+                </div>
+              )}
             </div>
             
             <DialogFooter>
