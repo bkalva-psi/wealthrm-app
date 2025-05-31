@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,6 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { 
   format, 
   startOfMonth, 
@@ -50,6 +61,21 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedView, setSelectedView] = useState<string>("day");
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    startDate: '',
+    startTime: '',
+    endTime: '',
+    location: '',
+    clientId: '',
+    priority: 'medium',
+    type: 'meeting'
+  });
+  
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   // Set page title
   useEffect(() => {
@@ -69,6 +95,55 @@ export default function CalendarPage() {
       return response.json();
     },
   });
+
+  // Fetch clients for the dropdown
+  const { data: clients } = useQuery({
+    queryKey: ['/api/clients'],
+  });
+
+  // Create appointment mutation
+  const createAppointmentMutation = useMutation({
+    mutationFn: async (appointmentData: any) => {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create appointment');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/appointments'] });
+      setShowCreateDialog(false);
+      setFormData({
+        title: '',
+        description: '',
+        startDate: '',
+        startTime: '',
+        endTime: '',
+        location: '',
+        clientId: '',
+        priority: 'medium',
+        type: 'meeting'
+      });
+      toast({
+        title: "Success",
+        description: "Appointment created successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create appointment",
+        variant: "destructive",
+      });
+    },
+  });
   
   const nextMonth = () => {
     setCalendarDate(addMonths(calendarDate, 1));
@@ -83,6 +158,52 @@ export default function CalendarPage() {
       setSelectedDate(date);
     }
   };
+
+  const handleCreateAppointment = () => {
+    setFormData(prev => ({
+      ...prev,
+      startDate: format(selectedDate, 'yyyy-MM-dd')
+    }));
+    setShowCreateDialog(true);
+  };
+
+  const handleSubmit = () => {
+    if (!formData.title || !formData.startDate || !formData.startTime || !formData.endTime) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+    const endDateTime = new Date(`${formData.startDate}T${formData.endTime}`);
+
+    if (endDateTime <= startDateTime) {
+      toast({
+        title: "Error",
+        description: "End time must be after start time",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const appointmentData = {
+      title: formData.title,
+      description: formData.description,
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
+      location: formData.location,
+      clientId: formData.clientId ? parseInt(formData.clientId) : null,
+      priority: formData.priority,
+      type: formData.type,
+    };
+
+    createAppointmentMutation.mutate(appointmentData);
+  };
+
+  const isFormValid = formData.title && formData.startDate && formData.startTime && formData.endTime;
   
   const getAppointmentsForDate = (date: Date) => {
     if (!appointments) return [];
@@ -144,7 +265,7 @@ export default function CalendarPage() {
           <h2 className="text-lg font-semibold text-slate-800">
             {format(selectedDate, "EEEE, MMMM d, yyyy")}
           </h2>
-          <Button variant="outline" size="icon" className="rounded-full">
+          <Button variant="outline" size="icon" className="rounded-full" onClick={handleCreateAppointment}>
             <Plus className="h-4 w-4" />
           </Button>
         </div>
@@ -195,7 +316,7 @@ export default function CalendarPage() {
           <h2 className="text-lg font-semibold text-slate-800">
             {format(days[0], "MMMM d")} - {format(days[6], "MMMM d, yyyy")}
           </h2>
-          <Button variant="outline" size="icon" className="rounded-full">
+          <Button variant="outline" size="icon" className="rounded-full" onClick={handleCreateAppointment}>
             <Plus className="h-4 w-4" />
           </Button>
         </div>
@@ -270,6 +391,7 @@ export default function CalendarPage() {
           size="icon" 
           className="rounded-full"
           aria-label="Add new appointment"
+          onClick={handleCreateAppointment}
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -418,6 +540,162 @@ export default function CalendarPage() {
       
       {selectedView === "day" && renderDayView()}
       {selectedView === "week" && renderWeekView()}
+
+      {/* Create Appointment Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Appointment</DialogTitle>
+            <DialogDescription>
+              Schedule a new appointment with a client or prospect
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Title *
+              </Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                className="col-span-3"
+                placeholder="Appointment title"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="type" className="text-right">
+                Type
+              </Label>
+              <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="meeting">Meeting</SelectItem>
+                  <SelectItem value="call">Call</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="follow-up">Follow-up</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="client" className="text-right">
+                Client
+              </Label>
+              <Select value={formData.clientId} onValueChange={(value) => setFormData(prev => ({ ...prev, clientId: value }))}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a client (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients?.map((client: any) => (
+                    <SelectItem key={client.id} value={client.id.toString()}>
+                      {client.fullName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="date" className="text-right">
+                Date *
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="startTime" className="text-right">
+                Start Time *
+              </Label>
+              <Input
+                id="startTime"
+                type="time"
+                value={formData.startTime}
+                onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="endTime" className="text-right">
+                End Time *
+              </Label>
+              <Input
+                id="endTime"
+                type="time"
+                value={formData.endTime}
+                onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="location" className="text-right">
+                Location
+              </Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                className="col-span-3"
+                placeholder="Meeting location"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="priority" className="text-right">
+                Priority
+              </Label>
+              <Select value={formData.priority} onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                className="col-span-3"
+                placeholder="Appointment details"
+                rows={3}
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSubmit}
+              disabled={!isFormValid || createAppointmentMutation.isPending}
+            >
+              {createAppointmentMutation.isPending ? "Creating..." : "Create Appointment"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
