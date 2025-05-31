@@ -225,6 +225,18 @@ function AuthenticatedApp() {
         return <ClientTasks />;
       case /^\/clients\/\d+\/insights$/.test(currentRoute):
         return <ClientInsights />;
+      case /^\/clients\/\d+\/portfolio-report$/.test(currentRoute):
+        // Extract client ID and open portfolio report
+        const clientIdMatch = currentRoute.match(/\/clients\/(\d+)\/portfolio-report/);
+        if (clientIdMatch) {
+          const clientId = clientIdMatch[1];
+          window.open(`/api/clients/${clientId}/portfolio-report`, '_blank');
+          // Navigate back to portfolio page
+          setTimeout(() => {
+            window.location.hash = `/clients/${clientId}/portfolio`;
+          }, 100);
+        }
+        return <ClientPortfolio />;
       
       case currentRoute === '/calendar':
         return <ClientAppointments clientId="all" />;
