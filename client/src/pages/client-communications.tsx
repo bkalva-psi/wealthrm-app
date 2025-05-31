@@ -475,9 +475,27 @@ const ClientCommunications: React.FC = () => {
                 <Filter className="h-5 w-5 text-gray-600" />
                 <span className="font-medium text-gray-900">Filters</span>
                 {(filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
-                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                    Active
-                  </span>
+                  <div className="flex items-center space-x-2 ml-2">
+                    {filters.noteType !== 'all' && (
+                      <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                        {filters.noteType.replace('_', ' ').toUpperCase()}
+                      </span>
+                    )}
+                    {filters.channel !== 'all' && (
+                      <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                        {filters.channel.toUpperCase()}
+                      </span>
+                    )}
+                    {filters.dateRange !== 'all' && (
+                      <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">
+                        {filters.dateRange === '7days' ? 'LAST 7 DAYS' :
+                         filters.dateRange === '30days' ? 'LAST 30 DAYS' :
+                         filters.dateRange === '3months' ? 'LAST 3 MONTHS' :
+                         filters.dateRange === '6months' ? 'LAST 6 MONTHS' : 
+                         filters.dateRange.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
               <ChevronDown 
@@ -581,13 +599,8 @@ const ClientCommunications: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-2">
-                          <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                            {communicationType}
-                          </span>
-                          <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
-                            {channel}
-                          </span>
+                        <div className="text-sm font-medium text-gray-900">
+                          {communicationType} • {channel}
                         </div>
                         <div className="text-sm text-gray-600">
                           {date}
