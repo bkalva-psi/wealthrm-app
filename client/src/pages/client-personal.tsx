@@ -3,21 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Briefcase, Home, Building, 
   CreditCard, Shield, Users, Wallet, PieChart, MessageCircle, Clock, Heart,
-  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown
+  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown, ChevronDown, ChevronUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { clientApi } from "@/lib/api";
 import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
 import { getTierColor } from "@/lib/utils";
 
 export default function ClientPersonalPage() {
   const [clientId, setClientId] = useState<number | null>(null);
+  const [isPersonalOpen, setIsPersonalOpen] = useState(true);
+  const [isFinancialOpen, setIsFinancialOpen] = useState(false);
+  const [isFamilyOpen, setIsFamilyOpen] = useState(false);
+  const [isKycOpen, setIsKycOpen] = useState(false);
   
   // Set page title
   useEffect(() => {
@@ -346,25 +350,26 @@ export default function ClientPersonalPage() {
             </CardContent>
           </Card>
 
-          {/* Detailed Information Tabs */}
-          <Tabs defaultValue="personal" className="mb-6">
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full">
-              <TabsTrigger value="personal">Personal</TabsTrigger>
-              <TabsTrigger value="financial">Financial</TabsTrigger>
-              <TabsTrigger value="family">Family</TabsTrigger>
-              <TabsTrigger value="kyc">KYC & Compliance</TabsTrigger>
-            </TabsList>
-            
-            {/* Personal Information Tab */}
-            <TabsContent value="personal" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-medium flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Personal Information
-                  </CardTitle>
+          {/* Personal Details Collapsible Card */}
+          <Collapsible 
+            open={isPersonalOpen} 
+            onOpenChange={setIsPersonalOpen}
+            className="space-y-2"
+          >
+            <Card className="overflow-hidden">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors py-3 px-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-medium flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Personal Details
+                    </CardTitle>
+                    {isPersonalOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </div>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="p-4 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h3 className="font-medium mb-3">Basic Details</h3>
