@@ -258,9 +258,9 @@ const ClientCommunications: React.FC = () => {
         (dateFilter === '3months' && (now.getTime() - commDate.getTime()) <= 90 * 24 * 60 * 60 * 1000) ||
         (dateFilter === '6months' && (now.getTime() - commDate.getTime()) <= 180 * 24 * 60 * 60 * 1000);
       
-      return matchesSearch && matchesNoteType && matchesChannel && matchesDate;
+      return matchesNoteType && matchesChannel && matchesDate;
     }).sort((a: any, b: any) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
-  }, [communications, searchText, filters]);
+  }, [communications, filters]);
 
   // Mutation for creating new note
   const createNoteMutation = useMutation({
