@@ -77,9 +77,9 @@ export default function AnnouncementsPage() {
       <div className="flex items-center space-x-3">
         <Megaphone className="h-6 w-6 text-ujjivan-primary" />
         <h1 className="text-2xl font-bold text-slate-900">Announcements</h1>
-        <Badge variant="secondary" className="ml-auto">
+        <span className="ml-auto text-sm text-slate-500">
           {activeAnnouncements.length} Active
-        </Badge>
+        </span>
       </div>
       
       <p className="text-slate-600">
@@ -101,26 +101,18 @@ export default function AnnouncementsPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className={getPriorityColor(announcement.priority)} variant="outline">
-                          {announcement.priority.toUpperCase()}
-                        </Badge>
-                        <Badge className={getTypeColor(announcement.type)} variant="secondary">
-                          {announcement.type.charAt(0).toUpperCase() + announcement.type.slice(1)}
-                        </Badge>
-                        {announcement.action_required && (
-                          <Badge variant="destructive" className="flex items-center gap-1">
-                            <AlertCircle className="h-3 w-3" />
-                            Action Required
-                          </Badge>
-                        )}
-                      </div>
                       <h3 className="font-medium text-slate-900 mb-1">
                         {announcement.title}
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-slate-500">
                         <span>{announcement.author}</span>
                         <span>{format(new Date(announcement.created_at), 'MMM dd')}</span>
+                        {announcement.action_required && (
+                          <span className="flex items-center gap-1 text-red-600">
+                            <AlertCircle className="h-3 w-3" />
+                            Action Required
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -164,15 +156,7 @@ export default function AnnouncementsPage() {
                         </div>
                       </div>
                       
-                      {announcement.tags && announcement.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {announcement.tags.map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+
                     </div>
                   )}
                 </div>
