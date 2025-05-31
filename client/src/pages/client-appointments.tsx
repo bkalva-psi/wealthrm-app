@@ -9,7 +9,11 @@ import {
   Plus,
   User,
   ArrowLeft,
-  Calendar
+  Calendar,
+  PieChart,
+  Receipt,
+  FileText,
+  FileBarChart
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
 
