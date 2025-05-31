@@ -822,7 +822,7 @@ export default function ClientTransactions() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Transaction Details</h3>
-          <p className="text-sm text-gray-500">Showing {sortedTransactions.length} of {transactions?.length || 0} transactions</p>
+          <p className="text-sm text-gray-500">Showing {Math.min(visibleCount, sortedTransactions.length)} of {sortedTransactions.length} transactions</p>
         </div>
         
         {isTransactionsLoading ? (
@@ -879,25 +879,28 @@ export default function ClientTransactions() {
             
             {/* Pagination Controls */}
             {sortedTransactions.length > ITEMS_PER_PAGE && (
-              <div className="flex justify-center space-x-4 pt-4">
-                {visibleCount < sortedTransactions.length && (
-                  <Button 
-                    variant="outline" 
-                    onClick={handleShowMore}
-                    className="px-6"
-                  >
-                    Show More ({Math.min(ITEMS_PER_PAGE, sortedTransactions.length - visibleCount)} more)
-                  </Button>
-                )}
-                {visibleCount > ITEMS_PER_PAGE && (
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleShowLess}
-                    className="px-6"
-                  >
-                    Show Less
-                  </Button>
-                )}
+              <div className="flex flex-col items-center space-y-2 pt-6">
+                <p className="text-xs text-gray-400">Debug: {sortedTransactions.length} total, showing {visibleCount}, threshold {ITEMS_PER_PAGE}</p>
+                <div className="flex justify-center space-x-4">
+                  {visibleCount < sortedTransactions.length && (
+                    <Button 
+                      variant="outline" 
+                      onClick={handleShowMore}
+                      className="px-6"
+                    >
+                      Show More ({Math.min(ITEMS_PER_PAGE, sortedTransactions.length - visibleCount)} more)
+                    </Button>
+                  )}
+                  {visibleCount > ITEMS_PER_PAGE && (
+                    <Button 
+                      variant="ghost" 
+                      onClick={handleShowLess}
+                      className="px-6"
+                    >
+                      Show Less
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
           </>
