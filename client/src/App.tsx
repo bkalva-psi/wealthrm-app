@@ -277,7 +277,7 @@ function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    login("rahul.sharma", "password123");
+    login("priya.krishnan", "password123");
   };
 
   return (
