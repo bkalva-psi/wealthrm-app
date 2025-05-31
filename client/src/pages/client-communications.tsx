@@ -1359,21 +1359,7 @@ const ClientCommunications: React.FC = () => {
         </div>
       )}
 
-      {/* Page Description - Mobile Optimized */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-            My Notes
-          </h2>
-          
-          {!isGlobalView && (
-            <NewCommunicationDialog 
-              clientId={clientId!}
-              onSuccess={refetchCommunications}
-            />
-          )}
-        </div>
-      </div>
+
 
       <div className="container mx-auto py-6">        
         <div className="max-w-4xl mx-auto">

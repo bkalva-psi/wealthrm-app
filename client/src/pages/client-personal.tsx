@@ -231,12 +231,6 @@ export default function ClientPersonalPage() {
         </div>
       </div>
 
-      {/* Page Description */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Personal Profile</h2>
-        </div>
-      </div>
       
       <div className="p-6">
         {isLoading ? (

@@ -541,15 +541,6 @@ export default function ClientTransactions() {
         </div>
       </div>
 
-      {/* Page Description */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Transactions</h2>
-          <p className="text-gray-600 mt-1">
-            Detailed transaction history with filtering and analysis tools
-          </p>
-        </div>
-      </div>
       
       <Dialog>
         <DialogTrigger asChild>
