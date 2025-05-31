@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield } from "lucide-react";
+import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp } from "lucide-react";
 
 interface Product {
   id: number;
@@ -42,7 +42,7 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRiskLevels, setSelectedRiskLevels] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 
   // Fetch products from database
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
@@ -73,8 +73,20 @@ export default function Products() {
   });
 
   // Get unique categories and risk levels for filters
-  const categories = [...new Set(products.map(p => p.category))];
-  const riskLevels = [...new Set(products.map(p => p.riskLevel))];
+  const categories = Array.from(new Set(products.map(p => p.category)));
+  const riskLevels = Array.from(new Set(products.map(p => p.riskLevel)));
+
+  const toggleCardExpansion = (productId: number) => {
+    const newExpandedCards = new Set(expandedCards);
+    if (newExpandedCards.has(productId)) {
+      newExpandedCards.delete(productId);
+    } else {
+      newExpandedCards.add(productId);
+    }
+    setExpandedCards(newExpandedCards);
+  };
+
+  const isCardExpanded = (productId: number) => expandedCards.has(productId);
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     if (checked) {
@@ -224,28 +236,15 @@ export default function Products() {
             )}
           </div>
         ) : (
-          <>
-            {/* Results Summary */}
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                Showing {filteredProducts.length} of {products.length} products
-                {selectedCategories.length > 0 && (
-                  <span className="ml-2">
-                    • Categories: {selectedCategories.join(", ")}
-                  </span>
-                )}
-                {selectedRiskLevels.length > 0 && (
-                  <span className="ml-2">
-                    • Risk: {selectedRiskLevels.join(", ")}
-                  </span>
-                )}
-              </p>
-            </div>
-
-            {/* Products Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className={`transition-all duration-200 hover:shadow-lg ${product.featured ? 'ring-2 ring-blue-200' : ''}`}>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProducts.map((product) => {
+              const isExpanded = isCardExpanded(product.id);
+              return (
+                <Card 
+                  key={product.id} 
+                  className={`transition-all duration-200 hover:shadow-lg cursor-pointer ${product.featured ? 'ring-2 ring-blue-200' : ''}`}
+                  onClick={() => toggleCardExpansion(product.id)}
+                >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -254,112 +253,174 @@ export default function Products() {
                           {product.productCode} • {product.category}
                         </CardDescription>
                       </div>
-                      {product.featured && (
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                          Featured
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {product.featured && (
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                            Featured
+                          </Badge>
+                        )}
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
 
                   <CardContent className="space-y-4">
-                    <p className="text-sm text-gray-700 line-clamp-3">
-                      {product.description}
-                    </p>
-
-                    {/* Key Stats */}
+                    {/* Summary View - Always Visible */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <p className="text-gray-600">Min Investment</p>
-                          <p className="font-medium">{product.minInvestment}</p>
-                        </div>
+                      <div>
+                        <p className="text-gray-600">Min Investment</p>
+                        <p className="font-medium">{product.minInvestment}</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <p className="text-gray-600">Risk Level</p>
-                          <Badge className={`text-xs ${getRiskColor(product.riskLevel)}`}>
-                            {product.riskLevel}
-                          </Badge>
-                        </div>
+                      <div>
+                        <p className="text-gray-600">Risk Level</p>
+                        <Badge className={`text-xs ${getRiskColor(product.riskLevel)}`}>
+                          {product.riskLevel}
+                        </Badge>
                       </div>
                     </div>
 
                     {product.expectedReturns && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <p className="text-gray-600">Expected Returns</p>
-                          <p className="font-medium text-green-700">{product.expectedReturns}</p>
+                      <div className="text-sm">
+                        <p className="text-gray-600">Expected Returns</p>
+                        <p className="font-medium text-green-700">{product.expectedReturns}</p>
+                      </div>
+                    )}
+
+                    {/* Expanded View - Conditional */}
+                    {isExpanded && (
+                      <div className="space-y-4 pt-4 border-t border-gray-100">
+                        <p className="text-sm text-gray-700">
+                          {product.description}
+                        </p>
+
+                        {/* Performance Metrics */}
+                        {(product.totalInvestors || product.totalSubscriptions) && (
+                          <div className="flex items-center gap-4 text-xs text-gray-600">
+                            {product.totalInvestors && (
+                              <div className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                <span>{product.totalInvestors.toLocaleString()} investors</span>
+                              </div>
+                            )}
+                            {product.totalSubscriptions && (
+                              <div className="flex items-center gap-1">
+                                <TrendingUp className="h-3 w-3" />
+                                <span>₹{(product.totalSubscriptions / 10000000).toFixed(0)}Cr AUM</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Key Features */}
+                        {product.keyFeatures && product.keyFeatures.length > 0 && (
+                          <div>
+                            <p className="text-sm font-medium text-gray-700 mb-2">Key Features</p>
+                            <div className="space-y-1">
+                              {product.keyFeatures.map((feature, index) => (
+                                <div key={index} className="text-xs text-gray-600 flex items-start gap-2">
+                                  <span className="text-green-600 mt-0.5">•</span>
+                                  <span>{feature}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Additional Details */}
+                        <div className="grid grid-cols-1 gap-3 text-sm">
+                          {product.tenure && (
+                            <div>
+                              <p className="text-gray-600">Tenure</p>
+                              <p className="font-medium">{product.tenure}</p>
+                            </div>
+                          )}
+                          
+                          {product.lockInPeriod && (
+                            <div>
+                              <p className="text-gray-600">Lock-in Period</p>
+                              <p className="font-medium">{product.lockInPeriod} months</p>
+                            </div>
+                          )}
+                          
+                          {product.managementFee && (
+                            <div>
+                              <p className="text-gray-600">Management Fee</p>
+                              <p className="font-medium">{product.managementFee}% p.a.</p>
+                            </div>
+                          )}
+                          
+                          {product.exitLoad && (
+                            <div>
+                              <p className="text-gray-600">Exit Load</p>
+                              <p className="font-medium">{product.exitLoad}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Regulatory Information */}
+                        {product.regulatoryApprovals && product.regulatoryApprovals.length > 0 && (
+                          <div>
+                            <p className="text-sm font-medium text-gray-700 mb-2">Regulatory Approvals</p>
+                            <div className="flex flex-wrap gap-1">
+                              {product.regulatoryApprovals.map((approval, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {approval}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tax Information */}
+                        {product.taxImplications && (
+                          <div>
+                            <p className="text-sm font-medium text-gray-700 mb-2">Tax Implications</p>
+                            <p className="text-xs text-gray-600">{product.taxImplications}</p>
+                          </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 pt-2">
+                          {product.factsheetUrl && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1 flex items-center gap-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(product.factsheetUrl, `${product.name} Factsheet`);
+                              }}
+                            >
+                              <FileText className="h-4 w-4" />
+                              Factsheet
+                            </Button>
+                          )}
+                          {product.applicationFormUrl && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1 flex items-center gap-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(product.applicationFormUrl, `${product.name} Application`);
+                              }}
+                            >
+                              <Download className="h-4 w-4" />
+                              Apply
+                            </Button>
+                          )}
                         </div>
                       </div>
                     )}
-
-                    {/* Performance Metrics */}
-                    {(product.totalInvestors || product.totalSubscriptions) && (
-                      <div className="flex items-center gap-4 text-xs text-gray-600 pt-2 border-t">
-                        {product.totalInvestors && (
-                          <div className="flex items-center gap-1">
-                            <Users className="h-3 w-3" />
-                            <span>{product.totalInvestors.toLocaleString()} investors</span>
-                          </div>
-                        )}
-                        {product.totalSubscriptions && (
-                          <div className="flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3" />
-                            <span>₹{(product.totalSubscriptions / 10000000).toFixed(0)}Cr AUM</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Key Features */}
-                    {product.keyFeatures && product.keyFeatures.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {product.keyFeatures.slice(0, 3).map((feature, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {feature}
-                          </Badge>
-                        ))}
-                        {product.keyFeatures.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{product.keyFeatures.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </CardContent>
-
-                  <CardFooter className="flex gap-2">
-                    {product.factsheetUrl && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1 flex items-center gap-2"
-                        onClick={() => handleDownload(product.factsheetUrl, `${product.name} Factsheet`)}
-                      >
-                        <FileText className="h-4 w-4" />
-                        Factsheet
-                      </Button>
-                    )}
-                    {product.applicationFormUrl && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1 flex items-center gap-2"
-                        onClick={() => handleDownload(product.applicationFormUrl, `${product.name} Application`)}
-                      >
-                        <Download className="h-4 w-4" />
-                        Apply
-                      </Button>
-                    )}
-                  </CardFooter>
                 </Card>
-              ))}
-            </div>
-          </>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
