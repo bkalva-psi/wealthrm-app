@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
+import { FeatureTooltip, QuickTip } from "@/components/ui/feature-tooltip";
 
 type Period = "M" | "Q" | "HY" | "Y";
 

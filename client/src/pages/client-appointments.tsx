@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
   CalendarIcon, 
@@ -9,19 +9,7 @@ import {
   Plus,
   User,
   ArrowLeft,
-  Phone,
-  Mail,
-  BarChart4,
-  Wallet,
-  ArrowUpDown,
-  Calendar,
-  MessageCircle,
-  FileText,
-  Target,
-  PieChart,
-  Receipt,
-  FileBarChart,
-  Lightbulb
+  Calendar
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
 
