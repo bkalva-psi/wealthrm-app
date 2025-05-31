@@ -71,6 +71,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   // Fetch client data if clientId is provided
   const { data: client, isLoading: isClientLoading } = useQuery({
     queryKey: ['/api/clients', clientId],
+    queryFn: () => fetch(`/api/clients/${clientId}`).then(res => res.json()),
     enabled: !!clientId,
   });
 
@@ -420,13 +421,13 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     </div>
                   ) : client ? (
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-900">{client.name}</h2>
+                      <h2 className="text-xl font-semibold text-slate-900">{client.fullName || client.name}</h2>
                       <div className="flex items-center gap-4 mt-1">
                         <Badge className={`${getTierColor(client.tier)} bg-white`}>
                           {client.tier?.toUpperCase() || 'STANDARD'}
                         </Badge>
                         <span className="text-sm text-slate-600">
-                          AUM: ₹{client.aum || '0'}
+                          AUM: {client.aum || '₹0'}
                         </span>
                       </div>
                     </div>
