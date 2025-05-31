@@ -761,33 +761,18 @@ export default function ClientPortfolioPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {/* AUM */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <div className="p-2 rounded-full bg-blue-100 text-blue-600">
-                      <DollarSign className="h-4 w-4" />
-                    </div>
-                  </div>
                   <div className="text-sm text-gray-500 mb-1">AUM</div>
                   <div className="text-lg font-semibold">₹{(aumValue / 100000).toFixed(1)}L</div>
                 </div>
                 
                 {/* Investment */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <div className="p-2 rounded-full bg-green-100 text-green-600">
-                      <Wallet className="h-4 w-4" />
-                    </div>
-                  </div>
                   <div className="text-sm text-gray-500 mb-1">Investment</div>
                   <div className="text-lg font-semibold">₹{((aumValue * 0.85) / 100000).toFixed(1)}L</div>
                 </div>
                 
                 {/* Unrealized Gain */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <div className="p-2 rounded-full bg-emerald-100 text-emerald-600">
-                      <TrendingUp className="h-4 w-4" />
-                    </div>
-                  </div>
                   <div className="text-sm text-gray-500 mb-1">Unrealized Gain</div>
                   <div className="text-lg font-semibold text-emerald-600">
                     ₹{((aumValue * 0.15) / 100000).toFixed(1)}L
@@ -797,11 +782,6 @@ export default function ClientPortfolioPage() {
                 
                 {/* XIRR */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <div className="p-2 rounded-full bg-amber-100 text-amber-600">
-                      <Percent className="h-4 w-4" />
-                    </div>
-                  </div>
                   <div className="text-sm text-gray-500 mb-1">XIRR</div>
                   <div className="text-lg font-semibold">{client?.performance?.xirr || 12.5}%</div>
                 </div>
