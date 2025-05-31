@@ -785,6 +785,7 @@ export default function ClientPortfolioPage() {
           isLoading={isLoading}
         />
       </div>
+      </div>
       
       {/* Portfolio Sections as Collapsible Cards */}
       <div className="space-y-3 flex-grow">
