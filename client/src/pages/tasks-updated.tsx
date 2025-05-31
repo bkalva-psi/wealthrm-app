@@ -81,7 +81,38 @@ export default function TasksUpdated() {
       (statusFilter === 'completed' && task.completed) ||
       (statusFilter === 'pending' && !task.completed);
     
-    return matchesSearch && matchesStatus;
+    // Priority filter (assuming tasks have priority field)
+    const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
+    
+    // Due date filter
+    let matchesDueDate = true;
+    if (dueDateFilter !== 'all' && task.dueDate) {
+      const dueDate = new Date(task.dueDate);
+      const today = new Date();
+      const tomorrow = addDays(today, 1);
+      const endOfWeek = addDays(today, 7 - today.getDay());
+      const endOfNextWeek = addDays(endOfWeek, 7);
+      
+      switch (dueDateFilter) {
+        case 'overdue':
+          matchesDueDate = isBefore(dueDate, today);
+          break;
+        case 'today':
+          matchesDueDate = isToday(dueDate);
+          break;
+        case 'tomorrow':
+          matchesDueDate = isToday(tomorrow) && isToday(dueDate);
+          break;
+        case 'this_week':
+          matchesDueDate = !isBefore(dueDate, today) && !isAfter(dueDate, endOfWeek);
+          break;
+        case 'next_week':
+          matchesDueDate = !isBefore(dueDate, endOfWeek) && !isAfter(dueDate, endOfNextWeek);
+          break;
+      }
+    }
+    
+    return matchesSearch && matchesStatus && matchesPriority && matchesDueDate;
   });
 
   // Filtered alerts based on search
