@@ -124,13 +124,20 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   const pipelineStages = stages.filter(stage => !['won', 'lost'].includes(stage.id));
   
   const funnelData = pipelineStages.map((stage, index) => {
-    const count = prospects.filter(p => p.stage === stage.id).length;
+    const stageProspects = prospects.filter(p => p.stage === stage.id);
+    const count = stageProspects.length;
+    
+    // Calculate total potential AUM for this stage in crores
+    const totalValue = stageProspects.reduce((sum, prospect) => {
+      return sum + (prospect.potentialAumValue || 0);
+    }, 0);
+    const valueInCrores = totalValue / 10000000; // Convert to crores
     
     // Define proper hex colors for each stage
     const getStageHexColor = (stageId: string) => {
       switch (stageId.toLowerCase()) {
-        case 'discovery': return '#3b82f6'; // Blue
-        case 'qualified': return '#10b981'; // Green
+        case 'new': return '#10b981'; // Green
+        case 'qualified': return '#3b82f6'; // Blue
         case 'proposal': return '#f59e0b'; // Orange
         case 'negotiation': return '#8b5cf6'; // Purple
         case 'won': return '#22c55e'; // Success green
@@ -143,6 +150,7 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
       stage: stage.title,
       stageId: stage.id,
       count,
+      potentialValue: valueInCrores,
       color: getStageHexColor(stage.id),
       percentage: prospects.length > 0 ? Math.round((count / prospects.length) * 100) : 0,
       level: index
@@ -196,7 +204,8 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
                         >
                           <div className="text-center">
                             <div className="font-semibold text-sm">{item.stage}</div>
-                            <div className="text-xs mt-0.5 font-medium">{item.count}</div>
+                            <div className="text-xs mt-0.5 font-medium">{item.count} prospects</div>
+                            <div className="text-xs font-medium">₹{item.potentialValue.toFixed(1)} Cr</div>
                           </div>
                         </div>
                       </div>
