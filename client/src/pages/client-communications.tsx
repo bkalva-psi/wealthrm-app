@@ -284,7 +284,7 @@ const ClientCommunications: React.FC = () => {
       {/* Page Title Band with Navigation */}
       <div className="bg-white border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
-          <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Notes</h2>
         </div>
         
         {/* Navigation Icons */}

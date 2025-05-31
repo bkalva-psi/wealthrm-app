@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Briefcase, Home, Building, 
   CreditCard, Shield, Users, Wallet, PieChart, MessageCircle, Clock, Heart,
-  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown, ChevronDown, ChevronUp
+  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown, ChevronDown, ChevronUp, FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -205,9 +205,9 @@ export default function ClientPersonalPage() {
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-            title="Communications"
+            title="Notes"
           >
-            <MessageCircle className="h-6 w-6 text-gray-600" />
+            <FileText className="h-6 w-6 text-gray-600" />
           </button>
           
           <button 
