@@ -180,12 +180,12 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
                 {/* Funnel Segments */}
                 <div className="space-y-0">
                   {funnelData.map((item, index) => {
-                    // Calculate width proportionate to prospect count
-                    const maxCount = Math.max(...funnelData.map(d => d.count));
+                    // Calculate width proportionate to AUM value instead of prospect count
+                    const maxValue = Math.max(...funnelData.map(d => d.potentialValue));
                     const minWidth = 100;
                     const maxWidth = 240;
-                    const proportionateWidth = maxCount > 0 
-                      ? minWidth + ((item.count / maxCount) * (maxWidth - minWidth))
+                    const proportionateWidth = maxValue > 0 
+                      ? minWidth + ((item.potentialValue / maxValue) * (maxWidth - minWidth))
                       : minWidth;
                     
                     return (
@@ -518,7 +518,7 @@ export default function Prospects() {
       </div>
       
       {/* Funnel Chart */}
-      <FunnelChart prospects={filteredProspects} stages={stages} />
+      <FunnelChart prospects={prospects} stages={stages} />
       
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
