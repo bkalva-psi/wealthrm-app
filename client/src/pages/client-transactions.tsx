@@ -575,8 +575,16 @@ export default function ClientTransactions() {
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => {
-              // Generate and download portfolio report
-              window.open(`/api/clients/${clientId}/portfolio-report`, '_blank');
+              // Check if mobile device
+              const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+              
+              if (isMobile) {
+                // On mobile, open in same tab for better experience
+                window.location.href = `/api/clients/${clientId}/portfolio-report`;
+              } else {
+                // On desktop, open in new tab
+                window.open(`/api/clients/${clientId}/portfolio-report`, '_blank');
+              }
             }}
             title="Portfolio Report"
           >

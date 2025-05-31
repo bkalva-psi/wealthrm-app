@@ -157,6 +157,47 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
             page-break-before: always;
           }
         }
+        @media (max-width: 768px) {
+          body {
+            padding: 10px;
+          }
+          .print-button {
+            position: static;
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 15px;
+            font-size: 18px;
+          }
+          .header {
+            text-align: center;
+            padding: 15px 0;
+          }
+          .bank-logo {
+            font-size: 20px;
+          }
+          .report-title {
+            font-size: 24px;
+          }
+          .client-details {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+          .metrics-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+          }
+          .chart-container {
+            height: 250px;
+            margin: 15px 0;
+          }
+          .table {
+            font-size: 12px;
+          }
+          .table th,
+          .table td {
+            padding: 8px 4px;
+          }
+        }
         .header {
           text-align: center;
           border-bottom: 3px solid #2563eb;
