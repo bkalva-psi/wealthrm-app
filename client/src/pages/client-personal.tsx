@@ -220,8 +220,8 @@ export default function ClientPersonalPage() {
           
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
-            title="Investment Ideas"
+            onClick={() => window.location.hash = `/clients/${clientId}/insights`}
+            title="Client Insights"
           >
             <Lightbulb className="h-6 w-6 text-gray-600" />
           </button>
