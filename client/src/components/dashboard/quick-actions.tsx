@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { UserPlus, Calendar, Edit, Phone, Mail, FolderPlus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,15 +14,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 export function QuickActions() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [activeDialog, setActiveDialog] = useState<string | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState<string>("");
+
+  // Fetch clients for the dropdown
+  const { data: clients = [] } = useQuery({
+    queryKey: ['/api/clients'],
+  });
   
   const handleDialogClose = () => {
     setActiveDialog(null);
+    setSelectedClientId(""); // Reset client selection
   };
   
   const handleAddNote = (e: React.FormEvent) => {
@@ -142,7 +157,18 @@ export function QuickActions() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="meeting-client">Client</Label>
-              <Input id="meeting-client" placeholder="Select or type client name" />
+              <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select or type client name" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(clients as any[]).map((client: any) => (
+                    <SelectItem key={client.id} value={client.id.toString()}>
+                      {client.fullName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
