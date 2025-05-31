@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigation } from "@/context/navigation-context";
 import { UserPlus, Calendar, Edit, Phone, Mail, FolderPlus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,69 +49,10 @@ export function QuickActions() {
     handleDialogClose();
   };
   
-  const handleScheduleMeeting = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target as HTMLFormElement);
-    const title = formData.get('meeting-title') as string;
-    const date = formData.get('meeting-date') as string;
-    const time = formData.get('meeting-time') as string;
-    const location = formData.get('meeting-location') as string;
-    const notes = formData.get('meeting-notes') as string;
-    
-    if (!title || !selectedClientId || !date || !time) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const startDateTime = new Date(`${date}T${time}`);
-      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour later
-
-      const appointmentData = {
-        title,
-        description: notes || "",
-        startTime: startDateTime.toISOString(),
-        endTime: endDateTime.toISOString(),
-        location: location || "TBD",
-        clientId: parseInt(selectedClientId),
-        priority: "medium",
-        type: "meeting"
-      };
-
-      const response = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(appointmentData)
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Meeting scheduled",
-          description: "Your meeting has been scheduled successfully.",
-        });
-        handleDialogClose();
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to schedule meeting.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to schedule meeting. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleScheduleMeeting = () => {
+    // Navigate to appointments page with creation mode
+    const { navigateWithHistory } = useNavigation();
+    navigateWithHistory('/calendar');
   };
   
   const quickActions = [
@@ -126,7 +68,7 @@ export function QuickActions() {
       id: "schedule",
       icon: Calendar,
       label: "Schedule",
-      action: () => setActiveDialog("schedule"),
+      action: handleScheduleMeeting,
     },
     {
       id: "add-note",
@@ -200,59 +142,7 @@ export function QuickActions() {
         </DialogContent>
       </Dialog>
       
-      {/* Schedule Meeting Dialog */}
-      <Dialog open={activeDialog === "schedule"} onOpenChange={(open) => !open && handleDialogClose()}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Schedule a Meeting</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleScheduleMeeting} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="meeting-title">Meeting Title</Label>
-              <Input id="meeting-title" name="meeting-title" placeholder="Enter meeting title" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="meeting-client">Client</Label>
-              <Select value={selectedClientId} onValueChange={setSelectedClientId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select or type client name" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(clients as any[]).map((client: any) => (
-                    <SelectItem key={client.id} value={client.id.toString()}>
-                      {client.fullName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="meeting-date">Date</Label>
-                <Input id="meeting-date" name="meeting-date" type="date" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="meeting-time">Time</Label>
-                <Input id="meeting-time" name="meeting-time" type="time" required />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="meeting-location">Location</Label>
-              <Input id="meeting-location" name="meeting-location" placeholder="Enter location" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="meeting-notes">Notes</Label>
-              <Textarea id="meeting-notes" name="meeting-notes" placeholder="Any additional notes..." rows={2} />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" type="button" onClick={handleDialogClose}>
-                Cancel
-              </Button>
-              <Button type="submit">Schedule</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+
       
       {/* Call Client Dialog */}
       <Dialog open={activeDialog === "call"} onOpenChange={(open) => !open && handleDialogClose()}>
