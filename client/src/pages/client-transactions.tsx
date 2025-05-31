@@ -61,7 +61,12 @@ import {
   Calendar as CalendarIconNav,
   Wallet,
   FileText,
-  Target
+  Target,
+  User,
+  PieChart,
+  Receipt,
+  FileBarChart,
+  Lightbulb
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -483,55 +488,7 @@ export default function ClientTransactions() {
                     </div>
                   )}
                   
-                  {/* Line 4: Navigation Icons */}
-                  <div className="grid grid-cols-7 gap-1 mt-2 w-full">
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Personal Profile"
-                    >
-                      <BarChart4 className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Portfolio"
-                    >
-                      <Wallet className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 bg-blue-100 rounded"
-                      title="Transactions"
-                    >
-                      <ArrowUpDown className="h-5 w-5 text-slate-400" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Appointments"
-                    >
-                      <CalendarIconNav className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Communications"
-                    >
-                      <MessageCircle className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Portfolio Report"
-                    >
-                      <FileText className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Investment Recommendations"
-                    >
-                      <Target className="h-5 w-5 text-slate-600" />
-                    </button>
-                  </div>
+
                 </>
               )}
             </div>
@@ -541,9 +498,67 @@ export default function ClientTransactions() {
         </div>
       </div>
 
-      {/* Page Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h2 className="text-2xl font-bold text-gray-900">Transactions</h2>
+      {/* Page Title Band with Navigation */}
+      <div className="bg-white border-b border-gray-200 px-1 py-4">
+        <h2 className="text-2xl font-bold text-gray-900 px-5 mb-3">Transactions</h2>
+        
+        {/* Navigation Icons */}
+        <div className="grid grid-cols-7 gap-1 px-1">
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            title="Personal Profile"
+          >
+            <User className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+            title="Portfolio"
+          >
+            <PieChart className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            title="Transactions"
+          >
+            <Receipt className="h-6 w-6 text-blue-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+            title="Appointments"
+          >
+            <CalendarIconNav className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+            title="Communications"
+          >
+            <MessageCircle className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+            title="Portfolio Report"
+          >
+            <FileBarChart className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+            title="Investment Ideas"
+          >
+            <Lightbulb className="h-6 w-6 text-gray-600" />
+          </button>
+        </div>
       </div>
       
       <Dialog>
