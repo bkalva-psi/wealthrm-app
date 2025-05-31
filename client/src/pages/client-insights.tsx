@@ -85,29 +85,50 @@ export default function ClientInsights() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href={`/clients/${clientId}/portfolio`}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Portfolio
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Client Insights</h1>
-            {client && (
-              <div className="flex items-center space-x-4 mt-2">
-                <p className="text-lg text-gray-600">{(client as Client).fullName}</p>
-                <Badge variant="outline" className="capitalize">
-                  {(client as Client).tier} Client
-                </Badge>
-                <span className="text-sm text-gray-500">AUM: {(client as Client).aum}</span>
-                <span className="text-sm text-gray-500">Risk: {(client as Client).riskProfile}</span>
+      {/* Header - Client Card */}
+      {client && (
+        <Card className="bg-white border-gray-200">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900">{(client as Client).fullName}</h1>
+                    <div className="space-y-1 mt-1">
+                      {(client as Client).phone && (
+                        <p className="text-sm text-gray-600">{(client as Client).phone}</p>
+                      )}
+                      {(client as Client).email && (
+                        <p className="text-sm text-gray-600">{(client as Client).email}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <Badge variant="outline" className="capitalize mb-2">
+                      {(client as Client).tier} Client
+                    </Badge>
+                    <p className="text-sm text-gray-500">AUM: {(client as Client).aum}</p>
+                    <p className="text-sm text-gray-500">Risk: {(client as Client).riskProfile}</p>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Page Title */}
+      <div className="mt-6">
+        <h2 className="text-2xl font-bold text-gray-900">Client Insights</h2>
+        <p className="text-gray-600 mt-1">Portfolio analysis and personalized recommendations</p>
       </div>
 
       {/* Quick Metrics */}
