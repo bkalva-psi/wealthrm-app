@@ -14,7 +14,8 @@ import {
   Receipt,
   FileText,
   FileBarChart,
-  Lightbulb
+  Lightbulb,
+  Phone
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
 
