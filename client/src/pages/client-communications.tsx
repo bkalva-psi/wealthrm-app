@@ -464,7 +464,10 @@ const ClientCommunications: React.FC = () => {
           
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+            onClick={() => {
+              // Generate and download portfolio report
+              window.open(`/api/clients/${clientId}/portfolio-report`, '_blank');
+            }}
             title="Portfolio Report"
           >
             <FileBarChart className="h-6 w-6 text-gray-600" />
