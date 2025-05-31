@@ -177,7 +177,7 @@ const ClientCommunications: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>('all');
   const [showAllNotes, setShowAllNotes] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
-  const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
+  const [filtersExpanded, setFiltersExpanded] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   const toggleNoteExpansion = (noteId: number) => {
