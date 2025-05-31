@@ -179,6 +179,16 @@ const ClientCommunications: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+  
+  const toggleNoteExpansion = (noteId: number) => {
+    const newExpanded = new Set(expandedNotes);
+    if (newExpanded.has(noteId)) {
+      newExpanded.delete(noteId);
+    } else {
+      newExpanded.add(noteId);
+    }
+    setExpandedNotes(newExpanded);
+  };
   const [filters, setFilters] = useState({
     noteType: 'all',
     channel: 'all',
@@ -204,15 +214,6 @@ const ClientCommunications: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Filter functions
-  const toggleNoteExpansion = (noteId: number) => {
-    const newExpanded = new Set(expandedNotes);
-    if (newExpanded.has(noteId)) {
-      newExpanded.delete(noteId);
-    } else {
-      newExpanded.add(noteId);
-    }
-    setExpandedNotes(newExpanded);
-  };
 
   const handleClearFilters = () => {
     setFilters({
@@ -238,7 +239,7 @@ const ClientCommunications: React.FC = () => {
 
   // Filter communications
   const filteredCommunications = React.useMemo(() => {
-    if (!communications) return [];
+    if (!communications || !Array.isArray(communications)) return [];
     
     return communications.filter((comm: any) => {
       // Text search
@@ -250,11 +251,11 @@ const ClientCommunications: React.FC = () => {
         comm.communication_type?.toLowerCase().includes(searchLower);
       
       // Note type filter
-      const matchesNoteType = !filters.noteType || 
+      const matchesNoteType = filters.noteType === 'all' || 
         comm.communication_type === filters.noteType;
       
       // Channel filter
-      const matchesChannel = !filters.channel || 
+      const matchesChannel = filters.channel === 'all' || 
         comm.channel === filters.channel;
       
       // Date filter
@@ -527,7 +528,7 @@ const ClientCommunications: React.FC = () => {
                 </SelectContent>
               </Select>
               
-              {(filters.noteType || filters.channel || filters.dateRange !== 'all' || searchText) && (
+              {(filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all' || searchText) && (
                 <Button onClick={handleClearFilters} variant="outline" size="sm">
                   Clear
                 </Button>
@@ -552,50 +553,136 @@ const ClientCommunications: React.FC = () => {
             ))}
           </div>
         ) : filteredCommunications && filteredCommunications.length > 0 ? (
-          <div className="space-y-4">
-            {filteredCommunications.map((communication: Communication) => (
-              <Card key={communication.id} className="p-4 hover:shadow-md transition-shadow">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        {communication.subject || `${communication.communication_type.replace('_', ' ')} - ${communication.channel}`}
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {communication.channel} • {communication.direction}
-                      </p>
+          <div className="space-y-3">
+            {filteredCommunications.map((communication: Communication) => {
+              const isExpanded = expandedNotes.has(communication.id);
+              const communicationType = communication.communication_type?.replace('_', ' ')?.toUpperCase() || 'NOTE';
+              const channel = communication.channel?.toUpperCase() || 'UNKNOWN';
+              const date = new Date(communication.start_time).toLocaleDateString();
+              
+              return (
+                <Card key={communication.id} className="overflow-hidden">
+                  {/* Summary Band - Always Visible */}
+                  <div 
+                    className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => toggleNoteExpansion(communication.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                            {communicationType}
+                          </span>
+                          <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+                            {channel}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {date}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {communication.follow_up_required && (
+                          <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
+                            Follow-up Required
+                          </span>
+                        )}
+                        <ChevronDown 
+                          className={`h-5 w-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        />
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {new Date(communication.start_time).toLocaleDateString()}
-                    </div>
+                    
+                    {/* Show subject/title in summary if available */}
+                    {communication.subject && (
+                      <div className="mt-2">
+                        <p className="text-sm font-medium text-gray-900 line-clamp-1">
+                          {communication.subject}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   
-                  {communication.summary && (
-                    <p className="text-sm text-gray-700 line-clamp-2">
-                      {communication.summary}
-                    </p>
-                  )}
-                  
-                  {communication.notes && (
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-gray-700">
-                        {communication.notes}
-                      </p>
+                  {/* Expandable Content */}
+                  {isExpanded && (
+                    <div className="p-4 space-y-4">
+                      {/* Summary */}
+                      {communication.summary && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900 mb-2">Summary</h4>
+                          <p className="text-sm text-gray-700">
+                            {communication.summary}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Notes/Details */}
+                      {communication.notes && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900 mb-2">Notes</h4>
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-sm text-gray-700">
+                              {communication.notes}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Tags */}
+                      {communication.tags && communication.tags.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900 mb-2">Tags</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {communication.tags.map((tag, index) => (
+                              <span key={index} className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Additional Details */}
+                      <div className="pt-2 border-t border-gray-100">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-500">Direction:</span>
+                            <span className="ml-2 text-gray-900">{communication.direction}</span>
+                          </div>
+                          {communication.duration && (
+                            <div>
+                              <span className="text-gray-500">Duration:</span>
+                              <span className="ml-2 text-gray-900">{communication.duration} min</span>
+                            </div>
+                          )}
+                          {communication.sentiment && (
+                            <div>
+                              <span className="text-gray-500">Sentiment:</span>
+                              <span className="ml-2 text-gray-900">{communication.sentiment}</span>
+                            </div>
+                          )}
+                          {communication.action_item_count > 0 && (
+                            <div>
+                              <span className="text-gray-500">Action Items:</span>
+                              <span className="ml-2 text-gray-900">{communication.action_item_count}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {communication.next_steps && (
+                          <div className="mt-3">
+                            <h4 className="text-sm font-medium text-gray-900 mb-1">Next Steps</h4>
+                            <p className="text-sm text-gray-700">
+                              {communication.next_steps}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
-                  
-                  {communication.tags && communication.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {communication.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <Card className="p-8 text-center">
