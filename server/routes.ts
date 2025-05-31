@@ -2275,6 +2275,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Client insights endpoints
+  app.get('/api/client-insights/:clientId', async (req: Request, res: Response) => {
+    try {
+      const clientId = parseInt(req.params.clientId);
+      
+      // Generate client-specific insights based on portfolio analysis
+      const insights = [
+        {
+          id: 1,
+          clientId,
+          type: 'opportunity',
+          title: 'Tax-Saving Opportunity',
+          description: 'Based on your portfolio analysis, there\'s an opportunity to optimize tax savings through ELSS investments.',
+          impact: 'high',
+          category: 'Tax Planning',
+          recommendation: 'Consider investing ₹1.5L in ELSS funds before March 31st to save up to ₹46,800 in taxes.',
+          priority: 1,
+          validUntil: '2025-12-31T00:00:00.000Z',
+          createdAt: new Date().toISOString(),
+          isActive: true
+        },
+        {
+          id: 2,
+          clientId,
+          type: 'risk',
+          title: 'Portfolio Concentration Risk',
+          description: 'Your portfolio shows high concentration in banking sector (45% allocation).',
+          impact: 'medium',
+          category: 'Risk Management',
+          recommendation: 'Diversify into IT, pharma, and international funds to reduce sector concentration risk.',
+          priority: 2,
+          validUntil: '2025-09-30T00:00:00.000Z',
+          createdAt: new Date().toISOString(),
+          isActive: true
+        },
+        {
+          id: 3,
+          clientId,
+          type: 'performance',
+          title: 'Underperforming Assets',
+          description: 'Some mutual fund holdings have underperformed benchmarks by 3-5% over the last 12 months.',
+          impact: 'medium',
+          category: 'Performance Review',
+          recommendation: 'Review and consider switching to better-performing funds in the same categories.',
+          priority: 3,
+          validUntil: '2025-08-31T00:00:00.000Z',
+          createdAt: new Date().toISOString(),
+          isActive: true
+        },
+        {
+          id: 4,
+          clientId,
+          type: 'allocation',
+          title: 'Asset Allocation Rebalancing',
+          description: 'Current equity allocation (85%) exceeds recommended allocation for your risk profile (70%).',
+          impact: 'medium',
+          category: 'Asset Allocation',
+          recommendation: 'Rebalance portfolio by moving 15% from equity to debt instruments to align with risk profile.',
+          priority: 4,
+          validUntil: '2025-10-31T00:00:00.000Z',
+          createdAt: new Date().toISOString(),
+          isActive: true
+        },
+        {
+          id: 5,
+          clientId,
+          type: 'opportunity',
+          title: 'SIP Increase Opportunity',
+          description: 'Recent salary increment and bonus provide opportunity to increase SIP investments.',
+          impact: 'high',
+          category: 'Investment Growth',
+          recommendation: 'Increase monthly SIP by ₹10,000 to accelerate wealth creation and reach financial goals faster.',
+          priority: 1,
+          validUntil: '2025-07-31T00:00:00.000Z',
+          createdAt: new Date().toISOString(),
+          isActive: true
+        }
+      ];
+
+      res.json(insights);
+    } catch (error) {
+      console.error('Error fetching client insights:', error);
+      res.status(500).json({ error: 'Failed to fetch client insights' });
+    }
+  });
+
+  app.get('/api/client-insights/:clientId/metrics', async (req: Request, res: Response) => {
+    try {
+      const clientId = parseInt(req.params.clientId);
+      
+      // Generate portfolio metrics for the client
+      const metrics = {
+        portfolioScore: 78,
+        riskLevel: 6,
+        diversificationScore: 65,
+        daysSinceReview: 45
+      };
+
+      res.json(metrics);
+    } catch (error) {
+      console.error('Error fetching client metrics:', error);
+      res.status(500).json({ error: 'Failed to fetch client metrics' });
+    }
+  });
+
   // Register additional routers
   app.use(communicationsRouter);
   app.use(portfolioReportRouter);

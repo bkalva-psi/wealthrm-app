@@ -19,6 +19,7 @@ import {
   Building,
   ChevronRight,
   FileBarChart,
+  Target,
   ArrowUpRight,
   ArrowDownRight,
   AlertCircle,

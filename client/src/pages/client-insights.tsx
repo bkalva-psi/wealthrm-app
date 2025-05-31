@@ -78,10 +78,10 @@ export default function ClientInsights() {
     }
   };
 
-  const opportunityInsights = insights.filter((insight: ClientInsight) => insight.type === 'opportunity');
-  const riskInsights = insights.filter((insight: ClientInsight) => insight.type === 'risk');
-  const performanceInsights = insights.filter((insight: ClientInsight) => insight.type === 'performance');
-  const allocationInsights = insights.filter((insight: ClientInsight) => insight.type === 'allocation');
+  const opportunityInsights = (insights as ClientInsight[]).filter((insight: ClientInsight) => insight.type === 'opportunity');
+  const riskInsights = (insights as ClientInsight[]).filter((insight: ClientInsight) => insight.type === 'risk');
+  const performanceInsights = (insights as ClientInsight[]).filter((insight: ClientInsight) => insight.type === 'performance');
+  const allocationInsights = (insights as ClientInsight[]).filter((insight: ClientInsight) => insight.type === 'allocation');
 
   return (
     <div className="p-6 space-y-6">
@@ -98,12 +98,12 @@ export default function ClientInsights() {
             <h1 className="text-2xl font-bold text-gray-900">Client Insights</h1>
             {client && (
               <div className="flex items-center space-x-4 mt-2">
-                <p className="text-lg text-gray-600">{client.fullName}</p>
+                <p className="text-lg text-gray-600">{(client as Client).fullName}</p>
                 <Badge variant="outline" className="capitalize">
-                  {client.tier} Client
+                  {(client as Client).tier} Client
                 </Badge>
-                <span className="text-sm text-gray-500">AUM: {client.aum}</span>
-                <span className="text-sm text-gray-500">Risk: {client.riskProfile}</span>
+                <span className="text-sm text-gray-500">AUM: {(client as Client).aum}</span>
+                <span className="text-sm text-gray-500">Risk: {(client as Client).riskProfile}</span>
               </div>
             )}
           </div>
@@ -118,7 +118,7 @@ export default function ClientInsights() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Portfolio Score</p>
-                  <p className="text-2xl font-bold text-blue-600">{portfolioMetrics.portfolioScore}/100</p>
+                  <p className="text-2xl font-bold text-blue-600">{(portfolioMetrics as any)?.portfolioScore}/100</p>
                 </div>
                 <Target className="h-8 w-8 text-blue-600" />
               </div>
@@ -130,7 +130,7 @@ export default function ClientInsights() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Risk Level</p>
-                  <p className="text-2xl font-bold text-orange-600">{portfolioMetrics.riskLevel}/10</p>
+                  <p className="text-2xl font-bold text-orange-600">{(portfolioMetrics as any)?.riskLevel}/10</p>
                 </div>
                 <AlertTriangle className="h-8 w-8 text-orange-600" />
               </div>
@@ -142,7 +142,7 @@ export default function ClientInsights() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Diversification</p>
-                  <p className="text-2xl font-bold text-green-600">{portfolioMetrics.diversificationScore}%</p>
+                  <p className="text-2xl font-bold text-green-600">{(portfolioMetrics as any)?.diversificationScore}%</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-600" />
               </div>
@@ -154,7 +154,7 @@ export default function ClientInsights() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Last Review</p>
-                  <p className="text-2xl font-bold text-purple-600">{portfolioMetrics.daysSinceReview}</p>
+                  <p className="text-2xl font-bold text-purple-600">{(portfolioMetrics as any)?.daysSinceReview}</p>
                   <p className="text-xs text-gray-500">days ago</p>
                 </div>
                 <Calendar className="h-8 w-8 text-purple-600" />
@@ -304,7 +304,7 @@ export default function ClientInsights() {
         </div>
       </div>
 
-      {insights.length === 0 && (
+      {(insights as ClientInsight[]).length === 0 && (
         <Card>
           <CardContent className="p-8 text-center">
             <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
