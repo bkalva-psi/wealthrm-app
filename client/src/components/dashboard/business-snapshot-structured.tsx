@@ -77,6 +77,9 @@ export function BusinessSnapshotStructured() {
     refetchOnMount: true
   });
 
+  // Debug log to check what data we're receiving
+  console.log('Business metrics API data:', businessMetrics);
+
   // Toggle metric expansion (shows/hides all drill-downs for that metric)
   const toggleMetric = (metricKey: string) => {
     const newExpanded = new Set(expandedMetrics);
