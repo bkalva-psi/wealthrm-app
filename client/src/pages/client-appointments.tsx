@@ -423,9 +423,6 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     <div>
                       <h2 className="text-xl font-semibold text-slate-900">{client.fullName || client.name}</h2>
                       <div className="flex items-center gap-4 mt-1">
-                        <Badge className={`${getTierColor(client.tier)} bg-white`}>
-                          {client.tier?.toUpperCase() || 'STANDARD'}
-                        </Badge>
                         <span className="text-sm text-slate-600">
                           AUM: {client.aum || '₹0'}
                         </span>
@@ -459,25 +456,11 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       <div className="bg-white shadow-sm border-b">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <Calendar className="h-6 w-6 text-blue-600" />
-                <h1 className="text-2xl font-bold text-slate-900">
-                  {clientId ? `${client?.name || 'Client'} Appointments` : 'Calendar'}
-                </h1>
-              </div>
-              {/* Navigation Icons below title */}
-              <div className="flex items-center gap-2 ml-9">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User className="h-5 w-5 text-gray-600" />
-                </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Phone className="h-5 w-5 text-gray-600" />
-                </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Mail className="h-5 w-5 text-gray-600" />
-                </button>
-              </div>
+            <div className="flex items-center gap-3">
+              <Calendar className="h-6 w-6 text-blue-600" />
+              <h1 className="text-2xl font-bold text-slate-900">
+                {clientId ? 'Client Appointments' : 'Calendar'}
+              </h1>
             </div>
             <Button>
               <Plus className="h-4 w-4" />
