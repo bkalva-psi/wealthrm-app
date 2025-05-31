@@ -1240,77 +1240,234 @@ const ClientCommunications: React.FC = () => {
               )}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Right side - Navigation icons */}
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Personal Profile"
-              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-            >
-              <BarChart4 className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-              className="p-2"
-              title="Portfolio"
-            >
-              <Wallet className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-              className="p-2"
-              title="Transactions"
-            >
-              <ArrowUpDown className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-              className="p-2"
-              title="Appointments"
-            >
-              <Calendar className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-              className="p-2 bg-blue-50"
-              title="Communications"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Portfolio Report"
-            >
-              <FileText className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              title="Investment Recommendations"
-            >
-              <Target className="h-5 w-5" />
-            </Button>
+      {/* Page Title Band with Navigation */}
+      <div className="bg-white border-b border-gray-200 px-1 py-4">
+        <div className="flex justify-between items-center px-5 mb-3">
+          <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
+          {!isGlobalView && (
+            <NewCommunicationDialog 
+              clientId={clientId!}
+              onSuccess={refetchCommunications}
+            />
+          )}
+        </div>
+        
+        {/* Navigation Icons */}
+        <div className="grid grid-cols-7 gap-1 px-1">
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            title="Personal Profile"
+          >
+            <User className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+            title="Portfolio"
+          >
+            <PieChart className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+            title="Transactions"
+          >
+            <Receipt className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+            title="Appointments"
+          >
+            <Calendar className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            title="Communications"
+          >
+            <MessageCircle className="h-6 w-6 text-blue-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+            title="Portfolio Report"
+          >
+            <FileBarChart className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+            title="Investment Ideas"
+          >
+            <Lightbulb className="h-6 w-6 text-gray-600" />
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="p-6">
+        <div className="space-y-6">
+          
+          {/* Filter Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="flex-1">
+              <Input
+                placeholder="Search communications..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            
+            {!isGlobalView && (
+              <div className="flex gap-2">
+                <Select value={selectedCustomer || 'all'} onValueChange={setSelectedCustomer}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="All customers" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All customers</SelectItem>
+                    {[...new Set(communications?.map((c: any) => c.client_name))].map((name: any) => (
+                      <SelectItem key={name} value={name}>{name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All time</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This week</SelectItem>
+                <SelectItem value="month">This month</SelectItem>
+                <SelectItem value="quarter">This quarter</SelectItem>
+                <SelectItem value="year">This year</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {(searchText || selectedCustomer || dateRangeFilter !== 'all') && (
+              <Button 
+                variant="outline" 
+                onClick={handleClearFilters}
+                className="whitespace-nowrap"
+              >
+                Clear Filters
+              </Button>
+            )}
           </div>
-        </div>
-        </div>
-      )}
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4">
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-20 w-full" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
-      {/* Page Header */}
+          {/* No Results */}
+          {!isLoading && filteredCommunications?.length === 0 && (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <p className="text-gray-500">
+                  {searchText || selectedCustomer || dateRangeFilter !== 'all'
+                    ? 'No communications found matching your filters.'
+                    : 'No communications found.'}
+                </p>
+                {searchText || selectedCustomer || dateRangeFilter !== 'all' ? (
+                  <Button variant="link" onClick={handleClearFilters} className="mt-2">
+                    Clear filters to see all communications
+                  </Button>
+                ) : null}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Communications List */}
+          {!isLoading && filteredCommunications && filteredCommunications.length > 0 && (
+            <div className="space-y-4">
+              {displayedCommunications.map((communication: Communication) => (
+                <div key={communication.id} className="relative">
+                  <CommunicationItem 
+                    communication={communication}
+                    isSelected={selectedCommunication?.id === communication.id}
+                    onClick={() => {
+                      setSelectedCommunication(communication);
+                      setActiveTab('details');
+                      if (expandedNotes.has(communication.id)) {
+                        toggleNoteExpansion(communication.id);
+                      }
+                    }}
+                    isGlobalView={isGlobalView}
+                  />
+                  
+                  {/* Expanded Notes */}
+                  {expandedNotes.has(communication.id) && communication.notes && (
+                    <Card className="ml-6 mt-2 border-l-4 border-primary/20">
+                      <CardContent className="p-4">
+                        <h5 className="font-medium mb-2">Detailed Notes:</h5>
+                        <p className="text-sm whitespace-pre-wrap">{communication.notes}</p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {/* Action Items for Global View */}
+                  {isGlobalView && communication.action_item_count > 0 && (
+                    <div className="ml-6 mt-2">
+                      <ActionItemsDisplay communicationId={communication.id} />
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Show More Button */}
+              {filteredCommunications && filteredCommunications.length > displayedCommunications.length && (
+                <div className="text-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowAll(!showAll)}
+                    className="mt-4"
+                  >
+                    {showAll ? 'Show Less' : `Show ${filteredCommunications.length - displayedCommunications.length} More`}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Client Preferences Tab - Only for client-specific view */}
+          {!isGlobalView && clientId && (
+            <ClientPreferences clientId={clientId} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ClientCommunications;
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
