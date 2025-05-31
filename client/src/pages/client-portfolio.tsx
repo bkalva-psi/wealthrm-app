@@ -508,7 +508,7 @@ function PortfolioSection({
           </CardHeader>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 px-0 pb-0">
             {children}
           </CardContent>
         </CollapsibleContent>
@@ -766,8 +766,8 @@ export default function ClientPortfolioPage() {
           defaultOpen={true}
         >
           <Card>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <CardContent className="p-0">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
                 {/* AUM */}
                 <div className="text-center">
                   <div className="text-sm text-gray-500 mb-1">AUM</div>
