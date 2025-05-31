@@ -180,8 +180,8 @@ const ClientCommunications: React.FC = () => {
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [filters, setFilters] = useState({
-    noteType: '',
-    channel: '',
+    noteType: 'all',
+    channel: 'all',
     dateRange: 'all'
   });
   
@@ -235,6 +235,41 @@ const ClientCommunications: React.FC = () => {
     queryKey: isGlobalView ? ['/api/communications'] : [`/api/communications/${clientId}`],
     enabled: isGlobalView || !!clientId,
   });
+
+  // Filter communications
+  const filteredCommunications = React.useMemo(() => {
+    if (!communications) return [];
+    
+    return communications.filter((comm: any) => {
+      // Text search
+      const searchLower = searchText.toLowerCase();
+      const matchesSearch = !searchText || 
+        comm.subject?.toLowerCase().includes(searchLower) ||
+        comm.summary?.toLowerCase().includes(searchLower) ||
+        comm.notes?.toLowerCase().includes(searchLower) ||
+        comm.communication_type?.toLowerCase().includes(searchLower);
+      
+      // Note type filter
+      const matchesNoteType = !filters.noteType || 
+        comm.communication_type === filters.noteType;
+      
+      // Channel filter
+      const matchesChannel = !filters.channel || 
+        comm.channel === filters.channel;
+      
+      // Date filter
+      const commDate = new Date(comm.start_time);
+      const now = new Date();
+      const dateFilter = filters.dateRange || 'all';
+      const matchesDate = dateFilter === 'all' || 
+        (dateFilter === '7days' && (now.getTime() - commDate.getTime()) <= 7 * 24 * 60 * 60 * 1000) ||
+        (dateFilter === '30days' && (now.getTime() - commDate.getTime()) <= 30 * 24 * 60 * 60 * 1000) ||
+        (dateFilter === '3months' && (now.getTime() - commDate.getTime()) <= 90 * 24 * 60 * 60 * 1000) ||
+        (dateFilter === '6months' && (now.getTime() - commDate.getTime()) <= 180 * 24 * 60 * 60 * 1000);
+      
+      return matchesSearch && matchesNoteType && matchesChannel && matchesDate;
+    }).sort((a: any, b: any) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
+  }, [communications, searchText, filters]);
 
   // Mutation for creating new note
   const createNoteMutation = useMutation({
@@ -438,6 +473,69 @@ const ClientCommunications: React.FC = () => {
 
       {/* Main Content */}
       <div className="p-4 space-y-4">
+        {/* Filter Controls */}
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                placeholder="Search notes..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Select value={filters.noteType} onValueChange={(value) => setFilters(prev => ({...prev, noteType: value}))}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Note Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="quarterly_review">Quarterly Review</SelectItem>
+                  <SelectItem value="portfolio_health_check">Portfolio Health Check</SelectItem>
+                  <SelectItem value="risk_assessment">Risk Assessment</SelectItem>
+                  <SelectItem value="product_discussion">Product Discussion</SelectItem>
+                  <SelectItem value="complaint_resolution">Complaint Resolution</SelectItem>
+                  <SelectItem value="general_inquiry">General Inquiry</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={filters.channel} onValueChange={(value) => setFilters(prev => ({...prev, channel: value}))}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Channel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Channels</SelectItem>
+                  <SelectItem value="phone">Phone</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                  <SelectItem value="in_person">In Person</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({...prev, dateRange: value}))}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Date Range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="7days">Last 7 Days</SelectItem>
+                  <SelectItem value="30days">Last 30 Days</SelectItem>
+                  <SelectItem value="3months">Last 3 Months</SelectItem>
+                  <SelectItem value="6months">Last 6 Months</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {(filters.noteType || filters.channel || filters.dateRange !== 'all' || searchText) && (
+                <Button onClick={handleClearFilters} variant="outline" size="sm">
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
+        </Card>
+
         {isLoading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
@@ -453,9 +551,9 @@ const ClientCommunications: React.FC = () => {
               </Card>
             ))}
           </div>
-        ) : communications && communications.length > 0 ? (
+        ) : filteredCommunications && filteredCommunications.length > 0 ? (
           <div className="space-y-4">
-            {communications.map((communication: Communication) => (
+            {filteredCommunications.map((communication: Communication) => (
               <Card key={communication.id} className="p-4 hover:shadow-md transition-shadow">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
