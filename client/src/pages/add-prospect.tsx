@@ -376,31 +376,11 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
 
   return (
     <div>
-      <div className="flex items-center mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mr-2"
-          onClick={() => window.location.hash = "/prospects"}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back
-        </Button>
-        <h1 className="text-2xl font-semibold text-slate-800">
-          {readOnly ? "Prospect Details" : "Add New Prospect"}
-        </h1>
-      </div>
+      <h1 className="text-2xl font-semibold text-slate-800 mb-6">
+        {readOnly ? "Prospect Details" : "Add New Prospect"}
+      </h1>
 
       <Card className="max-w-3xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-xl">Prospect Information</CardTitle>
-          <CardDescription>
-            {readOnly 
-              ? "View detailed information about this prospect."
-              : "Add a new prospect to your sales pipeline. Fields marked with * are required."
-            }
-          </CardDescription>
-        </CardHeader>
         <CardContent>
           {generalError && (
             <Alert variant="destructive" className="mb-6">
