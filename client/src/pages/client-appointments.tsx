@@ -73,13 +73,16 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   });
 
   // Fetch appointments
-  const { data: appointments = [], isLoading: isAppointmentsLoading } = useQuery({
+  const { data: appointmentsData, isLoading: isAppointmentsLoading } = useQuery({
     queryKey: clientId ? ['/api/appointments', clientId] : ['/api/appointments'],
     queryFn: () => {
       const url = clientId ? `/api/appointments?clientId=${clientId}` : '/api/appointments';
       return fetch(url).then(res => res.json());
     },
   });
+
+  // Ensure appointments is always an array
+  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
 
   const getTierColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
