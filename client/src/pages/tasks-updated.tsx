@@ -310,58 +310,103 @@ export default function TasksUpdated() {
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md hover:bg-slate-50 cursor-pointer">
-                              <Checkbox
-                                id={`task-${task.id}`}
-                                checked={task.completed}
-                                onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
-                                className="h-4 w-4 mt-1"
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                              <div className="flex-1">
-                                <label
-                                  htmlFor={`task-${task.id}`}
-                                  className={`block text-sm font-medium ${
-                                    task.completed ? "text-slate-500 line-through" : "text-slate-800"
-                                  }`}
-                                >
-                                  {task.title}
-                                </label>
-                                {task.description && (
-                                  <p className={`text-xs mt-1 ${
-                                    task.completed ? "text-slate-400" : "text-slate-600"
-                                  }`}>
-                                    {task.description}
-                                  </p>
-                                )}
-                                <span className={`text-xs ${dueStatus.color} mt-1 block`}>
-                                  {task.completed ? "Completed" : dueStatus.text}
-                                </span>
+                            <div key={task.id} className="border rounded-lg hover:bg-slate-50 transition-colors">
+                              <div 
+                                className="flex items-center space-x-3 p-3 cursor-pointer"
+                                onClick={() => {
+                                  const newExpanded = new Set(expandedTasks);
+                                  if (isExpanded) {
+                                    newExpanded.delete(task.id);
+                                  } else {
+                                    newExpanded.add(task.id);
+                                  }
+                                  setExpandedTasks(newExpanded);
+                                }}
+                              >
+                                <Checkbox
+                                  checked={task.completed}
+                                  onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
+                                  className="flex-shrink-0"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between">
+                                    <h3 className={`font-medium ${task.completed ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                                      {task.title}
+                                    </h3>
+                                    <div className="flex items-center gap-2">
+                                      {task.dueDate && (
+                                        <span className={`text-xs ${dueStatus.color}`}>
+                                          {dueStatus.text}
+                                        </span>
+                                      )}
+                                      {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                    </div>
+                                  </div>
+                                  {!isExpanded && task.description && (
+                                    <p className="text-sm text-slate-600 mt-1 truncate">
+                                      {task.description.length > 50 ? task.description.substring(0, 50) + '...' : task.description}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
+                              
+                              {isExpanded && (
+                                <div className="px-3 pb-3 border-t bg-slate-50/50">
+                                  <div className="pt-3 space-y-2">
+                                    {task.description && (
+                                      <div>
+                                        <p className="text-sm font-medium text-slate-700">Description:</p>
+                                        <p className="text-sm text-slate-600">{task.description}</p>
+                                      </div>
+                                    )}
+                                    {task.dueDate && (
+                                      <div>
+                                        <p className="text-sm font-medium text-slate-700">Due Date:</p>
+                                        <p className="text-sm text-slate-600">{format(new Date(task.dueDate), 'PPP')}</p>
+                                      </div>
+                                    )}
+                                    <div>
+                                      <p className="text-sm font-medium text-slate-700">Status:</p>
+                                      <p className="text-sm text-slate-600">{task.completed ? 'Completed' : 'Pending'}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
                         
-                        {(tasks as Task[] || []).filter(task => !task.completed).length > tasksVisibleCount && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => setTasksVisibleCount(prev => prev + 5)}
-                          >
-                            Show 5 more tasks
-                          </Button>
+                        {currentFilteredTasks.length > tasksVisibleCount && !tasksShowMore && (
+                          <div className="mt-4 text-center">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => setTasksShowMore(true)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              Show {currentFilteredTasks.length - tasksVisibleCount} more
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {tasksShowMore && currentFilteredTasks.length > tasksVisibleCount && (
+                          <div className="mt-4 text-center">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => setTasksShowMore(false)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              Show less
+                            </Button>
+                          </div>
                         )}
                       </>
                     ) : (
-                      <div className="text-center py-8">
-                        <p className="text-slate-500">No tasks to display</p>
-                        <Button
-                          variant="outline"
-                          className="mt-4"
-                          onClick={() => setIsNewTaskDialogOpen(true)}
-                        >
-                          Create a task
-                        </Button>
+                      <div className="text-center py-8 text-slate-500">
+                        <CheckSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p>No tasks found</p>
                       </div>
                     );
                   })()}
@@ -402,48 +447,109 @@ export default function TasksUpdated() {
               ) : (
                 <div className="space-y-4">
                   {(() => {
-                    const alerts = (portfolioAlerts as any[] || []).slice(0, alertsVisibleCount);
+                    const currentFilteredAlerts = filteredAlerts;
+                    const visibleAlerts = alertsShowMore ? currentFilteredAlerts : currentFilteredAlerts.slice(0, alertsVisibleCount);
                     
-                    return alerts.length > 0 ? (
+                    return visibleAlerts.length > 0 ? (
                       <>
-                        {alerts.map((alert: any) => (
-                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md hover:bg-slate-50 cursor-pointer">
-                            <div className={`h-4 w-4 mt-1 rounded-full ${
-                              alert.severity === 'high' ? 'bg-red-500' : 
-                              alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
-                            }`} />
-                            <div className="flex-1">
-                              <h4 className="text-sm font-medium text-slate-800">{alert.title}</h4>
-                              <p className="text-xs text-slate-600 mt-1">{alert.message}</p>
-                              <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-slate-500">
-                                  {alert.client_name ? `Client: ${alert.client_name}` : ''}
-                                </span>
-                                <span className={`text-xs px-2 py-1 rounded-full ${
-                                  alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
-                                  alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}>
-                                  {alert.severity}
-                                </span>
+                        {visibleAlerts.map((alert: any) => {
+                          const isExpanded = expandedAlerts.has(alert.id);
+                          
+                          return (
+                            <div key={alert.id} className="border rounded-lg hover:bg-slate-50 transition-colors">
+                              <div 
+                                className="flex items-center space-x-3 p-3 cursor-pointer"
+                                onClick={() => {
+                                  const newExpanded = new Set(expandedAlerts);
+                                  if (isExpanded) {
+                                    newExpanded.delete(alert.id);
+                                  } else {
+                                    newExpanded.add(alert.id);
+                                  }
+                                  setExpandedAlerts(newExpanded);
+                                }}
+                              >
+                                <div className={`h-3 w-3 rounded-full flex-shrink-0 ${
+                                  alert.severity === 'high' ? 'bg-red-500' : 
+                                  alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
+                                }`} />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between">
+                                    <h3 className="font-medium text-slate-900">{alert.title}</h3>
+                                    <div className="flex items-center gap-2">
+                                      <span className={`text-xs px-2 py-1 rounded-full ${
+                                        alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
+                                        alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
+                                      }`}>
+                                        {alert.severity}
+                                      </span>
+                                      {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                    </div>
+                                  </div>
+                                  {!isExpanded && alert.description && (
+                                    <p className="text-sm text-slate-600 mt-1 truncate">
+                                      {alert.description.length > 50 ? alert.description.substring(0, 50) + '...' : alert.description}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
+                              
+                              {isExpanded && (
+                                <div className="px-3 pb-3 border-t bg-slate-50/50">
+                                  <div className="pt-3 space-y-2">
+                                    {alert.description && (
+                                      <div>
+                                        <p className="text-sm font-medium text-slate-700">Description:</p>
+                                        <p className="text-sm text-slate-600">{alert.description}</p>
+                                      </div>
+                                    )}
+                                    {alert.client_name && (
+                                      <div>
+                                        <p className="text-sm font-medium text-slate-700">Client:</p>
+                                        <p className="text-sm text-slate-600">{alert.client_name}</p>
+                                      </div>
+                                    )}
+                                    <div>
+                                      <p className="text-sm font-medium text-slate-700">Priority:</p>
+                                      <p className="text-sm text-slate-600 capitalize">{alert.severity}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                         
-                        {(portfolioAlerts as any[] || []).length > alertsVisibleCount && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => setAlertsVisibleCount(prev => prev + 5)}
-                          >
-                            Show 5 more alerts
-                          </Button>
+                        {currentFilteredAlerts.length > alertsVisibleCount && !alertsShowMore && (
+                          <div className="mt-4 text-center">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => setAlertsShowMore(true)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              Show {currentFilteredAlerts.length - alertsVisibleCount} more
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {alertsShowMore && currentFilteredAlerts.length > alertsVisibleCount && (
+                          <div className="mt-4 text-center">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => setAlertsShowMore(false)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              Show less
+                            </Button>
+                          </div>
                         )}
                       </>
                     ) : (
-                      <div className="text-center py-8">
-                        <p className="text-slate-500">No portfolio alerts at this time</p>
-                        <p className="text-xs text-slate-400 mt-2">Your clients' portfolios are performing well</p>
+                      <div className="text-center py-8 text-slate-500">
+                        <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p>No alerts found</p>
                       </div>
                     );
                   })()}
