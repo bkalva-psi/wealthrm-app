@@ -150,27 +150,19 @@ export default function Products() {
   };
 
   const handleMail = async (product: Product) => {
-    if (!product.factsheetUrl) {
-      console.log('No factsheet available to mail');
-      return;
-    }
-
     try {
-      // Fetch the PDF to get it as a blob
-      const response = await fetch(product.factsheetUrl);
+      // Generate PDF filename based on product name
+      const filename = `${product.name.toLowerCase().replace(/\s+/g, '-')}-factsheet.pdf`;
+      
+      // Fetch the PDF from our document generation endpoint
+      const response = await fetch(`/documents/${filename}`);
       if (!response.ok) throw new Error('Failed to fetch PDF');
       
       const blob = await response.blob();
       
-      // Convert blob to base64 for email attachment
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Data = reader.result as string;
-        const base64Content = base64Data.split(',')[1]; // Remove data URL prefix
-        
-        // Prepare email content
-        const subject = `${product.name} - Product Information`;
-        const body = `Dear Client,
+      // Prepare email content with attachment reference
+      const subject = `${product.name} - Product Factsheet`;
+      const body = `Dear Sir/Madam,
 
 Please find herewith attached the details as you have requested for the given product: ${product.name}.
 
@@ -180,22 +172,48 @@ Product Details:
 - Minimum Investment: ${product.minInvestment}
 ${product.expectedReturns ? `- Expected Returns: ${product.expectedReturns}` : ''}
 
+The product factsheet document is attached to this email for your reference.
+
 Best regards,
 Ujjivan Small Finance Bank`;
 
-        // Create mailto link with attachment
-        const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        
-        // Open default email client
-        window.location.href = mailtoLink;
-      };
-      
-      reader.readAsDataURL(blob);
+      // For modern browsers, try to use Web Share API with file attachment
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], filename, { type: 'application/pdf' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: subject,
+            text: body,
+            files: [file]
+          });
+          return;
+        }
+      }
+
+      // Fallback: Create a downloadable link and open email client
+      const url = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = filename;
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      window.URL.revokeObjectURL(url);
+
+      // Also open email client with enhanced message
+      const enhancedBody = `${body}
+
+Note: The PDF document has been downloaded to your device. Please attach it to this email before sending.`;
+
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(enhancedBody)}`;
+      window.location.href = mailtoLink;
+
     } catch (error) {
       console.error('Mail preparation failed:', error);
-      // Fallback: open email client with just text content
+      // Final fallback: open email client with text content and download link
       const subject = `${product.name} - Product Information`;
-      const body = `Dear Client,
+      const body = `Dear Sir/Madam,
 
 Please find herewith the details as you have requested for the given product: ${product.name}.
 
@@ -204,6 +222,8 @@ Product Details:
 - Risk Level: ${product.riskLevel}
 - Minimum Investment: ${product.minInvestment}
 ${product.expectedReturns ? `- Expected Returns: ${product.expectedReturns}` : ''}
+
+You can download the product factsheet from: ${window.location.origin}/documents/${product.name.toLowerCase().replace(/\s+/g, '-')}-factsheet.pdf
 
 Best regards,
 Ujjivan Small Finance Bank`;
