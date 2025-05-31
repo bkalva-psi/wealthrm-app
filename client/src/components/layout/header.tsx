@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/context/auth-context";
-import { Search, Bell, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -96,52 +96,7 @@ export function Header({
         </div>
         
         {/* Right Navigation Items */}
-        <div className="flex items-center space-x-2 pr-6">
-          {/* Notification Bell */}
-          <div className="relative">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative p-1 text-slate-500 rounded-full hover:bg-slate-100 focus:outline-none">
-                  <Bell className="h-6 w-6" />
-                  {unreadAlertsCount > 0 && (
-                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-error pulse-animation"></span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {unreadAlertsCount > 0 ? (
-                  <>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <div className="flex flex-col space-y-1">
-                        <span className="font-medium">Portfolio Deviation - Gupta Family</span>
-                        <span className="text-xs text-slate-500">1 hour ago</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <div className="flex flex-col space-y-1">
-                        <span className="font-medium">Risk Profile Update - Sanjay Kapoor</span>
-                        <span className="text-xs text-slate-500">3 hours ago</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="cursor-pointer text-primary-600"
-                      onClick={() => navigate("/alerts")}
-                    >
-                      View all notifications
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <div className="py-2 px-4 text-center text-sm text-slate-500">
-                    No new notifications
-                  </div>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          
+        <div className="flex items-center pr-8">
           {/* Profile Dropdown */}
           <div className="relative">
             <DropdownMenu>
