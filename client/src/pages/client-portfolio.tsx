@@ -621,7 +621,7 @@ export default function ClientPortfolioPage() {
   const aumValue = getAumValue(client?.aum);
   
   return (
-    <div className="p-6 pb-20 md:pb-6">
+    <div className="px-4 py-6 pb-20 md:pb-6 md:px-6">
       {/* Consistent Header Band */}
       <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
@@ -748,7 +748,7 @@ export default function ClientPortfolioPage() {
 
       
       {/* Portfolio Sections as Collapsible Cards */}
-      <div className="space-y-3 flex-grow">
+      <div className="space-y-3 flex-grow w-full">
         
         {/* Summary Section */}
         <PortfolioSection
