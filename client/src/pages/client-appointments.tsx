@@ -17,7 +17,11 @@ import {
   Calendar,
   MessageCircle,
   FileText,
-  Target
+  Target,
+  PieChart,
+  Receipt,
+  FileBarChart,
+  Lightbulb
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
 
@@ -803,55 +807,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                       </div>
                     )}
                     
-                    {/* Line 4: Navigation Icons */}
-                    <div className="flex items-center justify-evenly mt-2 w-full px-2">
-                      <button 
-                        onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                        className="p-2 hover:bg-slate-100 rounded"
-                        title="Personal Profile"
-                      >
-                        <BarChart4 className="h-5 w-5 text-slate-600" />
-                      </button>
-                      <button 
-                        onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                        className="p-2 hover:bg-slate-100 rounded"
-                        title="Portfolio"
-                      >
-                        <Wallet className="h-5 w-5 text-slate-600" />
-                      </button>
-                      <button 
-                        onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                        className="p-2 hover:bg-slate-100 rounded"
-                        title="Transactions"
-                      >
-                        <ArrowUpDown className="h-5 w-5 text-slate-600" />
-                      </button>
-                      <button 
-                        className="p-2 bg-blue-100 rounded"
-                        title="Appointments"
-                      >
-                        <Calendar className="h-5 w-5 text-slate-400" />
-                      </button>
-                      <button 
-                        onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                        className="p-2 hover:bg-slate-100 rounded"
-                        title="Communications"
-                      >
-                        <MessageCircle className="h-5 w-5 text-slate-600" />
-                      </button>
-                      <button 
-                        className="p-2 hover:bg-slate-100 rounded"
-                        title="Portfolio Report"
-                      >
-                        <FileText className="h-5 w-5 text-slate-600" />
-                      </button>
-                      <button 
-                        className="p-2 hover:bg-slate-100 rounded"
-                        title="Investment Recommendations"
-                      >
-                        <Target className="h-5 w-5 text-slate-600" />
-                      </button>
-                    </div>
+
                   </div>
                 ) : (
                   <div className="text-gray-500">Client not found</div>
@@ -859,66 +815,13 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               </div>
             </div>
             
-            {/* Navigation Icons */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Personal"
-              >
-                <User className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Portfolio"
-              >
-                <BarChart4 className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Transactions"
-              >
-                <ArrowUpDown className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-                className="p-2 text-blue-600 bg-blue-50 rounded-lg transition-colors"
-                title="Calendar"
-              >
-                <Calendar className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Communications"
-              >
-                <MessageCircle className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/reports`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Reports"
-              >
-                <FileText className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Recommendations"
-              >
-                <Target className="h-5 w-5" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
-
-      {/* Page Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex justify-between items-center">
+      {/* Page Title Band with Navigation */}
+      <div className="bg-white border-b border-gray-200 px-1 py-4">
+        <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
           <Button 
             size="icon" 
@@ -927,6 +830,64 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           >
             <Plus className="h-4 w-4" />
           </Button>
+        </div>
+        
+        {/* Navigation Icons */}
+        <div className="grid grid-cols-7 gap-1 px-1">
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            title="Personal Profile"
+          >
+            <User className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+            title="Portfolio"
+          >
+            <PieChart className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+            title="Transactions"
+          >
+            <Receipt className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            title="Appointments"
+          >
+            <Calendar className="h-6 w-6 text-blue-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+            title="Communications"
+          >
+            <MessageCircle className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+            title="Portfolio Report"
+          >
+            <FileBarChart className="h-6 w-6 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+            title="Investment Ideas"
+          >
+            <Lightbulb className="h-6 w-6 text-gray-600" />
+          </button>
         </div>
       </div>
 

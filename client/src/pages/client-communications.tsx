@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Paperclip, Calendar, CheckCircle2, AlertCircle, Filter, BarChart4, Wallet, Target, User, ArrowUpDown, Users, CheckSquare, MessageSquare, Plus, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Paperclip, Calendar, CheckCircle2, AlertCircle, Filter, BarChart4, Wallet, Target, User, ArrowUpDown, Users, CheckSquare, MessageSquare, Plus, Search, ChevronDown, ChevronUp, PieChart, Receipt, FileBarChart, Lightbulb } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -1234,56 +1234,6 @@ const ClientCommunications: React.FC = () => {
                       </a>
                     </div>
                   )}
-                  
-                  {/* Line 4: Navigation Icons */}
-                  <div className="grid grid-cols-7 gap-1 mt-2 w-full">
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Personal Profile"
-                    >
-                      <BarChart4 className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Portfolio"
-                    >
-                      <Wallet className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Transactions"
-                    >
-                      <ArrowUpDown className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Appointments"
-                    >
-                      <Calendar className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 bg-blue-100 rounded"
-                      title="Communications"
-                    >
-                      <MessageCircle className="h-5 w-5 text-slate-400" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Portfolio Report"
-                    >
-                      <FileText className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Investment Recommendations"
-                    >
-                      <Target className="h-5 w-5 text-slate-600" />
-                    </button>
-                  </div>
                 </>
               ) : (
                 <div className="text-gray-500">Client not found</div>
