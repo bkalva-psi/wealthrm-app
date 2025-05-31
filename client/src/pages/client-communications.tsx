@@ -159,7 +159,15 @@ interface Template {
 
 const ClientCommunications: React.FC = () => {
   const params = useParams();
-  const clientId = params.id ? parseInt(params.id) : null;
+  
+  // Extract clientId from URL hash like /clients/:id/communications
+  const getClientIdFromUrl = (): number | null => {
+    const hash = window.location.hash.replace(/^#/, '');
+    const match = hash.match(/\/clients\/(\d+)\/communications/);
+    return match ? parseInt(match[1]) : null;
+  };
+  
+  const clientId = getClientIdFromUrl();
   const isGlobalView = !clientId;
   const { toast } = useToast();
   
