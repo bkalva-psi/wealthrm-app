@@ -60,9 +60,10 @@ export default function Tasks() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
-  // Set page title
+  // Set page title and force reload indicator
   useEffect(() => {
-    document.title = "Tasks | Wealth RM";
+    document.title = "Tasks | Wealth RM - Updated";
+    console.log("NEW TASKS PAGE LOADED");
   }, []);
   
   const { data: tasks, isLoading } = useQuery({
