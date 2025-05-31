@@ -182,27 +182,21 @@ router.post('/api/communications', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
-    const [newCommunication] = await db
-      .insert(communications)
-      .values({
-        clientId,
-        initiatedBy,
-        startTime: new Date(startTime),
-        endTime: endTime ? new Date(endTime) : null,
-        duration,
-        communicationType,
-        channel,
-        direction,
-        subject: subject || '',
-        summary: summary || '',
-        details: details || null,
-        sentiment: sentiment || 'neutral',
-        tags: tags || [],
-        followupRequired: followupRequired || false,
-        hasAttachments: hasAttachments || false,
-        status: status || 'completed'
-      })
-      .returning();
+    // Insert using raw SQL to match actual database schema
+    const { rows } = await pool.query(`
+      INSERT INTO communications (
+        client_id, initiated_by, start_time, end_time, duration,
+        communication_type, channel, direction, subject, summary,
+        notes, sentiment, tags, follow_up_required
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      RETURNING *
+    `, [
+      clientId, initiatedBy, startTime, endTime, duration,
+      communicationType, channel, direction, subject || '', summary || '',
+      details || null, sentiment || 'neutral', tags || [], followupRequired || false
+    ]);
+    
+    const newCommunication = rows[0];
     
     res.json(newCommunication);
   } catch (error) {
