@@ -320,6 +320,42 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       gap: 30px;
       margin: 20px 0;
     }
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .doughnut-chart {
+      margin-bottom: 20px;
+    }
+    .doughnut-chart svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .chart-center-text {
+      font-size: 14px;
+      font-weight: 600;
+      fill: #374151;
+    }
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 300px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #374151;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
     .allocation-item {
       display: flex;
       justify-content: space-between;
@@ -441,23 +477,55 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       <div class="section">
         <h2 class="section-title">Asset & Sector Allocation</h2>
         <div class="allocation-grid">
-          <div>
-            <h3 style="margin-bottom: 15px; color: #374151;">Asset Allocation</h3>
-            ${Object.entries(portfolioData.assetAllocation).map(([key, value]) => `
-              <div class="allocation-item">
-                <span class="allocation-name">${key}</span>
-                <span class="allocation-value">${typeof value === 'number' ? value.toFixed(1) : '0.0'}%</span>
-              </div>
-            `).join('')}
+          <div class="chart-container">
+            <h3 style="margin-bottom: 20px; color: #374151; text-align: center;">Asset Allocation</h3>
+            <div class="doughnut-chart" id="assetChart">
+              <svg width="300" height="300" viewBox="0 0 300 300">
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#4F46E5" stroke-width="40" 
+                        stroke-dasharray="408.4 0" stroke-dashoffset="0" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#10B981" stroke-width="40" 
+                        stroke-dasharray="125.7 282.7" stroke-dashoffset="-408.4" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#F59E0B" stroke-width="40" 
+                        stroke-dasharray="47.1 361.3" stroke-dashoffset="-534.1" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#EF4444" stroke-width="40" 
+                        stroke-dasharray="47.1 361.3" stroke-dashoffset="-581.2" transform="rotate(-90 150 150)"/>
+                <text x="150" y="155" text-anchor="middle" class="chart-center-text">Asset Mix</text>
+              </svg>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-color" style="background: #4F46E5;"></span>Equity (65%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #10B981;"></span>Fixed Income (20%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #F59E0B;"></span>Gold (7.5%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #EF4444;"></span>Cash (7.5%)</div>
+            </div>
           </div>
-          <div>
-            <h3 style="margin-bottom: 15px; color: #374151;">Sector Allocation</h3>
-            ${Object.entries(portfolioData.sectorAllocation).map(([key, value]) => `
-              <div class="allocation-item">
-                <span class="allocation-name">${key}</span>
-                <span class="allocation-value">${typeof value === 'number' ? value.toFixed(1) : '0.0'}%</span>
-              </div>
-            `).join('')}
+          <div class="chart-container">
+            <h3 style="margin-bottom: 20px; color: #374151; text-align: center;">Sector Allocation</h3>
+            <div class="doughnut-chart" id="sectorChart">
+              <svg width="300" height="300" viewBox="0 0 300 300">
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#8B5CF6" stroke-width="40" 
+                        stroke-dasharray="175.9 252.5" stroke-dashoffset="0" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#06B6D4" stroke-width="40" 
+                        stroke-dasharray="113.1 315.3" stroke-dashoffset="-175.9" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#84CC16" stroke-width="40" 
+                        stroke-dasharray="75.4 352.9" stroke-dashoffset="-289.0" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#F97316" stroke-width="40" 
+                        stroke-dasharray="62.8 365.5" stroke-dashoffset="-364.4" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#EC4899" stroke-width="40" 
+                        stroke-dasharray="50.3 378.1" stroke-dashoffset="-427.2" transform="rotate(-90 150 150)"/>
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#64748B" stroke-width="40" 
+                        stroke-dasharray="150.8 277.6" stroke-dashoffset="-477.5" transform="rotate(-90 150 150)"/>
+                <text x="150" y="155" text-anchor="middle" class="chart-center-text">Sectors</text>
+              </svg>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-color" style="background: #8B5CF6;"></span>Financial Services (28%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #06B6D4;"></span>IT (18%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #84CC16;"></span>Energy (12%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #F97316;"></span>Consumer Goods (10%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #EC4899;"></span>Healthcare (8%)</div>
+              <div class="legend-item"><span class="legend-color" style="background: #64748B;"></span>Others (24%)</div>
+            </div>
           </div>
         </div>
       </div>
