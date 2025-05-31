@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
-import { FeatureTooltip, QuickTip } from "@/components/ui/feature-tooltip";
 
 type Period = "M" | "Q" | "HY" | "Y";
 
@@ -161,16 +160,12 @@ export function PerformanceCard() {
   };
 
   return (
-    <Card className="overflow-hidden card-modern animate-scale-in">
-      <div className="px-4 py-3 border-b border-slate-200 bg-gradient-subtle">
+    <Card className="overflow-hidden">
+      <div className="px-4 py-3 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FeatureTooltip feature="performance-metrics" showIcon>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-ujjivan-primary animate-float" />
-                <h2 className="text-sm font-medium heading-modern text-gradient-primary">Performance</h2>
-              </div>
-            </FeatureTooltip>
+            <TrendingUp className="h-4 w-4 text-slate-500" />
+            <h2 className="text-sm font-medium text-slate-700">Performance</h2>
           </div>
           <div className="flex items-center gap-2">
             {/* Period Selector */}

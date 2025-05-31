@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight, TrendingUp, Users, DollarSign, Target } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { FeatureTooltip } from '@/components/ui/feature-tooltip';
 
 // Types for authentic database data
 interface BusinessMetrics {
@@ -169,11 +168,9 @@ export function BusinessSnapshotStructured() {
   }
 
   return (
-    <Card className="card-modern animate-fade-in">
-      <CardHeader className="bg-gradient-subtle">
-        <FeatureTooltip feature="business-snapshot" showIcon>
-          <CardTitle className="heading-modern text-gradient-primary">Business Snapshot - Authentic Data Only</CardTitle>
-        </FeatureTooltip>
+    <Card>
+      <CardHeader>
+        <CardTitle>Business Snapshot - Authentic Data Only</CardTitle>
         <p className="text-sm text-muted-foreground">
           All data fetched from database tables. Pipeline: {formatCurrency(businessMetrics?.pipelineValue || 0)}
         </p>
