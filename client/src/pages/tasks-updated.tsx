@@ -142,6 +142,31 @@ export default function TasksUpdated() {
   const handleTaskToggle = (task: Task, completed: boolean) => {
     updateTaskMutation.mutate({ id: task.id, completed });
   };
+
+  // Helper functions for item expansion
+  const toggleTaskExpansion = (taskId: number) => {
+    setExpandedTasks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(taskId)) {
+        newSet.delete(taskId);
+      } else {
+        newSet.add(taskId);
+      }
+      return newSet;
+    });
+  };
+  
+  const toggleAlertExpansion = (alertId: number) => {
+    setExpandedAlerts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(alertId)) {
+        newSet.delete(alertId);
+      } else {
+        newSet.add(alertId);
+      }
+      return newSet;
+    });
+  };
   
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
