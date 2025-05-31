@@ -51,7 +51,8 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
   const getChartHeight = () => {
     const baseHeight = 70; // Base height per item
     const itemCount = data.length;
-    return Math.max(itemCount * baseHeight, timeframe === 'overall' ? 120 : 180);
+    const minHeight = 180; // Consistent minimum height for all charts
+    return Math.max(itemCount * baseHeight, minHeight);
   };
 
   // Custom tooltip
