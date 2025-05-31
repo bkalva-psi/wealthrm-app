@@ -71,7 +71,7 @@ export function Header({
           <div className="flex items-center md:hidden ml-2">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
             <div className="ml-1 flex flex-col">
-              <h1 className="text-ujjivan-primary text-sm font-bold leading-tight whitespace-nowrap -ml-1">Ujjivan Small Finance Bank</h1>
+              <h1 className="text-ujjivan-primary text-sm font-bold leading-tight whitespace-nowrap -ml-3">Ujjivan Small Finance Bank</h1>
               <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM Pro</span>
             </div>
           </div>
@@ -96,7 +96,7 @@ export function Header({
         </div>
         
         {/* Right Navigation Items */}
-        <div className="flex items-center space-x-3 pr-4">
+        <div className="flex items-center space-x-2 pr-6">
           {/* Notification Bell */}
           <div className="relative">
             <DropdownMenu>
