@@ -801,30 +801,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               </div>
             </div>
             
-            {/* Right side actions */}
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors" 
-                title="Portfolio"
-              >
-                <BarChart4 className="h-5 w-5 text-gray-600" />
-              </button>
-              <button 
-                onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors" 
-                title="Communications"
-              >
-                <MessageCircle className="h-5 w-5 text-gray-600" />
-              </button>
-              <button 
-                onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors" 
-                title="Transactions"
-              >
-                <Wallet className="h-5 w-5 text-gray-600" />
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
