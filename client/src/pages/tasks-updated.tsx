@@ -49,8 +49,8 @@ export default function TasksUpdated() {
   const [alertsCollapsed, setAlertsCollapsed] = useState(true);
   
   // Pagination state
-  const [tasksVisibleCount, setTasksVisibleCount] = useState(3);
-  const [alertsVisibleCount, setAlertsVisibleCount] = useState(3);
+  const [tasksVisibleCount, setTasksVisibleCount] = useState(2);
+  const [alertsVisibleCount, setAlertsVisibleCount] = useState(2);
   const [tasksShowMore, setTasksShowMore] = useState(false);
   const [alertsShowMore, setAlertsShowMore] = useState(false);
   
