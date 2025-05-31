@@ -377,17 +377,10 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       align-items: center;
       gap: 15px;
     }
-    .logo-placeholder {
+    .logo-image {
       width: 60px;
       height: 60px;
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 20px;
+      object-fit: contain;
     }
     .bank-info h1 {
       color: #2563eb;
@@ -444,7 +437,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       font-size: 15px;
     }
     .client-tier {
-      text-align: center;
+      text-align: left;
       padding: 20px;
       background: linear-gradient(135deg, #f8fafc, #e2e8f0);
       border-radius: 12px;
@@ -535,7 +528,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       <!-- Bank Header -->
       <div class="header-top">
         <div class="bank-logo">
-          <div class="logo-placeholder">U</div>
+          <img src="/attached_assets/ujjival_logo.png" alt="Ujjivan Logo" class="logo-image">
           <div class="bank-info">
             <h1>Ujjivan Small Finance Bank</h1>
             <div class="tagline">Banking for Everyone, Everywhere</div>
@@ -727,6 +720,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       <!-- Recent Transactions -->
       <div class="section">
         <h2 class="section-title">Recent Transactions</h2>
+        ${transactions.length > 0 ? `
         <table class="table">
           <thead>
             <tr>
@@ -747,6 +741,12 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
             `).join('')}
           </tbody>
         </table>
+        ` : `
+        <div style="padding: 40px; text-align: center; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <div style="color: #64748b; font-size: 16px; margin-bottom: 8px;">No Recent Transactions</div>
+          <div style="color: #94a3b8; font-size: 14px;">Transaction data will appear here once available from the trading system.</div>
+        </div>
+        `}
       </div>
     </div>
   </div>
