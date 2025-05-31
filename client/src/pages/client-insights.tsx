@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, Target, Phone, Mail, User, PieChart, Receipt, FileText, FileBarChart, Lightbulb, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import { getTierColor } from "@/lib/utils";
+import { clientApi } from "@/lib/api";
 
 interface ClientInsight {
   id: number;
@@ -34,17 +34,31 @@ interface Client {
 }
 
 export default function ClientInsights() {
-  const { clientId } = useParams();
+  const [clientId, setClientId] = useState<number | null>(null);
   const [showAllInsights, setShowAllInsights] = useState(false);
+  
+  // Set page title and get client ID from URL
+  useEffect(() => {
+    document.title = "Client Insights | Wealth RM";
+    
+    // Get client ID from URL
+    const hash = window.location.hash;
+    const match = hash.match(/\/clients\/(\d+)\/insights/);
+    if (match && match[1]) {
+      setClientId(Number(match[1]));
+    }
+  }, []);
   
   const { data: insights } = useQuery({
     queryKey: ['/api/client-insights'],
     enabled: !!clientId
   });
 
+  // Fetch client data using the same pattern as portfolio page
   const { data: client, isLoading } = useQuery({
-    queryKey: [`/api/clients/${clientId}`],
-    enabled: !!clientId
+    queryKey: ['client', clientId],
+    queryFn: () => clientId ? clientApi.getClient(clientId) : null,
+    enabled: !!clientId,
   });
 
   const handleBackClick = () => {
@@ -61,10 +75,19 @@ export default function ClientInsights() {
     }
   };
 
+  if (!clientId) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Client not found</h1>
+        <Button onClick={handleBackClick}>Back to Clients</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="px-1 py-4 pb-20 md:pb-6 md:px-6">
       {/* Consistent Header Band */}
-      <div className={`bg-white border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier || '').border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+      <div className={`bg-white border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Back arrow and client info */}
           <div className="flex items-center">
