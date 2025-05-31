@@ -326,16 +326,16 @@ export default function TasksUpdated() {
                 <div className="space-y-4">
                   {(() => {
                     const currentFilteredTasks = filteredTasks.filter(task => !task.completed);
-                    const visibleTasks = tasksShowMore ? currentFilteredTasks : currentFilteredTasks.slice(0, tasksVisibleCount);
+                    const visibleTasks = currentFilteredTasks.slice(0, tasksVisibleCount);
                     
                     return visibleTasks.length > 0 ? (
                       <>
-                        {visibleTasks.map((task: Task) => {
+                        {visibleTasks.map((task: Task, index: number) => {
                           const isExpanded = expandedTasks.has(task.id);
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={task.id} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                            <div key={`task-${task.id}-${index}`} className="border border-slate-200 rounded-md hover:bg-slate-50">
                               <div 
                                 className="flex items-start space-x-3 p-3 cursor-pointer"
                                 onClick={() => toggleTaskExpansion(task.id)}
