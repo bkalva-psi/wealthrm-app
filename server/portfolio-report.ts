@@ -409,12 +409,17 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       grid-template-columns: 2fr 1fr;
       gap: 30px;
       align-items: start;
+      text-align: left;
+    }
+    .customer-details {
+      text-align: left;
     }
     .customer-details h2 {
       color: #1e40af;
       font-size: 20px;
       margin-bottom: 15px;
       font-weight: 600;
+      text-align: left;
     }
     .customer-info {
       display: grid;
@@ -528,7 +533,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       <!-- Bank Header -->
       <div class="header-top">
         <div class="bank-logo">
-          <img src="/attached_assets/ujjival_logo.png" alt="Ujjivan Logo" class="logo-image">
+          <img src="/ujjival_logo.png" alt="Ujjivan Logo" class="logo-image">
           <div class="bank-info">
             <h1>Ujjivan Small Finance Bank</h1>
             <div class="tagline">Banking for Everyone, Everywhere</div>
