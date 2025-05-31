@@ -179,6 +179,23 @@ const ClientCommunications: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+  
+  // New note dialog state
+  const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
+  const [newNoteData, setNewNoteData] = useState({
+    communication_type: 'call',
+    channel: 'phone',
+    direction: 'outbound',
+    subject: '',
+    summary: '',
+    notes: '',
+    outcome: 'completed',
+    duration_minutes: 15,
+    tags: [] as string[]
+  });
+  
+  // Query client for cache invalidation
+  const queryClient = useQueryClient();
 
   // Queries
   const { data: client, isLoading: isClientLoading } = useQuery({
@@ -189,6 +206,53 @@ const ClientCommunications: React.FC = () => {
   const { data: communications, isLoading, refetch: refetchCommunications } = useQuery({
     queryKey: isGlobalView ? ['/api/communications'] : [`/api/communications/${clientId}`],
     enabled: isGlobalView || !!clientId,
+  });
+
+  // Mutation for creating new note
+  const createNoteMutation = useMutation({
+    mutationFn: async (noteData: any) => {
+      const payload = {
+        ...noteData,
+        client_id: clientId,
+        initiated_by: 1, // Current user ID - would be from auth context
+        start_time: new Date().toISOString(),
+        end_time: new Date(Date.now() + (noteData.duration_minutes * 60 * 1000)).toISOString(),
+        duration: noteData.duration_minutes,
+        follow_up_required: false,
+        action_item_count: 0,
+        attachment_count: 0
+      };
+      
+      return apiRequest('/api/communications', 'POST', payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: isGlobalView ? ['/api/communications'] : [`/api/communications/${clientId}`] 
+      });
+      setIsNewNoteDialogOpen(false);
+      setNewNoteData({
+        communication_type: 'call',
+        channel: 'phone',
+        direction: 'outbound',
+        subject: '',
+        summary: '',
+        notes: '',
+        outcome: 'completed',
+        duration_minutes: 15,
+        tags: []
+      });
+      toast({
+        title: "Note created",
+        description: "Your note has been saved successfully."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create note. Please try again.",
+        variant: "destructive"
+      });
+    }
   });
 
   const toggleNoteExpansion = (id: number) => {
@@ -284,6 +348,15 @@ const ClientCommunications: React.FC = () => {
       <div className="bg-white border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Notes</h2>
+          {!isGlobalView && (
+            <Button 
+              size="sm" 
+              onClick={() => setIsNewNoteDialogOpen(true)}
+              className="h-8 w-8 p-0 rounded-full"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         
         {/* Navigation Icons */}
@@ -418,6 +491,144 @@ const ClientCommunications: React.FC = () => {
           </Card>
         )}
       </div>
+
+      {/* New Note Dialog */}
+      <Dialog open={isNewNoteDialogOpen} onOpenChange={setIsNewNoteDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add New Note</DialogTitle>
+            <DialogDescription>
+              Record a new communication or note for this client.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            createNoteMutation.mutate(newNoteData);
+          }}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="communication_type">Type</Label>
+                  <Select 
+                    value={newNoteData.communication_type} 
+                    onValueChange={(value) => setNewNoteData(prev => ({ ...prev, communication_type: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="call">Phone Call</SelectItem>
+                      <SelectItem value="meeting">Meeting</SelectItem>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="video_call">Video Call</SelectItem>
+                      <SelectItem value="note">General Note</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="channel">Channel</Label>
+                  <Select 
+                    value={newNoteData.channel} 
+                    onValueChange={(value) => setNewNoteData(prev => ({ ...prev, channel: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select channel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="phone">Phone</SelectItem>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="in_person">In Person</SelectItem>
+                      <SelectItem value="video_call">Video Call</SelectItem>
+                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="direction">Direction</Label>
+                  <Select 
+                    value={newNoteData.direction} 
+                    onValueChange={(value) => setNewNoteData(prev => ({ ...prev, direction: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select direction" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="outbound">Outbound</SelectItem>
+                      <SelectItem value="inbound">Inbound</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+                  <Input
+                    id="duration_minutes"
+                    type="number"
+                    value={newNoteData.duration_minutes}
+                    onChange={(e) => setNewNoteData(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 15 }))}
+                    min="1"
+                    max="300"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subject">Subject</Label>
+                <Input
+                  id="subject"
+                  value={newNoteData.subject}
+                  onChange={(e) => setNewNoteData(prev => ({ ...prev, subject: e.target.value }))}
+                  placeholder="Brief subject or title"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="summary">Summary</Label>
+                <Textarea
+                  id="summary"
+                  value={newNoteData.summary}
+                  onChange={(e) => setNewNoteData(prev => ({ ...prev, summary: e.target.value }))}
+                  placeholder="Brief summary of the communication"
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Detailed Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={newNoteData.notes}
+                  onChange={(e) => setNewNoteData(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Detailed notes and observations"
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsNewNoteDialogOpen(false)}
+                disabled={createNoteMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={createNoteMutation.isPending || !newNoteData.notes.trim()}
+              >
+                {createNoteMutation.isPending ? "Saving..." : "Save Note"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
