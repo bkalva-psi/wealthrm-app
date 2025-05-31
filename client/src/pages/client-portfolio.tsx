@@ -957,7 +957,15 @@ export default function ClientPortfolioPage() {
               </Button>
             </CardFooter>
           </Card>
-          
+
+        </PortfolioSection>
+        
+        {/* Action Items Section */}
+        <PortfolioSection
+          title="Action Items"
+          icon={<AlertCircle className="h-5 w-5" />}
+          defaultOpen={true}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="overflow-hidden border-0 shadow-md">
               <CardHeader className="pb-3 bg-gradient-to-r from-amber-500/90 to-amber-600/90">
