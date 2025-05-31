@@ -29,7 +29,8 @@ import {
   Calendar,
   Receipt,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Calculator
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -1497,10 +1498,14 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </PortfolioSection>
         
-        {/* Financial Planning Tab */}
-        <TabsContent value="planning" className="space-y-4 pt-6">
+        {/* Financial Planning Section */}
+        <PortfolioSection
+          title="Financial Planning"
+          icon={<Calculator className="h-5 w-5" />}
+          defaultOpen={false}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Financial Goals</CardTitle>
@@ -1623,8 +1628,7 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-      </Tabs>
+        </PortfolioSection>
       </div>
     </div>
   );
