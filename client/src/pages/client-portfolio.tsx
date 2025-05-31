@@ -696,44 +696,60 @@ export default function ClientPortfolioPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-3">Portfolio</h2>
         
         {/* Navigation Icons */}
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-7 gap-2">
           <button 
-            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            title="Personal Profile"
           >
             <User className="h-5 w-5 text-gray-600" />
-            <span className="text-xs text-gray-600 mt-1">Profile</span>
           </button>
           
           <button 
-            className="flex flex-col items-center p-2 rounded-lg bg-blue-50 border border-blue-200"
+            className="flex items-center justify-center p-3 rounded-lg bg-blue-50 border border-blue-200"
+            title="Portfolio"
           >
             <PieChart className="h-5 w-5 text-blue-600" />
-            <span className="text-xs text-blue-600 mt-1 font-medium">Portfolio</span>
           </button>
           
           <button 
-            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
             onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+            title="Transactions"
           >
             <Receipt className="h-5 w-5 text-gray-600" />
-            <span className="text-xs text-gray-600 mt-1">Transactions</span>
           </button>
           
           <button 
-            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+            title="Appointments"
+          >
+            <Calendar className="h-5 w-5 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+            title="Communications"
+          >
+            <MessageCircle className="h-5 w-5 text-gray-600" />
+          </button>
+          
+          <button 
+            className="flex items-center justify-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+            title="Portfolio Report"
           >
             <FileBarChart className="h-5 w-5 text-gray-600" />
-            <span className="text-xs text-gray-600 mt-1">Report</span>
           </button>
           
           <button 
-            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
             onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+            title="Investment Ideas"
           >
             <Lightbulb className="h-5 w-5 text-gray-600" />
-            <span className="text-xs text-gray-600 mt-1">Ideas</span>
           </button>
         </div>
       </div>
