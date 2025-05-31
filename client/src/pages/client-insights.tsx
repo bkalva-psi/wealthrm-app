@@ -43,7 +43,7 @@ export default function ClientInsights() {
   });
 
   const { data: client, isLoading } = useQuery({
-    queryKey: ['/api/clients', clientId],
+    queryKey: [`/api/clients/${clientId}`],
     enabled: !!clientId
   });
 
