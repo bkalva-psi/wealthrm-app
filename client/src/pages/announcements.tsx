@@ -81,10 +81,6 @@ export default function AnnouncementsPage() {
           {activeAnnouncements.length} Active
         </span>
       </div>
-      
-      <p className="text-slate-600">
-        Important updates, campaigns, and communications from the product team
-      </p>
 
       {activeAnnouncements.length > 0 ? (
         <Card>
