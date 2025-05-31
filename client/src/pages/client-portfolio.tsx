@@ -693,10 +693,10 @@ export default function ClientPortfolioPage() {
 
       {/* Page Header with Navigation */}
       <div className="bg-white border-b border-gray-200 px-1 py-3">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">Portfolio</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Portfolio</h2>
         
         {/* Navigation Icons */}
-        <div className="grid grid-cols-7 gap-3">
+        <div className="grid grid-cols-7 gap-3 ml-3">
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
