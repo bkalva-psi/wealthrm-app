@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, Target, Phone, Mail, User, PieChart, Receipt, FileText, FileBarChart, Lightbulb, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import { getTierColor } from "@/lib/utils";
 import { clientApi } from "@/lib/api";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface ClientInsight {
   id: number;
@@ -36,6 +37,8 @@ interface Client {
 export default function ClientInsights() {
   const [clientId, setClientId] = useState<number | null>(null);
   const [showAllInsights, setShowAllInsights] = useState(false);
+  const [showPortfolioAlerts, setShowPortfolioAlerts] = useState(false);
+  const [showInvestmentOpportunities, setShowInvestmentOpportunities] = useState(false);
   
   // Set page title and get client ID from URL
   useEffect(() => {
@@ -60,6 +63,30 @@ export default function ClientInsights() {
     queryFn: () => clientId ? clientApi.getClient(clientId) : null,
     enabled: !!clientId,
   });
+
+  // Fetch portfolio alerts
+  const { data: portfolioAlerts } = useQuery({
+    queryKey: ['/api/portfolio-alerts'],
+    enabled: !!clientId
+  });
+
+  // Mock investment opportunities data for now
+  const investmentOpportunities = [
+    {
+      id: 1,
+      title: "Diversify into Small Cap",
+      description: "Consider adding exposure to small cap mutual funds for higher growth potential",
+      priority: "medium",
+      category: "Asset Allocation"
+    },
+    {
+      id: 2,
+      title: "Tax Saving Opportunity",
+      description: "Invest in ELSS funds before March 31st to save taxes under Section 80C",
+      priority: "high",
+      category: "Tax Planning"
+    }
+  ];
 
   const handleBackClick = () => {
     window.location.hash = '/clients';
@@ -224,142 +251,111 @@ export default function ClientInsights() {
       </div>
 
       <div className="space-y-6 px-3">
-        {/* Single Insights Card */}
+        {/* Portfolio Alerts Collapsible Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Lightbulb className="h-5 w-5 mr-2 text-blue-600" />
-                Insights & Recommendations
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAllInsights(!showAllInsights)}
-                className="flex items-center gap-2"
-              >
-                {showAllInsights ? (
-                  <>
-                    Show Less <ChevronUp className="h-4 w-4" />
-                  </>
+          <Collapsible open={showPortfolioAlerts} onOpenChange={setShowPortfolioAlerts}>
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                    Portfolio Alerts
+                  </CardTitle>
+                  {showPortfolioAlerts ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="pt-0">
+                {portfolioAlerts && Array.isArray(portfolioAlerts) && portfolioAlerts.length > 0 ? (
+                  <div className="space-y-3">
+                    {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 2).map((alert: any) => (
+                      <div key={alert.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <AlertTriangle className="h-4 w-4 text-red-500" />
+                              <span className="font-medium text-sm">{alert.title}</span>
+                              <Badge variant="destructive" className="text-xs">
+                                {alert.severity || 'Medium'}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-gray-600 mb-2">{alert.description}</p>
+                            <p className="text-xs font-medium text-red-700">{alert.action}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {portfolioAlerts.length > 2 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setShowAllInsights(!showAllInsights)}
+                        className="text-xs w-full"
+                      >
+                        {showAllInsights ? 'Show Less' : `Show More (${portfolioAlerts.length - 2} more)`}
+                      </Button>
+                    )}
+                  </div>
                 ) : (
-                  <>
-                    Show More <ChevronDown className="h-4 w-4" />
-                  </>
+                  <div className="text-center py-8 text-gray-500">
+                    <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm">No portfolio alerts at the moment.</p>
+                  </div>
                 )}
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {insights && Array.isArray(insights) && insights.length > 0 ? (
-              <>
-                {/* Show first insight by default */}
-                {insights.slice(0, 1).map((insight: ClientInsight) => (
-                  <div key={insight.id} className="p-4 border rounded-lg bg-blue-50">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          {getInsightIcon(insight.type)}
-                          <h4 className="font-semibold text-blue-800">{insight.title}</h4>
-                          <Badge 
-                            variant={insight.impact === 'high' ? 'destructive' : insight.impact === 'medium' ? 'default' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {insight.impact} impact
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">{insight.description}</p>
-                        <p className="text-sm font-medium text-blue-700 mb-2">
-                          Recommendation: {insight.recommendation}
-                        </p>
-                        <div className="flex items-center text-xs text-gray-500 gap-4">
-                          <span>Category: {insight.category}</span>
-                          <span>Valid until: {new Date(insight.validUntil).toLocaleDateString()}</span>
-                          <span>Priority: {insight.priority}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                
-                {/* Show remaining insights when expanded */}
-                {showAllInsights && insights.slice(1).map((insight: ClientInsight) => (
-                  <div key={insight.id} className="p-4 border rounded-lg bg-gray-50">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          {getInsightIcon(insight.type)}
-                          <h4 className="font-semibold text-gray-800">{insight.title}</h4>
-                          <Badge 
-                            variant={insight.impact === 'high' ? 'destructive' : insight.impact === 'medium' ? 'default' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {insight.impact} impact
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">{insight.description}</p>
-                        <p className="text-sm font-medium text-gray-700 mb-2">
-                          Recommendation: {insight.recommendation}
-                        </p>
-                        <div className="flex items-center text-xs text-gray-500 gap-4">
-                          <span>Category: {insight.category}</span>
-                          <span>Valid until: {new Date(insight.validUntil).toLocaleDateString()}</span>
-                          <span>Priority: {insight.priority}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                No insights available for this client at the moment.
-              </div>
-            )}
-          </CardContent>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
         </Card>
 
-        {/* Action Items Card */}
-        <Card className="overflow-hidden border-0 shadow-md">
-          <CardHeader className="pb-3 bg-gradient-to-r from-amber-500/90 to-amber-600/90">
-            <CardTitle className="flex items-center text-lg text-white font-semibold">
-              <AlertTriangle className="h-5 w-5 mr-2 text-white" />
-              Action Items
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-5">
-            <div className="space-y-4">
-              <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
-                <h4 className="text-sm font-medium text-amber-800 flex items-center">
-                  <Target className="h-4 w-4 mr-2 text-amber-500" />
-                  <span className="font-semibold">Rebalance Portfolio</span>
-                </h4>
-                <p className="text-xs text-amber-700 mt-2 leading-relaxed">
-                  Your equity allocation has drifted 5% above target. Consider rebalancing to maintain your risk profile.
-                </p>
-                <div className="mt-3">
-                  <Button size="sm" variant="outline" className="text-xs bg-white text-amber-600 border-amber-300 hover:bg-amber-50">
-                    Review Allocation
-                  </Button>
+        {/* Investment Opportunities Collapsible Card */}
+        <Card>
+          <Collapsible open={showInvestmentOpportunities} onOpenChange={setShowInvestmentOpportunities}>
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <Target className="h-4 w-4 text-green-500" />
+                    Investment Opportunities
+                  </CardTitle>
+                  {showInvestmentOpportunities ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </div>
-              </div>
-              
-              <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm">
-                <h4 className="text-sm font-medium text-blue-800 flex items-center">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                  <span className="font-semibold">Fixed Deposit Maturing</span>
-                </h4>
-                <p className="text-xs text-blue-700 mt-2 leading-relaxed">
-                  Your HDFC Bank FD of ₹3,00,000 is maturing in 15 days. Contact your RM for reinvestment options.
-                </p>
-                <div className="mt-3">
-                  <Button size="sm" variant="outline" className="text-xs bg-white text-blue-600 border-blue-300 hover:bg-blue-50">
-                    View Options
-                  </Button>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 2).map((opportunity: any) => (
+                    <div key={opportunity.id} className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Target className="h-4 w-4 text-green-500" />
+                            <span className="font-medium text-sm">{opportunity.title}</span>
+                            <Badge variant={opportunity.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                              {opportunity.priority}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-600 mb-2">{opportunity.description}</p>
+                          <p className="text-xs font-medium text-green-700">Category: {opportunity.category}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {investmentOpportunities.length > 2 && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setShowAllInsights(!showAllInsights)}
+                      className="text-xs w-full"
+                    >
+                      {showAllInsights ? 'Show Less' : `Show More (${investmentOpportunities.length - 2} more)`}
+                    </Button>
+                  )}
                 </div>
-              </div>
-            </div>
-          </CardContent>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
         </Card>
       </div>
     </div>
