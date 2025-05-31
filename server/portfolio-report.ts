@@ -939,7 +939,7 @@ function generateReportHTML(client: any, portfolioData: any, recentTransactions:
       <script>
         // Create Asset Allocation Donut Chart (matching app design)
         const ctx = document.getElementById('assetChart').getContext('2d');
-        const allocationData = ${JSON.stringify(allocation)};
+        const allocationData = ${JSON.stringify(portfolioData.assetAllocation)};
         
         const labels = Object.keys(allocationData);
         const data = Object.values(allocationData);
