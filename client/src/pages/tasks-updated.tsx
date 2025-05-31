@@ -48,13 +48,7 @@ export default function TasksUpdated() {
   const [tasksCollapsed, setTasksCollapsed] = useState(false);
   const [alertsCollapsed, setAlertsCollapsed] = useState(false);
   
-  // Pagination state
-  const [tasksVisibleCount, setTasksVisibleCount] = useState(2);
-  const [alertsVisibleCount, setAlertsVisibleCount] = useState(2);
-  const [tasksShowMore, setTasksShowMore] = useState(false);
-  const [alertsShowMore, setAlertsShowMore] = useState(false);
-  
-  // Item expansion state
+  // Item expansion state only
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
   const [expandedAlerts, setExpandedAlerts] = useState<Set<number>>(new Set());
   
@@ -326,11 +320,10 @@ export default function TasksUpdated() {
                 <div className="space-y-4">
                   {(() => {
                     const currentFilteredTasks = filteredTasks.filter(task => !task.completed);
-                    const visibleTasks = currentFilteredTasks.slice(0, tasksVisibleCount);
                     
-                    return visibleTasks.length > 0 ? (
+                    return currentFilteredTasks.length > 0 ? (
                       <>
-                        {visibleTasks.map((task: Task, index: number) => {
+                        {currentFilteredTasks.map((task: Task, index: number) => {
                           const isExpanded = expandedTasks.has(task.id);
                           const dueStatus = getDueStatus(task.dueDate);
                           
@@ -374,31 +367,7 @@ export default function TasksUpdated() {
                             </div>
                           );
                         })}
-                        
-                        {!tasksShowMore && (tasks as Task[] || []).filter(task => !task.completed).length > tasksVisibleCount && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => {
-                              setTasksShowMore(true);
-                              setTasksVisibleCount(prev => prev + 5);
-                            }}
-                          >
-                            Show 5 more tasks
-                          </Button>
-                        )}
-                        {tasksShowMore && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => {
-                              setTasksShowMore(false);
-                              setTasksVisibleCount(2);
-                            }}
-                          >
-                            Show less
-                          </Button>
-                        )}
+
                       </>
                     ) : (
                       <div className="text-center py-8">
@@ -490,31 +459,7 @@ export default function TasksUpdated() {
                             </div>
                           );
                         })}
-                        
-                        {!alertsShowMore && (portfolioAlerts as any[] || []).length > alertsVisibleCount && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => {
-                              setAlertsShowMore(true);
-                              setAlertsVisibleCount(prev => prev + 5);
-                            }}
-                          >
-                            Show 5 more alerts
-                          </Button>
-                        )}
-                        {alertsShowMore && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => {
-                              setAlertsShowMore(false);
-                              setAlertsVisibleCount(2);
-                            }}
-                          >
-                            Show less
-                          </Button>
-                        )}
+
                       </>
                     ) : (
                       <div className="text-center py-8">
