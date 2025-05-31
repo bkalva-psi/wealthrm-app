@@ -1,320 +1,365 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { Search, Filter, ChevronDown } from "lucide-react";
+import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield } from "lucide-react";
 
-// Product data (in a real app, this would come from API)
-const products = [
-  {
-    id: 1,
-    name: "Premium Wealth Management",
-    category: "Wealth Management",
-    minInvestment: "₹50 L",
-    riskLevel: "Moderate",
-    returns: "12-15% p.a.",
-    description: "Comprehensive wealth management solution for high-net-worth individuals including personalized portfolio management, tax planning, and estate planning.",
-    featured: true,
-    tags: ["High Net Worth", "Tax Efficient"]
-  },
-  {
-    id: 2,
-    name: "Balanced Growth Portfolio",
-    category: "Mutual Funds",
-    minInvestment: "₹10 L",
-    riskLevel: "Moderate",
-    returns: "10-12% p.a.",
-    description: "A balanced portfolio of equity and debt funds designed to provide steady growth with moderate risk.",
-    featured: false,
-    tags: ["Balanced", "Growth"]
-  },
-  {
-    id: 3,
-    name: "Equity Growth Fund",
-    category: "Mutual Funds",
-    minInvestment: "₹5 L",
-    riskLevel: "High",
-    returns: "15-18% p.a.",
-    description: "Aggressive equity fund focused on capital appreciation through investments in high-growth sectors.",
-    featured: true,
-    tags: ["High Growth", "Equity"]
-  },
-  {
-    id: 4,
-    name: "Fixed Income Portfolio",
-    category: "Fixed Income",
-    minInvestment: "₹25 L",
-    riskLevel: "Low",
-    returns: "7-8% p.a.",
-    description: "Conservative portfolio focused on generating steady income through investments in bonds, fixed deposits, and debt instruments.",
-    featured: false,
-    tags: ["Income", "Low Risk"]
-  },
-  {
-    id: 5,
-    name: "Tax-Advantaged Investment Plan",
-    category: "Tax Planning",
-    minInvestment: "₹1.5 L",
-    riskLevel: "Low to Moderate",
-    returns: "8-10% p.a.",
-    description: "Investment solutions designed to maximize tax benefits under Section 80C while providing moderate returns.",
-    featured: false,
-    tags: ["Tax Saving", "ELSS"]
-  },
-  {
-    id: 6,
-    name: "Corporate Treasury Management",
-    category: "Corporate Solutions",
-    minInvestment: "₹1 Cr",
-    riskLevel: "Low",
-    returns: "6-8% p.a.",
-    description: "Treasury management solutions for corporate clients focusing on liquidity management and short-term investments.",
-    featured: false,
-    tags: ["Corporate", "Treasury"]
-  },
-  {
-    id: 7,
-    name: "Real Estate Investment Trust",
-    category: "Alternative Investments",
-    minInvestment: "₹25 L",
-    riskLevel: "Moderate",
-    returns: "9-11% p.a.",
-    description: "REIT investments providing exposure to commercial real estate with regular income distributions.",
-    featured: true,
-    tags: ["Real Estate", "Income"]
-  },
-  {
-    id: 8,
-    name: "Private Equity Fund",
-    category: "Alternative Investments",
-    minInvestment: "₹1 Cr",
-    riskLevel: "Very High",
-    returns: "18-25% p.a.",
-    description: "Access to private equity investments in high-growth companies with potential for significant returns.",
-    featured: false,
-    tags: ["Private Equity", "High Return"]
-  }
-];
+interface Product {
+  id: number;
+  name: string;
+  productCode: string;
+  category: string;
+  subCategory?: string;
+  description: string;
+  keyFeatures: string[];
+  targetAudience?: string;
+  minInvestment: string;
+  maxInvestment?: string;
+  riskLevel: string;
+  expectedReturns?: string;
+  lockInPeriod?: number;
+  tenure?: string;
+  exitLoad?: string;
+  managementFee?: number;
+  regulatoryApprovals: string[];
+  taxImplications?: string;
+  factsheetUrl?: string;
+  kimsUrl?: string;
+  applicationFormUrl?: string;
+  isOpenForSubscription: boolean;
+  launchDate?: string;
+  maturityDate?: string;
+  totalSubscriptions?: number;
+  totalInvestors?: number;
+  featured: boolean;
+  tags: string[];
+}
 
 export default function Products() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRiskLevels, setSelectedRiskLevels] = useState<string[]>([]);
-  const [featuredOnly, setFeaturedOnly] = useState(false);
-  
-  // Set page title
-  useEffect(() => {
-    document.title = "Products | Wealth RM";
-  }, []);
-  
-  // Get unique values for filters
-  const categories = Array.from(new Set(products.map(product => product.category)));
-  const riskLevels = Array.from(new Set(products.map(product => product.riskLevel)));
-  
-  // Filter products based on search query and filters
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Fetch products from database
+  const { data: products = [], isLoading, error } = useQuery<Product[]>({
+    queryKey: ['/api/products'],
+    queryFn: async () => {
+      const response = await fetch('/api/products');
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      return response.json();
+    }
+  });
+
+  // Filter products based on search and filters
   const filteredProducts = products.filter(product => {
-    // Filter by search query
-    const matchesSearch = searchQuery === "" || 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = searchTerm === "" || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Filter by category
     const matchesCategory = selectedCategories.length === 0 || 
       selectedCategories.includes(product.category);
-      
-    // Filter by risk level
-    const matchesRiskLevel = selectedRiskLevels.length === 0 || 
-      selectedRiskLevels.includes(product.riskLevel);
-      
-    // Filter by featured
-    const matchesFeatured = !featuredOnly || product.featured;
     
-    return matchesSearch && matchesCategory && matchesRiskLevel && matchesFeatured;
+    const matchesRisk = selectedRiskLevels.length === 0 || 
+      selectedRiskLevels.includes(product.riskLevel);
+    
+    return matchesSearch && matchesCategory && matchesRisk;
   });
-  
-  // Toggle functions for filters
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(category) 
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
+
+  // Get unique categories and risk levels for filters
+  const categories = [...new Set(products.map(p => p.category))];
+  const riskLevels = [...new Set(products.map(p => p.riskLevel))];
+
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCategories([...selectedCategories, category]);
+    } else {
+      setSelectedCategories(selectedCategories.filter(c => c !== category));
+    }
+  };
+
+  const handleRiskLevelChange = (riskLevel: string, checked: boolean) => {
+    if (checked) {
+      setSelectedRiskLevels([...selectedRiskLevels, riskLevel]);
+    } else {
+      setSelectedRiskLevels(selectedRiskLevels.filter(r => r !== riskLevel));
+    }
+  };
+
+  const getRiskColor = (riskLevel: string) => {
+    switch (riskLevel.toLowerCase()) {
+      case 'very low':
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      case 'moderate':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'very high':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleDownload = (url?: string, fileName?: string) => {
+    if (url) {
+      // In a real app, this would download the actual PDF
+      console.log(`Downloading ${fileName || 'document'} from ${url}`);
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">Failed to load products. Please try again later.</p>
+        </div>
+      </div>
     );
-  };
-  
-  const toggleRiskLevel = (riskLevel: string) => {
-    setSelectedRiskLevels(prev => 
-      prev.includes(riskLevel) 
-        ? prev.filter(r => r !== riskLevel)
-        : [...prev, riskLevel]
-    );
-  };
-  
-  const clearAllFilters = () => {
-    setSelectedCategories([]);
-    setSelectedRiskLevels([]);
-    setFeaturedOnly(false);
-  };
-  
-  const getRiskLevelColor = (riskLevel: string) => {
-    if (riskLevel.includes("Low")) return "bg-green-100 text-green-800";
-    if (riskLevel.includes("Moderate")) return "bg-amber-100 text-amber-800";
-    if (riskLevel.includes("High")) return "bg-red-100 text-red-800";
-    return "bg-slate-100 text-slate-800";
-  };
-  
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
-        <h1 className="text-2xl font-bold text-slate-900">Products</h1>
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+            
+            {/* Filters Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Category</DropdownMenuLabel>
+                {categories.map(category => (
+                  <DropdownMenuCheckboxItem
+                    key={category}
+                    checked={selectedCategories.includes(category)}
+                    onCheckedChange={(checked) => handleCategoryChange(category, checked)}
+                  >
+                    {category}
+                  </DropdownMenuCheckboxItem>
+                ))}
+                
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Risk Level</DropdownMenuLabel>
+                {riskLevels.map(riskLevel => (
+                  <DropdownMenuCheckboxItem
+                    key={riskLevel}
+                    checked={selectedRiskLevels.includes(riskLevel)}
+                    onCheckedChange={(checked) => handleRiskLevelChange(riskLevel, checked)}
+                  >
+                    {riskLevel}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="p-6 space-y-6">
-        {/* Search and Filter Section */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="Search products by name, description, or tags..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
-                    Filters
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuLabel>Filter Products</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  
-                  <DropdownMenuCheckboxItem
-                    checked={featuredOnly}
-                    onCheckedChange={setFeaturedOnly}
-                  >
-                    Featured Only
-                  </DropdownMenuCheckboxItem>
-                  
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Categories</DropdownMenuLabel>
-                  {categories.map(category => (
-                    <DropdownMenuCheckboxItem
-                      key={category}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={() => toggleCategory(category)}
-                    >
-                      {category}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                  
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Risk Levels</DropdownMenuLabel>
-                  {riskLevels.map(riskLevel => (
-                    <DropdownMenuCheckboxItem
-                      key={riskLevel}
-                      checked={selectedRiskLevels.includes(riskLevel)}
-                      onCheckedChange={() => toggleRiskLevel(riskLevel)}
-                    >
-                      {riskLevel}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                  
-                  <DropdownMenuSeparator />
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={clearAllFilters}
-                  >
-                    Clear All Filters
-                  </Button>
-                </DropdownMenuContent>
-              </DropdownMenu>
+      {/* Content */}
+      <div className="p-6">
+        {isLoading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader>
+                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-20 bg-gray-200 rounded mb-4"></div>
+                  <div className="flex gap-2">
+                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    <div className="h-6 bg-gray-200 rounded w-20"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-500 mb-4">
+              <Search className="h-12 w-12 mx-auto mb-4" />
+              {searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0 
+                ? "No products match your search criteria."
+                : "No products available."}
             </div>
-          </CardContent>
-        </Card>
+            {(searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0) && (
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategories([]);
+                  setSelectedRiskLevels([]);
+                }}
+              >
+                Clear Filters
+              </Button>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Results Summary */}
+            <div className="mb-6">
+              <p className="text-sm text-gray-600">
+                Showing {filteredProducts.length} of {products.length} products
+                {selectedCategories.length > 0 && (
+                  <span className="ml-2">
+                    • Categories: {selectedCategories.join(", ")}
+                  </span>
+                )}
+                {selectedRiskLevels.length > 0 && (
+                  <span className="ml-2">
+                    • Risk: {selectedRiskLevels.join(", ")}
+                  </span>
+                )}
+              </p>
+            </div>
 
-        {/* Products Grid - Only show when search query exists */}
-        {searchQuery.trim() !== "" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map(product => (
-                <Card key={product.id} className="overflow-hidden">
+            {/* Products Grid */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredProducts.map((product) => (
+                <Card key={product.id} className={`transition-all duration-200 hover:shadow-lg ${product.featured ? 'ring-2 ring-blue-200' : ''}`}>
                   <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{product.name}</CardTitle>
-                        <CardDescription>{product.category}</CardDescription>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                        <CardDescription className="text-sm text-gray-600">
+                          {product.productCode} • {product.category}
+                        </CardDescription>
                       </div>
                       {product.featured && (
-                        <Badge variant="secondary" className="bg-blue-50 text-blue-700">
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                           Featured
                         </Badge>
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-slate-600 mb-4">{product.description}</p>
-                    <div className="grid grid-cols-2 gap-y-2 text-sm">
-                      <div>
-                        <span className="font-medium text-slate-700">Min Investment:</span>
+
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-gray-700 line-clamp-3">
+                      {product.description}
+                    </p>
+
+                    {/* Key Stats */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-gray-600">Min Investment</p>
+                          <p className="font-medium">{product.minInvestment}</p>
+                        </div>
                       </div>
-                      <div className="text-slate-800">{product.minInvestment}</div>
-                      
-                      <div>
-                        <span className="font-medium text-slate-700">Risk Level:</span>
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-gray-600">Risk Level</p>
+                          <Badge className={`text-xs ${getRiskColor(product.riskLevel)}`}>
+                            {product.riskLevel}
+                          </Badge>
+                        </div>
                       </div>
-                      <div>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getRiskLevelColor(product.riskLevel)}`}>
-                          {product.riskLevel}
-                        </span>
-                      </div>
-                      
-                      <div>
-                        <span className="font-medium text-slate-700">Expected Returns:</span>
-                      </div>
-                      <div className="text-slate-800">{product.returns}</div>
                     </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {product.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="bg-slate-50">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+
+                    {product.expectedReturns && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-gray-600">Expected Returns</p>
+                          <p className="font-medium text-green-700">{product.expectedReturns}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Performance Metrics */}
+                    {(product.totalInvestors || product.totalSubscriptions) && (
+                      <div className="flex items-center gap-4 text-xs text-gray-600 pt-2 border-t">
+                        {product.totalInvestors && (
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            <span>{product.totalInvestors.toLocaleString()} investors</span>
+                          </div>
+                        )}
+                        {product.totalSubscriptions && (
+                          <div className="flex items-center gap-1">
+                            <TrendingUp className="h-3 w-3" />
+                            <span>₹{(product.totalSubscriptions / 10000000).toFixed(0)}Cr AUM</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Key Features */}
+                    {product.keyFeatures && product.keyFeatures.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {product.keyFeatures.slice(0, 3).map((feature, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {feature}
+                          </Badge>
+                        ))}
+                        {product.keyFeatures.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{product.keyFeatures.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
-                  <CardFooter className="flex justify-between border-t bg-slate-50 px-6 py-3">
-                    <Button variant="outline" size="sm">View Details</Button>
+
+                  <CardFooter className="flex gap-2">
+                    {product.factsheetUrl && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 flex items-center gap-2"
+                        onClick={() => handleDownload(product.factsheetUrl, `${product.name} Factsheet`)}
+                      >
+                        <FileText className="h-4 w-4" />
+                        Factsheet
+                      </Button>
+                    )}
+                    {product.applicationFormUrl && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1 flex items-center gap-2"
+                        onClick={() => handleDownload(product.applicationFormUrl, `${product.name} Application`)}
+                      >
+                        <Download className="h-4 w-4" />
+                        Apply
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-10">
-                <p className="text-slate-500">No products match your search criteria</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Empty state when no search query */}
-        {searchQuery.trim() === "" && (
-          <div className="text-center py-20">
-            <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-900 mb-2">Search for Products</h3>
-            <p className="text-slate-500">Start typing to search for financial products and investment options.</p>
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
