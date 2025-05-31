@@ -26,7 +26,6 @@ const navigationItems = [
   { name: "Notes", href: "/communications", icon: FileText },
   { name: "Insights", href: "/talking-points", icon: Lightbulb },
   { name: "Announcements", href: "/announcements", icon: Megaphone },
-  { name: "Analytics", href: "/analytics", icon: BarChart2 },
   { name: "Products", href: "/products", icon: Package },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
