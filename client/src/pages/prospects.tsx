@@ -126,14 +126,6 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   const funnelData = pipelineStages.map((stage, index) => {
     const count = prospects.filter(p => p.stage === stage.id).length;
     
-    // Debug logging for new stage specifically
-    if (stage.id === 'new') {
-      console.log(`=== FUNNEL DEBUG: NEW STAGE ===`);
-      console.log(`Total prospects passed to funnel:`, prospects.length);
-      console.log(`Prospects with stage "new":`, prospects.filter(p => p.stage === 'new'));
-      console.log(`Count for NEW stage:`, count);
-    }
-    
     // Define proper hex colors for each stage
     const getStageHexColor = (stageId: string) => {
       switch (stageId.toLowerCase()) {
