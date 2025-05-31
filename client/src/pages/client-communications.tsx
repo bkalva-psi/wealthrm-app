@@ -179,6 +179,11 @@ const ClientCommunications: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+  const [filters, setFilters] = useState({
+    noteType: '',
+    channel: '',
+    dateRange: 'all'
+  });
   
   // New note dialog state
   const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
@@ -197,6 +202,28 @@ const ClientCommunications: React.FC = () => {
   
   // Query client for cache invalidation
   const queryClient = useQueryClient();
+
+  // Filter functions
+  const toggleNoteExpansion = (noteId: number) => {
+    const newExpanded = new Set(expandedNotes);
+    if (newExpanded.has(noteId)) {
+      newExpanded.delete(noteId);
+    } else {
+      newExpanded.add(noteId);
+    }
+    setExpandedNotes(newExpanded);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      noteType: '',
+      channel: '',
+      dateRange: 'all'
+    });
+    setSearchText('');
+    setSelectedCustomer(null);
+    setDateRangeFilter('all');
+  };
 
   // Queries
   const { data: client, isLoading: isClientLoading } = useQuery({
@@ -263,24 +290,6 @@ const ClientCommunications: React.FC = () => {
       });
     }
   });
-
-  const toggleNoteExpansion = (id: number) => {
-    setExpandedNotes(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
-  const handleClearFilters = () => {
-    setSearchText('');
-    setSelectedCustomer(null);
-    setDateRangeFilter('all');
-  };
 
   // Main component return
   return (
