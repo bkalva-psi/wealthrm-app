@@ -737,7 +737,97 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   
   return (
     <div className="min-h-screen bg-gray-50">
-
+      {/* Customer Information Band */}
+      <div className={`bg-white shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-slate-300'}`}>
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => window.location.hash = '/clients'}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              
+              <div className="flex items-center gap-3">
+                {/* Client Details - No Avatar */}
+                {isClientLoading ? (
+                  <div className="space-y-1">
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ) : client ? (
+                  <div className="flex flex-col">
+                    {/* Line 1: Client Name */}
+                    <button 
+                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                      className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer text-left"
+                    >
+                      {client.fullName}
+                    </button>
+                    
+                    {/* Line 2: Phone Number */}
+                    {client.phone && (
+                      <div className="mt-1 flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-slate-400" />
+                        <a 
+                          href={`tel:${client.phone}`}
+                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          title="Call client"
+                        >
+                          {client.phone}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {/* Line 3: Email */}
+                    {client.email && (
+                      <div className="mt-1 flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-slate-400" />
+                        <a 
+                          href={`mailto:${client.email}`}
+                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          title="Send email to client"
+                        >
+                          {client.email}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-gray-500">Client not found</div>
+                )}
+              </div>
+            </div>
+            
+            {/* Right side actions */}
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                title="Portfolio"
+              >
+                <BarChart4 className="h-5 w-5 text-gray-600" />
+              </button>
+              <button 
+                onClick={() => window.location.hash = `/clients/${clientId}/communications`}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                title="Communications"
+              >
+                <MessageCircle className="h-5 w-5 text-gray-600" />
+              </button>
+              <button 
+                onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                title="Transactions"
+              >
+                <Wallet className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Page Title Band with Navigation */}
       <div className="bg-white border-b border-gray-200 px-1 py-4">
