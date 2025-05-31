@@ -213,23 +213,20 @@ const ClientCommunications: React.FC = () => {
   const createNoteMutation = useMutation({
     mutationFn: async (noteData: any) => {
       const payload = {
-        clientId: clientId,
-        initiatedBy: 1, // Current user ID - would be from auth context
-        communicationType: noteData.communication_type,
+        client_id: clientId,
+        initiated_by: 1, // Current user ID - would be from auth context
+        communication_type: noteData.communication_type,
         direction: noteData.direction,
         subject: noteData.subject,
         summary: noteData.summary,
-        details: noteData.notes,
-        startTime: new Date().toISOString(),
-        endTime: new Date(Date.now() + (noteData.duration_minutes * 60 * 1000)).toISOString(),
+        notes: noteData.notes,
+        start_time: new Date().toISOString(),
+        end_time: new Date(Date.now() + (noteData.duration_minutes * 60 * 1000)).toISOString(),
         duration: noteData.duration_minutes,
         channel: noteData.channel,
-        location: noteData.location || null,
         sentiment: 'neutral',
-        followupRequired: false,
-        hasAttachments: false,
-        tags: noteData.tags,
-        status: 'completed'
+        follow_up_required: false,
+        tags: noteData.tags
       };
       
       return apiRequest('POST', '/api/communications', payload);
