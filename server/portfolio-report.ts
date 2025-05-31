@@ -793,7 +793,7 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
       </div>
 
       <script>
-        // Create Asset Allocation Pie Chart
+        // Create Asset Allocation Donut Chart (matching app design)
         const ctx = document.getElementById('assetChart').getContext('2d');
         const allocationData = ${JSON.stringify(allocation)};
         
@@ -805,7 +805,7 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
         ];
 
         new Chart(ctx, {
-          type: 'pie',
+          type: 'doughnut',
           data: {
             labels: labels,
             datasets: [{
@@ -818,20 +818,88 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
               legend: {
                 position: 'bottom',
                 labels: {
-                  padding: 15,
-                  usePointStyle: true
+                  padding: 10,
+                  usePointStyle: true,
+                  font: {
+                    size: 11
+                  }
                 }
-              },
-              title: {
-                display: true,
-                text: 'Portfolio Asset Allocation',
-                font: {
-                  size: 16,
-                  weight: 'bold'
+              }
+            }
+          }
+        });
+
+        // Create Sector Exposure Chart
+        const sectorData = ${JSON.stringify(sectorData)};
+        const sectorCtx = document.getElementById('sectorChart').getContext('2d');
+        
+        new Chart(sectorCtx, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(sectorData),
+            datasets: [{
+              data: Object.values(sectorData),
+              backgroundColor: [
+                '#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#f97316'
+              ],
+              borderColor: '#ffffff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 10,
+                  usePointStyle: true,
+                  font: {
+                    size: 11
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // Create Geographic Exposure Chart
+        const geographicData = ${JSON.stringify(geographicData)};
+        const geoCtx = document.getElementById('geographicChart').getContext('2d');
+        
+        new Chart(geoCtx, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(geographicData),
+            datasets: [{
+              data: Object.values(geographicData),
+              backgroundColor: [
+                '#22c55e', '#3b82f6', '#f59e0b', '#ef4444'
+              ],
+              borderColor: '#ffffff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 10,
+                  usePointStyle: true,
+                  font: {
+                    size: 11
+                  }
                 }
               }
             }
