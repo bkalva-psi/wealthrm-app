@@ -73,16 +73,19 @@ export default function AnnouncementsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center space-x-3">
-        <Megaphone className="h-6 w-6 text-ujjivan-primary" />
-        <h1 className="text-2xl font-bold text-slate-900">Announcements</h1>
-        <span className="ml-auto text-sm text-slate-500">
-          {activeAnnouncements.length} Active
-        </span>
+    <div className="relative">
+      <div className="sticky top-0 z-10 bg-white border-b border-slate-200 p-6">
+        <div className="flex items-center space-x-3">
+          <Megaphone className="h-6 w-6 text-ujjivan-primary" />
+          <h1 className="text-2xl font-bold text-slate-900">Announcements</h1>
+          <span className="ml-auto text-sm text-slate-500">
+            {activeAnnouncements.length} Active
+          </span>
+        </div>
       </div>
-
-      {activeAnnouncements.length > 0 ? (
+      
+      <div className="p-6 pt-0 space-y-6">
+        {activeAnnouncements.length > 0 ? (
         <Card>
           <CardContent className="p-0">
             {displayedAnnouncements.map((announcement, index) => {
@@ -193,6 +196,7 @@ export default function AnnouncementsPage() {
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   );
 }
