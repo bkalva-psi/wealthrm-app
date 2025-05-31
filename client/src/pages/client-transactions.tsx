@@ -133,7 +133,7 @@ export default function ClientTransactions() {
   const clientId = parseInt(window.location.hash.split('/')[2] || '0');
   
   // Date filter state
-  const [selectedPeriod, setSelectedPeriod] = useState<'1w' | '1m' | '3m'>('3m');
+  const [selectedPeriod, setSelectedPeriod] = useState<'1w' | '1m' | '3m' | 'all'>('all');
   const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 3));
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [transactionType, setTransactionType] = useState<string>('all');
@@ -147,10 +147,18 @@ export default function ClientTransactions() {
   const ITEMS_PER_PAGE = 10;
   
   // Quick date filter handler
-  const handlePeriodFilter = (period: '1w' | '1m' | '3m') => {
+  const handlePeriodFilter = (period: '1w' | '1m' | '3m' | 'all') => {
     console.log(`Applying period filter: ${period}`);
     setSelectedPeriod(period);
     setVisibleCount(ITEMS_PER_PAGE); // Reset visible count when changing period
+    
+    if (period === 'all') {
+      // For "all", don't apply date filtering
+      setStartDate(new Date(0)); // Set to very old date
+      setEndDate(new Date()); // Current date
+      return;
+    }
+    
     const end = new Date();
     let start: Date;
     
@@ -670,6 +678,13 @@ export default function ClientTransactions() {
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
+            <Button 
+              variant={selectedPeriod === 'all' ? 'default' : 'outline'}
+              onClick={() => handlePeriodFilter('all')}
+              className="flex-1"
+            >
+              All
+            </Button>
             <Button 
               variant={selectedPeriod === '1w' ? 'default' : 'outline'}
               onClick={() => handlePeriodFilter('1w')}
