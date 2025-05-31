@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 export function QuickActions() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { navigateWithHistory } = useNavigation();
   const [activeDialog, setActiveDialog] = useState<string | null>(null);
   const [selectedClientId, setSelectedClientId] = useState<string>("");
 
@@ -50,8 +51,7 @@ export function QuickActions() {
   };
   
   const handleScheduleMeeting = () => {
-    // Navigate to appointments page with creation mode
-    const { navigateWithHistory } = useNavigation();
+    // Navigate to calendar page for appointment creation
     navigateWithHistory('/calendar');
   };
   
