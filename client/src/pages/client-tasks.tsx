@@ -158,7 +158,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
         title: "",
         description: "",
         dueDate: format(new Date(), "yyyy-MM-dd"),
-        clientId: isAllTasks ? "" : (numericClientId?.toString() || ""),
+        clientId: isAllTasks ? "" : (effectiveClientId?.toString() || ""),
       });
     },
     onError: (error) => {
@@ -329,7 +329,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                         <SelectValue placeholder="Select a client" />
                       </SelectTrigger>
                       <SelectContent>
-                        {clients?.map((client: Client) => (
+                        {(clients || [])?.map((client: Client) => (
                           <SelectItem key={client.id} value={client.id.toString()}>
                             {client.fullName}
                           </SelectItem>
@@ -425,8 +425,8 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filterTasks(tasks, activeTab).length > 0 ? (
-                    filterTasks(tasks, activeTab).map((task: Task) => {
+                  {filterTasks(tasks || [], activeTab).length > 0 ? (
+                    filterTasks(tasks || [], activeTab).map((task: Task) => {
                       const dueStatus = getDueStatus(task.dueDate);
                       
                       return (
