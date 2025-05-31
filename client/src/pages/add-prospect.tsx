@@ -95,9 +95,8 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
       phone: "",
       potentialAum: "",
       potentialAumValue: 0,
-      stage: "discovery", // Changed from "new" to "discovery" to match the stage names in Prospects page
+      stage: "new", // Use valid stage from schema
       probabilityScore: 20,
-      source: "referral",
       notes: "",
       productsOfInterest: "",
     },
@@ -541,10 +540,9 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="discovery">Discovery</SelectItem>
+                          <SelectItem value="new">New</SelectItem>
                           <SelectItem value="qualified">Qualified</SelectItem>
                           <SelectItem value="proposal">Proposal</SelectItem>
-                          <SelectItem value="negotiation">Negotiation</SelectItem>
                           <SelectItem value="won">Won</SelectItem>
                           <SelectItem value="lost">Lost</SelectItem>
                         </SelectContent>
@@ -643,41 +641,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="source"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex">
-                        Source <span className="text-red-500 ml-1">*</span>
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select source" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="referral">Referral</SelectItem>
-                          <SelectItem value="website">Website</SelectItem>
-                          <SelectItem value="event">Event</SelectItem>
-                          <SelectItem value="social">Social Media</SelectItem>
-                          <SelectItem value="advertisement">Advertisement</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                      {getServerErrorsForField("source").map((error, i) => (
-                        <p key={i} className="text-sm font-medium text-destructive">
-                          {error}
-                        </p>
-                      ))}
-                    </FormItem>
-                  )}
-                />
+
               </div>
 
               <FormField
