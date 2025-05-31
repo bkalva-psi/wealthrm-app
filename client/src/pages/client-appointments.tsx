@@ -63,6 +63,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
 
   // Extract clientId from URL if not provided as prop
   const urlClientId = typeof window !== 'undefined' ? 
+    window.location.hash.match(/\/clients\/(\d+)\/appointments/)?.[1] ||
     new URLSearchParams(window.location.search).get('clientId') || 
     new URLSearchParams(window.location.hash.split('?')[1] || '').get('clientId') : null;
   const clientId = propClientId || urlClientId;
@@ -457,25 +458,25 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       <div className="bg-white shadow-sm border-b">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-6 w-6 text-blue-600" />
-              <h1 className="text-2xl font-bold text-slate-900">
-                {clientId ? `${client?.name || 'Client'} Appointments` : 'Calendar'}
-              </h1>
-              {/* Navigation Icons */}
-              {!clientId && (
-                <div className="flex items-center gap-2 ml-4">
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <User className="h-5 w-5 text-gray-600" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Phone className="h-5 w-5 text-gray-600" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Mail className="h-5 w-5 text-gray-600" />
-                  </button>
-                </div>
-              )}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <Calendar className="h-6 w-6 text-blue-600" />
+                <h1 className="text-2xl font-bold text-slate-900">
+                  {clientId ? `${client?.name || 'Client'} Appointments` : 'Calendar'}
+                </h1>
+              </div>
+              {/* Navigation Icons below title */}
+              <div className="flex items-center gap-2 ml-9">
+                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <User className="h-5 w-5 text-gray-600" />
+                </button>
+                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <Phone className="h-5 w-5 text-gray-600" />
+                </button>
+                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <Mail className="h-5 w-5 text-gray-600" />
+                </button>
+              </div>
             </div>
             <Button>
               <Plus className="h-4 w-4" />
