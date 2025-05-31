@@ -476,6 +476,46 @@ function RiskAssessment({ score }: { score: number }) {
 }
 
 // Main portfolio page component
+// Collapsible Section Component
+function PortfolioSection({ 
+  title, 
+  icon, 
+  children, 
+  defaultOpen = false 
+}: { 
+  title: string; 
+  icon: React.ReactNode; 
+  children: React.ReactNode; 
+  defaultOpen?: boolean 
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Card>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-full bg-blue-100 text-blue-600">
+                  {icon}
+                </div>
+                <CardTitle className="text-lg">{title}</CardTitle>
+              </div>
+              {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            </div>
+          </CardHeader>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent className="pt-0">
+            {children}
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+}
+
 export default function ClientPortfolioPage() {
   const [clientId, setClientId] = useState<number | null>(null);
   
@@ -745,18 +785,15 @@ export default function ClientPortfolioPage() {
         />
       </div>
       
-      {/* Tabs for different portfolio views */}
-      <Tabs defaultValue="overview" className="space-y-3 flex-grow">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full sticky top-0 z-10 bg-white">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="holdings">Holdings</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
-          <TabsTrigger value="planning">Planning</TabsTrigger>
-        </TabsList>
+      {/* Portfolio Sections as Collapsible Cards */}
+      <div className="space-y-3 flex-grow">
         
-        {/* Portfolio Overview Tab */}
-        <TabsContent value="overview" className="space-y-3 pt-3">
+        {/* Portfolio Overview Section */}
+        <PortfolioSection
+          title="Portfolio Overview"
+          icon={<PieChart className="h-5 w-5" />}
+          defaultOpen={true}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
@@ -1004,10 +1041,14 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </PortfolioSection>
         
-        {/* Holdings Tab */}
-        <TabsContent value="holdings" className="space-y-4 pt-4 md:pt-6">
+        {/* Holdings Section */}
+        <PortfolioSection
+          title="Holdings"
+          icon={<Receipt className="h-5 w-5" />}
+          defaultOpen={true}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Complete Holdings</CardTitle>
@@ -1083,10 +1124,14 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </PortfolioSection>
         
-        {/* Performance Tab */}
-        <TabsContent value="performance" className="space-y-4 pt-6">
+        {/* Performance Section */}
+        <PortfolioSection
+          title="Performance"
+          icon={<TrendingUp className="h-5 w-5" />}
+          defaultOpen={false}
+        >
           <div className="grid grid-cols-1 gap-6 mb-6">
             <Card>
               <CardHeader>
@@ -1295,10 +1340,14 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </PortfolioSection>
         
-        {/* Risk Analysis Tab */}
-        <TabsContent value="risk" className="space-y-4 pt-6">
+        {/* Risk Analysis Section */}
+        <PortfolioSection
+          title="Risk Analysis"
+          icon={<AlertTriangle className="h-5 w-5" />}
+          defaultOpen={false}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <MetricCard 
               title="Risk Score"
