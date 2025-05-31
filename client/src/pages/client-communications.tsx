@@ -232,7 +232,7 @@ const ClientCommunications: React.FC = () => {
         status: 'completed'
       };
       
-      return apiRequest('/api/communications', 'POST', payload);
+      return apiRequest('POST', '/api/communications', payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ 
