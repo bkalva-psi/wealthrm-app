@@ -214,75 +214,66 @@ const ClientCommunications: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Client Header - Only show for client-specific view */}
       {!isGlobalView && (
-        <div className={`bg-white border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-            {/* Left side - Back arrow and client name */}
-            <div className="flex items-center min-w-0 flex-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => window.location.hash = `/clients`}
-                className="mr-2 sm:mr-4 p-1 sm:p-2 flex-shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-              
-              <div className="min-w-0 flex-1">
-                {isClientLoading ? (
-                  <div className="space-y-1">
-                    <Skeleton className="h-5 sm:h-6 w-24 sm:w-32" />
-                    <Skeleton className="h-3 sm:h-4 w-20 sm:w-24" />
-                    <Skeleton className="h-3 sm:h-4 w-20 sm:w-24" />
-                    <Skeleton className="h-3 sm:h-4 w-20 sm:w-24" />
-                  </div>
-                ) : client ? (
-                  <>
-                    {/* Line 1: Client Name */}
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="text-left truncate hover:text-blue-600 transition-colors"
-                    >
-                      <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
-                        {client.fullName}
-                      </h1>
-                    </button>
-                    
-                    {/* Line 2: Client Tier */}
-                    <div className="mt-1">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTierColor(client.tier).bg} ${getTierColor(client.tier).text}`}>
-                        {client.tier}
-                      </span>
+        <div className={`bg-white shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => window.location.hash = '/clients'}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5 text-gray-600" />
+                </button>
+                
+                <div className="flex items-center gap-3">
+                  {isClientLoading ? (
+                    <div className="space-y-1">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-24" />
                     </div>
-
-                    {/* Line 3: Phone */}
-                    {client.phone && (
-                      <div className="mt-1">
-                        <a 
-                          href={`tel:${client.phone}`}
-                          className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
-                        >
-                          <Phone className="h-3 w-3 mr-1" />
-                          {client.phone}
-                        </a>
-                      </div>
-                    )}
-
-                    {/* Line 4: Email */}
-                    {client.email && (
-                      <div className="mt-1">
-                        <a 
-                          href={`mailto:${client.email}`}
-                          className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
-                        >
-                          <Mail className="h-3 w-3 mr-1" />
-                          {client.email}
-                        </a>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="text-gray-500">Client not found</div>
-                )}
+                  ) : client ? (
+                    <div className="flex flex-col">
+                      {/* Line 1: Client Name */}
+                      <button 
+                        onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                        className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer text-left"
+                      >
+                        {client.fullName}
+                      </button>
+                      
+                      {/* Line 2: Phone Number */}
+                      {client.phone && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-slate-400" />
+                          <a 
+                            href={`tel:${client.phone}`}
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                            title="Call client"
+                          >
+                            {client.phone}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {/* Line 3: Email */}
+                      {client.email && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-slate-400" />
+                          <a 
+                            href={`mailto:${client.email}`}
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                            title="Send email to client"
+                          >
+                            {client.email}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">Client not found</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
