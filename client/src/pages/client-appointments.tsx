@@ -892,8 +892,8 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       </div>
 
       {/* Main Content */}
-      <div className="p-6">
-        <div className="space-y-6">
+      <div className="p-4 space-y-4">
+        <div className="space-y-4">
         
         <Tabs defaultValue="list" value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
           <TabsList>

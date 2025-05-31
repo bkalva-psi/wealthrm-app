@@ -347,8 +347,8 @@ const ClientCommunications: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="p-6">
-        <div className="space-y-6">
+      <div className="p-4 space-y-4">
+        <div className="space-y-4">
           <div className="text-center text-gray-500">
             Communications content will be displayed here.
           </div>

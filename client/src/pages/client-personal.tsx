@@ -248,32 +248,23 @@ export default function ClientPersonalPage() {
               </div>
               
               <div className="text-center">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-slate-400" />
-                  <div>
-                    <p className="text-sm text-slate-500">Age</p>
-                    <p>{client.dateOfBirth ? new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear() : "Not provided"}</p>
-                  </div>
+                <div>
+                  <p className="text-sm text-slate-500">Age</p>
+                  <p>{client.dateOfBirth ? new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear() : "Not provided"}</p>
                 </div>
               </div>
               
               <div className="text-center">
-                <div className="flex items-center gap-3">
-                  <Heart className="h-5 w-5 text-slate-400" />
-                  <div>
-                    <p className="text-sm text-slate-500">Status</p>
-                    <p>{client.maritalStatus || "Not provided"}</p>
-                  </div>
+                <div>
+                  <p className="text-sm text-slate-500">Status</p>
+                  <p>{client.maritalStatus || "Not provided"}</p>
                 </div>
               </div>
               
               <div className="text-center">
-                <div className="flex items-center gap-3">
-                  <Building className="h-5 w-5 text-slate-400" />
-                  <div>
-                    <p className="text-sm text-slate-500">Company</p>
-                    <p>{client.companyName || "Not provided"}</p>
-                  </div>
+                <div>
+                  <p className="text-sm text-slate-500">Company</p>
+                  <p>{client.companyName || "Not provided"}</p>
                 </div>
               </div>
             </div>
