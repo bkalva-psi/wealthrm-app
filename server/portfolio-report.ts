@@ -108,6 +108,7 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
     <head>
       <meta charset="UTF-8">
       <title>Portfolio Report - ${client.fullName}</title>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <style>
         body {
           font-family: 'Arial', sans-serif;
@@ -115,6 +116,17 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
           padding: 20px;
           color: #333;
           line-height: 1.6;
+        }
+        .chart-container {
+          margin: 20px 0;
+          height: 300px;
+          display: flex;
+          justify-content: center;
+        }
+        .chart-wrapper {
+          width: 100%;
+          max-width: 500px;
+          position: relative;
         }
         .print-button {
           position: fixed;
@@ -352,15 +364,29 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
 
       <div class="section">
         <h2 class="section-title">Asset Allocation</h2>
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <canvas id="assetChart"></canvas>
+          </div>
+        </div>
         ${Object.entries(allocation).map(([asset, percentage]) => `
           <div class="allocation-item">
             <span style="font-weight: bold;">${asset}</span>
             <div class="allocation-bar">
               <div class="allocation-fill" style="width: ${percentage}%"></div>
             </div>
-            <span>${percentage.toFixed(1)}%</span>
+            <span>${(percentage as number).toFixed(1)}%</span>
           </div>
         `).join('')}
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Transaction Trends</h2>
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <canvas id="transactionChart"></canvas>
+          </div>
+        </div>
       </div>
 
       <div class="section page-break">
@@ -393,6 +419,150 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
         <p>This report is generated electronically by Ujjivan Small Finance Bank's Portfolio Management System.</p>
         <p>For any queries, please contact your relationship manager.</p>
       </div>
+
+      <script>
+        // Create Asset Allocation Pie Chart
+        const ctx = document.getElementById('assetChart').getContext('2d');
+        const allocationData = ${JSON.stringify(allocation)};
+        
+        const labels = Object.keys(allocationData);
+        const data = Object.values(allocationData);
+        const colors = [
+          '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe',
+          '#06b6d4', '#0891b2', '#0e7490', '#155e75', '#164e63'
+        ];
+
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: colors.slice(0, labels.length),
+              borderColor: '#ffffff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 15,
+                  usePointStyle: true
+                }
+              },
+              title: {
+                display: true,
+                text: 'Portfolio Asset Allocation',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        });
+
+        // Create Transaction Trends Line Chart
+        const transactionData = ${JSON.stringify(recentTransactions)};
+        const monthlyData = {};
+        
+        // Group transactions by month
+        transactionData.forEach(txn => {
+          const date = new Date(txn.transactionDate);
+          const monthKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+          if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = { count: 0, amount: 0 };
+          }
+          monthlyData[monthKey].count++;
+          monthlyData[monthKey].amount += txn.amount;
+        });
+
+        const sortedMonths = Object.keys(monthlyData).sort();
+        const transactionCounts = sortedMonths.map(month => monthlyData[month].count);
+        const transactionAmounts = sortedMonths.map(month => monthlyData[month].amount);
+
+        const ctx2 = document.getElementById('transactionChart').getContext('2d');
+        new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels: sortedMonths.map(month => {
+              const [year, monthNum] = month.split('-');
+              const date = new Date(year, monthNum - 1);
+              return date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+            }),
+            datasets: [{
+              label: 'Transaction Count',
+              data: transactionCounts,
+              borderColor: '#2563eb',
+              backgroundColor: 'rgba(37, 99, 235, 0.1)',
+              tension: 0.4,
+              yAxisID: 'y'
+            }, {
+              label: 'Transaction Volume (₹)',
+              data: transactionAmounts,
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.1)',
+              tension: 0.4,
+              yAxisID: 'y1'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            scales: {
+              x: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Month'
+                }
+              },
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                  display: true,
+                  text: 'Transaction Count'
+                }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                  display: true,
+                  text: 'Volume (₹)'
+                },
+                grid: {
+                  drawOnChartArea: false,
+                }
+              }
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: 'Monthly Transaction Trends',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                }
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      </script>
     </body>
     </html>
   `;
