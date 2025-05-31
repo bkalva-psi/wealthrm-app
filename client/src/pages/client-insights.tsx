@@ -39,6 +39,28 @@ export default function ClientInsights() {
   const [showAllInsights, setShowAllInsights] = useState(false);
   const [showPortfolioAlerts, setShowPortfolioAlerts] = useState(true);
   const [showInvestmentOpportunities, setShowInvestmentOpportunities] = useState(true);
+  const [expandedAlerts, setExpandedAlerts] = useState<Set<number>>(new Set());
+  const [expandedOpportunities, setExpandedOpportunities] = useState<Set<number>>(new Set());
+
+  const toggleAlertExpansion = (alertId: number) => {
+    const newExpanded = new Set(expandedAlerts);
+    if (newExpanded.has(alertId)) {
+      newExpanded.delete(alertId);
+    } else {
+      newExpanded.add(alertId);
+    }
+    setExpandedAlerts(newExpanded);
+  };
+
+  const toggleOpportunityExpansion = (opportunityId: number) => {
+    const newExpanded = new Set(expandedOpportunities);
+    if (newExpanded.has(opportunityId)) {
+      newExpanded.delete(opportunityId);
+    } else {
+      newExpanded.add(opportunityId);
+    }
+    setExpandedOpportunities(newExpanded);
+  };
   
   // Set page title and get client ID from URL
   useEffect(() => {
@@ -269,14 +291,27 @@ export default function ClientInsights() {
               <CardContent className="pt-0">
                 {portfolioAlerts && Array.isArray(portfolioAlerts) && portfolioAlerts.length > 0 ? (
                   <div className="space-y-3">
-                    {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 3).map((alert: any) => (
-                      <div key={alert.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-red-500" />
-                          <span className="font-medium text-sm">{alert.title}</span>
+                    {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 3).map((alert: any) => {
+                      const isExpanded = expandedAlerts.has(alert.id);
+                      return (
+                        <div key={alert.id} className="p-3 bg-red-50 border border-red-200 rounded-lg cursor-pointer hover:bg-red-100 transition-colors" onClick={() => toggleAlertExpansion(alert.id)}>
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                            <span className="font-medium text-sm">{alert.title}</span>
+                            <ChevronDown className={`h-4 w-4 text-gray-400 ml-auto transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                          </div>
+                          {isExpanded && (
+                            <div className="mt-3 pt-3 border-t border-red-200">
+                              <p className="text-xs text-gray-600 mb-2">{alert.description}</p>
+                              <p className="text-xs font-medium text-red-700">Action: {alert.action}</p>
+                              {alert.severity && (
+                                <p className="text-xs text-gray-500 mt-1">Severity: {alert.severity}</p>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                     {portfolioAlerts.length > 3 && (
                       <Button 
                         variant="ghost" 
@@ -316,14 +351,30 @@ export default function ClientInsights() {
             <CollapsibleContent>
               <CardContent className="pt-0">
                 <div className="space-y-3">
-                  {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 3).map((opportunity: any) => (
-                    <div key={opportunity.id} className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-green-500" />
-                        <span className="font-medium text-sm">{opportunity.title}</span>
+                  {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 3).map((opportunity: any) => {
+                    const isExpanded = expandedOpportunities.has(opportunity.id);
+                    return (
+                      <div key={opportunity.id} className="p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition-colors" onClick={() => toggleOpportunityExpansion(opportunity.id)}>
+                        <div className="flex items-center gap-2">
+                          <Target className="h-4 w-4 text-green-500" />
+                          <span className="font-medium text-sm">{opportunity.title}</span>
+                          <ChevronDown className={`h-4 w-4 text-gray-400 ml-auto transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-3 pt-3 border-t border-green-200">
+                            <p className="text-xs text-gray-600 mb-2">{opportunity.description}</p>
+                            <p className="text-xs font-medium text-green-700">Category: {opportunity.category}</p>
+                            {opportunity.recommendation && (
+                              <p className="text-xs text-gray-600 mt-1">Recommendation: {opportunity.recommendation}</p>
+                            )}
+                            {opportunity.impact && (
+                              <p className="text-xs text-gray-500 mt-1">Impact: {opportunity.impact}</p>
+                            )}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {investmentOpportunities.length > 3 && (
                     <Button 
                       variant="ghost" 
