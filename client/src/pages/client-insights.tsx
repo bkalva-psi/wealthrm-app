@@ -294,16 +294,15 @@ export default function ClientInsights() {
                     {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 3).map((alert: any) => {
                       const isExpanded = expandedAlerts.has(alert.id);
                       return (
-                        <div key={alert.id} className="p-3 bg-red-50 border border-red-200 rounded-lg cursor-pointer hover:bg-red-100 transition-colors" onClick={() => toggleAlertExpansion(alert.id)}>
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                        <div key={alert.id} className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => toggleAlertExpansion(alert.id)}>
+                          <div className="flex items-center justify-between">
                             <span className="font-medium text-sm">{alert.title}</span>
-                            <ChevronDown className={`h-4 w-4 text-gray-400 ml-auto transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                           </div>
                           {isExpanded && (
-                            <div className="mt-3 pt-3 border-t border-red-200">
+                            <div className="mt-3 pt-3 border-t">
                               <p className="text-xs text-gray-600 mb-2">{alert.description}</p>
-                              <p className="text-xs font-medium text-red-700">Action: {alert.action}</p>
+                              <p className="text-xs font-medium text-gray-700">Action: {alert.action}</p>
                               {alert.severity && (
                                 <p className="text-xs text-gray-500 mt-1">Severity: {alert.severity}</p>
                               )}
@@ -354,16 +353,15 @@ export default function ClientInsights() {
                   {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 3).map((opportunity: any) => {
                     const isExpanded = expandedOpportunities.has(opportunity.id);
                     return (
-                      <div key={opportunity.id} className="p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition-colors" onClick={() => toggleOpportunityExpansion(opportunity.id)}>
-                        <div className="flex items-center gap-2">
-                          <Target className="h-4 w-4 text-green-500" />
+                      <div key={opportunity.id} className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => toggleOpportunityExpansion(opportunity.id)}>
+                        <div className="flex items-center justify-between">
                           <span className="font-medium text-sm">{opportunity.title}</span>
-                          <ChevronDown className={`h-4 w-4 text-gray-400 ml-auto transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </div>
                         {isExpanded && (
-                          <div className="mt-3 pt-3 border-t border-green-200">
+                          <div className="mt-3 pt-3 border-t">
                             <p className="text-xs text-gray-600 mb-2">{opportunity.description}</p>
-                            <p className="text-xs font-medium text-green-700">Category: {opportunity.category}</p>
+                            <p className="text-xs font-medium text-gray-700">Category: {opportunity.category}</p>
                             {opportunity.recommendation && (
                               <p className="text-xs text-gray-600 mt-1">Recommendation: {opportunity.recommendation}</p>
                             )}
