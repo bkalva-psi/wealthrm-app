@@ -310,34 +310,42 @@ export default function TasksUpdated() {
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md hover:bg-slate-50 cursor-pointer">
-                              <Checkbox
-                                id={`task-${task.id}`}
-                                checked={task.completed}
-                                onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
-                                className="h-4 w-4 mt-1"
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                              <div className="flex-1">
-                                <label
-                                  htmlFor={`task-${task.id}`}
-                                  className={`block text-sm font-medium ${
-                                    task.completed ? "text-slate-500 line-through" : "text-slate-800"
-                                  }`}
-                                >
-                                  {task.title}
-                                </label>
-                                {task.description && (
-                                  <p className={`text-xs mt-1 ${
+                            <div key={task.id} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                              <div 
+                                className="flex items-start space-x-3 p-3 cursor-pointer"
+                                onClick={() => toggleTaskExpansion(task.id)}
+                              >
+                                <Checkbox
+                                  id={`task-${task.id}`}
+                                  checked={task.completed}
+                                  onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
+                                  className="h-4 w-4 mt-1"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                <div className="flex-1">
+                                  <label
+                                    htmlFor={`task-${task.id}`}
+                                    className={`block text-sm font-medium ${
+                                      task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                                    }`}
+                                  >
+                                    {task.title}
+                                  </label>
+                                  <span className={`text-xs ${dueStatus.color} mt-1 block`}>
+                                    {task.completed ? "Completed" : dueStatus.text}
+                                  </span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                              </div>
+                              {isExpanded && task.description && (
+                                <div className="px-3 pb-3 pt-0 border-t">
+                                  <p className={`text-xs mt-2 ${
                                     task.completed ? "text-slate-400" : "text-slate-600"
                                   }`}>
                                     {task.description}
                                   </p>
-                                )}
-                                <span className={`text-xs ${dueStatus.color} mt-1 block`}>
-                                  {task.completed ? "Completed" : dueStatus.text}
-                                </span>
-                              </div>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -406,29 +414,42 @@ export default function TasksUpdated() {
                     
                     return alerts.length > 0 ? (
                       <>
-                        {alerts.map((alert: any) => (
-                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md hover:bg-slate-50 cursor-pointer">
-                            <div className={`h-4 w-4 mt-1 rounded-full ${
-                              alert.severity === 'high' ? 'bg-red-500' : 
-                              alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
-                            }`} />
-                            <div className="flex-1">
-                              <h4 className="text-sm font-medium text-slate-800">{alert.title}</h4>
-                              <p className="text-xs text-slate-600 mt-1">{alert.message}</p>
-                              <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-slate-500">
-                                  {alert.client_name ? `Client: ${alert.client_name}` : ''}
-                                </span>
-                                <span className={`text-xs px-2 py-1 rounded-full ${
-                                  alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
-                                  alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}>
-                                  {alert.severity}
-                                </span>
+                        {alerts.map((alert: any) => {
+                          const isExpanded = expandedAlerts.has(alert.id);
+                          return (
+                            <div key={alert.id} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                              <div 
+                                className="flex items-start space-x-3 p-3 cursor-pointer"
+                                onClick={() => toggleAlertExpansion(alert.id)}
+                              >
+                                <div className={`h-4 w-4 mt-1 rounded-full ${
+                                  alert.severity === 'high' ? 'bg-red-500' : 
+                                  alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
+                                }`} />
+                                <div className="flex-1">
+                                  <h4 className="text-sm font-medium text-slate-800">{alert.title}</h4>
+                                  <span className="text-xs text-slate-500 mt-1 block">
+                                    {alert.client_name ? `Client: ${alert.client_name}` : ''}
+                                  </span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                               </div>
+                              {isExpanded && (
+                                <div className="px-3 pb-3 pt-0 border-t">
+                                  <p className="text-xs text-slate-600 mt-2">{alert.message}</p>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <span className={`text-xs px-2 py-1 rounded-full ${
+                                      alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
+                                      alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
+                                    }`}>
+                                      Severity: {alert.severity}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                         
                         {(portfolioAlerts as any[] || []).length > alertsVisibleCount && (
                           <Button 
