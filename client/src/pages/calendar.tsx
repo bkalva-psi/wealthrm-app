@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameMonth, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameMonth, startOfWeek, endOfWeek, startOfDay, endOfDay, addDays, isSameWeek, startOfToday } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, MapPin, Phone, Video, Users, Plus, ChevronLeft, ChevronRight, Filter, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ export default function CalendarPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('all');
   const [view, setView] = useState<'month' | 'list'>('month');
 
   // Set page title
@@ -82,6 +83,9 @@ export default function CalendarPage() {
     if (!appointments) return [];
     
     return appointments.filter((appointment) => {
+      const appointmentDate = new Date(appointment.startTime);
+      const today = startOfToday();
+      
       const matchesSearch = searchQuery === '' || 
         appointment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         appointment.clientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,9 +94,16 @@ export default function CalendarPage() {
       const matchesType = filterType === 'all' || appointment.type === filterType;
       const matchesPriority = filterPriority === 'all' || appointment.priority === filterPriority;
       
-      return matchesSearch && matchesType && matchesPriority;
+      let matchesDate = true;
+      if (dateFilter === 'today') {
+        matchesDate = appointmentDate >= startOfDay(today) && appointmentDate <= endOfDay(today);
+      } else if (dateFilter === 'week') {
+        matchesDate = isSameWeek(appointmentDate, today, { weekStartsOn: 0 });
+      }
+      
+      return matchesSearch && matchesType && matchesPriority && matchesDate;
     });
-  }, [appointments, searchQuery, filterType, filterPriority]);
+  }, [appointments, searchQuery, filterType, filterPriority, dateFilter]);
 
   // Generate calendar days
   const generateCalendarDays = (): CalendarDay[] => {
@@ -196,6 +207,17 @@ export default function CalendarPage() {
               <SelectItem value="high">High</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={dateFilter} onValueChange={setDateFilter}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Date" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Dates</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
             </SelectContent>
           </Select>
         </div>
