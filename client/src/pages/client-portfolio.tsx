@@ -761,7 +761,6 @@ export default function ClientPortfolioPage() {
               title="AUM"
               value={`₹${(aumValue / 100000).toFixed(1)}L`}
               icon={<DollarSign className="h-5 w-5" />}
-              description="Assets Under Management"
               color="blue"
               isLoading={isLoading}
             />
@@ -770,7 +769,6 @@ export default function ClientPortfolioPage() {
               title="Investment"
               value={`₹${((aumValue * 0.85) / 100000).toFixed(1)}L`}
               icon={<Wallet className="h-5 w-5" />}
-              description="Total Investment Amount"
               color="green"
               isLoading={isLoading}
             />
@@ -779,7 +777,6 @@ export default function ClientPortfolioPage() {
               title="Unrealized Gain"
               value={`₹${((aumValue * 0.15) / 100000).toFixed(1)}L`}
               icon={<TrendingUp className="h-5 w-5" />}
-              description="Portfolio Gain"
               color="emerald"
               trend={19.05}
               isLoading={isLoading}
@@ -789,7 +786,6 @@ export default function ClientPortfolioPage() {
               title="XIRR"
               value={`${client?.performance?.xirr || 12.5}%`}
               icon={<Percent className="h-5 w-5" />}
-              description="Annualized Returns"
               color="amber"
               isLoading={isLoading}
             />
