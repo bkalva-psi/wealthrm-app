@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Calendar, CheckCircle2, Plus, Search, ChevronDown, ChevronUp, Filter } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Calendar, CheckCircle2, Plus, Search, ChevronDown, ChevronUp, Filter, User, PieChart, Receipt, FileBarChart, Lightbulb } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -421,6 +421,73 @@ const ClientCommunications: React.FC = () => {
           )}
         </div>
         
+        {/* Navigation Icons */}
+        {!isGlobalView && (
+          <div className="grid grid-cols-7 gap-1 px-1">
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+              title="Personal Profile"
+            >
+              <User className="h-6 w-6 text-gray-600" />
+            </button>
+            
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
+              title="Portfolio"
+            >
+              <PieChart className="h-6 w-6 text-gray-600" />
+            </button>
+            
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+              title="Transactions"
+            >
+              <Receipt className="h-6 w-6 text-gray-600" />
+            </button>
+            
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
+              title="Appointments"
+            >
+              <Calendar className="h-6 w-6 text-gray-600" />
+            </button>
+            
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+              title="Notes"
+            >
+              <FileText className="h-6 w-6 text-blue-600" />
+            </button>
+            
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              onClick={() => {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                  window.location.href = `/api/clients/${clientId}/portfolio-report`;
+                } else {
+                  window.open(`/api/clients/${clientId}/portfolio-report`, '_blank');
+                }
+              }}
+              title="Portfolio Report"
+            >
+              <FileBarChart className="h-6 w-6 text-gray-600" />
+            </button>
+            
+            <button 
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              onClick={() => window.location.hash = `/clients/${clientId}/insights`}
+              title="Client Insights"
+            >
+              <Lightbulb className="h-6 w-6 text-gray-600" />
+            </button>
+          </div>
+        )}
 
       </div>
 
