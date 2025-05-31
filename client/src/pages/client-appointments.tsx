@@ -584,7 +584,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     
     return (
       <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Schedule New Appointment</DialogTitle>
             <DialogDescription>
@@ -592,8 +592,9 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
+          <ScrollArea className="flex-1 max-h-[60vh]">
+            <div className="grid gap-4 py-4 px-1">
+              <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
               <Input 
                 id="title" 
@@ -714,9 +715,10 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 </Select>
               </div>
             </div>
-          </div>
+            </div>
+          </ScrollArea>
           
-          <DialogFooter>
+          <DialogFooter className="flex-shrink-0">
             <Button variant="outline" onClick={() => setIsNewAppointmentDialogOpen(false)}>
               Cancel
             </Button>
