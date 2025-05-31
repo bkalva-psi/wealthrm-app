@@ -183,7 +183,7 @@ const ClientCommunications: React.FC = () => {
   // New note dialog state
   const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
   const [newNoteData, setNewNoteData] = useState({
-    communication_type: 'call',
+    communication_type: 'quarterly_review',
     channel: 'phone',
     direction: 'outbound',
     subject: '',
@@ -231,7 +231,7 @@ const ClientCommunications: React.FC = () => {
       });
       setIsNewNoteDialogOpen(false);
       setNewNoteData({
-        communication_type: 'call',
+        communication_type: 'quarterly_review',
         channel: 'phone',
         direction: 'outbound',
         subject: '',
@@ -518,11 +518,16 @@ const ClientCommunications: React.FC = () => {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="call">Phone Call</SelectItem>
-                      <SelectItem value="meeting">Meeting</SelectItem>
-                      <SelectItem value="email">Email</SelectItem>
-                      <SelectItem value="video_call">Video Call</SelectItem>
-                      <SelectItem value="note">General Note</SelectItem>
+                      <SelectItem value="quarterly_review">Quarterly Portfolio Review</SelectItem>
+                      <SelectItem value="portfolio_diagnosis">Portfolio Health Check</SelectItem>
+                      <SelectItem value="risk_assessment">Risk Profile Assessment</SelectItem>
+                      <SelectItem value="goal_planning">Financial Goal Planning</SelectItem>
+                      <SelectItem value="product_discussion">Product Discussion</SelectItem>
+                      <SelectItem value="investment_advisory">Investment Advisory Session</SelectItem>
+                      <SelectItem value="market_update">Market Update Discussion</SelectItem>
+                      <SelectItem value="onboarding">Client Onboarding</SelectItem>
+                      <SelectItem value="complaint_resolution">Complaint Resolution</SelectItem>
+                      <SelectItem value="general_note">General Note</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
