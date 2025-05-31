@@ -48,6 +48,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
+  const [showAllTasks, setShowAllTasks] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -461,122 +462,139 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filterTasks(tasks || [], activeTab).length > 0 ? (
-                    filterTasks(tasks || [], activeTab).map((task: Task) => {
-                      const dueStatus = getDueStatus(task.dueDate);
-                      const isExpanded = expandedTasks.has(task.id);
-                      
-                      return (
-                        <div key={task.id} className="border border-slate-200 rounded-md overflow-hidden">
-                          {/* Collapsed View - Essential Details */}
-                          <div 
-                            className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-slate-50"
-                            onClick={() => toggleTaskExpansion(task.id)}
-                          >
-                            <Checkbox
-                              id={`task-${task.id}`}
-                              checked={task.completed}
-                              onCheckedChange={(checked) => {
-                                handleTaskToggle(task, !!checked);
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              className="h-4 w-4"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
-                                <label
-                                  htmlFor={`task-${task.id}`}
-                                  className={`text-sm font-medium ${
-                                    task.completed ? "text-slate-500 line-through" : "text-slate-800"
-                                  }`}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  {task.title}
-                                </label>
-                                <div className="flex items-center space-x-2">
-                                  <span className={`text-xs ${dueStatus.color}`}>
-                                    {task.completed ? "Completed" : dueStatus.text}
-                                  </span>
-                                  <svg 
-                                    className={`h-4 w-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                                    fill="none" 
-                                    viewBox="0 0 24 24" 
-                                    stroke="currentColor"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Expanded View - Full Details */}
-                          {isExpanded && (
-                            <div className="px-3 pb-3 bg-slate-25 border-t border-slate-100">
-                              {task.description && (
-                                <div className="mt-3">
-                                  <p className="text-xs font-medium text-slate-700 mb-1">Description:</p>
-                                  <p className={`text-xs ${
-                                    task.completed ? "text-slate-400" : "text-slate-600"
-                                  }`}>
-                                    {task.description}
-                                  </p>
-                                </div>
-                              )}
-                              
-                              {isAllTasks && task.clientName && (
-                                <div className="mt-3">
-                                  <p className="text-xs font-medium text-slate-700 mb-1">Client:</p>
-                                  <p className="text-xs text-blue-600">
-                                    {task.clientName}
-                                  </p>
-                                </div>
-                              )}
-
-                              <div className="flex justify-between items-center mt-4">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleTaskExpansion(task.id);
+                  {(() => {
+                    const filteredTasks = filterTasks(tasks || [], activeTab);
+                    const tasksToShow = showAllTasks ? filteredTasks : filteredTasks.slice(0, 5);
+                    
+                    return filteredTasks.length > 0 ? (
+                      <>
+                        {tasksToShow.map((task: Task) => {
+                          const dueStatus = getDueStatus(task.dueDate);
+                          const isExpanded = expandedTasks.has(task.id);
+                          
+                          return (
+                            <div key={task.id} className="border border-slate-200 rounded-md overflow-hidden">
+                              {/* Collapsed View - Essential Details */}
+                              <div 
+                                className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-slate-50"
+                                onClick={() => toggleTaskExpansion(task.id)}
+                              >
+                                <Checkbox
+                                  id={`task-${task.id}`}
+                                  checked={task.completed}
+                                  onCheckedChange={(checked) => {
+                                    handleTaskToggle(task, !!checked);
                                   }}
-                                  className="text-xs text-slate-600 hover:text-slate-900 p-0 h-auto"
-                                >
-                                  Show less
-                                </Button>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-7 px-2">
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="h-4 w-4"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between">
+                                    <span className={`text-sm font-medium ${
+                                      task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                                    }`}>
+                                      {task.title}
+                                    </span>
+                                    <div className="flex items-center space-x-2">
+                                      <span className={`text-xs ${dueStatus.color}`}>
+                                        {task.completed ? "Completed" : dueStatus.text}
+                                      </span>
+                                      <svg 
+                                        className={`h-4 w-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                                        fill="none" 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                      >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                       </svg>
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                                    <DropdownMenuItem>Set Priority</DropdownMenuItem>
-                                    <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
+
+                              {/* Expanded View - Full Details */}
+                              {isExpanded && (
+                                <div className="px-3 pb-3 bg-slate-25 border-t border-slate-100">
+                                  {task.description && (
+                                    <div className="mt-3">
+                                      <p className="text-xs font-medium text-slate-700 mb-1">Description:</p>
+                                      <p className={`text-xs ${
+                                        task.completed ? "text-slate-400" : "text-slate-600"
+                                      }`}>
+                                        {task.description}
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  {isAllTasks && task.clientName && (
+                                    <div className="mt-3">
+                                      <p className="text-xs font-medium text-slate-700 mb-1">Client:</p>
+                                      <p className="text-xs text-blue-600">
+                                        {task.clientName}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  <div className="flex justify-between items-center mt-4">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleTaskExpansion(task.id);
+                                      }}
+                                      className="text-xs text-slate-600 hover:text-slate-900 p-0 h-auto"
+                                    >
+                                      Show less
+                                    </Button>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="h-7 px-2">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                          </svg>
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                                        <DropdownMenuItem>Set Priority</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-slate-500">No tasks to display</p>
-                      <Button
-                        variant="outline"
-                        className="mt-4"
-                        onClick={() => setIsNewTaskDialogOpen(true)}
-                      >
-                        Create a task
-                      </Button>
-                    </div>
-                  )}
+                          );
+                        })}
+                        
+                        {/* Show More/Less Button */}
+                        {filteredTasks.length > 5 && (
+                          <div className="text-center pt-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setShowAllTasks(!showAllTasks)}
+                              className="text-sm text-blue-600 hover:text-blue-800"
+                            >
+                              {showAllTasks ? 'Show less' : `Show more (${filteredTasks.length - 5} more tasks)`}
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-slate-500">No tasks to display</p>
+                        <Button
+                          variant="outline"
+                          className="mt-4"
+                          onClick={() => setIsNewTaskDialogOpen(true)}
+                        >
+                          Create a task
+                        </Button>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </CardContent>
