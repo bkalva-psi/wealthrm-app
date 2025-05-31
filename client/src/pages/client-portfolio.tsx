@@ -745,8 +745,15 @@ export default function ClientPortfolioPage() {
         />
       </div>
       
-      {/* Portfolio Sections as Collapsible Cards */}
-      <div className="space-y-3 flex-grow">
+      {/* Tabs for different portfolio views */}
+      <Tabs defaultValue="overview" className="space-y-3 flex-grow">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full sticky top-0 z-10 bg-white">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="holdings">Holdings</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
+          <TabsTrigger value="planning">Planning</TabsTrigger>
+        </TabsList>
         
         {/* Portfolio Overview Tab */}
         <TabsContent value="overview" className="space-y-3 pt-3">
@@ -1569,7 +1576,6 @@ export default function ClientPortfolioPage() {
           </div>
         </TabsContent>
       </Tabs>
-      </div>
       </div>
     </div>
   );
