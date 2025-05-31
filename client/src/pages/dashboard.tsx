@@ -21,28 +21,34 @@ export default function Dashboard() {
   }, []);
   
   return (
-    <div>
+    <div className="animate-fade-in">
       {/* Page Header */}
-      <div className="mb-6 mt-6">
-        <h1 className="text-2xl font-semibold text-slate-800">Welcome back, {user?.fullName.split(' ')[0]}</h1>
-        <p className="text-sm text-slate-600">Here's what's happening with your clients today</p>
+      <div className="mb-6 mt-6 animate-slide-down">
+        <div className="welcome-header">
+          <h1 className="text-2xl font-semibold heading-modern text-gradient-primary text-balance">
+            Welcome back, {user?.fullName.split(' ')[0]}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Here's what's happening with your clients today
+          </p>
+        </div>
       </div>
       
       {/* Grid Layout for Dashboard Content - Responsive for all device sizes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Column 1: Today's Agenda */}
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6 animate-slide-left animate-stagger-1">
           <AgendaCard />
         </div>
         
         {/* Column 2: Performance + Business Snapshot */}
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6 animate-slide-up animate-stagger-2">
           <PerformanceCard />
           <BusinessSnapshotStructured />
         </div>
         
         {/* Column 3: Talking Points + Announcements */}
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6 animate-slide-right animate-stagger-3">
           <TalkingPointsCard />
           <AnnouncementsCard />
         </div>

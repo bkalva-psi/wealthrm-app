@@ -161,14 +161,14 @@ export function PerformanceCard() {
   };
 
   return (
-    <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+    <Card className="overflow-hidden card-modern animate-scale-in">
+      <div className="px-4 py-3 border-b border-slate-200 bg-gradient-subtle">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FeatureTooltip feature="performance-metrics" showIcon>
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <h2 className="text-sm font-medium text-slate-700">Performance</h2>
+                <TrendingUp className="h-4 w-4 text-ujjivan-primary animate-float" />
+                <h2 className="text-sm font-medium heading-modern text-gradient-primary">Performance</h2>
               </div>
             </FeatureTooltip>
           </div>

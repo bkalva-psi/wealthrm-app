@@ -169,10 +169,10 @@ export function BusinessSnapshotStructured() {
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="card-modern animate-fade-in">
+      <CardHeader className="bg-gradient-subtle">
         <FeatureTooltip feature="business-snapshot" showIcon>
-          <CardTitle>Business Snapshot - Authentic Data Only</CardTitle>
+          <CardTitle className="heading-modern text-gradient-primary">Business Snapshot - Authentic Data Only</CardTitle>
         </FeatureTooltip>
         <p className="text-sm text-muted-foreground">
           All data fetched from database tables. Pipeline: {formatCurrency(businessMetrics?.pipelineValue || 0)}
