@@ -45,7 +45,7 @@ interface ClientTasksProps {
 
 function ClientTasks({ clientId }: ClientTasksProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("upcoming");
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -382,7 +382,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
       </Card>
       
       {/* Filter Dropdown */}
-      <div className="flex items-center gap-3 mb-3 ml-2">
+      <div className="flex items-center gap-3 mb-3 ml-4">
         <Filter className="h-4 w-4 text-slate-600" />
         <span className="text-sm font-medium text-slate-700">Filter Tasks:</span>
         <Select value={activeTab} onValueChange={setActiveTab}>
