@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
+import { NavigationProvider } from "@/context/navigation-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -372,8 +373,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AccessibilityProvider>
-          <Toaster />
-          {user ? <AuthenticatedApp /> : <LoginPage />}
+          <NavigationProvider>
+            <Toaster />
+            {user ? <AuthenticatedApp /> : <LoginPage />}
+          </NavigationProvider>
         </AccessibilityProvider>
       </TooltipProvider>
     </QueryClientProvider>

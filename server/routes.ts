@@ -1281,13 +1281,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           Y: { newClients: 32, netNewMoney: 600, clientMeetings: 180, prospectPipeline: 960, revenue: 300 }
         };
 
-        // Get authentic prospect pipeline value from database
+        // Get authentic prospect pipeline value from database (only active pipeline stages: new, qualified, proposal)
         const prospectPipelineQuery = await db
           .select({
             totalValue: sql<number>`sum(${prospects.potentialAumValue})`
           })
           .from(prospects)
-          .where(eq(prospects.assignedTo, 1));
+          .where(sql`${prospects.assignedTo} = 1 AND ${prospects.stage} IN ('new', 'qualified', 'proposal')`);
         
         const pipelineValueCrores = (prospectPipelineQuery[0]?.totalValue || 0) / 10000000; // Convert to crores
         const pipelineValueLakhs = (prospectPipelineQuery[0]?.totalValue || 0) / 100000; // Convert to lakhs
