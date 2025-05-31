@@ -34,6 +34,8 @@ interface Task {
 // NEW UPDATED Tasks page with two-card layout
 export default function TasksUpdated() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -46,8 +48,14 @@ export default function TasksUpdated() {
   const [alertsCollapsed, setAlertsCollapsed] = useState(true);
   
   // Pagination state
-  const [tasksVisibleCount, setTasksVisibleCount] = useState(2);
-  const [alertsVisibleCount, setAlertsVisibleCount] = useState(5);
+  const [tasksVisibleCount, setTasksVisibleCount] = useState(3);
+  const [alertsVisibleCount, setAlertsVisibleCount] = useState(3);
+  const [tasksShowMore, setTasksShowMore] = useState(false);
+  const [alertsShowMore, setAlertsShowMore] = useState(false);
+  
+  // Item expansion state
+  const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
+  const [expandedAlerts, setExpandedAlerts] = useState<Set<number>>(new Set());
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -162,14 +170,26 @@ export default function TasksUpdated() {
           <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
         </div>
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Search tasks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-64"
-            />
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-64"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tasks</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
             <DialogTrigger asChild>
