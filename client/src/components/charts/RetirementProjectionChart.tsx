@@ -78,6 +78,16 @@ export function RetirementProjectionChart({
   const data = generateProjectionData();
   const peakCorpus = Math.max(...data.map(d => d.corpus));
   
+  // Split data into accumulation and depletion phases
+  const accumulationData = data.filter(d => d.phase === 'accumulation');
+  const depletionData = data.filter(d => d.phase === 'depletion');
+  
+  // Add the retirement point to depletion data for continuity
+  if (accumulationData.length > 0 && depletionData.length > 0) {
+    const retirementPoint = accumulationData[accumulationData.length - 1];
+    depletionData.unshift(retirementPoint);
+  }
+  
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -131,13 +141,25 @@ export function RetirementProjectionChart({
             label={{ value: "Retirement", position: "top" }}
           />
           
-          {/* Split data for different coloring */}
+          {/* Accumulation phase area - green growing */}
           <Area
+            data={accumulationData}
             type="monotone"
             dataKey="corpus"
             stroke="#10b981"
             strokeWidth={2}
             fill="url(#accumulationGradient)"
+            connectNulls={false}
+          />
+          
+          {/* Depletion phase area - orange declining */}
+          <Area
+            data={depletionData}
+            type="monotone"
+            dataKey="corpus"
+            stroke="#f59e0b"
+            strokeWidth={2}
+            fill="url(#depletionGradient)"
             connectNulls={false}
           />
         </AreaChart>
