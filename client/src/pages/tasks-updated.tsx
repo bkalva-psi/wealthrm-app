@@ -445,11 +445,11 @@ export default function TasksUpdated() {
                         
                         {/* Show More/Less button for Tasks */}
                         {currentFilteredTasks.length > 2 && (
-                          <div className="pt-4 border-t border-slate-200">
+                          <div className="pt-2 border-t border-slate-100">
                             <Button 
                               variant="ghost" 
                               onClick={() => setShowAllTasks(!showAllTasks)}
-                              className="w-full text-blue-600 hover:text-blue-700"
+                              className="w-full text-blue-600 hover:text-blue-700 h-8 text-sm"
                             >
                               {showAllTasks ? 'Show less' : `Show ${currentFilteredTasks.length - 2} more`}
                             </Button>
@@ -551,11 +551,11 @@ export default function TasksUpdated() {
                         
                         {/* Show More/Less button for Portfolio Alerts */}
                         {alerts.length > 2 && (
-                          <div className="pt-4 border-t border-slate-200">
+                          <div className="pt-2 border-t border-slate-100">
                             <Button 
                               variant="ghost" 
                               onClick={() => setShowAllAlerts(!showAllAlerts)}
-                              className="w-full text-blue-600 hover:text-blue-700"
+                              className="w-full text-blue-600 hover:text-blue-700 h-8 text-sm"
                             >
                               {showAllAlerts ? 'Show less' : `Show ${alerts.length - 2} more`}
                             </Button>
