@@ -209,7 +209,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
     
     let filtered = [...tasks];
     
-    // Filter by search query
+    // Filter by search query first
     if (searchQuery) {
       filtered = filtered.filter(task => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -218,29 +218,35 @@ function ClientTasks({ clientId }: ClientTasksProps) {
       );
     }
     
-    // Filter by tab
+    // Filter by status/tab
     switch (status) {
       case "upcoming":
-        return filtered.filter(task => 
-          !task.completed && 
-          task.dueDate && 
-          isAfter(new Date(task.dueDate), new Date())
-        );
+        return filtered.filter(task => {
+          if (task.completed) return false;
+          if (!task.dueDate) return false;
+          const dueDate = new Date(task.dueDate);
+          const today = new Date();
+          today.setHours(23, 59, 59, 999); // End of today
+          return isAfter(dueDate, today);
+        });
       case "today":
-        return filtered.filter(task => 
-          !task.completed && 
-          task.dueDate && 
-          isToday(new Date(task.dueDate))
-        );
+        return filtered.filter(task => {
+          if (task.completed) return false;
+          if (!task.dueDate) return false;
+          return isToday(new Date(task.dueDate));
+        });
       case "overdue":
-        return filtered.filter(task => 
-          !task.completed && 
-          task.dueDate && 
-          isBefore(new Date(task.dueDate), new Date()) &&
-          !isToday(new Date(task.dueDate))
-        );
+        return filtered.filter(task => {
+          if (task.completed) return false;
+          if (!task.dueDate) return false;
+          const dueDate = new Date(task.dueDate);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Start of today
+          return isBefore(dueDate, today);
+        });
       case "completed":
-        return filtered.filter(task => task.completed);
+        return filtered.filter(task => task.completed === true);
+      case "all":
       default:
         return filtered;
     }
@@ -380,22 +386,37 @@ function ClientTasks({ clientId }: ClientTasksProps) {
           <TabsTrigger value="all" className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
             All Tasks
+            <span className="ml-1 text-xs bg-slate-200 px-2 py-0.5 rounded-full">
+              {filterTasks(tasks || [], "all").length}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="today" className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             Today
+            <span className="ml-1 text-xs bg-amber-200 px-2 py-0.5 rounded-full">
+              {filterTasks(tasks || [], "today").length}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="upcoming" className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
             Upcoming
+            <span className="ml-1 text-xs bg-blue-200 px-2 py-0.5 rounded-full">
+              {filterTasks(tasks || [], "upcoming").length}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="overdue" className="flex items-center gap-2">
             <XCircle className="h-4 w-4" />
             Overdue
+            <span className="ml-1 text-xs bg-red-200 px-2 py-0.5 rounded-full">
+              {filterTasks(tasks || [], "overdue").length}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="completed" className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4" />
             Completed
+            <span className="ml-1 text-xs bg-green-200 px-2 py-0.5 rounded-full">
+              {filterTasks(tasks || [], "completed").length}
+            </span>
           </TabsTrigger>
         </TabsList>
         
