@@ -63,7 +63,8 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
 
   // Extract clientId from URL if not provided as prop
   const urlClientId = typeof window !== 'undefined' ? 
-    new URLSearchParams(window.location.search).get('clientId') : null;
+    new URLSearchParams(window.location.search).get('clientId') || 
+    new URLSearchParams(window.location.hash.split('?')[1] || '').get('clientId') : null;
   const clientId = propClientId || urlClientId;
 
   // Fetch client data if clientId is provided
@@ -461,10 +462,23 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               <h1 className="text-2xl font-bold text-slate-900">
                 {clientId ? `${client?.name || 'Client'} Appointments` : 'Calendar'}
               </h1>
+              {/* Navigation Icons */}
+              {!clientId && (
+                <div className="flex items-center gap-2 ml-4">
+                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <User className="h-5 w-5 text-gray-600" />
+                  </button>
+                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Phone className="h-5 w-5 text-gray-600" />
+                  </button>
+                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Mail className="h-5 w-5 text-gray-600" />
+                  </button>
+                </div>
+              )}
             </div>
             <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Appointment
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </div>
