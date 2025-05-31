@@ -839,21 +839,23 @@ export default function ClientTransactions() {
                   </div>
                 </div>
                 
-                {/* Details Row */}
-                <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <p className="text-sm text-gray-500">Type</p>
-                      <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Amount</p>
-                      <p className="font-medium">{formatCurrency(transaction.amount)}</p>
-                    </div>
+                {/* Details Row - Two Column Layout */}
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                  <div>
+                    <p className="text-sm text-gray-500">Type</p>
+                    <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>
                   </div>
-                  <div className="text-right">
+                  <div>
+                    <p className="text-sm text-gray-500">Amount</p>
+                    <p className="font-medium">{formatCurrency(transaction.amount)}</p>
+                  </div>
+                  <div>
                     <p className="text-sm text-gray-500">Status</p>
                     <p className="font-medium">{transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Fees</p>
+                    <p className="font-medium">{formatCurrency(transaction.fees || 0)}</p>
                   </div>
                 </div>
               </div>
