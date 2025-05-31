@@ -41,9 +41,9 @@ export default function TasksUpdated() {
     dueDate: format(new Date(), "yyyy-MM-dd"),
   });
   
-  // Collapsible state for cards
-  const [tasksCollapsed, setTasksCollapsed] = useState(false);
-  const [alertsCollapsed, setAlertsCollapsed] = useState(false);
+  // Collapsible state for cards - start collapsed
+  const [tasksCollapsed, setTasksCollapsed] = useState(true);
+  const [alertsCollapsed, setAlertsCollapsed] = useState(true);
   
   // Pagination state
   const [tasksVisibleCount, setTasksVisibleCount] = useState(2);
@@ -159,15 +159,25 @@ export default function TasksUpdated() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Tasks - New Layout</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
         </div>
-        <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
-          <DialogTrigger asChild>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-64"
+            />
+          </div>
+          <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
+            <DialogTrigger asChild>
             <Button size="icon" className="rounded-full">
               <Plus className="h-4 w-4" />
             </Button>
-          </DialogTrigger>
-          <DialogContent>
+            </DialogTrigger>
+            <DialogContent>
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
               <DialogDescription>
@@ -213,8 +223,9 @@ export default function TasksUpdated() {
                 </Button>
               </DialogFooter>
             </form>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       
       <div className="space-y-6">
@@ -234,17 +245,6 @@ export default function TasksUpdated() {
           
           {!tasksCollapsed && (
             <CardContent>
-              <div className="mb-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    placeholder="Search tasks..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
               
               {isLoading ? (
                 <div className="space-y-4">
