@@ -66,7 +66,8 @@ import {
   PieChart,
   Receipt,
   FileBarChart,
-  Lightbulb
+  Lightbulb,
+  ChevronDown
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -145,6 +146,9 @@ export default function ClientTransactions() {
   // Pagination state
   const [visibleCount, setVisibleCount] = useState<number>(10);
   const ITEMS_PER_PAGE = 10;
+  
+  // Filter UI state
+  const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
   
   // Quick date filter handler
   const handlePeriodFilter = (period: '1w' | '1m' | '3m' | 'all') => {
@@ -727,80 +731,167 @@ export default function ClientTransactions() {
         </CardContent>
       </Card>
 
-      {/* Other Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              
-              {/* Transaction Type */}
-              <div className="space-y-2">
-                <Label>Transaction Type</Label>
-                <Select 
-                  value={transactionType} 
-                  onValueChange={setTransactionType}
-                >
-                  <SelectTrigger className="text-xs sm:text-sm">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    {uniqueTransactionTypes.map(type => (
-                      <SelectItem key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Product Type */}
-              <div className="space-y-2">
-                <Label>Product Type</Label>
-                <Select 
-                  value={productType} 
-                  onValueChange={setProductType}
-                >
-                  <SelectTrigger className="text-xs sm:text-sm">
-                    <SelectValue placeholder="Select product" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Products</SelectItem>
-                    {uniqueProductTypes.map(type => (
-                      <SelectItem key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Security Filter */}
-              <div className="space-y-2">
-                <Label>Security</Label>
-                <Select 
-                  value={securityFilter} 
-                  onValueChange={setSecurityFilter}
-                >
-                  <SelectTrigger className="text-xs sm:text-sm">
-                    <SelectValue placeholder="Select security" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Securities</SelectItem>
-                    {transactions && [...new Set(transactions.map(t => t.productName))].sort().map(security => (
-                      <SelectItem key={security} value={security}>
-                        {security}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+      {/* Filters - Collapsible */}
+      <Card className="overflow-hidden">
+        <div 
+          className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Filter className="h-5 w-5 text-gray-600" />
+              <span className="font-medium text-gray-900">Filters</span>
+              {(selectedPeriod !== 'all' || transactionType !== 'all' || productType !== 'all' || securityFilter !== 'all') && (
+                <div className="flex items-center space-x-2 ml-2">
+                  {selectedPeriod !== 'all' && (
+                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                      {selectedPeriod === '1w' ? 'LAST WEEK' :
+                       selectedPeriod === '1m' ? 'LAST MONTH' :
+                       selectedPeriod === '3m' ? 'LAST 3 MONTHS' : 
+                       selectedPeriod.toUpperCase()}
+                    </span>
+                  )}
+                  {transactionType !== 'all' && (
+                    <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                      {transactionType.toUpperCase()}
+                    </span>
+                  )}
+                  {productType !== 'all' && (
+                    <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">
+                      {productType.toUpperCase()}
+                    </span>
+                  )}
+                  {securityFilter !== 'all' && (
+                    <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">
+                      {securityFilter}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <ChevronDown 
+                className={`h-5 w-5 text-gray-400 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`}
+              />
             </div>
           </div>
-        </CardContent>
+        </div>
+        
+        {filtersExpanded && (
+          <div className="p-4 space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</Label>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={selectedPeriod === '1w' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handlePeriodFilter('1w')}
+                >
+                  Last Week
+                </Button>
+                <Button
+                  variant={selectedPeriod === '1m' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handlePeriodFilter('1m')}
+                >
+                  Last Month
+                </Button>
+                <Button
+                  variant={selectedPeriod === '3m' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handlePeriodFilter('3m')}
+                >
+                  Last 3 Months
+                </Button>
+                <Button
+                  variant={selectedPeriod === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handlePeriodFilter('all')}
+                >
+                  All Time
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Transaction Type</Label>
+              <Select 
+                value={transactionType} 
+                onValueChange={setTransactionType}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select transaction type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {uniqueTransactionTypes.map(type => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Product Type</Label>
+              <Select 
+                value={productType} 
+                onValueChange={setProductType}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select product type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Products</SelectItem>
+                  {uniqueProductTypes.map(type => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Security</Label>
+              <Select 
+                value={securityFilter} 
+                onValueChange={setSecurityFilter}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select security" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Securities</SelectItem>
+                  {transactions && [...new Set(transactions.map(t => t.productName))].sort().map(security => (
+                    <SelectItem key={security} value={security}>
+                      {security}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {(selectedPeriod !== 'all' || transactionType !== 'all' || productType !== 'all' || securityFilter !== 'all') && (
+              <div className="pt-2">
+                <Button 
+                  onClick={() => {
+                    setSelectedPeriod('all');
+                    setTransactionType('all');
+                    setProductType('all');
+                    setSecurityFilter('all');
+                    handlePeriodFilter('all');
+                  }} 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </Card>
       
       {/* Compact Transaction Metrics */}
