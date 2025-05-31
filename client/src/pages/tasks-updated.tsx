@@ -48,9 +48,11 @@ export default function TasksUpdated() {
   const [tasksCollapsed, setTasksCollapsed] = useState(false);
   const [alertsCollapsed, setAlertsCollapsed] = useState(false);
   
-  // Item expansion state only
+  // Item expansion state and list visibility
   const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
   const [expandedAlerts, setExpandedAlerts] = useState<Set<number>>(new Set());
+  const [showAllTasks, setShowAllTasks] = useState(false);
+  const [showAllAlerts, setShowAllAlerts] = useState(false);
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -320,10 +322,11 @@ export default function TasksUpdated() {
                 <div className="space-y-4">
                   {(() => {
                     const currentFilteredTasks = filteredTasks.filter(task => !task.completed);
+                    const tasksToShow = showAllTasks ? currentFilteredTasks : currentFilteredTasks.slice(0, 2);
                     
                     return currentFilteredTasks.length > 0 ? (
                       <>
-                        {currentFilteredTasks.map((task: Task, index: number) => {
+                        {tasksToShow.map((task: Task, index: number) => {
                           const isExpanded = expandedTasks.has(task.id);
                           const dueStatus = getDueStatus(task.dueDate);
                           
@@ -367,6 +370,19 @@ export default function TasksUpdated() {
                             </div>
                           );
                         })}
+                        
+                        {/* Show More/Less button for Tasks */}
+                        {currentFilteredTasks.length > 2 && (
+                          <div className="pt-4 border-t border-slate-200">
+                            <Button 
+                              variant="ghost" 
+                              onClick={() => setShowAllTasks(!showAllTasks)}
+                              className="w-full text-blue-600 hover:text-blue-700"
+                            >
+                              {showAllTasks ? 'Show less' : `Show ${currentFilteredTasks.length - 2} more`}
+                            </Button>
+                          </div>
+                        )}
 
                       </>
                     ) : (
@@ -420,10 +436,11 @@ export default function TasksUpdated() {
                 <div className="space-y-4">
                   {(() => {
                     const alerts = (portfolioAlerts as any[] || []);
+                    const alertsToShow = showAllAlerts ? alerts : alerts.slice(0, 2);
                     
                     return alerts.length > 0 ? (
                       <>
-                        {alerts.map((alert: any) => {
+                        {alertsToShow.map((alert: any) => {
                           const isExpanded = expandedAlerts.has(alert.id);
                           return (
                             <div key={alert.id} className="border border-slate-200 rounded-md hover:bg-slate-50">
@@ -459,6 +476,19 @@ export default function TasksUpdated() {
                             </div>
                           );
                         })}
+                        
+                        {/* Show More/Less button for Portfolio Alerts */}
+                        {alerts.length > 2 && (
+                          <div className="pt-4 border-t border-slate-200">
+                            <Button 
+                              variant="ghost" 
+                              onClick={() => setShowAllAlerts(!showAllAlerts)}
+                              className="w-full text-blue-600 hover:text-blue-700"
+                            >
+                              {showAllAlerts ? 'Show less' : `Show ${alerts.length - 2} more`}
+                            </Button>
+                          </div>
+                        )}
 
                       </>
                     ) : (
