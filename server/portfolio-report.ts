@@ -2,7 +2,6 @@ import { Router, Request, Response } from 'express';
 import { db } from './db';
 import { clients, transactions, appointments, communications } from '@shared/schema';
 import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
-import puppeteer from 'puppeteer';
 
 const router = Router();
 
@@ -37,34 +36,9 @@ router.get('/api/clients/:clientId/portfolio-report', async (req: Request, res: 
     // Generate HTML for PDF
     const htmlContent = generateReportHTML(client, portfolioMetrics, assetAllocation, recentTransactions);
 
-    // Generate PDF using Puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-    
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20mm',
-        right: '10mm',
-        bottom: '20mm',
-        left: '10mm'
-      }
-    });
-    
-    await browser.close();
-
-    // Set response headers for PDF download
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="Portfolio_Report_${client.fullName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf"`);
-    res.setHeader('Content-Length', pdfBuffer.length);
-    
-    res.send(pdfBuffer);
+    // Return HTML content that can be printed as PDF by the browser
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlContent);
 
   } catch (error) {
     console.error('Error generating portfolio report:', error);
@@ -141,6 +115,35 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
           padding: 20px;
           color: #333;
           line-height: 1.6;
+        }
+        .print-button {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #2563eb;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 16px;
+          font-weight: bold;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          z-index: 1000;
+        }
+        .print-button:hover {
+          background: #1d4ed8;
+        }
+        @media print {
+          .print-button {
+            display: none;
+          }
+          body {
+            padding: 0;
+          }
+          .page-break {
+            page-break-before: always;
+          }
         }
         .header {
           text-align: center;
@@ -286,6 +289,7 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
       </style>
     </head>
     <body>
+      <button class="print-button" onclick="window.print()">Print/Save as PDF</button>
       <div class="header">
         <div class="bank-logo">Ujjivan Small Finance Bank</div>
         <div class="report-title">Portfolio Report</div>
