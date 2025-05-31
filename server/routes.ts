@@ -10,6 +10,9 @@ import portfolioReportRouter from "./portfolio-report";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { z } from "zod";
+import fs from "fs";
+import path from "path";
+import puppeteer from "puppeteer";
 import {
   insertUserSchema,
   insertClientSchema,
@@ -2464,6 +2467,238 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Register additional routers
+  
+  // HTML generation functions for PDFs
+  function generateFactsheetHTML(productName: string): string {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>${productName} Factsheet</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #003366; padding-bottom: 20px; }
+            .logo { color: #003366; font-size: 24px; font-weight: bold; }
+            .product-title { color: #003366; font-size: 20px; margin: 10px 0; }
+            .section { margin: 20px 0; }
+            .section-title { background: #f0f8ff; padding: 10px; font-weight: bold; color: #003366; }
+            .table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            .table th { background: #f0f8ff; }
+            .disclaimer { font-size: 10px; margin-top: 30px; color: #666; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="logo">UJJIVAN SMALL FINANCE BANK</div>
+            <div class="product-title">${productName} - Product Factsheet</div>
+            <div>Date: ${new Date().toLocaleDateString()}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Product Overview</div>
+            <table class="table">
+                <tr><td><strong>Product Name</strong></td><td>${productName}</td></tr>
+                <tr><td><strong>Category</strong></td><td>Wealth Management Product</td></tr>
+                <tr><td><strong>Launch Date</strong></td><td>${new Date().toLocaleDateString()}</td></tr>
+                <tr><td><strong>Fund Manager</strong></td><td>Ujjivan Asset Management</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Key Features</div>
+            <ul>
+                <li>Professional fund management</li>
+                <li>Diversified portfolio approach</li>
+                <li>Regular monitoring and rebalancing</li>
+                <li>Transparent fee structure</li>
+                <li>Risk-adjusted returns</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Investment Details</div>
+            <table class="table">
+                <tr><td><strong>Minimum Investment</strong></td><td>₹1,00,000</td></tr>
+                <tr><td><strong>Exit Load</strong></td><td>1% if redeemed within 1 year</td></tr>
+                <tr><td><strong>Management Fee</strong></td><td>1.5% per annum</td></tr>
+                <tr><td><strong>Lock-in Period</strong></td><td>12 months</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Risk Profile</div>
+            <p>This product is suitable for investors with moderate to high risk appetite seeking long-term capital appreciation.</p>
+        </div>
+
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> Mutual Fund investments are subject to market risks. Please read all scheme related documents carefully before investing. Past performance is not indicative of future results.</p>
+        </div>
+    </body>
+    </html>`;
+  }
+
+  function generateKIMSHTML(productName: string): string {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>${productName} Key Information Memorandum</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #003366; padding-bottom: 20px; }
+            .logo { color: #003366; font-size: 24px; font-weight: bold; }
+            .section { margin: 20px 0; }
+            .section-title { background: #f0f8ff; padding: 10px; font-weight: bold; color: #003366; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="logo">UJJIVAN SMALL FINANCE BANK</div>
+            <h2>${productName} - Key Information Memorandum</h2>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Investment Objective</div>
+            <p>To provide long-term capital appreciation through a diversified portfolio of equity and debt instruments.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Investment Strategy</div>
+            <p>The fund follows a balanced approach with focus on quality securities and risk management.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Tax Implications</div>
+            <p>Capital gains tax as per prevailing tax laws. Please consult your tax advisor.</p>
+        </div>
+    </body>
+    </html>`;
+  }
+
+  function generateApplicationFormHTML(): string {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Investment Application Form</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #003366; padding-bottom: 20px; }
+            .form-section { margin: 20px 0; }
+            .form-field { margin: 10px 0; }
+            label { display: inline-block; width: 200px; font-weight: bold; }
+            .signature-section { margin-top: 40px; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>UJJIVAN SMALL FINANCE BANK</h1>
+            <h2>Investment Application Form</h2>
+        </div>
+
+        <div class="form-section">
+            <h3>Investor Details</h3>
+            <div class="form-field"><label>Name:</label> _________________________</div>
+            <div class="form-field"><label>PAN Number:</label> _________________________</div>
+            <div class="form-field"><label>Address:</label> _________________________</div>
+            <div class="form-field"><label>Mobile:</label> _________________________</div>
+            <div class="form-field"><label>Email:</label> _________________________</div>
+        </div>
+
+        <div class="form-section">
+            <h3>Investment Details</h3>
+            <div class="form-field"><label>Product Name:</label> _________________________</div>
+            <div class="form-field"><label>Investment Amount:</label> _________________________</div>
+            <div class="form-field"><label>Investment Mode:</label> _________________________</div>
+        </div>
+
+        <div class="signature-section">
+            <p>Date: _____________ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Signature: _________________________</p>
+        </div>
+    </body>
+    </html>`;
+  }
+
+  // PDF Document Generation and Serving
+  app.get('/documents/:filename', async (req: Request, res: Response) => {
+    try {
+      const filename = req.params.filename;
+      const documentsDir = path.join(process.cwd(), 'documents');
+      const filePath = path.join(documentsDir, filename);
+
+      // Check if PDF already exists
+      if (fs.existsSync(filePath)) {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        return res.sendFile(filePath);
+      }
+
+      // Generate PDF if it doesn't exist
+      if (!fs.existsSync(documentsDir)) {
+        fs.mkdirSync(documentsDir, { recursive: true });
+      }
+
+      // Determine what type of document to generate
+      let htmlContent = '';
+      
+      if (filename.includes('factsheet')) {
+        const productName = filename.replace('-factsheet.pdf', '').split('-').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        
+        htmlContent = generateFactsheetHTML(productName);
+      } else if (filename.includes('kims')) {
+        const productName = filename.replace('-kims.pdf', '').split('-').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        
+        htmlContent = generateKIMSHTML(productName);
+      } else if (filename.includes('application-form')) {
+        htmlContent = generateApplicationFormHTML();
+      } else {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      // Generate PDF using puppeteer
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      
+      const page = await browser.newPage();
+      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+      
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20px',
+          right: '20px',
+          bottom: '20px',
+          left: '20px'
+        }
+      });
+
+      await browser.close();
+
+      // Save PDF to disk
+      fs.writeFileSync(filePath, pdfBuffer);
+
+      // Send PDF to client
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(pdfBuffer);
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  });
+
   app.use(communicationsRouter);
   app.use(portfolioReportRouter);
 
