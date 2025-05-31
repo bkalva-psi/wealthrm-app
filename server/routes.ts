@@ -6,6 +6,7 @@ import { db } from "./db";
 import { eq, sql, and, gt, desc } from "drizzle-orm";
 import { clients, prospects, transactions, performanceIncentives, clientComplaints } from "@shared/schema";
 import communicationsRouter from "./communications";
+import portfolioReportRouter from "./portfolio-report";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { z } from "zod";
@@ -2273,6 +2274,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to fetch incentives data' });
     }
   });
+
+  // Register additional routers
+  app.use(communicationsRouter);
+  app.use(portfolioReportRouter);
 
   const httpServer = createServer(app);
 
