@@ -602,8 +602,8 @@ const ClientCommunications: React.FC = () => {
                     className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => toggleNoteExpansion(communication.id)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-1">
                         <div className="text-sm font-medium text-gray-900">
                           {communicationType} • {channel}
                         </div>
@@ -611,12 +611,7 @@ const ClientCommunications: React.FC = () => {
                           {date}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {communication.follow_up_required && (
-                          <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
-                            Follow-up Required
-                          </span>
-                        )}
+                      <div className="flex items-center">
                         <ChevronDown 
                           className={`h-5 w-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                         />
