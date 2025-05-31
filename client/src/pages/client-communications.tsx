@@ -790,7 +790,7 @@ const ClientCommunications: React.FC = () => {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="communication_type">Type</Label>
+                  <Label htmlFor="communication_type">Type *</Label>
                   <Select 
                     value={newNoteData.communication_type} 
                     onValueChange={(value) => setNewNoteData(prev => ({ ...prev, communication_type: value }))}
@@ -814,7 +814,7 @@ const ClientCommunications: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="channel">Channel</Label>
+                  <Label htmlFor="channel">Channel *</Label>
                   <Select 
                     value={newNoteData.channel} 
                     onValueChange={(value) => setNewNoteData(prev => ({ ...prev, channel: value }))}
@@ -835,7 +835,7 @@ const ClientCommunications: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="direction">Direction</Label>
+                  <Label htmlFor="direction">Direction *</Label>
                   <Select 
                     value={newNoteData.direction} 
                     onValueChange={(value) => setNewNoteData(prev => ({ ...prev, direction: value }))}
@@ -851,7 +851,7 @@ const ClientCommunications: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+                  <Label htmlFor="duration_minutes">Duration (minutes) *</Label>
                   <Input
                     id="duration_minutes"
                     type="number"
@@ -864,7 +864,7 @@ const ClientCommunications: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
+                <Label htmlFor="subject">Subject *</Label>
                 <Input
                   id="subject"
                   value={newNoteData.subject}
