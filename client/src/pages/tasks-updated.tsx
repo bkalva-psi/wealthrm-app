@@ -37,6 +37,7 @@ export default function TasksUpdated() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [dueDateFilter, setDueDateFilter] = useState("all");
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
@@ -291,8 +292,8 @@ export default function TasksUpdated() {
       <div className="space-y-6">
         {/* Tasks Card */}
         <Card>
-          <CardHeader className="cursor-pointer sticky top-0 bg-white z-10 border-b" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
-            <div className="flex items-center justify-between">
+          <CardHeader className="sticky top-0 bg-white z-10 border-b">
+            <div className="flex items-center justify-between cursor-pointer" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
               <CardTitle className="text-lg flex items-center gap-2">
                 <CheckSquare className="h-5 w-5 text-blue-600" />
                 Tasks ({(tasks as Task[] || []).filter(task => !task.completed).length})
@@ -301,6 +302,46 @@ export default function TasksUpdated() {
                 {tasksCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
               </Button>
             </div>
+            {!tasksCollapsed && (
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-32 h-8 text-xs">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Tasks</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                  <SelectTrigger className="w-28 h-8 text-xs">
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Select value={dueDateFilter} onValueChange={setDueDateFilter}>
+                  <SelectTrigger className="w-32 h-8 text-xs">
+                    <SelectValue placeholder="Due Date" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Dates</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                    <SelectItem value="today">Today</SelectItem>
+                    <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                    <SelectItem value="this_week">This Week</SelectItem>
+                    <SelectItem value="next_week">Next Week</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardHeader>
           
           {!tasksCollapsed && (
