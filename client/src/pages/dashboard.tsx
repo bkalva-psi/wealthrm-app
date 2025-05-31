@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { QuickActions } from "@/components/dashboard/quick-actions";
 import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
@@ -24,13 +23,10 @@ export default function Dashboard() {
   return (
     <div>
       {/* Page Header */}
-      <div className="mb-8 mt-6">
+      <div className="mb-6 mt-6">
         <h1 className="text-2xl font-semibold text-slate-800">Welcome back, {user?.fullName.split(' ')[0]}</h1>
         <p className="text-sm text-slate-600">Here's what's happening with your clients today</p>
       </div>
-      
-      {/* Quick Actions Strip */}
-      <QuickActions />
       
       {/* Grid Layout for Dashboard Content - Responsive for all device sizes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
