@@ -50,10 +50,14 @@ router.get('/api/clients/:clientId/portfolio-report', async (req: Request, res: 
 
 function calculatePortfolioUsingAppLogic(client: any, transactions: any[]) {
   // Extract numerical AUM value from client data (same as app frontend)
-  const getAumValue = (aumString?: string): number => {
-    if (!aumString) return 0;
-    // Extract numerical value from formatted string (e.g., "₹11.20 L" -> 1120000)
-    const match = aumString.match(/₹([\d\.]+)\s*L/);
+  const getAumValue = (aumData?: string | number): number => {
+    if (!aumData) return 0;
+    
+    // If it's already a number, return it
+    if (typeof aumData === 'number') return aumData;
+    
+    // If it's a string, extract numerical value (e.g., "₹11.20 L" -> 1120000)
+    const match = aumData.match(/₹([\d\.]+)\s*L/);
     return match ? parseFloat(match[1]) * 100000 : 0;
   };
 
