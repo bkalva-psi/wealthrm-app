@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Calendar, CheckSquare, Lightbulb, Menu } from 'lucide-react';
+import { Home, Calendar, CheckSquare, Users, Menu } from 'lucide-react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useQuery } from '@tanstack/react-query';
 
@@ -23,8 +23,8 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: talkingPoints } = useQuery({
-    queryKey: ['/api/talking-points'],
+  const { data: clients } = useQuery({
+    queryKey: ['/api/clients'],
     staleTime: 5 * 60 * 1000,
   });
 
@@ -36,11 +36,11 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
     today.setHours(0, 0, 0, 0);
     return dueDate <= today && task.status !== 'completed';
   });
-  const hasRecentTalkingPoints = Array.isArray(talkingPoints) && talkingPoints.some((point: any) => {
-    const createdDate = new Date(point.created_at);
+  const hasRecentClients = Array.isArray(clients) && clients.some((client: any) => {
+    const createdDate = new Date(client.createdAt);
     const threeDaysAgo = new Date();
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    return createdDate >= threeDaysAgo && point.is_active;
+    return createdDate >= threeDaysAgo;
   });
   
   useEffect(() => {
@@ -62,15 +62,15 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
     if (path === '/' && currentPath === '/') return true;
     if (path === '/calendar' && currentPath === '/calendar') return true;
     if (path === '/tasks' && currentPath === '/tasks') return true;
-    if (path === '/talking-points' && currentPath === '/talking-points') return true;
+    if (path === '/clients' && (currentPath === '/clients' || currentPath.startsWith('/clients/'))) return true;
     if (path === '/menu' && (
       currentPath === '/settings' || 
-      currentPath === '/clients' || 
       currentPath === '/prospects' ||
       currentPath === '/announcements' ||
       currentPath === '/analytics' || 
       currentPath === '/products' ||
-      currentPath === '/communications'
+      currentPath === '/communications' ||
+      currentPath === '/talking-points'
     )) return true;
     
     return false;
@@ -132,17 +132,17 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
       </button>
       
       <button 
-        onClick={() => navigateTo('/talking-points')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/talking-points') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
-        aria-label="Insights"
+        onClick={() => navigateTo('/clients')}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/clients') ? 'text-ujjivan-primary' : 'text-gray-500'}`}
+        aria-label="Clients"
       >
         <div className="relative">
-          <Lightbulb size={24} />
-          {hasRecentTalkingPoints && (
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full" />
+          <Users size={24} />
+          {hasRecentClients && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full" />
           )}
         </div>
-        <span className="text-xs mt-1">Insights</span>
+        <span className="text-xs mt-1">Clients</span>
       </button>
       
       <button 
