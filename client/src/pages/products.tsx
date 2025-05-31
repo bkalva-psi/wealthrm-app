@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, ChevronDown, Download, Plus } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { Search, Filter, ChevronDown } from "lucide-react";
 
 // Product data (in a real app, this would come from API)
 const products = [
@@ -100,33 +101,64 @@ const products = [
 
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedRiskLevels, setSelectedRiskLevels] = useState<string[]>([]);
+  const [featuredOnly, setFeaturedOnly] = useState(false);
   
   // Set page title
   useEffect(() => {
     document.title = "Products | Wealth RM";
   }, []);
   
-  // Filter products based on search query and active tab
+  // Get unique values for filters
+  const categories = Array.from(new Set(products.map(product => product.category)));
+  const riskLevels = Array.from(new Set(products.map(product => product.riskLevel)));
+  
+  // Filter products based on search query and filters
   const filteredProducts = products.filter(product => {
     // Filter by search query
-    const matchesSearch = 
+    const matchesSearch = searchQuery === "" || 
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    // Filter by tab
-    const matchesTab = 
-      activeTab === "all" || 
-      (activeTab === "featured" && product.featured) ||
-      product.category.toLowerCase() === activeTab.toLowerCase();
+    // Filter by category
+    const matchesCategory = selectedCategories.length === 0 || 
+      selectedCategories.includes(product.category);
+      
+    // Filter by risk level
+    const matchesRiskLevel = selectedRiskLevels.length === 0 || 
+      selectedRiskLevels.includes(product.riskLevel);
+      
+    // Filter by featured
+    const matchesFeatured = !featuredOnly || product.featured;
     
-    return matchesSearch && matchesTab;
+    return matchesSearch && matchesCategory && matchesRiskLevel && matchesFeatured;
   });
   
-  // Get unique categories for tabs
-  const categories = Array.from(new Set(products.map(product => product.category)));
+  // Toggle functions for filters
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+  
+  const toggleRiskLevel = (riskLevel: string) => {
+    setSelectedRiskLevels(prev => 
+      prev.includes(riskLevel) 
+        ? prev.filter(r => r !== riskLevel)
+        : [...prev, riskLevel]
+    );
+  };
+  
+  const clearAllFilters = () => {
+    setSelectedCategories([]);
+    setSelectedRiskLevels([]);
+    setFeaturedOnly(false);
+  };
   
   const getRiskLevelColor = (riskLevel: string) => {
     if (riskLevel.includes("Low")) return "bg-green-100 text-green-800";
@@ -136,57 +168,86 @@ export default function Products() {
   };
   
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Products</h1>
-          <p className="text-sm text-slate-600">Browse and recommend financial products</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Product Catalog
-          </Button>
-          <Button className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Request Product
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
+        <h1 className="text-2xl font-bold text-slate-900">Products</h1>
       </div>
-      
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search products by name, description, or tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+
+      {/* Main Content */}
+      <div className="p-6 space-y-6">
+        {/* Search and Filter Section */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Search products by name, description, or tags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filters
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel>Filter Products</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuCheckboxItem
+                    checked={featuredOnly}
+                    onCheckedChange={setFeaturedOnly}
+                  >
+                    Featured Only
+                  </DropdownMenuCheckboxItem>
+                  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Categories</DropdownMenuLabel>
+                  {categories.map(category => (
+                    <DropdownMenuCheckboxItem
+                      key={category}
+                      checked={selectedCategories.includes(category)}
+                      onCheckedChange={() => toggleCategory(category)}
+                    >
+                      {category}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Risk Levels</DropdownMenuLabel>
+                  {riskLevels.map(riskLevel => (
+                    <DropdownMenuCheckboxItem
+                      key={riskLevel}
+                      checked={selectedRiskLevels.includes(riskLevel)}
+                      onCheckedChange={() => toggleRiskLevel(riskLevel)}
+                    >
+                      {riskLevel}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                  
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={clearAllFilters}
+                  >
+                    Clear All Filters
+                  </Button>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">All Products</TabsTrigger>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
-          {categories.map(category => (
-            <TabsTrigger key={category} value={category.toLowerCase()}>
-              {category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        
-        <TabsContent value={activeTab}>
+          </CardContent>
+        </Card>
+
+        {/* Products Grid - Only show when search query exists */}
+        {searchQuery.trim() !== "" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.length > 0 ? (
               filteredProducts.map(product => (
@@ -194,11 +255,11 @@ export default function Products() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle>{product.name}</CardTitle>
+                        <CardTitle className="text-lg">{product.name}</CardTitle>
                         <CardDescription>{product.category}</CardDescription>
                       </div>
                       {product.featured && (
-                        <Badge variant="secondary" className="bg-primary-50 text-primary-700 hover:bg-primary-100">
+                        <Badge variant="secondary" className="bg-blue-50 text-blue-700">
                           Featured
                         </Badge>
                       )}
@@ -236,7 +297,6 @@ export default function Products() {
                   </CardContent>
                   <CardFooter className="flex justify-between border-t bg-slate-50 px-6 py-3">
                     <Button variant="outline" size="sm">View Details</Button>
-                    <Button size="sm">Recommend</Button>
                   </CardFooter>
                 </Card>
               ))
@@ -246,8 +306,17 @@ export default function Products() {
               </div>
             )}
           </div>
-        </TabsContent>
-      </Tabs>
+        )}
+
+        {/* Empty state when no search query */}
+        {searchQuery.trim() === "" && (
+          <div className="text-center py-20">
+            <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">Search for Products</h3>
+            <p className="text-slate-500">Start typing to search for financial products and investment options.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
