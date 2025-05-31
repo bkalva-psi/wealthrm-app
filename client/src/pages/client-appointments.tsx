@@ -604,27 +604,25 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               />
             </div>
             
-            {/* Only show client selection when viewing all appointments (calendar view) */}
-            {clientId === null && (
-              <div className="space-y-2">
-                <Label htmlFor="clientId">Client</Label>
-                <Select 
-                  value={formData.clientId} 
-                  onValueChange={(value) => handleChange('clientId', value)}
-                >
-                  <SelectTrigger id="clientId">
-                    <SelectValue placeholder="Select client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(clients as any[]).map((client: any) => (
-                      <SelectItem key={client.id} value={client.id.toString()}>
-                        {client.fullName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {/* Client selection dropdown - always shown */}
+            <div className="space-y-2">
+              <Label htmlFor="clientId">Client</Label>
+              <Select 
+                value={formData.clientId} 
+                onValueChange={(value) => handleChange('clientId', value)}
+              >
+                <SelectTrigger id="clientId">
+                  <SelectValue placeholder="Select client" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(clients as any[]).map((client: any) => (
+                    <SelectItem key={client.id} value={client.id.toString()}>
+                      {client.fullName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
