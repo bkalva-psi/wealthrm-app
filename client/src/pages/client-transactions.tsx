@@ -142,10 +142,15 @@ export default function ClientTransactions() {
   const [sortBy, setSortBy] = useState<string>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   
+  // Pagination state
+  const [visibleCount, setVisibleCount] = useState<number>(10);
+  const ITEMS_PER_PAGE = 10;
+  
   // Quick date filter handler
   const handlePeriodFilter = (period: '1w' | '1m' | '3m') => {
     console.log(`Applying period filter: ${period}`);
     setSelectedPeriod(period);
+    setVisibleCount(ITEMS_PER_PAGE); // Reset visible count when changing period
     const end = new Date();
     let start: Date;
     
@@ -164,6 +169,15 @@ export default function ClientTransactions() {
     
     setStartDate(start);
     setEndDate(end);
+  };
+
+  // Pagination handlers
+  const handleShowMore = () => {
+    setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+  };
+
+  const handleShowLess = () => {
+    setVisibleCount(ITEMS_PER_PAGE);
   };
   
   // Get client data
@@ -824,43 +838,69 @@ export default function ClientTransactions() {
             </CardContent>
           </Card>
         ) : (
-          sortedTransactions.map((transaction) => (
-            <Card key={transaction.id} className="p-4">
-              <div className="flex flex-col space-y-3">
-                {/* Header Row */}
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-lg">{transaction.productName}</p>
-                    <p className="text-sm text-gray-500">{transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}</p>
+          <>
+            {sortedTransactions.slice(0, visibleCount).map((transaction) => (
+              <Card key={transaction.id} className="p-4">
+                <div className="flex flex-col space-y-3">
+                  {/* Header Row */}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-medium text-lg">{transaction.productName}</p>
+                      <p className="text-sm text-gray-500">{transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-lg">{formatCurrency(transaction.totalAmount)}</p>
+                      <p className="text-sm text-gray-500">{format(new Date(transaction.transactionDate), 'dd MMM yyyy')}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-lg">{formatCurrency(transaction.totalAmount)}</p>
-                    <p className="text-sm text-gray-500">{format(new Date(transaction.transactionDate), 'dd MMM yyyy')}</p>
+                  
+                  {/* Details Row - Two Column Layout */}
+                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                    <div>
+                      <p className="text-sm text-gray-500">Type</p>
+                      <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Amount</p>
+                      <p className="font-medium">{formatCurrency(transaction.amount)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Status</p>
+                      <p className="font-medium">{transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Fees</p>
+                      <p className="font-medium">{formatCurrency(transaction.fees || 0)}</p>
+                    </div>
                   </div>
                 </div>
-                
-                {/* Details Row - Two Column Layout */}
-                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
-                  <div>
-                    <p className="text-sm text-gray-500">Type</p>
-                    <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Amount</p>
-                    <p className="font-medium">{formatCurrency(transaction.amount)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Status</p>
-                    <p className="font-medium">{transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Fees</p>
-                    <p className="font-medium">{formatCurrency(transaction.fees || 0)}</p>
-                  </div>
-                </div>
+              </Card>
+            ))}
+            
+            {/* Pagination Controls */}
+            {sortedTransactions.length > ITEMS_PER_PAGE && (
+              <div className="flex justify-center space-x-4 pt-4">
+                {visibleCount < sortedTransactions.length && (
+                  <Button 
+                    variant="outline" 
+                    onClick={handleShowMore}
+                    className="px-6"
+                  >
+                    Show More ({Math.min(ITEMS_PER_PAGE, sortedTransactions.length - visibleCount)} more)
+                  </Button>
+                )}
+                {visibleCount > ITEMS_PER_PAGE && (
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleShowLess}
+                    className="px-6"
+                  >
+                    Show Less
+                  </Button>
+                )}
               </div>
-            </Card>
-          ))
+            )}
+          </>
         )}
       </div>
     </div>
