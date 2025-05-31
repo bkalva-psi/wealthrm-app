@@ -1472,13 +1472,6 @@ export default function ClientPortfolioPage() {
                     <div className="text-xs text-slate-500">March 2020 (COVID-19 Crash)</div>
                   </div>
                   
-                  <div className="h-40 flex items-center justify-center bg-slate-50 rounded-lg">
-                    <div className="text-center">
-                      <LineChart className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                      <p className="text-xs text-slate-500">Drawdown chart</p>
-                    </div>
-                  </div>
-                  
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <div>
