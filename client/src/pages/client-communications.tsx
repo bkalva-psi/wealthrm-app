@@ -177,7 +177,7 @@ const ClientCommunications: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>('all');
   const [showAllNotes, setShowAllNotes] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
-  const [filtersExpanded, setFiltersExpanded] = useState<boolean>(true);
+  const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   const toggleNoteExpansion = (noteId: number) => {
@@ -430,7 +430,7 @@ const ClientCommunications: React.FC = () => {
       )}
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-4">
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Notes</h2>
           {!isGlobalView && (
