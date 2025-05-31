@@ -13,7 +13,8 @@ import {
   PieChart,
   Receipt,
   FileText,
-  FileBarChart
+  FileBarChart,
+  Lightbulb
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
 
