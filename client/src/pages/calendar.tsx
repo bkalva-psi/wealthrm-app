@@ -112,7 +112,7 @@ export default function CalendarPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
         </div>
