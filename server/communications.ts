@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { pool } from './db';
+import { pool, db } from './db';
+import { communications } from '@shared/schema';
 
 // Create a router to handle communication-related routes
 const router = Router();
@@ -169,42 +170,41 @@ router.post('/api/communications', async (req: Request, res: Response) => {
       direction,
       subject,
       summary,
-      notes,
+      details,
       sentiment,
       tags,
-      followUpRequired,
-      nextSteps
+      followupRequired,
+      hasAttachments,
+      status
     } = req.body;
     
-    if (!clientId || !initiatedBy || !startTime || !communicationType || !channel || !direction) {
+    if (!clientId || !initiatedBy || !startTime || !communicationType || !direction) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
-    const { rows } = await pool.query(`
-      INSERT INTO communications
-      (client_id, initiated_by, start_time, end_time, duration, communication_type, 
-       channel, direction, subject, summary, notes, sentiment, tags, follow_up_required, next_steps)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-      RETURNING *
-    `, [
-      clientId,
-      initiatedBy,
-      startTime,
-      endTime || null,
-      duration || null,
-      communicationType,
-      channel,
-      direction,
-      subject || null,
-      summary || null,
-      notes || null,
-      sentiment || null,
-      tags || [],
-      followUpRequired || false,
-      nextSteps || null
-    ]);
+    const [newCommunication] = await db
+      .insert(communications)
+      .values({
+        clientId,
+        initiatedBy,
+        startTime: new Date(startTime),
+        endTime: endTime ? new Date(endTime) : null,
+        duration,
+        communicationType,
+        channel,
+        direction,
+        subject: subject || '',
+        summary: summary || '',
+        details: details || null,
+        sentiment: sentiment || 'neutral',
+        tags: tags || [],
+        followupRequired: followupRequired || false,
+        hasAttachments: hasAttachments || false,
+        status: status || 'completed'
+      })
+      .returning();
     
-    res.status(201).json(rows[0]);
+    res.json(newCommunication);
   } catch (error) {
     console.error('Error creating communication:', error);
     res.status(500).json({ error: 'Failed to create communication' });
