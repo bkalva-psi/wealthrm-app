@@ -295,7 +295,7 @@ export default function TasksUpdated() {
       <div className="space-y-6">
         {/* Tasks Card */}
         <Card>
-          <CardHeader className="cursor-pointer" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
+          <CardHeader className="cursor-pointer sticky top-0 bg-white z-10 border-b" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
                 <CheckSquare className="h-5 w-5 text-blue-600" />
@@ -421,7 +421,7 @@ export default function TasksUpdated() {
 
         {/* Portfolio Alerts Card */}
         <Card>
-          <CardHeader className="cursor-pointer" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
+          <CardHeader className="cursor-pointer sticky top-16 bg-white z-10 border-b" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-orange-600" />
