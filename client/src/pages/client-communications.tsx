@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Calendar, CheckCircle2, Plus, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, Mail, Video, FileText, Clock, Calendar, CheckCircle2, Plus, Search, ChevronDown, ChevronUp, Filter } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
