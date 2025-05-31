@@ -48,13 +48,69 @@ export function QuickActions() {
     handleDialogClose();
   };
   
-  const handleScheduleMeeting = (e: React.FormEvent) => {
+  const handleScheduleMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Meeting scheduled",
-      description: "Your meeting has been scheduled successfully.",
-    });
-    handleDialogClose();
+    
+    const formData = new FormData(e.target as HTMLFormElement);
+    const title = formData.get('meeting-title') as string;
+    const date = formData.get('meeting-date') as string;
+    const time = formData.get('meeting-time') as string;
+    const location = formData.get('meeting-location') as string;
+    const notes = formData.get('meeting-notes') as string;
+    
+    if (!title || !selectedClientId || !date || !time) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const startDateTime = new Date(`${date}T${time}`);
+      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour later
+
+      const appointmentData = {
+        title,
+        description: notes || "",
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        location: location || "TBD",
+        clientId: parseInt(selectedClientId),
+        priority: "medium",
+        type: "meeting"
+      };
+
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(appointmentData)
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Meeting scheduled",
+          description: "Your meeting has been scheduled successfully.",
+        });
+        handleDialogClose();
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "Failed to schedule meeting.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to schedule meeting. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   
   const quickActions = [
@@ -153,7 +209,7 @@ export function QuickActions() {
           <form onSubmit={handleScheduleMeeting} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="meeting-title">Meeting Title</Label>
-              <Input id="meeting-title" placeholder="Enter meeting title" />
+              <Input id="meeting-title" name="meeting-title" placeholder="Enter meeting title" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="meeting-client">Client</Label>
@@ -173,20 +229,20 @@ export function QuickActions() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="meeting-date">Date</Label>
-                <Input id="meeting-date" type="date" />
+                <Input id="meeting-date" name="meeting-date" type="date" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="meeting-time">Time</Label>
-                <Input id="meeting-time" type="time" />
+                <Input id="meeting-time" name="meeting-time" type="time" required />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="meeting-location">Location</Label>
-              <Input id="meeting-location" placeholder="Enter location" />
+              <Input id="meeting-location" name="meeting-location" placeholder="Enter location" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="meeting-notes">Notes</Label>
-              <Textarea id="meeting-notes" placeholder="Any additional notes..." rows={2} />
+              <Textarea id="meeting-notes" name="meeting-notes" placeholder="Any additional notes..." rows={2} />
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" type="button" onClick={handleDialogClose}>
