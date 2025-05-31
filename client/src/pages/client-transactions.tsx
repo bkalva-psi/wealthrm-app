@@ -133,6 +133,7 @@ export default function ClientTransactions() {
   const clientId = parseInt(window.location.hash.split('/')[2] || '0');
   
   // Date filter state
+  const [selectedPeriod, setSelectedPeriod] = useState<'1w' | '1m' | '3m'>('3m');
   const [startDate, setStartDate] = useState<Date>(subMonths(new Date(), 3));
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [transactionType, setTransactionType] = useState<string>('all');
@@ -142,8 +143,9 @@ export default function ClientTransactions() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   
   // Quick date filter handler
-  const handleQuickDateFilter = (period: '1w' | '1m' | '3m') => {
-    console.log(`Applying quick filter: ${period}`);
+  const handlePeriodFilter = (period: '1w' | '1m' | '3m') => {
+    console.log(`Applying period filter: ${period}`);
+    setSelectedPeriod(period);
     const end = new Date();
     let start: Date;
     
@@ -162,11 +164,6 @@ export default function ClientTransactions() {
     
     setStartDate(start);
     setEndDate(end);
-    
-    // Force refresh
-    setTimeout(() => {
-      window.location.hash = window.location.hash;
-    }, 100);
   };
   
   // Get client data
@@ -652,80 +649,46 @@ export default function ClientTransactions() {
             </DialogContent>
           </Dialog>
       
-      {/* Filters */}
+      {/* Period Filter Bar */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Time Period</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Button 
+              variant={selectedPeriod === '1w' ? 'default' : 'outline'}
+              onClick={() => handlePeriodFilter('1w')}
+              className="flex-1"
+            >
+              1 Week
+            </Button>
+            <Button 
+              variant={selectedPeriod === '1m' ? 'default' : 'outline'}
+              onClick={() => handlePeriodFilter('1m')}
+              className="flex-1"
+            >
+              1 Month
+            </Button>
+            <Button 
+              variant={selectedPeriod === '3m' ? 'default' : 'outline'}
+              onClick={() => handlePeriodFilter('3m')}
+              className="flex-1"
+            >
+              3 Months
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Other Filters */}
       <Card>
         <CardHeader>
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {/* Date Range */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label>Date Range</Label>
-                  <div className="flex space-x-1">
-                    <Button 
-                      variant="outline" 
-                      size="xs" 
-                      onClick={() => handleQuickDateFilter('1w')}
-                      className="h-6 text-xs px-2"
-                    >
-                      1w
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="xs" 
-                      onClick={() => handleQuickDateFilter('1m')}
-                      className="h-6 text-xs px-2"
-                    >
-                      1m
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="xs" 
-                      onClick={() => handleQuickDateFilter('3m')}
-                      className="h-6 text-xs px-2"
-                    >
-                      3m
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
-                        <CalendarIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-                        <span className="truncate">{format(startDate, 'PP')}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={(date) => date && setStartDate(date)}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal text-xs sm:text-sm">
-                        <CalendarIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-                        <span className="truncate">{format(endDate, 'PP')}</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={(date) => date && setEndDate(date)}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               
               {/* Transaction Type */}
               <div className="space-y-2">
@@ -841,152 +804,63 @@ export default function ClientTransactions() {
         </div>
       </div>
       
-      {/* Transaction Details Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Transaction Details</CardTitle>
-          <CardDescription>Showing {sortedTransactions.length} of {transactions?.length || 0} transactions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSortChange('date')}
-                      className="flex items-center justify-start p-0 h-auto font-medium"
-                    >
-                      Date
-                      {sortBy === 'date' && (
-                        sortDirection === 'asc' ? 
-                          <ArrowUp className="ml-2 h-4 w-4" /> : 
-                          <ArrowDown className="ml-2 h-4 w-4" />
-                      )}
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSortChange('transactionType')}
-                      className="flex items-center justify-start p-0 h-auto font-medium"
-                    >
-                      Type
-                      {sortBy === 'transactionType' && (
-                        sortDirection === 'asc' ? 
-                          <ArrowUp className="ml-2 h-4 w-4" /> : 
-                          <ArrowDown className="ml-2 h-4 w-4" />
-                      )}
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSortChange('productType')}
-                      className="flex items-center justify-start p-0 h-auto font-medium"
-                    >
-                      Product
-                      {sortBy === 'productType' && (
-                        sortDirection === 'asc' ? 
-                          <ArrowUp className="ml-2 h-4 w-4" /> : 
-                          <ArrowDown className="ml-2 h-4 w-4" />
-                      )}
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSortChange('productName')}
-                      className="flex items-center justify-start p-0 h-auto font-medium"
-                    >
-                      Security
-                      {sortBy === 'productName' && (
-                        sortDirection === 'asc' ? 
-                          <ArrowUp className="ml-2 h-4 w-4" /> : 
-                          <ArrowDown className="ml-2 h-4 w-4" />
-                      )}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSortChange('amount')}
-                      className="flex items-center justify-end p-0 h-auto font-medium ml-auto"
-                    >
-                      Amount
-                      {sortBy === 'amount' && (
-                        sortDirection === 'asc' ? 
-                          <ArrowUp className="ml-2 h-4 w-4" /> : 
-                          <ArrowDown className="ml-2 h-4 w-4" />
-                      )}
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isTransactionsLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24">
-                      <div className="flex flex-col gap-2">
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : sortedTransactions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      No transactions found. Try adjusting your filters.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  sortedTransactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell className="font-medium">
-                        {format(new Date(transaction.transactionDate), 'dd MMM yyyy')}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={
-                          transaction.transactionType === 'buy' ? 'default' :
-                          transaction.transactionType === 'sell' ? 'destructive' :
-                          'secondary'
-                        }>
-                          {transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}
-                      </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
-                        {transaction.productName}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(transaction.amount)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(transaction.totalAmount)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={
-                          transaction.status === 'completed' ? 'outline' :
-                          transaction.status === 'pending' ? 'secondary' :
-                          'outline'
-                        }>
-                          {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+      {/* Transaction Details Cards */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Transaction Details</h3>
+          <p className="text-sm text-gray-500">Showing {sortedTransactions.length} of {transactions?.length || 0} transactions</p>
+        </div>
+        
+        {isTransactionsLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
           </div>
-        </CardContent>
-      </Card>
+        ) : sortedTransactions.length === 0 ? (
+          <Card>
+            <CardContent className="p-6 text-center">
+              <p className="text-gray-500">No transactions found. Try adjusting your filters.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          sortedTransactions.map((transaction) => (
+            <Card key={transaction.id} className="p-4">
+              <div className="flex flex-col space-y-3">
+                {/* Header Row */}
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-lg">{transaction.productName}</p>
+                    <p className="text-sm text-gray-500">{transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-lg">{formatCurrency(transaction.totalAmount)}</p>
+                    <p className="text-sm text-gray-500">{format(new Date(transaction.transactionDate), 'dd MMM yyyy')}</p>
+                  </div>
+                </div>
+                
+                {/* Details Row */}
+                <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Type</p>
+                      <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Amount</p>
+                      <p className="font-medium">{formatCurrency(transaction.amount)}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Status</p>
+                    <p className="font-medium">{transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
 }
