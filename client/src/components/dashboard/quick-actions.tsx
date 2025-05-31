@@ -82,7 +82,7 @@ export function QuickActions() {
   
   return (
     <>
-      <Card className="mb-6">
+      <Card className="mb-4">
         <CardContent className="pt-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium text-slate-700">Quick Actions</h2>
