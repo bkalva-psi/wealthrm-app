@@ -70,9 +70,11 @@ export function BusinessSnapshotStructured() {
   const [showAllThirdLevel, setShowAllThirdLevel] = useState<Set<string>>(new Set());
 
   // Main business metrics query
-  const { data: businessMetrics, isLoading } = useQuery<BusinessMetrics>({
+  const { data: businessMetrics, isLoading, error } = useQuery<BusinessMetrics>({
     queryKey: ['/api/business-metrics/1'],
     enabled: true,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true
   });
 
   // Toggle metric expansion (shows/hides all drill-downs for that metric)
