@@ -385,9 +385,9 @@ Ujjivan Small Finance Bank`;
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="px-3 py-6">
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
@@ -426,7 +426,7 @@ Ujjivan Small Finance Bank`;
             )}
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredProducts.map((product) => {
               const isExpanded = isCardExpanded(product.id);
               return (
@@ -574,41 +574,41 @@ Ujjivan Small Finance Bank`;
                         )}
 
                         {/* Action Buttons */}
-                        <div className="flex gap-2 pt-2">
+                        <div className="flex gap-1 pt-2">
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex-1 flex items-center gap-2"
+                            className="flex-1 flex items-center gap-1 text-xs px-2"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDownload(product);
                             }}
                           >
-                            <Download className="h-4 w-4" />
+                            <Download className="h-3 w-3" />
                             Download
                           </Button>
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex-1 flex items-center gap-2"
+                            className="flex-1 flex items-center gap-1 text-xs px-2"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleMail(product);
                             }}
                           >
-                            <Mail className="h-4 w-4" />
+                            <Mail className="h-3 w-3" />
                             Mail
                           </Button>
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex-1 flex items-center gap-2"
+                            className="flex-1 flex items-center gap-1 text-xs px-2"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleWhatsApp(product);
                             }}
                           >
-                            <MessageCircle className="h-4 w-4" />
+                            <MessageCircle className="h-3 w-3" />
                             WhatsApp
                           </Button>
                         </div>
