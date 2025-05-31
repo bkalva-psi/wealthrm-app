@@ -175,7 +175,7 @@ const ClientCommunications: React.FC = () => {
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState<boolean>(false);
+  const [showAllNotes, setShowAllNotes] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
   
@@ -196,8 +196,8 @@ const ClientCommunications: React.FC = () => {
   });
   
   // Pagination state
-  const [visibleCount, setVisibleCount] = useState<number>(10);
-  const ITEMS_PER_PAGE = 10;
+  const [visibleCount, setVisibleCount] = useState<number>(5);
+  const ITEMS_PER_PAGE = 5;
   
   // New note dialog state
   const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
@@ -421,74 +421,7 @@ const ClientCommunications: React.FC = () => {
           )}
         </div>
         
-        {/* Navigation Icons */}
-        <div className="grid grid-cols-7 gap-1 px-1">
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-            title="Personal Profile"
-          >
-            <User className="h-6 w-6 text-gray-600" />
-          </button>
-          
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-            title="Portfolio"
-          >
-            <PieChart className="h-6 w-6 text-gray-600" />
-          </button>
-          
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-            title="Transactions"
-          >
-            <Receipt className="h-6 w-6 text-gray-600" />
-          </button>
-          
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-            title="Appointments"
-          >
-            <Calendar className="h-6 w-6 text-gray-600" />
-          </button>
-          
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
-            title="Notes"
-          >
-            <FileText className="h-6 w-6 text-blue-600" />
-          </button>
-          
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => {
-              // Check if mobile device
-              const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-              
-              if (isMobile) {
-                // On mobile, open in same tab for better experience
-                window.location.href = `/api/clients/${clientId}/portfolio-report`;
-              } else {
-                // On desktop, open in new tab
-                window.open(`/api/clients/${clientId}/portfolio-report`, '_blank');
-              }
-            }}
-            title="Portfolio Report"
-          >
-            <FileBarChart className="h-6 w-6 text-gray-600" />
-          </button>
-          
-          <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
-            onClick={() => window.location.hash = `/clients/${clientId}/insights`}
-            title="Investment Ideas"
-          >
-            <Lightbulb className="h-6 w-6 text-gray-600" />
-          </button>
-        </div>
+
       </div>
 
       {/* Main Content */}
@@ -747,7 +680,7 @@ const ClientCommunications: React.FC = () => {
                     variant="outline"
                     className="px-6"
                   >
-                    Show More ({Math.min(ITEMS_PER_PAGE, filteredCommunications.length - visibleCount)} more)
+                    Show more ({filteredCommunications.length - visibleCount} more notes)
                   </Button>
                 )}
                 {visibleCount > ITEMS_PER_PAGE && (
