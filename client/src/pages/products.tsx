@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp } from "lucide-react";
+import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp, Mail } from "lucide-react";
 
 interface Product {
   id: number;
@@ -120,10 +120,96 @@ export default function Products() {
     }
   };
 
-  const handleDownload = (url?: string, fileName?: string) => {
-    if (url) {
-      // In a real app, this would download the actual PDF
-      console.log(`Downloading ${fileName || 'document'} from ${url}`);
+  const handleDownload = async (product: Product) => {
+    if (!product.factsheetUrl) {
+      console.log('No factsheet available for download');
+      return;
+    }
+    
+    try {
+      // Fetch the PDF from the database/server
+      const response = await fetch(product.factsheetUrl);
+      if (!response.ok) throw new Error('Failed to fetch PDF');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${product.name}_Factsheet.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up object URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
+  const handleMail = async (product: Product) => {
+    if (!product.factsheetUrl) {
+      console.log('No factsheet available to mail');
+      return;
+    }
+
+    try {
+      // Fetch the PDF to get it as a blob
+      const response = await fetch(product.factsheetUrl);
+      if (!response.ok) throw new Error('Failed to fetch PDF');
+      
+      const blob = await response.blob();
+      
+      // Convert blob to base64 for email attachment
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Data = reader.result as string;
+        const base64Content = base64Data.split(',')[1]; // Remove data URL prefix
+        
+        // Prepare email content
+        const subject = `${product.name} - Product Information`;
+        const body = `Dear Client,
+
+Please find herewith attached the details as you have requested for the given product: ${product.name}.
+
+Product Details:
+- Category: ${product.category}
+- Risk Level: ${product.riskLevel}
+- Minimum Investment: ${product.minInvestment}
+${product.expectedReturns ? `- Expected Returns: ${product.expectedReturns}` : ''}
+
+Best regards,
+Ujjivan Small Finance Bank`;
+
+        // Create mailto link with attachment
+        const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // Open default email client
+        window.location.href = mailtoLink;
+      };
+      
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error('Mail preparation failed:', error);
+      // Fallback: open email client with just text content
+      const subject = `${product.name} - Product Information`;
+      const body = `Dear Client,
+
+Please find herewith the details as you have requested for the given product: ${product.name}.
+
+Product Details:
+- Category: ${product.category}
+- Risk Level: ${product.riskLevel}
+- Minimum Investment: ${product.minInvestment}
+${product.expectedReturns ? `- Expected Returns: ${product.expectedReturns}` : ''}
+
+Best regards,
+Ujjivan Small Finance Bank`;
+
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
     }
   };
 
@@ -392,25 +478,25 @@ export default function Products() {
                               className="flex-1 flex items-center gap-2"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDownload(product.factsheetUrl, `${product.name} Factsheet`);
+                                handleDownload(product);
                               }}
                             >
-                              <FileText className="h-4 w-4" />
-                              Factsheet
+                              <Download className="h-4 w-4" />
+                              Download
                             </Button>
                           )}
-                          {product.applicationFormUrl && (
+                          {product.factsheetUrl && (
                             <Button 
                               variant="outline" 
                               size="sm" 
                               className="flex-1 flex items-center gap-2"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDownload(product.applicationFormUrl, `${product.name} Application`);
+                                handleMail(product);
                               }}
                             >
-                              <Download className="h-4 w-4" />
-                              Apply
+                              <Mail className="h-4 w-4" />
+                              Mail
                             </Button>
                           )}
                         </div>
