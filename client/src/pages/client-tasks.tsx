@@ -75,29 +75,36 @@ function ClientTasks({ clientId }: ClientTasksProps) {
   }, [isAllTasks, numericClientId]);
 
   // Extract client ID from URL for client-specific pages
+  const [urlClientId, setUrlClientId] = useState<number | null>(null);
+  
   useEffect(() => {
     if (!isAllTasks && !numericClientId) {
       const hash = window.location.hash;
       const match = hash.match(/\/clients\/(\d+)\/tasks/);
       if (match && match[1]) {
         const extractedClientId = parseInt(match[1]);
+        setUrlClientId(extractedClientId);
         setNewTask(prev => ({ ...prev, clientId: extractedClientId.toString() }));
       }
     }
   }, [isAllTasks, numericClientId]);
 
+  // Use the extracted client ID if no prop was provided
+  const effectiveClientId = numericClientId || urlClientId;
+
   // Fetch tasks
   const { data: tasks, isLoading } = useQuery({
-    queryKey: isAllTasks ? ['/api/tasks'] : ['/api/tasks', 'client', numericClientId],
+    queryKey: isAllTasks ? ['/api/tasks'] : ['/api/tasks', 'client', effectiveClientId],
     queryFn: async () => {
       if (isAllTasks) {
         const response = await fetch('/api/tasks');
         return response.json();
       } else {
-        const response = await fetch(`/api/tasks?clientId=${numericClientId}`);
+        const response = await fetch(`/api/tasks?clientId=${effectiveClientId}`);
         return response.json();
       }
     },
+    enabled: isAllTasks || !!effectiveClientId,
   });
 
   // Fetch clients for task creation dropdown
@@ -108,12 +115,12 @@ function ClientTasks({ clientId }: ClientTasksProps) {
 
   // Fetch current client data for client-specific view
   const { data: currentClient } = useQuery({
-    queryKey: ['/api/clients', numericClientId],
+    queryKey: ['/api/clients', effectiveClientId],
     queryFn: async () => {
-      const response = await fetch(`/api/clients/${numericClientId}`);
+      const response = await fetch(`/api/clients/${effectiveClientId}`);
       return response.json();
     },
-    enabled: !!numericClientId,
+    enabled: !!effectiveClientId,
   });
 
   const updateTaskMutation = useMutation({

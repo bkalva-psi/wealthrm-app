@@ -46,7 +46,7 @@ export interface IStorage {
 
   // Task methods
   getTask(id: number): Promise<Task | undefined>;
-  getTasks(assignedTo?: number, completed?: boolean): Promise<Task[]>;
+  getTasks(assignedTo?: number, completed?: boolean, clientId?: number): Promise<Task[]>;
   createTask(task: InsertTask): Promise<Task>;
   updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined>;
   deleteTask(id: number): Promise<boolean>;
@@ -560,7 +560,7 @@ export class MemStorage implements IStorage {
     return this.tasks.get(id);
   }
   
-  async getTasks(assignedTo?: number, completed?: boolean): Promise<Task[]> {
+  async getTasks(assignedTo?: number, completed?: boolean, clientId?: number): Promise<Task[]> {
     let tasks = Array.from(this.tasks.values());
     
     if (assignedTo !== undefined) {
@@ -569,6 +569,10 @@ export class MemStorage implements IStorage {
     
     if (completed !== undefined) {
       tasks = tasks.filter(task => task.completed === completed);
+    }
+    
+    if (clientId !== undefined) {
+      tasks = tasks.filter(task => task.clientId === clientId);
     }
     
     return tasks.sort((a, b) => {
@@ -1225,7 +1229,7 @@ export class DatabaseStorage implements IStorage {
     return task || undefined;
   }
 
-  async getTasks(assignedTo?: number, completed?: boolean): Promise<any[]> {
+  async getTasks(assignedTo?: number, completed?: boolean, clientId?: number): Promise<any[]> {
     // Build the SQL query with proper filtering
     let regularTasksSQL = `
       SELECT 
@@ -1270,6 +1274,13 @@ export class DatabaseStorage implements IStorage {
         actionItemsSQL += ` AND cai.completed_at IS NULL`;
       }
       params.push(completed);
+      paramIndex++;
+    }
+    
+    if (clientId !== undefined) {
+      regularTasksSQL += ` AND t.client_id = $${paramIndex}`;
+      actionItemsSQL += ` AND comm.client_id = $${paramIndex}`;
+      params.push(clientId);
       paramIndex++;
     }
     

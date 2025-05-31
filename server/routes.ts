@@ -867,8 +867,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const completed = req.query.completed === "true" ? true : 
                       req.query.completed === "false" ? false : 
                       undefined;
+      const clientId = req.query.clientId ? Number(req.query.clientId) : undefined;
       
-      const tasks = await storage.getTasks(assignedTo, completed);
+      if (req.query.clientId && isNaN(clientId!)) {
+        return res.status(400).json({ message: "Invalid client ID format" });
+      }
+      
+      const tasks = await storage.getTasks(assignedTo, completed, clientId);
       res.json(tasks);
     } catch (error) {
       console.error("Get tasks error:", error);
