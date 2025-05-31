@@ -367,7 +367,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
         </Dialog>
       </div>
       
-      <Card className="mb-6">
+      <Card className="mb-3">
         <CardContent className="p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -382,7 +382,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
       </Card>
       
       {/* Filter Dropdown */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-3 ml-2">
         <Filter className="h-4 w-4 text-slate-600" />
         <span className="text-sm font-medium text-slate-700">Filter Tasks:</span>
         <Select value={activeTab} onValueChange={setActiveTab}>
