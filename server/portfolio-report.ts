@@ -435,28 +435,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
         </table>
       </div>
 
-      <!-- Portfolio Risk Profile -->
-      <div class="section">
-        <h2 class="section-title">Portfolio Risk Profile</h2>
-        <div class="risk-metrics">
-          <div class="risk-metric">
-            <div class="risk-score">7/10</div>
-            <div class="metric-label">Risk Score</div>
-          </div>
-          <div class="risk-metric">
-            <div class="risk-score">19.0406420468337%</div>
-            <div class="metric-label">Volatility</div>
-          </div>
-          <div class="risk-metric">
-            <div class="risk-score">1.79216483471377</div>
-            <div class="metric-label">Sharpe Ratio</div>
-          </div>
-          <div class="risk-metric">
-            <div class="risk-score">Moderate</div>
-            <div class="metric-label">Risk Category</div>
-          </div>
-        </div>
-      </div>
+
 
       <!-- Asset & Sector Allocation -->
       <div class="section">
