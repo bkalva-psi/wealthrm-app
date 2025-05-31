@@ -698,6 +698,12 @@ const ClientCommunications: React.FC = () => {
                         <div className="text-sm text-gray-600">
                           {date}
                         </div>
+                        {/* Show customer name in global view */}
+                        {isGlobalView && communication.client_name && (
+                          <div className="text-sm font-medium text-blue-600">
+                            {communication.client_name}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center">
                         <ChevronDown 
