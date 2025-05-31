@@ -52,6 +52,7 @@ function useHashRouter() {
       return pathname;
     }
     
+    // Always default to dashboard/home page
     return hash || '/';
   });
   
