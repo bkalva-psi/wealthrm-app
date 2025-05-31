@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Briefcase, Home, Building, 
-  CreditCard, Shield, Users, Wallet, BarChart4, MessageCircle, Clock, Heart,
-  FileText, CheckCircle, XCircle, AlertCircle, Target, ArrowUpDown
+  CreditCard, Shield, Users, Wallet, PieChart, MessageCircle, Clock, Heart,
+  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -181,21 +181,21 @@ export default function ClientPersonalPage() {
                       className="p-2 bg-blue-100 rounded flex items-center justify-center"
                       title="Personal Profile"
                     >
-                      <BarChart4 className="h-5 w-5 text-slate-400" />
+                      <User className="h-5 w-5 text-slate-400" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
                       className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Portfolio"
                     >
-                      <Wallet className="h-5 w-5 text-slate-600" />
+                      <PieChart className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
                       className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Transactions"
                     >
-                      <ArrowUpDown className="h-5 w-5 text-slate-600" />
+                      <Receipt className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
@@ -215,13 +215,13 @@ export default function ClientPersonalPage() {
                       className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Portfolio Report"
                     >
-                      <FileText className="h-5 w-5 text-slate-600" />
+                      <FileBarChart className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       className="p-2 hover:bg-slate-100 rounded flex items-center justify-center"
                       title="Investment Recommendations"
                     >
-                      <Target className="h-5 w-5 text-slate-600" />
+                      <Lightbulb className="h-5 w-5 text-slate-600" />
                     </button>
                   </div>
                 </>
@@ -483,7 +483,7 @@ export default function ClientPersonalPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl font-medium flex items-center gap-2">
-                    <BarChart4 className="h-5 w-5" />
+                    <PieChart className="h-5 w-5" />
                     Financial Profile
                   </CardTitle>
                 </CardHeader>
