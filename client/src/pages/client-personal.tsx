@@ -291,85 +291,85 @@ export default function ClientPersonalPage() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="px-4 pb-4 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-medium mb-3">Basic Details</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Date of Birth</dt>
-                        <dd className="text-sm font-medium">{formatDate(client.dateOfBirth)}</dd>
-                      </div>
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Age</dt>
-                        <dd className="text-sm font-medium">
-                          {client.dateOfBirth ? `${new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear()} years` : "Not specified"}
-                        </dd>
-                      </div>
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Gender</dt>
-                        <dd className="text-sm font-medium">{client.gender || "Not specified"}</dd>
-                      </div>
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Marital Status</dt>
-                        <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
-                      </div>
-                      {client.maritalStatus === "Married" && (
-                        <div className="space-y-1">
-                          <dt className="text-sm text-slate-500">Anniversary</dt>
-                          <dd className="text-sm font-medium">{formatDate(client.anniversaryDate)}</dd>
-                        </div>
-                      )}
+                <div>
+                  <h3 className="font-medium mb-3">Basic Details</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Date of Birth</dt>
+                      <dd className="text-sm font-medium">{formatDate(client.dateOfBirth)}</dd>
                     </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Age</dt>
+                      <dd className="text-sm font-medium">
+                        {client.dateOfBirth ? `${new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear()} years` : "Not specified"}
+                      </dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Gender</dt>
+                      <dd className="text-sm font-medium">{client.gender || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Marital Status</dt>
+                      <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
+                    </div>
+                    {client.maritalStatus === "Married" && (
+                      <div className="space-y-1">
+                        <dt className="text-sm text-slate-500">Anniversary</dt>
+                        <dd className="text-sm font-medium">{formatDate(client.anniversaryDate)}</dd>
+                      </div>
+                    )}
                   </div>
-                  
-                  <div>
-                    <h3 className="font-medium mb-3">Contact Preferences</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Preferred Contact Method</dt>
-                        <dd className="text-sm font-medium">{client.preferredContactMethod || "Not specified"}</dd>
-                      </div>
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Preferred Time</dt>
-                        <dd className="text-sm font-medium">{client.preferredContactTime || "Not specified"}</dd>
-                      </div>
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Communication Frequency</dt>
-                        <dd className="text-sm font-medium">{client.communicationFrequency || "Not specified"}</dd>
-                      </div>
-                      <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Last Contact</dt>
-                        <dd className="text-sm font-medium">{formatDate(client.lastContactDate)}</dd>
-                      </div>
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <h3 className="font-medium mb-3">Contact Preferences</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Preferred Contact Method</dt>
+                      <dd className="text-sm font-medium">{client.preferredContactMethod || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Preferred Time</dt>
+                      <dd className="text-sm font-medium">{client.preferredContactTime || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Communication Frequency</dt>
+                      <dd className="text-sm font-medium">{client.communicationFrequency || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Last Contact</dt>
+                      <dd className="text-sm font-medium">{formatDate(client.lastContactDate)}</dd>
                     </div>
                   </div>
                 </div>
 
                 <Separator />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-medium mb-3">Home Address</h3>
-                    <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="mb-1">{client.homeAddress || "Address not provided"}</p>
-                      <p className="text-sm">
-                        {client.homeCity && <span>{client.homeCity}, </span>}
-                        {client.homeState && <span>{client.homeState}, </span>}
-                        {client.homePincode && <span>PIN: {client.homePincode}</span>}
-                      </p>
-                    </div>
+                <div>
+                  <h3 className="font-medium mb-3">Home Address</h3>
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <p className="mb-1">{client.homeAddress || "Address not provided"}</p>
+                    <p className="text-sm">
+                      {client.homeCity && <span>{client.homeCity}, </span>}
+                      {client.homeState && <span>{client.homeState}, </span>}
+                      {client.homePincode && <span>PIN: {client.homePincode}</span>}
+                    </p>
                   </div>
-                  
-                  <div>
-                    <h3 className="font-medium mb-3">Work Address</h3>
-                    <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="mb-1">{client.workAddress || "Address not provided"}</p>
-                      <p className="text-sm">
-                        {client.workCity && <span>{client.workCity}, </span>}
-                        {client.workState && <span>{client.workState}, </span>}
-                        {client.workPincode && <span>PIN: {client.workPincode}</span>}
-                      </p>
-                    </div>
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <h3 className="font-medium mb-3">Work Address</h3>
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <p className="mb-1">{client.workAddress || "Address not provided"}</p>
+                    <p className="text-sm">
+                      {client.workCity && <span>{client.workCity}, </span>}
+                      {client.workState && <span>{client.workState}, </span>}
+                      {client.workPincode && <span>PIN: {client.workPincode}</span>}
+                    </p>
                   </div>
                 </div>
                 
@@ -377,32 +377,30 @@ export default function ClientPersonalPage() {
                 
                 <div>
                   <h3 className="font-medium mb-3">Professional Information</h3>
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-                      <div>
-                        <p className="text-sm text-slate-500">Profession</p>
-                        <p className="font-medium">{client.profession || "Not specified"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Designation</p>
-                        <p className="font-medium">{client.designation || "Not specified"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Company</p>
-                        <p className="font-medium">{client.companyName || "Not specified"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Work Experience</p>
-                        <p className="font-medium">{client.workExperience ? `${client.workExperience} years` : "Not specified"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Sector</p>
-                        <p className="font-medium">{client.sectorOfEmployment || "Not specified"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500">Annual Income</p>
-                        <p className="font-medium">{client.annualIncome || "Not specified"}</p>
-                      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Profession</dt>
+                      <dd className="text-sm font-medium">{client.profession || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Designation</dt>
+                      <dd className="text-sm font-medium">{client.designation || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Company</dt>
+                      <dd className="text-sm font-medium">{client.companyName || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Work Experience</dt>
+                      <dd className="text-sm font-medium">{client.workExperience ? `${client.workExperience} years` : "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Sector</dt>
+                      <dd className="text-sm font-medium">{client.sectorOfEmployment || "Not specified"}</dd>
+                    </div>
+                    <div className="space-y-1">
+                      <dt className="text-sm text-slate-500">Annual Income</dt>
+                      <dd className="text-sm font-medium">{client.annualIncome || "Not specified"}</dd>
                     </div>
                   </div>
                 </div>
