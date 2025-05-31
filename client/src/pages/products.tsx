@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp, Mail } from "lucide-react";
+import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp, Mail, MessageCircle } from "lucide-react";
 
 interface Product {
   id: number;
@@ -230,6 +230,90 @@ Ujjivan Small Finance Bank`;
 
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.location.href = mailtoLink;
+    }
+  };
+
+  const handleWhatsApp = async (product: Product) => {
+    try {
+      // Generate PDF filename based on product name
+      const filename = `${product.name.toLowerCase().replace(/\s+/g, '-')}-factsheet.pdf`;
+      
+      // Fetch the PDF from our document generation endpoint
+      const response = await fetch(`/documents/${filename}`);
+      if (!response.ok) throw new Error('Failed to fetch PDF');
+      
+      const blob = await response.blob();
+      
+      // Prepare WhatsApp message
+      const message = `Dear Sir/Madam,
+
+Thank you for your interest in ${product.name}.
+
+Please find herewith the details as you have requested:
+
+📊 *Product Details:*
+• Category: ${product.category}
+• Risk Level: ${product.riskLevel}
+• Minimum Investment: ${product.minInvestment}
+${product.expectedReturns ? `• Expected Returns: ${product.expectedReturns}` : ''}
+
+I have attached the product factsheet document for your reference.
+
+Best regards,
+Ujjivan Small Finance Bank`;
+
+      // For modern browsers with Web Share API support
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], filename, { type: 'application/pdf' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: `${product.name} - Product Information`,
+            text: message,
+            files: [file]
+          });
+          return;
+        }
+      }
+
+      // Fallback: Download PDF and open WhatsApp with message
+      const url = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = filename;
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      window.URL.revokeObjectURL(url);
+
+      // Open WhatsApp with enhanced message
+      const enhancedMessage = `${message}
+
+Note: I have downloaded the PDF document to your device. Please attach it when sending this message.`;
+
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(enhancedMessage)}`;
+      window.open(whatsappUrl, '_blank');
+
+    } catch (error) {
+      console.error('WhatsApp preparation failed:', error);
+      // Final fallback: open WhatsApp with text content and download link
+      const message = `Dear Sir/Madam,
+
+Thank you for your interest in ${product.name}.
+
+📊 *Product Details:*
+• Category: ${product.category}
+• Risk Level: ${product.riskLevel}
+• Minimum Investment: ${product.minInvestment}
+${product.expectedReturns ? `• Expected Returns: ${product.expectedReturns}` : ''}
+
+You can download the product factsheet from: ${window.location.origin}/documents/${product.name.toLowerCase().replace(/\s+/g, '-')}-factsheet.pdf
+
+Best regards,
+Ujjivan Small Finance Bank`;
+
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
     }
   };
 
@@ -491,34 +575,42 @@ Ujjivan Small Finance Bank`;
 
                         {/* Action Buttons */}
                         <div className="flex gap-2 pt-2">
-                          {product.factsheetUrl && (
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex-1 flex items-center gap-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDownload(product);
-                              }}
-                            >
-                              <Download className="h-4 w-4" />
-                              Download
-                            </Button>
-                          )}
-                          {product.factsheetUrl && (
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex-1 flex items-center gap-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMail(product);
-                              }}
-                            >
-                              <Mail className="h-4 w-4" />
-                              Mail
-                            </Button>
-                          )}
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 flex items-center gap-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownload(product);
+                            }}
+                          >
+                            <Download className="h-4 w-4" />
+                            Download
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 flex items-center gap-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMail(product);
+                            }}
+                          >
+                            <Mail className="h-4 w-4" />
+                            Mail
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 flex items-center gap-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleWhatsApp(product);
+                            }}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            WhatsApp
+                          </Button>
                         </div>
                       </div>
                     )}
