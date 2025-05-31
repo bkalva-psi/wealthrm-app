@@ -76,7 +76,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
 
   return (
     <div className="w-full h-full">
-      <h3 className="text-sm font-medium text-slate-500 mb-3">{getChartTitle()}</h3>
+      <h3 className="text-sm font-medium text-slate-500 mb-3 text-left">{getChartTitle()}</h3>
       <ResponsiveContainer width="100%" height={getChartHeight()}>
         <BarChart
           data={chartData}
@@ -104,7 +104,8 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
           <Tooltip content={<CustomTooltip />} />
           <Legend 
             iconType="circle"
-            wrapperStyle={{ fontSize: 12, paddingTop: 10 }}
+            wrapperStyle={{ fontSize: 12, paddingTop: 10, textAlign: 'left' }}
+            align="left"
           />
           <ReferenceLine x={0} stroke="#cbd5e1" />
           <Bar dataKey="Portfolio" fill={colors.portfolio} name="Portfolio" radius={[0, 2, 2, 0]} />
