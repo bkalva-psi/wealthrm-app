@@ -194,8 +194,11 @@ function MetricCard({ title, value, icon, description, color = "blue", trend, is
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex items-start">
+          <div className={`p-2 rounded-full ${iconBg} mr-3`}>
+            {icon}
+          </div>
+          <div className="flex-1">
             <p className="text-sm text-slate-500">{title}</p>
             <div className="mt-1 flex items-baseline">
               {isLoading ? (
@@ -213,9 +216,6 @@ function MetricCard({ title, value, icon, description, color = "blue", trend, is
               )}
             </div>
             {description && <p className="text-xs text-slate-500 mt-1">{description}</p>}
-          </div>
-          <div className={`p-2 rounded-full ${iconBg}`}>
-            {icon}
           </div>
         </div>
       </CardContent>
@@ -697,15 +697,15 @@ export default function ClientPortfolioPage() {
       </div>
 
       {/* Page Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-white border-b border-gray-200 px-6 py-3">
         <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
       </div>
       
-      <div className="p-6">
+      <div className="p-4">
       {/* Portfolio Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <MetricCard 
-          title="Assets Under Management"
+          title="AUM"
           value={client?.aum || "₹0"}
           icon={<Wallet className="h-5 w-5" />}
           description="Total portfolio value"
@@ -743,7 +743,7 @@ export default function ClientPortfolioPage() {
       </div>
       
       {/* Tabs for different portfolio views */}
-      <Tabs defaultValue="overview" className="space-y-4 flex-grow">
+      <Tabs defaultValue="overview" className="space-y-3 flex-grow">
         <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full sticky top-0 z-10 bg-white">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="holdings">Holdings</TabsTrigger>
@@ -753,7 +753,7 @@ export default function ClientPortfolioPage() {
         </TabsList>
         
         {/* Portfolio Overview Tab */}
-        <TabsContent value="overview" className="space-y-4 pt-6">
+        <TabsContent value="overview" className="space-y-3 pt-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
