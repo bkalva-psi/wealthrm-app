@@ -681,56 +681,7 @@ export default function ClientPortfolioPage() {
                       </a>
                     </div>
                   )}
-                  
-                  {/* Line 4: Navigation Icons */}
-                  <div className="grid grid-cols-7 gap-1 mt-2 w-full">
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Personal Profile"
-                    >
-                      <User className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 bg-blue-100 rounded"
-                      title="Portfolio"
-                    >
-                      <PieChart className="h-5 w-5 text-slate-400" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Transactions"
-                    >
-                      <Receipt className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Appointments"
-                    >
-                      <Calendar className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      onClick={() => window.location.hash = `/clients/${clientId}/communications`}
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Communications"
-                    >
-                      <MessageCircle className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Portfolio Report"
-                    >
-                      <FileBarChart className="h-5 w-5 text-slate-600" />
-                    </button>
-                    <button 
-                      className="p-2 hover:bg-slate-100 rounded"
-                      title="Investment Recommendations"
-                    >
-                      <Lightbulb className="h-5 w-5 text-slate-600" />
-                    </button>
-                  </div>
+
                 </>
               )}
             </div>
@@ -742,50 +693,48 @@ export default function ClientPortfolioPage() {
 
       {/* Page Header with Navigation */}
       <div className="bg-white border-b border-gray-200 px-6 py-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">Portfolio</h2>
+        
+        {/* Navigation Icons */}
+        <div className="grid grid-cols-5 gap-3">
+          <button 
+            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+          >
+            <User className="h-5 w-5 text-gray-600" />
+            <span className="text-xs text-gray-600 mt-1">Profile</span>
+          </button>
           
-          {/* Navigation Icons */}
-          <div className="grid grid-cols-5 gap-3">
-            <button 
-              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-            >
-              <User className="h-5 w-5 text-gray-600" />
-              <span className="text-xs text-gray-600 mt-1">Profile</span>
-            </button>
-            
-            <button 
-              className="flex flex-col items-center p-2 rounded-lg bg-blue-50 border border-blue-200"
-            >
-              <PieChart className="h-5 w-5 text-blue-600" />
-              <span className="text-xs text-blue-600 mt-1 font-medium">Portfolio</span>
-            </button>
-            
-            <button 
-              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
-            >
-              <Receipt className="h-5 w-5 text-gray-600" />
-              <span className="text-xs text-gray-600 mt-1">Transactions</span>
-            </button>
-            
-            <button 
-              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
-            >
-              <FileBarChart className="h-5 w-5 text-gray-600" />
-              <span className="text-xs text-gray-600 mt-1">Report</span>
-            </button>
-            
-            <button 
-              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
-            >
-              <Lightbulb className="h-5 w-5 text-gray-600" />
-              <span className="text-xs text-gray-600 mt-1">Ideas</span>
-            </button>
-          </div>
+          <button 
+            className="flex flex-col items-center p-2 rounded-lg bg-blue-50 border border-blue-200"
+          >
+            <PieChart className="h-5 w-5 text-blue-600" />
+            <span className="text-xs text-blue-600 mt-1 font-medium">Portfolio</span>
+          </button>
+          
+          <button 
+            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+          >
+            <Receipt className="h-5 w-5 text-gray-600" />
+            <span className="text-xs text-gray-600 mt-1">Transactions</span>
+          </button>
+          
+          <button 
+            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+          >
+            <FileBarChart className="h-5 w-5 text-gray-600" />
+            <span className="text-xs text-gray-600 mt-1">Report</span>
+          </button>
+          
+          <button 
+            className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+          >
+            <Lightbulb className="h-5 w-5 text-gray-600" />
+            <span className="text-xs text-gray-600 mt-1">Ideas</span>
+          </button>
         </div>
       </div>
       
