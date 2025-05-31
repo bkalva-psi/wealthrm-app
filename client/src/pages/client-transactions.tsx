@@ -745,34 +745,38 @@ export default function ClientTransactions() {
           <div className="p-4 space-y-4">
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</Label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2">
                 <Button
                   variant={selectedPeriod === '1w' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handlePeriodFilter('1w')}
+                  className="flex-1"
                 >
-                  Last Week
+                  1W
                 </Button>
                 <Button
                   variant={selectedPeriod === '1m' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handlePeriodFilter('1m')}
+                  className="flex-1"
                 >
-                  Last Month
+                  1M
                 </Button>
                 <Button
                   variant={selectedPeriod === '3m' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handlePeriodFilter('3m')}
+                  className="flex-1"
                 >
-                  Last 3 Months
+                  3M
                 </Button>
                 <Button
                   variant={selectedPeriod === 'all' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handlePeriodFilter('all')}
+                  className="flex-1"
                 >
-                  All Time
+                  ALL
                 </Button>
               </div>
             </div>
