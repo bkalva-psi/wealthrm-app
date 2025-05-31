@@ -1907,12 +1907,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           pipelineValue: sql<number>`coalesce(sum(${prospects.potentialAumValue}), 0)`
         })
         .from(prospects)
-        .where(
-          and(
-            eq(prospects.assignedTo, userId),
-            sql`${prospects.stage} IN ('new', 'qualified', 'proposal')`
-          )
-        );
+        .where(sql`${prospects.assignedTo} = ${userId} AND ${prospects.stage} IN ('new', 'qualified', 'proposal')`);
 
       // Calculate revenue from transactions (this month)
       const monthStart = new Date(currentYear, currentMonth - 1, 1);
