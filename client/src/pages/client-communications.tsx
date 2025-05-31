@@ -874,7 +874,7 @@ const ClientCommunications: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="summary">Summary</Label>
+                <Label htmlFor="summary">Summary *</Label>
                 <Textarea
                   id="summary"
                   value={newNoteData.summary}
@@ -885,7 +885,7 @@ const ClientCommunications: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes">Detailed Notes</Label>
+                <Label htmlFor="notes">Detailed Notes *</Label>
                 <Textarea
                   id="notes"
                   value={newNoteData.notes}
