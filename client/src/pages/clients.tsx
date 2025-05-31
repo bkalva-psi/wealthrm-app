@@ -172,12 +172,8 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             {formatPerformance(client.yearlyPerformance)}
           </div>
           
-          {/* Risk profile - navigates to portfolio page */}
-          <div 
-            className="cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'portfolio')}
-            title="View client portfolio"
-          >
+          {/* Risk profile - non-clickable */}
+          <div>
             <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
             <div className="text-sm text-slate-700">
               {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
