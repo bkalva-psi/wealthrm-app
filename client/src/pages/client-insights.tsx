@@ -202,7 +202,7 @@ export default function ClientInsights() {
       </div>
 
       {/* Page Header with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-3">
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-1 py-3">
         <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Insights</h2>
         
         {/* Navigation Icons */}
