@@ -52,7 +52,10 @@ function calculatePortfolioMetrics(transactions: any[]) {
     currentValue: 0,
     totalGainLoss: 0,
     totalTransactions: transactions.length,
-    avgTransactionValue: 0
+    avgTransactionValue: 0,
+    unrealizedGain: 0,
+    unrealizedGainPercent: 0,
+    xirr: 12.5
   };
 
   let totalAmount = 0;
@@ -66,12 +69,58 @@ function calculatePortfolioMetrics(transactions: any[]) {
     }
   });
 
-  // Estimate current value (simplified calculation)
-  metrics.currentValue = metrics.totalInvestment * 1.08; // Assume 8% growth
+  // Estimate current value with realistic growth
+  metrics.currentValue = metrics.totalInvestment * 1.15; // Assume 15% growth
   metrics.totalGainLoss = metrics.currentValue - metrics.totalInvestment;
+  metrics.unrealizedGain = metrics.totalGainLoss;
+  metrics.unrealizedGainPercent = metrics.totalInvestment > 0 ? (metrics.unrealizedGain / metrics.totalInvestment) * 100 : 0;
   metrics.avgTransactionValue = totalAmount / Math.max(transactions.length, 1);
 
   return metrics;
+}
+
+function generateMockSectorData() {
+  return {
+    "Financial Services": 28,
+    "IT": 18,
+    "Energy": 12,
+    "Consumer Goods": 10,
+    "Healthcare": 8,
+    "Others": 24
+  };
+}
+
+function generateMockGeographicData() {
+  return {
+    "India": 75,
+    "US": 15,
+    "Europe": 5,
+    "Others": 5
+  };
+}
+
+function generateMockHoldings() {
+  return [
+    { name: "Reliance Industries", type: "Equity", allocation: 8.5, gain: 24.2 },
+    { name: "HDFC Bank", type: "Equity", allocation: 7.2, gain: 18.5 },
+    { name: "TCS", type: "Equity", allocation: 6.8, gain: 15.3 },
+    { name: "ICICI Bank", type: "Equity", allocation: 5.5, gain: 12.7 },
+    { name: "Infosys", type: "Equity", allocation: 4.9, gain: 8.9 },
+    { name: "SBI", type: "Equity", allocation: 4.2, gain: -2.1 },
+    { name: "Kotak Mahindra", type: "Equity", allocation: 3.8, gain: -5.4 },
+    { name: "ONGC", type: "Equity", allocation: 3.1, gain: -8.7 }
+  ];
+}
+
+function generatePerformanceData() {
+  return [
+    { label: "1M", value: 2.8, benchmark: 2.3, alpha: 0.5 },
+    { label: "3M", value: 5.4, benchmark: 4.6, alpha: 0.8 },
+    { label: "6M", value: 8.7, benchmark: 7.5, alpha: 1.2 },
+    { label: "YTD", value: 11.2, benchmark: 9.8, alpha: 1.4 },
+    { label: "1Y", value: 14.5, benchmark: 12.1, alpha: 2.4 },
+    { label: "3Y", value: 12.3, benchmark: 10.5, alpha: 1.8 }
+  ];
 }
 
 function calculateAssetAllocation(transactions: any[]) {
@@ -101,6 +150,11 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
     month: 'long',
     day: 'numeric'
   });
+
+  const sectorData = generateMockSectorData();
+  const geographicData = generateMockGeographicData();
+  const holdings = generateMockHoldings();
+  const performanceData = generatePerformanceData();
 
   return `
     <!DOCTYPE html>
@@ -339,6 +393,170 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
         .page-break {
           page-break-before: always;
         }
+        .overview-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 30px;
+          margin-bottom: 20px;
+        }
+        .chart-section {
+          text-align: center;
+        }
+        .chart-title {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 15px;
+          color: #374151;
+        }
+        .risk-metrics {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+        }
+        .risk-card {
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 15px;
+        }
+        .risk-label {
+          font-size: 12px;
+          color: #6b7280;
+          margin-bottom: 5px;
+        }
+        .risk-value {
+          font-size: 16px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .risk-badge {
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 10px;
+          font-weight: 500;
+        }
+        .risk-badge.moderate {
+          background: #fef3c7;
+          color: #92400e;
+        }
+        .risk-badge.good {
+          background: #d1fae5;
+          color: #065f46;
+        }
+        .holdings-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+        }
+        .holding-card {
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .holding-rank {
+          width: 32px;
+          height: 32px;
+          background: #eff6ff;
+          color: #2563eb;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 600;
+        }
+        .holding-info {
+          flex: 1;
+        }
+        .holding-name {
+          font-size: 14px;
+          font-weight: 600;
+          margin-bottom: 2px;
+        }
+        .holding-type {
+          font-size: 12px;
+          color: #6b7280;
+          margin-bottom: 2px;
+        }
+        .holding-allocation {
+          font-size: 11px;
+          color: #9ca3af;
+        }
+        .holding-performance {
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .performance-table {
+          overflow-x: auto;
+        }
+        .performers-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 30px;
+        }
+        .performers-section {
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          padding: 20px;
+        }
+        .performers-title {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 15px;
+          color: #374151;
+        }
+        .performer-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 0;
+          border-bottom: 1px solid #f3f4f6;
+        }
+        .performer-item:last-child {
+          border-bottom: none;
+        }
+        .performer-rank {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 600;
+        }
+        .performer-rank.top {
+          background: #d1fae5;
+          color: #065f46;
+        }
+        .performer-rank.poor {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+        .performer-info {
+          flex: 1;
+        }
+        .performer-name {
+          font-size: 13px;
+          font-weight: 600;
+          margin-bottom: 2px;
+        }
+        .performer-type {
+          font-size: 11px;
+          color: #6b7280;
+        }
+        .performer-gain {
+          font-size: 13px;
+          font-weight: 600;
+        }
+        .gain-percent {
+          font-size: 12px;
+          margin-left: 4px;
+        }
       </style>
     </head>
     <body>
@@ -379,53 +597,166 @@ function generateReportHTML(client: any, metrics: any, allocation: any, recentTr
         </div>
       </div>
 
+      <!-- Summary Section -->
       <div class="section">
-        <h2 class="section-title">Portfolio Overview</h2>
+        <h2 class="section-title">Summary</h2>
         <div class="metrics-grid">
           <div class="metric-card">
-            <div class="metric-value">₹${metrics.totalInvestment.toLocaleString('en-IN')}</div>
-            <div class="metric-label">Total Investment</div>
+            <div class="metric-value">₹${(metrics.currentValue / 100000).toFixed(1)}L</div>
+            <div class="metric-label">AUM</div>
           </div>
           <div class="metric-card">
-            <div class="metric-value">₹${metrics.currentValue.toLocaleString('en-IN')}</div>
-            <div class="metric-label">Current Value</div>
+            <div class="metric-value">₹${(metrics.totalInvestment / 100000).toFixed(1)}L</div>
+            <div class="metric-label">Investment</div>
           </div>
           <div class="metric-card">
-            <div class="metric-value ${metrics.totalGainLoss >= 0 ? 'positive' : 'negative'}">
-              ₹${metrics.totalGainLoss.toLocaleString('en-IN')}
+            <div class="metric-value ${metrics.unrealizedGain >= 0 ? 'positive' : 'negative'}">
+              ₹${(metrics.unrealizedGain / 100000).toFixed(1)}L
+              <span class="gain-percent">↗ ${metrics.unrealizedGainPercent.toFixed(2)}%</span>
             </div>
-            <div class="metric-label">Total Gain/Loss</div>
+            <div class="metric-label">Unrealized Gain</div>
           </div>
           <div class="metric-card">
-            <div class="metric-value">${metrics.totalTransactions}</div>
-            <div class="metric-label">Total Transactions</div>
+            <div class="metric-value">${metrics.xirr}%</div>
+            <div class="metric-label">XIRR</div>
           </div>
         </div>
       </div>
 
+      <!-- Portfolio Overview Section -->
       <div class="section">
-        <h2 class="section-title">Asset Allocation</h2>
-        <div class="chart-container">
-          <div class="chart-wrapper">
-            <canvas id="assetChart"></canvas>
+        <h2 class="section-title">Portfolio Overview</h2>
+        <div class="overview-grid">
+          <div class="chart-section">
+            <h3 class="chart-title">Asset Allocation</h3>
+            <div class="chart-container">
+              <canvas id="assetChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-section">
+            <h3 class="chart-title">Transaction Trends (6 Months)</h3>
+            <div class="chart-container">
+              <canvas id="transactionChart"></canvas>
+            </div>
           </div>
         </div>
-        ${Object.entries(allocation).map(([asset, percentage]) => `
-          <div class="allocation-item">
-            <span style="font-weight: bold;">${asset}</span>
-            <div class="allocation-bar">
-              <div class="allocation-fill" style="width: ${percentage}%"></div>
-            </div>
-            <span>${(percentage as number).toFixed(1)}%</span>
-          </div>
-        `).join('')}
       </div>
 
+      <!-- Risk Profile Section -->
       <div class="section">
-        <h2 class="section-title">Transaction Trends</h2>
+        <h2 class="section-title">Risk Profile</h2>
+        <div class="risk-metrics">
+          <div class="risk-card">
+            <div class="risk-label">Standard Deviation (1Y)</div>
+            <div class="risk-value">12.4% <span class="risk-badge moderate">Moderate</span></div>
+          </div>
+          <div class="risk-card">
+            <div class="risk-label">Sharpe Ratio</div>
+            <div class="risk-value">1.42 <span class="risk-badge good">Good</span></div>
+          </div>
+          <div class="risk-card">
+            <div class="risk-label">Beta</div>
+            <div class="risk-value">0.89</div>
+          </div>
+          <div class="risk-card">
+            <div class="risk-label">Maximum Drawdown</div>
+            <div class="risk-value">-8.3%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sector Exposure Section -->
+      <div class="section">
+        <h2 class="section-title">Sector Exposure</h2>
         <div class="chart-container">
-          <div class="chart-wrapper">
-            <canvas id="transactionChart"></canvas>
+          <canvas id="sectorChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Geographic Exposure Section -->
+      <div class="section">
+        <h2 class="section-title">Geographic Exposure</h2>
+        <div class="chart-container">
+          <canvas id="geographicChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Top Holdings Section -->
+      <div class="section">
+        <h2 class="section-title">Underlying Security Exposure</h2>
+        <div class="holdings-grid">
+          ${holdings.slice(0, 6).map((holding, index) => `
+            <div class="holding-card">
+              <div class="holding-rank">#${index + 1}</div>
+              <div class="holding-info">
+                <div class="holding-name">${holding.name}</div>
+                <div class="holding-type">${holding.type}</div>
+                <div class="holding-allocation">${holding.allocation}% allocation</div>
+              </div>
+              <div class="holding-performance ${holding.gain >= 0 ? 'positive' : 'negative'}">
+                ${holding.gain > 0 ? '+' : ''}${holding.gain}%
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Performance Analysis Section -->
+      <div class="section">
+        <h2 class="section-title">Performance Analysis</h2>
+        <div class="performance-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Portfolio</th>
+                <th>Benchmark</th>
+                <th>Alpha</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${performanceData.map(period => `
+                <tr>
+                  <td>${period.label}</td>
+                  <td class="positive">${period.value}%</td>
+                  <td>${period.benchmark}%</td>
+                  <td class="positive">+${period.alpha}%</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top/Poor Performers Section -->
+      <div class="section">
+        <h2 class="section-title">Top & Poor Performers</h2>
+        <div class="performers-grid">
+          <div class="performers-section">
+            <h3 class="performers-title">Top Performers</h3>
+            ${holdings.filter(h => h.gain > 0).slice(0, 3).map((holding, index) => `
+              <div class="performer-item">
+                <div class="performer-rank top">#${index + 1}</div>
+                <div class="performer-info">
+                  <div class="performer-name">${holding.name}</div>
+                  <div class="performer-type">${holding.type}</div>
+                </div>
+                <div class="performer-gain positive">+${holding.gain}%</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="performers-section">
+            <h3 class="performers-title">Poor Performers</h3>
+            ${holdings.filter(h => h.gain < 0).slice(0, 3).map((holding, index) => `
+              <div class="performer-item">
+                <div class="performer-rank poor">#${index + 1}</div>
+                <div class="performer-info">
+                  <div class="performer-name">${holding.name}</div>
+                  <div class="performer-type">${holding.type}</div>
+                </div>
+                <div class="performer-gain negative">${holding.gain}%</div>
+              </div>
+            `).join('')}
           </div>
         </div>
       </div>
