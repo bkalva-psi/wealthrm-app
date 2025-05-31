@@ -12,21 +12,22 @@ import {
   Percent, 
   AlertTriangle,
   Shield,
-  Target,
+  Lightbulb,
   Wallet,
   Landmark,
   Globe,
   Building,
   ChevronRight,
-  FileText,
+  FileBarChart,
   ArrowUpRight,
   ArrowDownRight,
   AlertCircle,
   Phone,
   Mail,
-  BarChart4,
+  User,
   MessageCircle,
-  Calendar
+  Calendar,
+  Receipt
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -644,20 +645,20 @@ export default function ClientPortfolioPage() {
                       className="p-2 hover:bg-slate-100 rounded"
                       title="Personal Profile"
                     >
-                      <BarChart4 className="h-5 w-5 text-slate-600" />
+                      <User className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       className="p-2 bg-blue-100 rounded"
                       title="Portfolio"
                     >
-                      <Wallet className="h-5 w-5 text-slate-400" />
+                      <PieChart className="h-5 w-5 text-slate-400" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
                       className="p-2 hover:bg-slate-100 rounded"
                       title="Transactions"
                     >
-                      <ArrowUpRight className="h-5 w-5 text-slate-600" />
+                      <Receipt className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
@@ -677,13 +678,13 @@ export default function ClientPortfolioPage() {
                       className="p-2 hover:bg-slate-100 rounded"
                       title="Portfolio Report"
                     >
-                      <FileText className="h-5 w-5 text-slate-600" />
+                      <FileBarChart className="h-5 w-5 text-slate-600" />
                     </button>
                     <button 
                       className="p-2 hover:bg-slate-100 rounded"
                       title="Investment Recommendations"
                     >
-                      <Target className="h-5 w-5 text-slate-600" />
+                      <Lightbulb className="h-5 w-5 text-slate-600" />
                     </button>
                   </div>
                 </>
@@ -957,7 +958,7 @@ export default function ClientPortfolioPage() {
             <Card className="overflow-hidden border-0 shadow-md">
               <CardHeader className="pb-3 bg-gradient-to-r from-indigo-500/90 to-indigo-600/90">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
-                  <Target className="h-5 w-5 mr-2 text-white" />
+                  <Lightbulb className="h-5 w-5 mr-2 text-white" />
                   Investment Opportunities
                 </CardTitle>
                 <CardDescription className="text-indigo-100">Personalized recommendations</CardDescription>
