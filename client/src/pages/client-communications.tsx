@@ -514,12 +514,16 @@ const ClientCommunications: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="quarterly_review">Quarterly Review</SelectItem>
-                    <SelectItem value="portfolio_health_check">Portfolio Health Check</SelectItem>
-                    <SelectItem value="risk_assessment">Risk Assessment</SelectItem>
+                    <SelectItem value="quarterly_review">Quarterly Portfolio Review</SelectItem>
+                    <SelectItem value="portfolio_diagnosis">Portfolio Health Check</SelectItem>
+                    <SelectItem value="risk_assessment">Risk Profile Assessment</SelectItem>
+                    <SelectItem value="goal_planning">Financial Goal Planning</SelectItem>
                     <SelectItem value="product_discussion">Product Discussion</SelectItem>
+                    <SelectItem value="investment_advisory">Investment Advisory Session</SelectItem>
+                    <SelectItem value="market_update">Market Update Discussion</SelectItem>
+                    <SelectItem value="onboarding">Client Onboarding</SelectItem>
                     <SelectItem value="complaint_resolution">Complaint Resolution</SelectItem>
-                    <SelectItem value="general_inquiry">General Inquiry</SelectItem>
+                    <SelectItem value="general_note">General Note</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -534,8 +538,9 @@ const ClientCommunications: React.FC = () => {
                     <SelectItem value="all">All Channels</SelectItem>
                     <SelectItem value="phone">Phone</SelectItem>
                     <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="video">Video</SelectItem>
                     <SelectItem value="in_person">In Person</SelectItem>
+                    <SelectItem value="video_call">Video Call</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
