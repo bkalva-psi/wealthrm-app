@@ -1562,16 +1562,7 @@ export default function ClientPortfolioPage() {
                 <CardTitle className="text-lg">Retirement Projections</CardTitle>
               </CardHeader>
               <CardContent>
-                <RetirementProjectionChart
-                  currentAge={35}
-                  retirementAge={60}
-                  currentCorpus={3750000}
-                  monthlyContribution={25000}
-                  expectedReturn={0.12}
-                  monthlyExpenseAfterRetirement={85000}
-                  inflationRate={0.06}
-                />
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-slate-50 rounded-lg">
                     <div className="text-sm text-slate-500">Retirement Age</div>
