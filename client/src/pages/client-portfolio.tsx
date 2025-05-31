@@ -698,7 +698,7 @@ export default function ClientPortfolioPage() {
         {/* Navigation Icons */}
         <div className="grid grid-cols-7 gap-2">
           <button 
-            className="flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
@@ -706,14 +706,14 @@ export default function ClientPortfolioPage() {
           </button>
           
           <button 
-            className="flex items-center justify-center p-1 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
             title="Portfolio"
           >
             <PieChart className="h-10 w-10 text-blue-600" />
           </button>
           
           <button 
-            className="flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
             title="Transactions"
           >
@@ -721,7 +721,7 @@ export default function ClientPortfolioPage() {
           </button>
           
           <button 
-            className="flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
             title="Appointments"
           >
@@ -729,7 +729,7 @@ export default function ClientPortfolioPage() {
           </button>
           
           <button 
-            className="flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
             title="Communications"
           >
@@ -737,7 +737,7 @@ export default function ClientPortfolioPage() {
           </button>
           
           <button 
-            className="flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
             title="Portfolio Report"
           >
@@ -745,7 +745,7 @@ export default function ClientPortfolioPage() {
           </button>
           
           <button 
-            className="flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
             title="Investment Ideas"
           >
