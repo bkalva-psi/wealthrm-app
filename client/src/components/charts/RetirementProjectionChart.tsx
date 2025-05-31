@@ -27,16 +27,18 @@ export function RetirementProjectionChart({
     
     // Accumulation phase (current age to retirement)
     for (let age = currentAge; age <= retirementAge; age++) {
-      // Add annual contribution and returns
-      const annualContribution = monthlyContribution * 12;
-      corpus = corpus * (1 + expectedReturn) + annualContribution;
-      
       data.push({
         age,
         corpus: Math.round(corpus),
         phase: 'accumulation',
         formattedCorpus: `₹${(corpus / 10000000).toFixed(1)}Cr`
       });
+      
+      // Calculate growth for next year (only if not the last year)
+      if (age < retirementAge) {
+        const annualContribution = monthlyContribution * 12;
+        corpus = corpus * (1 + expectedReturn) + annualContribution;
+      }
     }
     
     // Depletion phase (retirement to corpus exhaustion)
@@ -44,11 +46,11 @@ export function RetirementProjectionChart({
     let monthlyExpense = monthlyExpenseAfterRetirement;
     
     for (let age = retirementAge + 1; age <= 85; age++) {
-      // Adjust expense for inflation
+      // Adjust expense for inflation from previous year
       monthlyExpense = monthlyExpense * (1 + inflationRate);
       const annualExpense = monthlyExpense * 12;
       
-      // Corpus grows by return rate but reduces by expenses
+      // Corpus earns returns but reduces by expenses
       retirementCorpus = retirementCorpus * (1 + expectedReturn) - annualExpense;
       
       // Stop if corpus is exhausted
@@ -129,23 +131,13 @@ export function RetirementProjectionChart({
             label={{ value: "Retirement", position: "top" }}
           />
           
-          {/* Area for accumulation phase */}
+          {/* Split data for different coloring */}
           <Area
             type="monotone"
             dataKey="corpus"
             stroke="#10b981"
             strokeWidth={2}
             fill="url(#accumulationGradient)"
-            connectNulls={false}
-          />
-          
-          {/* Line for the transition */}
-          <Line
-            type="monotone"
-            dataKey="corpus"
-            stroke="#10b981"
-            strokeWidth={2}
-            dot={false}
             connectNulls={false}
           />
         </AreaChart>
