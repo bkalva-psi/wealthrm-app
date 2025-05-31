@@ -439,19 +439,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 </div>
               </div>
               
-              {client && (
-                <div className="flex items-center gap-3">
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <User className="h-5 w-5 text-gray-600" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Phone className="h-5 w-5 text-gray-600" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Mail className="h-5 w-5 text-gray-600" />
-                  </button>
-                </div>
-              )}
+
             </div>
           </div>
         </div>
@@ -467,7 +455,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 {clientId ? 'Client Appointments' : 'Calendar'}
               </h1>
             </div>
-            <Button>
+            <Button className="rounded-full w-10 h-10 p-0">
               <Plus className="h-4 w-4" />
             </Button>
           </div>
