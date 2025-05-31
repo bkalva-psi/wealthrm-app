@@ -335,12 +335,11 @@ export default function Prospects() {
     queryKey: ['/api/prospects']
   });
   
-  // Define the stages for the pipeline and filters
+  // Define the stages for the pipeline and filters (matching database schema)
   const stages = [
-    { id: 'discovery', title: 'Discovery' },
+    { id: 'new', title: 'New' },
     { id: 'qualified', title: 'Qualified' },
     { id: 'proposal', title: 'Proposal' },
-    { id: 'negotiation', title: 'Negotiation' },
     { id: 'won', title: 'Won' },
     { id: 'lost', title: 'Lost' }
   ];
@@ -364,7 +363,7 @@ export default function Prospects() {
     if (filterOptions.maxPotentialAum < 10000000) count++;
     if (filterOptions.minProbabilityScore > 0) count++;
     if (filterOptions.maxProbabilityScore < 100) count++;
-    if (filterOptions.includedStages.length < 6) count++;
+    if (filterOptions.includedStages.length < 5) count++;
     
     setActiveFilters(count);
   };
