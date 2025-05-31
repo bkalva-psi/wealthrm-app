@@ -623,7 +623,7 @@ export default function ClientPortfolioPage() {
   return (
     <div className="px-1 py-4 pb-20 md:pb-6 md:px-6">
       {/* Consistent Header Band */}
-      <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+      <div className={`bg-white border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Back arrow and client info */}
           <div className="flex items-center">
