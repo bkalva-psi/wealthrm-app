@@ -740,9 +740,53 @@ export default function ClientPortfolioPage() {
         </div>
       </div>
 
-      {/* Page Header */}
+      {/* Page Header with Navigation */}
       <div className="bg-white border-b border-gray-200 px-6 py-3">
-        <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
+          
+          {/* Navigation Icons */}
+          <div className="grid grid-cols-5 gap-3">
+            <button 
+              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+            >
+              <User className="h-5 w-5 text-gray-600" />
+              <span className="text-xs text-gray-600 mt-1">Profile</span>
+            </button>
+            
+            <button 
+              className="flex flex-col items-center p-2 rounded-lg bg-blue-50 border border-blue-200"
+            >
+              <PieChart className="h-5 w-5 text-blue-600" />
+              <span className="text-xs text-blue-600 mt-1 font-medium">Portfolio</span>
+            </button>
+            
+            <button 
+              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
+            >
+              <Receipt className="h-5 w-5 text-gray-600" />
+              <span className="text-xs text-gray-600 mt-1">Transactions</span>
+            </button>
+            
+            <button 
+              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
+            >
+              <FileBarChart className="h-5 w-5 text-gray-600" />
+              <span className="text-xs text-gray-600 mt-1">Report</span>
+            </button>
+            
+            <button 
+              className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
+            >
+              <Lightbulb className="h-5 w-5 text-gray-600" />
+              <span className="text-xs text-gray-600 mt-1">Ideas</span>
+            </button>
+          </div>
+        </div>
       </div>
       
 
