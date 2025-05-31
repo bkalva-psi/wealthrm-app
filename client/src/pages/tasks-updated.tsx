@@ -375,13 +375,28 @@ export default function TasksUpdated() {
                           );
                         })}
                         
-                        {(tasks as Task[] || []).filter(task => !task.completed).length > tasksVisibleCount && (
+                        {!tasksShowMore && (tasks as Task[] || []).filter(task => !task.completed).length > tasksVisibleCount && (
                           <Button 
                             variant="outline" 
                             className="w-full mt-4"
-                            onClick={() => setTasksVisibleCount(prev => prev + 5)}
+                            onClick={() => {
+                              setTasksShowMore(true);
+                              setTasksVisibleCount(prev => prev + 5);
+                            }}
                           >
                             Show 5 more tasks
+                          </Button>
+                        )}
+                        {tasksShowMore && (
+                          <Button 
+                            variant="outline" 
+                            className="w-full mt-4"
+                            onClick={() => {
+                              setTasksShowMore(false);
+                              setTasksVisibleCount(2);
+                            }}
+                          >
+                            Show less
                           </Button>
                         )}
                       </>
@@ -476,13 +491,28 @@ export default function TasksUpdated() {
                           );
                         })}
                         
-                        {(portfolioAlerts as any[] || []).length > alertsVisibleCount && (
+                        {!alertsShowMore && (portfolioAlerts as any[] || []).length > alertsVisibleCount && (
                           <Button 
                             variant="outline" 
                             className="w-full mt-4"
-                            onClick={() => setAlertsVisibleCount(prev => prev + 5)}
+                            onClick={() => {
+                              setAlertsShowMore(true);
+                              setAlertsVisibleCount(prev => prev + 5);
+                            }}
                           >
                             Show 5 more alerts
+                          </Button>
+                        )}
+                        {alertsShowMore && (
+                          <Button 
+                            variant="outline" 
+                            className="w-full mt-4"
+                            onClick={() => {
+                              setAlertsShowMore(false);
+                              setAlertsVisibleCount(2);
+                            }}
+                          >
+                            Show less
                           </Button>
                         )}
                       </>
