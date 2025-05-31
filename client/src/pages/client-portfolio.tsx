@@ -692,7 +692,7 @@ export default function ClientPortfolioPage() {
       </div>
 
       {/* Page Header with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-6 py-3">
+      <div className="bg-white border-b border-gray-200 px-1 py-3">
         <h2 className="text-2xl font-bold text-gray-900 mb-3">Portfolio</h2>
         
         {/* Navigation Icons */}
@@ -757,7 +757,7 @@ export default function ClientPortfolioPage() {
 
       
       {/* Portfolio Sections as Collapsible Cards */}
-      <div className="space-y-3 flex-grow w-full px-5">
+      <div className="space-y-3 flex-grow w-full">
         
         {/* Summary Section */}
         <PortfolioSection
