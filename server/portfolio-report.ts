@@ -206,7 +206,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Portfolio Report - ${client.fullName}</title>
+  <title>Portfolio Report - ${client.fullName} | Ujjivan Small Finance Bank</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -356,6 +356,121 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       border-radius: 2px;
       flex-shrink: 0;
     }
+    .header {
+      background: white;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #2563eb;
+    }
+    .bank-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo-placeholder {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .bank-info h1 {
+      color: #2563eb;
+      font-size: 24px;
+      margin-bottom: 5px;
+      font-weight: 700;
+    }
+    .bank-info .tagline {
+      color: #64748b;
+      font-size: 14px;
+      font-style: italic;
+    }
+    .report-meta {
+      text-align: right;
+      color: #64748b;
+      font-size: 14px;
+    }
+    .report-meta .report-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 5px;
+    }
+    .customer-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+    .customer-details h2 {
+      color: #1e40af;
+      font-size: 20px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+    .customer-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .info-item {
+      margin-bottom: 10px;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #374151;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .info-value {
+      color: #1f2937;
+      font-size: 15px;
+    }
+    .client-tier {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+    }
+    .tier-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .tier-silver {
+      background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+      color: #374151;
+    }
+    .tier-gold {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: white;
+    }
+    .tier-platinum {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+    }
     .allocation-item {
       display: flex;
       justify-content: space-between;
@@ -417,9 +532,61 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
   
   <div class="container">
     <div class="header">
-      <h1>Portfolio Report</h1>
-      <div class="client-name">${client.fullName}</div>
-      <div class="report-date">Report Date: ${currentDate}</div>
+      <!-- Bank Header -->
+      <div class="header-top">
+        <div class="bank-logo">
+          <div class="logo-placeholder">U</div>
+          <div class="bank-info">
+            <h1>Ujjivan Small Finance Bank</h1>
+            <div class="tagline">Banking for Everyone, Everywhere</div>
+          </div>
+        </div>
+        <div class="report-meta">
+          <div class="report-title">Portfolio Report</div>
+          <div>Generated on: ${currentDate}</div>
+          <div>Report ID: PF-${client.id}-${new Date().getFullYear()}</div>
+        </div>
+      </div>
+
+      <!-- Customer Information -->
+      <div class="customer-section">
+        <div class="customer-details">
+          <h2>Client Information</h2>
+          <div class="customer-info">
+            <div class="info-item">
+              <div class="info-label">Full Name</div>
+              <div class="info-value">${client.fullName}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Client ID</div>
+              <div class="info-value">USF-${client.id.toString().padStart(6, '0')}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Email Address</div>
+              <div class="info-value">${client.email || 'Not provided'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Phone Number</div>
+              <div class="info-value">${client.phone || 'Not provided'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Home Address</div>
+              <div class="info-value">${client.homeAddress || 'Not provided'}<br>
+              ${client.homeCity || ''} ${client.homeState || ''} ${client.homePincode || ''}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Client Since</div>
+              <div class="info-value">${client.clientSince ? new Date(client.clientSince).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' }) : 'Not available'}</div>
+            </div>
+          </div>
+        </div>
+        <div class="client-tier">
+          <div class="tier-badge tier-${client.tier || 'silver'}">${(client.tier || 'silver').toUpperCase()} CLIENT</div>
+          <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">Portfolio Value</div>
+          <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${client.aum}</div>
+          <div style="color: #64748b; font-size: 12px; margin-top: 5px;">As of ${currentDate}</div>
+        </div>
+      </div>
     </div>
     
     <div class="content">
