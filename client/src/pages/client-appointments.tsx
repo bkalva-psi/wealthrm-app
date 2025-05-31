@@ -422,10 +422,15 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                   ) : client ? (
                     <div>
                       <h2 className="text-xl font-semibold text-slate-900">{client.fullName || client.name}</h2>
-                      <div className="flex items-center gap-4 mt-1">
-                        <span className="text-sm text-slate-600">
-                          AUM: {client.aum || '₹0'}
-                        </span>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Phone className="h-4 w-4" />
+                          <span>{client.phone || 'Not available'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Mail className="h-4 w-4" />
+                          <span>{client.email || 'Not available'}</span>
+                        </div>
                       </div>
                     </div>
                   ) : (
