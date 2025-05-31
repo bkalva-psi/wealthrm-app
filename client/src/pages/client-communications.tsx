@@ -507,6 +507,18 @@ const ClientCommunications: React.FC = () => {
 
       {/* Main Content */}
       <div className="p-4 space-y-4">
+        {/* Search Box - Always visible */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search in notes, subject, or customer name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
         {/* Filter Controls - Collapsible */}
         <Card className="overflow-hidden">
           <div 
@@ -559,18 +571,6 @@ const ClientCommunications: React.FC = () => {
           
           {filtersExpanded && (
             <div className="p-4 space-y-4">
-              {/* Search Box */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search in notes, subject, or customer name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
               {/* Customer Filter - Only show for global view */}
               {isGlobalView && (
                 <div>
