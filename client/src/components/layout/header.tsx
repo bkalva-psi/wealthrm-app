@@ -96,7 +96,7 @@ export function Header({
         </div>
         
         {/* Right Navigation Items */}
-        <div className="flex items-center pr-6">
+        <div className="flex items-center pr-4 ml-8">
           {/* Profile Dropdown */}
           <div className="relative">
             <DropdownMenu>
