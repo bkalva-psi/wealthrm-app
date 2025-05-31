@@ -757,7 +757,7 @@ export default function ClientPortfolioPage() {
 
       
       {/* Portfolio Sections as Collapsible Cards */}
-      <div className="space-y-3 flex-grow w-full">
+      <div className="space-y-3 flex-grow w-full px-5">
         
         {/* Summary Section */}
         <PortfolioSection
