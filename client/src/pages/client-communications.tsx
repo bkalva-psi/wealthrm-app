@@ -174,10 +174,11 @@ const ClientCommunications: React.FC = () => {
   // State hooks
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
-  const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<string>('all');
   const [showAllNotes, setShowAllNotes] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   
   const toggleNoteExpansion = (noteId: number) => {
     const newExpanded = new Set(expandedNotes);
@@ -253,6 +254,17 @@ const ClientCommunications: React.FC = () => {
     
     return communications.filter((comm: any) => {
       
+      // Search filter - search in subject, summary, notes, and client name
+      const matchesSearch = searchQuery === '' || 
+        (comm.subject && comm.subject.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (comm.summary && comm.summary.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (comm.notes && comm.notes.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (comm.client_name && comm.client_name.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      // Customer filter - filter by selected customer
+      const matchesCustomer = selectedCustomer === 'all' || 
+        comm.client_name === selectedCustomer;
+      
       // Note type filter
       const matchesNoteType = filters.noteType === 'all' || 
         comm.communication_type === filters.noteType;
@@ -271,9 +283,20 @@ const ClientCommunications: React.FC = () => {
         (dateFilter === '3months' && (now.getTime() - commDate.getTime()) <= 90 * 24 * 60 * 60 * 1000) ||
         (dateFilter === '6months' && (now.getTime() - commDate.getTime()) <= 180 * 24 * 60 * 60 * 1000);
       
-      return matchesNoteType && matchesChannel && matchesDate;
+      return matchesSearch && matchesCustomer && matchesNoteType && matchesChannel && matchesDate;
     }).sort((a: any, b: any) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
-  }, [communications, filters]);
+  }, [communications, filters, searchQuery, selectedCustomer]);
+
+  // Get unique customer names for filter dropdown
+  const uniqueCustomers = React.useMemo(() => {
+    if (!communications || !Array.isArray(communications)) return [];
+    const customers = communications
+      .map((comm: any) => comm.client_name)
+      .filter((name: string) => name && name.trim() !== '')
+      .filter((name: string, index: number, arr: string[]) => arr.indexOf(name) === index)
+      .sort();
+    return customers;
+  }, [communications]);
 
   // Get paginated communications for display
   const displayedCommunications = React.useMemo(() => {
@@ -494,8 +517,18 @@ const ClientCommunications: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <Filter className="h-5 w-5 text-gray-600" />
                 <span className="font-medium text-gray-900">Filters</span>
-                {(filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
+                {(searchQuery !== '' || selectedCustomer !== 'all' || filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
                   <div className="flex items-center space-x-2 ml-2">
+                    {searchQuery !== '' && (
+                      <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">
+                        SEARCH: {searchQuery.length > 15 ? searchQuery.substring(0, 15) + '...' : searchQuery}
+                      </span>
+                    )}
+                    {selectedCustomer !== 'all' && (
+                      <span className="px-2 py-1 text-xs bg-teal-100 text-teal-800 rounded">
+                        CUSTOMER: {selectedCustomer}
+                      </span>
+                    )}
                     {filters.noteType !== 'all' && (
                       <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
                         {filters.noteType.replace('_', ' ').toUpperCase()}
@@ -526,6 +559,41 @@ const ClientCommunications: React.FC = () => {
           
           {filtersExpanded && (
             <div className="p-4 space-y-4">
+              {/* Search Box */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Search</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search in notes, subject, or customer name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              {/* Customer Filter - Only show for global view */}
+              {isGlobalView && (
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Customer</label>
+                  <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select customer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Customers</SelectItem>
+                      {uniqueCustomers.map((customer) => (
+                        <SelectItem key={customer} value={customer}>
+                          {customer}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">Note Type</label>
                 <Select value={filters.noteType} onValueChange={(value) => setFilters(prev => ({...prev, noteType: value}))}>
