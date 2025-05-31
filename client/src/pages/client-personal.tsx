@@ -247,21 +247,21 @@ export default function ClientPersonalPage() {
                 </div>
               </div>
               
-              <div className="text-center">
+              <div className="text-left">
                 <div>
                   <p className="text-sm text-slate-500">Age</p>
                   <p>{client.dateOfBirth ? new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear() : "Not provided"}</p>
                 </div>
               </div>
               
-              <div className="text-center">
+              <div className="text-left">
                 <div>
                   <p className="text-sm text-slate-500">Status</p>
                   <p>{client.maritalStatus || "Not provided"}</p>
                 </div>
               </div>
               
-              <div className="text-center">
+              <div className="text-left">
                 <div>
                   <p className="text-sm text-slate-500">Company</p>
                   <p>{client.companyName || "Not provided"}</p>
