@@ -732,8 +732,9 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Customer Information Band */}
-      <div className={`bg-white shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-slate-300'}`}>
+      {/* Customer Information Band - Only show for client-specific view */}
+      {clientId && (
+        <div className={`bg-white shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-slate-300'}`}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -799,10 +800,13 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
 
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Page Title Band with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-4">
+      {/* Main Content */}
+      <div className="p-4 space-y-4">
+        {/* Page Title Band with Navigation - Only for client view */}
+        {clientId && (
+          <div className="bg-white border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
           <Button 
@@ -871,7 +875,34 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             <Lightbulb className="h-6 w-6 text-gray-600" />
           </button>
         </div>
-      </div>
+        </div>
+      )}
+
+      {/* Global Calendar Header for non-client view */}
+      {!clientId && (
+        <div className="bg-white shadow-sm border-b">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => window.location.hash = '/dashboard'}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5 text-gray-600" />
+                </button>
+                <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
+              </div>
+              <Button 
+                onClick={() => setIsNewAppointmentDialogOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New Appointment
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="p-4 space-y-4">
@@ -984,7 +1015,6 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        </div>
       </div>
     </div>
   );
