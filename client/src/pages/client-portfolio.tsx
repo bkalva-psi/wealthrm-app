@@ -745,47 +745,7 @@ export default function ClientPortfolioPage() {
         <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
       </div>
       
-      <div className="p-4">
-      {/* Portfolio Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <MetricCard 
-          title="AUM"
-          value={client?.aum || "₹0"}
-          icon={<Wallet className="h-5 w-5" />}
-          description="Total portfolio value"
-          color="blue"
-          isLoading={isLoading}
-        />
-        
-        <MetricCard 
-          title="Invested Amount"
-          value={`₹${((aumValue * 0.85) / 100000).toFixed(2)} L`}
-          icon={<DollarSign className="h-5 w-5" />}
-          description="Principal investment"
-          color="indigo"
-          isLoading={isLoading}
-        />
-        
-        <MetricCard 
-          title="Unrealized Gains"
-          value={`₹${((aumValue * 0.15) / 100000).toFixed(2)} L`}
-          icon={<TrendingUp className="h-5 w-5" />}
-          description="Growth in portfolio value"
-          color="green"
-          trend={15.8}
-          isLoading={isLoading}
-        />
-        
-        <MetricCard 
-          title="XIRR"
-          value={`${client?.yearlyPerformance || 12.5}%`}
-          icon={<Percent className="h-5 w-5" />}
-          description="Annualized returns"
-          color="amber"
-          isLoading={isLoading}
-        />
-      </div>
-      </div>
+
       
       {/* Portfolio Sections as Collapsible Cards */}
       <div className="space-y-3 flex-grow">
@@ -799,7 +759,7 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <MetricCard 
               title="AUM"
-              value={`₹${((client?.aum || 5000000) / 100000).toFixed(1)}L`}
+              value={`₹${(((client?.aum || 5000000)) / 100000).toFixed(1)}L`}
               icon={<DollarSign className="h-5 w-5" />}
               description="Assets Under Management"
               color="blue"
@@ -808,7 +768,7 @@ export default function ClientPortfolioPage() {
             
             <MetricCard 
               title="Investment"
-              value={`₹${((client?.totalInvestment || 4200000) / 100000).toFixed(1)}L`}
+              value={`₹${((client?.totalInvestedAmount || 4200000) / 100000).toFixed(1)}L`}
               icon={<Wallet className="h-5 w-5" />}
               description="Total Investment Amount"
               color="green"
@@ -817,7 +777,7 @@ export default function ClientPortfolioPage() {
             
             <MetricCard 
               title="Unrealized Gain"
-              value={`₹${(((client?.aum || 5000000) - (client?.totalInvestment || 4200000)) / 100000).toFixed(1)}L`}
+              value={`₹${(((client?.aum || 5000000) - (client?.totalInvestedAmount || 4200000)) / 100000).toFixed(1)}L`}
               icon={<TrendingUp className="h-5 w-5" />}
               description="Portfolio Gain"
               color="emerald"
@@ -827,7 +787,7 @@ export default function ClientPortfolioPage() {
             
             <MetricCard 
               title="XIRR"
-              value={`${client?.xirr || 12.5}%`}
+              value={`${client?.performanceXirr || 12.5}%`}
               icon={<Percent className="h-5 w-5" />}
               description="Annualized Returns"
               color="amber"
