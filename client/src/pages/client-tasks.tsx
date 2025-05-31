@@ -382,68 +382,47 @@ function ClientTasks({ clientId }: ClientTasksProps) {
       </Card>
       
       {/* Filter Dropdown */}
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-slate-600" />
-              <span className="text-sm font-medium text-slate-700">Filter Tasks:</span>
-            </div>
-            <Select value={activeTab} onValueChange={setActiveTab}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" />
-                    <span>All Tasks</span>
-                    <span className="ml-auto text-xs bg-slate-200 px-2 py-0.5 rounded-full">
-                      {filterTasks(tasks || [], "all").length}
-                    </span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="today">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    <span>Today</span>
-                    <span className="ml-auto text-xs bg-amber-200 px-2 py-0.5 rounded-full">
-                      {filterTasks(tasks || [], "today").length}
-                    </span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="upcoming">
-                  <div className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" />
-                    <span>Upcoming</span>
-                    <span className="ml-auto text-xs bg-blue-200 px-2 py-0.5 rounded-full">
-                      {filterTasks(tasks || [], "upcoming").length}
-                    </span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="overdue">
-                  <div className="flex items-center gap-2">
-                    <XCircle className="h-4 w-4" />
-                    <span>Overdue</span>
-                    <span className="ml-auto text-xs bg-red-200 px-2 py-0.5 rounded-full">
-                      {filterTasks(tasks || [], "overdue").length}
-                    </span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="completed">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Completed</span>
-                    <span className="ml-auto text-xs bg-green-200 px-2 py-0.5 rounded-full">
-                      {filterTasks(tasks || [], "completed").length}
-                    </span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-3 mb-6">
+        <Filter className="h-4 w-4 text-slate-600" />
+        <span className="text-sm font-medium text-slate-700">Filter Tasks:</span>
+        <Select value={activeTab} onValueChange={setActiveTab}>
+          <SelectTrigger className="w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4" />
+                <span>All Tasks</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="today">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                <span>Today</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="upcoming">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4" />
+                <span>Upcoming</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="overdue">
+              <div className="flex items-center gap-2">
+                <XCircle className="h-4 w-4" />
+                <span>Overdue</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="completed">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                <span>Completed</span>
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">
