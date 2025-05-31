@@ -680,7 +680,18 @@ export default function ClientTransactions() {
       {/* Period Filter Bar */}
       <Card>
         <CardHeader>
-          <CardTitle>Time Period</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>Time Period</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={exportToCSV}
+              className="ml-2"
+            >
+              <Download className="h-4 w-4 mr-1" />
+              Export CSV
+            </Button>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
@@ -696,21 +707,21 @@ export default function ClientTransactions() {
               onClick={() => handlePeriodFilter('1w')}
               className="flex-1"
             >
-              1 Week
+              1W
             </Button>
             <Button 
               variant={selectedPeriod === '1m' ? 'default' : 'outline'}
               onClick={() => handlePeriodFilter('1m')}
               className="flex-1"
             >
-              1 Month
+              1M
             </Button>
             <Button 
               variant={selectedPeriod === '3m' ? 'default' : 'outline'}
               onClick={() => handlePeriodFilter('3m')}
               className="flex-1"
             >
-              3 Months
+              3M
             </Button>
           </div>
         </CardContent>
