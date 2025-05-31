@@ -34,16 +34,75 @@ router.get('/api/clients/:clientId/portfolio-report', async (req: Request, res: 
     const investment = aumValue * 0.85;
     const unrealizedGain = aumValue * 0.15;
 
-    // Calculate allocations from transactions
-    const { assetAllocation, sectorAllocation, topHoldings } = calculateAllocations(clientTransactions);
+    // Use exact same mock data as the app
+    const mockAssetAllocation = {
+      Equity: 65,
+      "Fixed Income": 20,
+      Gold: 7.5,
+      Cash: 7.5
+    };
+
+    const mockSectorExposure = {
+      "Financial Services": 28,
+      "IT": 18,
+      "Energy": 12,
+      "Consumer Goods": 10,
+      "Healthcare": 8,
+      "Others": 24
+    };
+
+    const mockHoldings = [
+      { 
+        name: "HDFC Top 100 Fund", 
+        type: "Mutual Fund - Equity", 
+        allocation: 25, 
+        gain: 15.4
+      },
+      { 
+        name: "SBI Small Cap Fund", 
+        type: "Mutual Fund - Equity", 
+        allocation: 17.5, 
+        gain: 22.8
+      },
+      { 
+        name: "ICICI Prudential Corporate Bond Fund", 
+        type: "Mutual Fund - Debt", 
+        allocation: 20, 
+        gain: 7.2
+      },
+      { 
+        name: "Reliance Industries Ltd.", 
+        type: "Direct Equity", 
+        allocation: 12.5, 
+        gain: 18.7
+      },
+      { 
+        name: "HDFC Bank Ltd.", 
+        type: "Direct Equity", 
+        allocation: 10, 
+        gain: 9.8
+      },
+      { 
+        name: "Gold ETF", 
+        type: "Gold ETF", 
+        allocation: 7.5, 
+        gain: 11.2
+      },
+      { 
+        name: "HDFC Savings Account", 
+        type: "Cash", 
+        allocation: 7.5, 
+        gain: 3.5
+      }
+    ];
 
     const htmlContent = generateReportHTML(client, {
       aumValue,
       investment,
       unrealizedGain,
-      assetAllocation,
-      sectorAllocation,
-      topHoldings
+      assetAllocation: mockAssetAllocation,
+      sectorAllocation: mockSectorExposure,
+      topHoldings: mockHoldings
     }, clientTransactions);
 
     res.setHeader('Content-Type', 'text/html');
@@ -130,13 +189,16 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
     day: 'numeric'
   });
 
+  // Use exact same performance data as the app
   const performanceData = [
     { period: "1M", value: 2.8, benchmark: 2.3, alpha: 0.5 },
     { period: "3M", value: 5.4, benchmark: 4.6, alpha: 0.8 },
     { period: "6M", value: 8.7, benchmark: 7.5, alpha: 1.2 },
     { period: "YTD", value: 11.2, benchmark: 9.8, alpha: 1.4 },
     { period: "1Y", value: 14.5, benchmark: 12.1, alpha: 2.4 },
-    { period: "3Y", value: 12.3, benchmark: 10.5, alpha: 1.8 }
+    { period: "3Y", value: 12.3, benchmark: 10.5, alpha: 1.8 },
+    { period: "5Y", value: 11.8, benchmark: 10.2, alpha: 1.6 },
+    { period: "Since Inception", value: 13.2, benchmark: 11.4, alpha: 1.8 }
   ];
 
   return `
