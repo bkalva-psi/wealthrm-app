@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format, isToday, isAfter, isBefore, isYesterday, addDays } from "date-fns";
 
 interface Task {
@@ -73,6 +74,24 @@ export default function TasksUpdated() {
   const { data: portfolioAlerts, isLoading: alertsLoading } = useQuery({
     queryKey: ['/api/portfolio-alerts'],
   });
+
+  // Filtered tasks based on search and filters
+  const filteredTasks = (tasks as Task[] || []).filter((task: Task) => {
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesStatus = statusFilter === 'all' || 
+      (statusFilter === 'completed' && task.completed) ||
+      (statusFilter === 'pending' && !task.completed);
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  // Filtered alerts based on search
+  const filteredAlerts = (portfolioAlerts as any[] || []).filter((alert: any) => 
+    alert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    alert.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
   const updateTaskMutation = useMutation({
     mutationFn: async ({ id, completed }: { id: number, completed: boolean }) => {
@@ -281,18 +300,13 @@ export default function TasksUpdated() {
               ) : (
                 <div className="space-y-4">
                   {(() => {
-                    const filteredTasks = (tasks as Task[] || [])
-                      .filter(task => !task.completed)
-                      .filter(task => 
-                        searchQuery === "" || 
-                        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )
-                      .slice(0, tasksVisibleCount);
+                    const currentFilteredTasks = filteredTasks.filter(task => !task.completed);
+                    const visibleTasks = tasksShowMore ? currentFilteredTasks : currentFilteredTasks.slice(0, tasksVisibleCount);
                     
-                    return filteredTasks.length > 0 ? (
+                    return visibleTasks.length > 0 ? (
                       <>
-                        {filteredTasks.map((task: Task) => {
+                        {visibleTasks.map((task: Task) => {
+                          const isExpanded = expandedTasks.has(task.id);
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
