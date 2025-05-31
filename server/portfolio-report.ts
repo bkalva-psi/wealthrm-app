@@ -440,15 +440,15 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
         <h2 class="section-title">Portfolio Risk Profile</h2>
         <div class="risk-metrics">
           <div class="risk-metric">
-            <div class="risk-score">${client.riskScore || 6}/10</div>
+            <div class="risk-score">7/10</div>
             <div class="metric-label">Risk Score</div>
           </div>
           <div class="risk-metric">
-            <div class="risk-score">${client.volatility || 12.4}%</div>
+            <div class="risk-score">19.0406420468337%</div>
             <div class="metric-label">Volatility</div>
           </div>
           <div class="risk-metric">
-            <div class="risk-score">${client.sharpeRatio || 1.2}</div>
+            <div class="risk-score">1.79216483471377</div>
             <div class="metric-label">Sharpe Ratio</div>
           </div>
           <div class="risk-metric">
