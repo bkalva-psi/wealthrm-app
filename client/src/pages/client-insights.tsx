@@ -203,7 +203,7 @@ export default function ClientInsights() {
 
       {/* Page Header with Navigation */}
       <div className="bg-white border-b border-gray-200 px-1 py-3">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Client Insights</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Insights</h2>
         
         {/* Navigation Icons */}
         <div className="grid grid-cols-8 gap-3 ml-3">
