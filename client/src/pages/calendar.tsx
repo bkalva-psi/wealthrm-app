@@ -167,7 +167,26 @@ export default function CalendarPage() {
     setShowCreateDialog(true);
   };
 
-  const handleSubmit = () => {
+  const handleStartTimeChange = (newStartTime: string) => {
+    setFormData(prev => {
+      const updatedData = { ...prev, startTime: newStartTime };
+      
+      // Auto-set end time to one hour after start time
+      if (newStartTime) {
+        const [hours, minutes] = newStartTime.split(':');
+        const startHour = parseInt(hours);
+        const endHour = startHour + 1;
+        const endTime = `${endHour.toString().padStart(2, '0')}:${minutes}`;
+        updatedData.endTime = endTime;
+      }
+      
+      return updatedData;
+    });
+  };
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    
     if (!formData.title || !formData.startDate || !formData.startTime || !formData.endTime) {
       toast({
         title: "Error",
@@ -551,7 +570,7 @@ export default function CalendarPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
+          <form onSubmit={handleSubmit} className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
                 Title *
@@ -621,7 +640,7 @@ export default function CalendarPage() {
                 id="startTime"
                 type="time"
                 value={formData.startTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                onChange={(e) => handleStartTimeChange(e.target.value)}
                 className="col-span-3"
               />
             </div>
@@ -681,19 +700,19 @@ export default function CalendarPage() {
                 rows={3}
               />
             </div>
-          </div>
-          
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={!isFormValid || createAppointmentMutation.isPending}
-            >
-              {createAppointmentMutation.isPending ? "Creating..." : "Create Appointment"}
-            </Button>
-          </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={!isFormValid || createAppointmentMutation.isPending}
+              >
+                {createAppointmentMutation.isPending ? "Creating..." : "Create Appointment"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
