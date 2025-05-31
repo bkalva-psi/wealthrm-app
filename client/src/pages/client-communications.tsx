@@ -174,11 +174,10 @@ const ClientCommunications: React.FC = () => {
   // State hooks
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   const [activeTab, setActiveTab] = useState<string>('details');
-  const [searchText, setSearchText] = useState<string>('');
-  const [dateRangeFilter, setDateRangeFilter] = useState<string>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+  const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
   
   const toggleNoteExpansion = (noteId: number) => {
     const newExpanded = new Set(expandedNotes);
@@ -189,6 +188,7 @@ const ClientCommunications: React.FC = () => {
     }
     setExpandedNotes(newExpanded);
   };
+  
   const [filters, setFilters] = useState({
     noteType: 'all',
     channel: 'all',
@@ -217,13 +217,10 @@ const ClientCommunications: React.FC = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      noteType: '',
-      channel: '',
+      noteType: 'all',
+      channel: 'all',
       dateRange: 'all'
     });
-    setSearchText('');
-    setSelectedCustomer(null);
-    setDateRangeFilter('all');
   };
 
   // Queries
@@ -242,13 +239,6 @@ const ClientCommunications: React.FC = () => {
     if (!communications || !Array.isArray(communications)) return [];
     
     return communications.filter((comm: any) => {
-      // Text search
-      const searchLower = searchText.toLowerCase();
-      const matchesSearch = !searchText || 
-        comm.subject?.toLowerCase().includes(searchLower) ||
-        comm.summary?.toLowerCase().includes(searchLower) ||
-        comm.notes?.toLowerCase().includes(searchLower) ||
-        comm.communication_type?.toLowerCase().includes(searchLower);
       
       // Note type filter
       const matchesNoteType = filters.noteType === 'all' || 
@@ -474,67 +464,89 @@ const ClientCommunications: React.FC = () => {
 
       {/* Main Content */}
       <div className="p-4 space-y-4">
-        {/* Filter Controls */}
-        <Card className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search notes..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="w-full"
+        {/* Filter Controls - Collapsible */}
+        <Card className="overflow-hidden">
+          <div 
+            className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => setFiltersExpanded(!filtersExpanded)}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Filter className="h-5 w-5 text-gray-600" />
+                <span className="font-medium text-gray-900">Filters</span>
+                {(filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
+                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                    Active
+                  </span>
+                )}
+              </div>
+              <ChevronDown 
+                className={`h-5 w-5 text-gray-400 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`}
               />
             </div>
-            
-            <div className="flex gap-2">
-              <Select value={filters.noteType} onValueChange={(value) => setFilters(prev => ({...prev, noteType: value}))}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Note Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="quarterly_review">Quarterly Review</SelectItem>
-                  <SelectItem value="portfolio_health_check">Portfolio Health Check</SelectItem>
-                  <SelectItem value="risk_assessment">Risk Assessment</SelectItem>
-                  <SelectItem value="product_discussion">Product Discussion</SelectItem>
-                  <SelectItem value="complaint_resolution">Complaint Resolution</SelectItem>
-                  <SelectItem value="general_inquiry">General Inquiry</SelectItem>
-                </SelectContent>
-              </Select>
+          </div>
+          
+          {filtersExpanded && (
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Note Type</label>
+                <Select value={filters.noteType} onValueChange={(value) => setFilters(prev => ({...prev, noteType: value}))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select note type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="quarterly_review">Quarterly Review</SelectItem>
+                    <SelectItem value="portfolio_health_check">Portfolio Health Check</SelectItem>
+                    <SelectItem value="risk_assessment">Risk Assessment</SelectItem>
+                    <SelectItem value="product_discussion">Product Discussion</SelectItem>
+                    <SelectItem value="complaint_resolution">Complaint Resolution</SelectItem>
+                    <SelectItem value="general_inquiry">General Inquiry</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
-              <Select value={filters.channel} onValueChange={(value) => setFilters(prev => ({...prev, channel: value}))}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Channel" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Channels</SelectItem>
-                  <SelectItem value="phone">Phone</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="in_person">In Person</SelectItem>
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Channel</label>
+                <Select value={filters.channel} onValueChange={(value) => setFilters(prev => ({...prev, channel: value}))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select channel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Channels</SelectItem>
+                    <SelectItem value="phone">Phone</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                    <SelectItem value="in_person">In Person</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
-              <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({...prev, dateRange: value}))}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Date Range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Time</SelectItem>
-                  <SelectItem value="7days">Last 7 Days</SelectItem>
-                  <SelectItem value="30days">Last 30 Days</SelectItem>
-                  <SelectItem value="3months">Last 3 Months</SelectItem>
-                  <SelectItem value="6months">Last 6 Months</SelectItem>
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</label>
+                <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({...prev, dateRange: value}))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select date range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Time</SelectItem>
+                    <SelectItem value="7days">Last 7 Days</SelectItem>
+                    <SelectItem value="30days">Last 30 Days</SelectItem>
+                    <SelectItem value="3months">Last 3 Months</SelectItem>
+                    <SelectItem value="6months">Last 6 Months</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
-              {(filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all' || searchText) && (
-                <Button onClick={handleClearFilters} variant="outline" size="sm">
-                  Clear
-                </Button>
+              {(filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
+                <div className="pt-2">
+                  <Button onClick={handleClearFilters} variant="outline" className="w-full">
+                    Clear All Filters
+                  </Button>
+                </div>
               )}
             </div>
-          </div>
+          )}
         </Card>
 
         {isLoading ? (
