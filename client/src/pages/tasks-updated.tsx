@@ -44,9 +44,9 @@ export default function TasksUpdated() {
     dueDate: format(new Date(), "yyyy-MM-dd"),
   });
   
-  // Collapsible state for cards - start collapsed
-  const [tasksCollapsed, setTasksCollapsed] = useState(true);
-  const [alertsCollapsed, setAlertsCollapsed] = useState(true);
+  // Collapsible state for cards - start expanded
+  const [tasksCollapsed, setTasksCollapsed] = useState(false);
+  const [alertsCollapsed, setAlertsCollapsed] = useState(false);
   
   // Pagination state
   const [tasksVisibleCount, setTasksVisibleCount] = useState(2);
