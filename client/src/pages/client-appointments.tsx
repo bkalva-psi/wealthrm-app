@@ -70,7 +70,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     ? (typeof propClientId === "string" ? parseInt(propClientId) : propClientId)
     : parseInt(window.location.hash.split('/')[2]);
   const [calendarDate, setCalendarDate] = useState(new Date());
-  const [selectedView, setSelectedView] = useState<'month' | 'day' | 'week'>('month');
+  const [selectedView, setSelectedView] = useState<'list' | 'month' | 'day' | 'week'>('list');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isNewAppointmentDialogOpen, setIsNewAppointmentDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
