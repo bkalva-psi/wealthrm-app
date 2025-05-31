@@ -860,6 +860,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all products from products table
+  app.get('/api/products', async (req: Request, res: Response) => {
+    try {
+      const allProducts = await db
+        .select()
+        .from(products)
+        .where(eq(products.isActive, true))
+        .orderBy(products.totalSubscriptions);
+
+      // Format products for frontend
+      const formattedProducts = allProducts.map(product => ({
+        id: product.id,
+        name: product.name,
+        productCode: product.productCode,
+        category: product.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        subCategory: product.subCategory,
+        description: product.description,
+        keyFeatures: product.keyFeatures || [],
+        targetAudience: product.targetAudience,
+        minInvestment: `₹${(product.minInvestment / 100000).toFixed(1)}L`,
+        maxInvestment: product.maxInvestment ? `₹${(product.maxInvestment / 100000).toFixed(1)}L` : 'No limit',
+        riskLevel: product.riskLevel,
+        expectedReturns: product.expectedReturns,
+        lockInPeriod: product.lockInPeriod,
+        tenure: product.tenure,
+        exitLoad: product.exitLoad,
+        managementFee: product.managementFee,
+        regulatoryApprovals: product.regulatoryApprovals || [],
+        taxImplications: product.taxImplications,
+        factsheetUrl: product.factsheetUrl,
+        kimsUrl: product.kimsUrl,
+        applicationFormUrl: product.applicationFormUrl,
+        isOpenForSubscription: product.isOpenForSubscription,
+        launchDate: product.launchDate,
+        maturityDate: product.maturityDate,
+        totalSubscriptions: product.totalSubscriptions,
+        totalInvestors: product.totalInvestors,
+        featured: (product.totalSubscriptions || 0) > 100000000, // Featured if > 10 crores
+        tags: [
+          product.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          product.riskLevel + ' Risk',
+          ...(product.keyFeatures?.slice(0, 2) || [])
+        ]
+      }));
+
+      res.json(formattedProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      res.status(500).json({ error: 'Failed to fetch products' });
+    }
+  });
+
   // Task routes
   app.get("/api/tasks", authMiddleware, async (req, res) => {
     try {

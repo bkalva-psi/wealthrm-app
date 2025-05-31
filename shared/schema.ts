@@ -694,6 +694,65 @@ export const insertCommunicationTemplateSchema = createInsertSchema(communicatio
   updatedAt: true,
 });
 
+// Products - wealth management products offered by the bank
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  productCode: text("product_code").unique().notNull(),
+  category: text("category").notNull(), // mutual_funds, bonds, equity, margin_lending, deposits, insurance, structured_products
+  subCategory: text("sub_category"), // large_cap, debt, term_plan, etc.
+  
+  // Basic Details
+  description: text("description").notNull(),
+  keyFeatures: text("key_features").array(), // array of key features
+  targetAudience: text("target_audience"), // HNI, retail, corporate, etc.
+  
+  // Investment Details
+  minInvestment: integer("min_investment").notNull(), // in rupees
+  maxInvestment: integer("max_investment"), // in rupees, null for no limit
+  investmentMultiples: integer("investment_multiples").default(1000), // minimum increment amount
+  
+  // Risk and Returns
+  riskLevel: text("risk_level").notNull(), // Low, Moderate, High, Very High
+  expectedReturns: text("expected_returns"), // e.g., "8-12% p.a."
+  lockInPeriod: integer("lock_in_period"), // in months, null if no lock-in
+  
+  // Terms and Conditions
+  tenure: text("tenure"), // e.g., "1-5 years", "Open ended"
+  exitLoad: text("exit_load"), // e.g., "1% if redeemed within 1 year"
+  managementFee: real("management_fee"), // annual fee as percentage
+  
+  // Regulatory Information
+  regulatoryApprovals: text("regulatory_approvals").array(), // SEBI, RBI, etc.
+  taxImplications: text("tax_implications"),
+  
+  // Documents
+  factsheetUrl: text("factsheet_url"), // path to PDF factsheet
+  kimsUrl: text("kims_url"), // Key Information Memorandum
+  applicationFormUrl: text("application_form_url"), // application form PDF
+  
+  // Status and Availability
+  isActive: boolean("is_active").default(true),
+  isOpenForSubscription: boolean("is_open_for_subscription").default(true),
+  launchDate: timestamp("launch_date"),
+  maturityDate: timestamp("maturity_date"), // for fixed tenure products
+  
+  // Performance Metrics (for tracking)
+  totalSubscriptions: doublePrecision("total_subscriptions").default(0), // total amount subscribed
+  totalInvestors: integer("total_investors").default(0),
+  
+  // Metadata
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Communication Analytics - aggregated metrics for communication analysis
 export const communicationAnalytics = pgTable("communication_analytics", {
   id: serial("id").primaryKey(),
@@ -922,3 +981,6 @@ export const insertPerformanceIncentiveSchema = createInsertSchema(performanceIn
 
 export type PerformanceIncentive = typeof performanceIncentives.$inferSelect;
 export type InsertPerformanceIncentive = z.infer<typeof insertPerformanceIncentiveSchema>;
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
