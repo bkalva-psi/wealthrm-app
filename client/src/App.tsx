@@ -19,7 +19,7 @@ import Prospects from "@/pages/prospects";
 import AddProspect from "@/pages/add-prospect";
 import ProspectDetail from "@/pages/prospect-detail";
 
-import Tasks from "@/pages/tasks";
+
 import Analytics from "@/pages/analytics";
 import Products from "@/pages/products";
 import Settings from "@/pages/settings";
@@ -33,6 +33,7 @@ import ClientInteractions from "@/pages/client-interactions";
 import ClientTransactions from "@/pages/client-transactions";
 import ClientCommunications from "@/pages/client-communications";
 import ClientAppointments from "@/pages/client-appointments";
+import ClientTasks from "@/pages/client-tasks";
 import ClientInsights from "@/pages/client-insights";
 import { Loader2 } from "lucide-react";
 
@@ -219,6 +220,8 @@ function AuthenticatedApp() {
         return <ClientCommunications />;
       case /^\/clients\/\d+\/appointments$/.test(currentRoute):
         return <ClientAppointments />;
+      case /^\/clients\/\d+\/tasks$/.test(currentRoute):
+        return <ClientTasks />;
       case /^\/clients\/\d+\/insights$/.test(currentRoute):
         return <ClientInsights />;
       
@@ -227,7 +230,7 @@ function AuthenticatedApp() {
       case currentRoute === '/appointments':
         return <ClientAppointments clientId="all" />;
       case currentRoute === '/tasks':
-        return <Tasks />;
+        return <ClientTasks clientId="all" />;
       case currentRoute === '/communications':
         return <ClientCommunications />;
       case currentRoute === '/talking-points':
