@@ -18,7 +18,7 @@ import Clients from "@/pages/clients";
 import Prospects from "@/pages/prospects";
 import AddProspect from "@/pages/add-prospect";
 import ProspectDetail from "@/pages/prospect-detail";
-import Calendar from "@/pages/calendar";
+
 import Tasks from "@/pages/tasks";
 import Analytics from "@/pages/analytics";
 import Products from "@/pages/products";
@@ -223,7 +223,7 @@ function AuthenticatedApp() {
         return <ClientInsights />;
       
       case currentRoute === '/calendar':
-        return <Calendar />;
+        return <ClientAppointments clientId="all" />;
       case currentRoute === '/appointments':
         return <ClientAppointments clientId="all" />;
       case currentRoute === '/tasks':
