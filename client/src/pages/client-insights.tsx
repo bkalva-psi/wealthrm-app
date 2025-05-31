@@ -3,8 +3,9 @@ import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, Target, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, Target, Calendar, DollarSign, Phone, Mail } from "lucide-react";
 import { Link } from "wouter";
+import { getTierColor } from "@/lib/utils";
 
 interface ClientInsight {
   id: number;
@@ -87,42 +88,55 @@ export default function ClientInsights() {
     <div className="p-6 space-y-6">
       {/* Header - Client Card */}
       {client && (
-        <Card className="bg-white border-gray-200">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-4">
-              <button 
+        <div className="bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 border-l-slate-300">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="sm" 
                 onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="mr-4 p-2"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
               
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="text-xl font-semibold text-gray-900">{(client as Client).fullName}</h1>
-                    <div className="space-y-1 mt-1">
-                      {(client as Client).phone && (
-                        <p className="text-sm text-gray-600">{(client as Client).phone}</p>
-                      )}
-                      {(client as Client).email && (
-                        <p className="text-sm text-gray-600">{(client as Client).email}</p>
-                      )}
-                    </div>
+              <div>
+                <button 
+                  onClick={() => window.location.hash = `/clients/${clientId}/personal`}
+                  className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  {client.fullName}
+                </button>
+                
+                {client.phone && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    <a 
+                      href={`tel:${client.phone}`}
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                      title="Call client"
+                    >
+                      {client.phone}
+                    </a>
                   </div>
-                  
-                  <div className="text-right">
-                    <Badge variant="outline" className="capitalize mb-2">
-                      {(client as Client).tier} Client
-                    </Badge>
-                    <p className="text-sm text-gray-500">AUM: {(client as Client).aum}</p>
-                    <p className="text-sm text-gray-500">Risk: {(client as Client).riskProfile}</p>
+                )}
+                
+                {client.email && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-slate-400" />
+                    <a 
+                      href={`mailto:${client.email}`}
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                      title="Send email to client"
+                    >
+                      {client.email}
+                    </a>
                   </div>
-                </div>
+                )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Page Title */}
