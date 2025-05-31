@@ -419,7 +419,7 @@ export default function TasksUpdated() {
               ) : (
                 <div className="space-y-4">
                   {(() => {
-                    const alerts = (portfolioAlerts as any[] || []).slice(0, alertsVisibleCount);
+                    const alerts = (portfolioAlerts as any[] || []);
                     
                     return alerts.length > 0 ? (
                       <>
