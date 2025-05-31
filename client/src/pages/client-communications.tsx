@@ -195,6 +195,10 @@ const ClientCommunications: React.FC = () => {
     dateRange: 'all'
   });
   
+  // Pagination state
+  const [visibleCount, setVisibleCount] = useState<number>(10);
+  const ITEMS_PER_PAGE = 10;
+  
   // New note dialog state
   const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
   const [newNoteData, setNewNoteData] = useState({
@@ -221,6 +225,15 @@ const ClientCommunications: React.FC = () => {
       channel: 'all',
       dateRange: 'all'
     });
+  };
+
+  // Pagination handlers
+  const handleShowMore = () => {
+    setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+  };
+
+  const handleShowLess = () => {
+    setVisibleCount(ITEMS_PER_PAGE);
   };
 
   // Queries
@@ -261,6 +274,11 @@ const ClientCommunications: React.FC = () => {
       return matchesNoteType && matchesChannel && matchesDate;
     }).sort((a: any, b: any) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
   }, [communications, filters]);
+
+  // Get paginated communications for display
+  const displayedCommunications = React.useMemo(() => {
+    return filteredCommunications.slice(0, visibleCount);
+  }, [filteredCommunications, visibleCount]);
 
   // Mutation for creating new note
   const createNoteMutation = useMutation({
@@ -589,7 +607,7 @@ const ClientCommunications: React.FC = () => {
           </div>
         ) : filteredCommunications && filteredCommunications.length > 0 ? (
           <div className="space-y-3">
-            {filteredCommunications.map((communication: Communication) => {
+            {displayedCommunications.map((communication: Communication) => {
               const isExpanded = expandedNotes.has(communication.id);
               const communicationType = communication.communication_type?.replace('_', ' ')?.toUpperCase() || 'NOTE';
               const channel = communication.channel?.toUpperCase() || 'UNKNOWN';
@@ -708,6 +726,30 @@ const ClientCommunications: React.FC = () => {
                 </Card>
               );
             })}
+            
+            {/* Pagination Controls */}
+            {filteredCommunications.length > ITEMS_PER_PAGE && (
+              <div className="flex justify-center mt-6 space-x-3">
+                {visibleCount < filteredCommunications.length && (
+                  <Button 
+                    onClick={handleShowMore} 
+                    variant="outline"
+                    className="px-6"
+                  >
+                    Show More ({Math.min(ITEMS_PER_PAGE, filteredCommunications.length - visibleCount)} more)
+                  </Button>
+                )}
+                {visibleCount > ITEMS_PER_PAGE && (
+                  <Button 
+                    onClick={handleShowLess} 
+                    variant="outline"
+                    className="px-6"
+                  >
+                    Show Less
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <Card className="p-8 text-center">
