@@ -699,28 +699,28 @@ export default function ClientPersonalPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-medium mb-3">KYC Details</h3>
-                    <dl className="space-y-2">
-                      <div className="flex justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">KYC Date</dt>
                         <dd className="text-sm font-medium">{formatDate(client.kycDate)}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">PAN Number</dt>
                         <dd className="text-sm font-medium">{client.panNumber || "Not available"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Tax Residency Status</dt>
                         <dd className="text-sm font-medium">{client.taxResidencyStatus || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">FATCA Status</dt>
                         <dd className="text-sm font-medium">{client.fatcaStatus || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Risk Assessment Score</dt>
                         <dd className="text-sm font-medium">{client.riskAssessmentScore ? `${client.riskAssessmentScore}/10` : "Not assessed"}</dd>
                       </div>
-                    </dl>
+                    </div>
                   </div>
                   
                   <div>
