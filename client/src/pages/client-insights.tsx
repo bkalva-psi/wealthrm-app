@@ -37,8 +37,8 @@ interface Client {
 export default function ClientInsights() {
   const [clientId, setClientId] = useState<number | null>(null);
   const [showAllInsights, setShowAllInsights] = useState(false);
-  const [showPortfolioAlerts, setShowPortfolioAlerts] = useState(false);
-  const [showInvestmentOpportunities, setShowInvestmentOpportunities] = useState(false);
+  const [showPortfolioAlerts, setShowPortfolioAlerts] = useState(true);
+  const [showInvestmentOpportunities, setShowInvestmentOpportunities] = useState(true);
   
   // Set page title and get client ID from URL
   useEffect(() => {
@@ -269,31 +269,22 @@ export default function ClientInsights() {
               <CardContent className="pt-0">
                 {portfolioAlerts && Array.isArray(portfolioAlerts) && portfolioAlerts.length > 0 ? (
                   <div className="space-y-3">
-                    {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 2).map((alert: any) => (
+                    {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 3).map((alert: any) => (
                       <div key={alert.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <AlertTriangle className="h-4 w-4 text-red-500" />
-                              <span className="font-medium text-sm">{alert.title}</span>
-                              <Badge variant="destructive" className="text-xs">
-                                {alert.severity || 'Medium'}
-                              </Badge>
-                            </div>
-                            <p className="text-xs text-gray-600 mb-2">{alert.description}</p>
-                            <p className="text-xs font-medium text-red-700">{alert.action}</p>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                          <span className="font-medium text-sm">{alert.title}</span>
                         </div>
                       </div>
                     ))}
-                    {portfolioAlerts.length > 2 && (
+                    {portfolioAlerts.length > 3 && (
                       <Button 
                         variant="ghost" 
                         size="sm"
                         onClick={() => setShowAllInsights(!showAllInsights)}
                         className="text-xs w-full"
                       >
-                        {showAllInsights ? 'Show Less' : `Show More (${portfolioAlerts.length - 2} more)`}
+                        {showAllInsights ? 'Show Less' : `Show More (${portfolioAlerts.length - 3} more)`}
                       </Button>
                     )}
                   </div>
@@ -325,31 +316,22 @@ export default function ClientInsights() {
             <CollapsibleContent>
               <CardContent className="pt-0">
                 <div className="space-y-3">
-                  {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 2).map((opportunity: any) => (
+                  {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 3).map((opportunity: any) => (
                     <div key={opportunity.id} className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Target className="h-4 w-4 text-green-500" />
-                            <span className="font-medium text-sm">{opportunity.title}</span>
-                            <Badge variant={opportunity.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
-                              {opportunity.priority}
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-gray-600 mb-2">{opportunity.description}</p>
-                          <p className="text-xs font-medium text-green-700">Category: {opportunity.category}</p>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-green-500" />
+                        <span className="font-medium text-sm">{opportunity.title}</span>
                       </div>
                     </div>
                   ))}
-                  {investmentOpportunities.length > 2 && (
+                  {investmentOpportunities.length > 3 && (
                     <Button 
                       variant="ghost" 
                       size="sm"
                       onClick={() => setShowAllInsights(!showAllInsights)}
                       className="text-xs w-full"
                     >
-                      {showAllInsights ? 'Show Less' : `Show More (${investmentOpportunities.length - 2} more)`}
+                      {showAllInsights ? 'Show Less' : `Show More (${investmentOpportunities.length - 3} more)`}
                     </Button>
                   )}
                 </div>
