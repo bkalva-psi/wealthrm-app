@@ -98,7 +98,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
       stage: "new", // Use valid stage from schema
       probabilityScore: 20,
       notes: "",
-      productsOfInterest: "",
+      productsOfInterest: [],
     },
     mode: "onChange", // Validate on change for immediate feedback
   });
@@ -304,6 +304,8 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
   const onSubmit = async (data: ProspectFormValues) => {
     setIsSubmitting(true);
     console.log("Form submitted", { data, prospectId, readOnly });
+    console.log("Form validation state:", form.formState.errors);
+    console.log("Form data being submitted:", data);
     
     try {
       if (prospectId && !readOnly) {
@@ -607,22 +609,16 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
                               <Checkbox
                                 id={product.id}
                                 checked={
-                                  Array.isArray(field.value) 
-                                    ? field.value.includes(product.label) 
-                                    : field.value === product.label
+                                  field.value && field.value.includes(product.label)
                                 }
                                 onCheckedChange={(checked) => {
-                                  const currentValue = Array.isArray(field.value) 
-                                    ? field.value 
-                                    : field.value 
-                                      ? [field.value] 
-                                      : [];
+                                  const currentValue = field.value || [];
                                   
                                   const newValue = checked
                                     ? [...currentValue, product.label]
                                     : currentValue.filter(v => v !== product.label);
                                   
-                                  field.onChange(newValue.length > 0 ? newValue : null);
+                                  field.onChange(newValue);
                                 }}
                                 disabled={readOnly || isSubmitting}
                               />

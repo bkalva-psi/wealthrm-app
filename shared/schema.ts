@@ -168,7 +168,7 @@ export const insertProspectSchema = baseProspectSchema.extend({
   probabilityScore: z.number().min(0, "Probability must be at least 0%").max(100, "Probability cannot exceed 100%"),
   initials: z.string().optional(),
   lastContactDate: z.date().optional().nullable(),
-  productsOfInterest: z.string().optional(),
+  productsOfInterest: z.array(z.string()).optional(),
   notes: z.string().optional(),
 });
 
