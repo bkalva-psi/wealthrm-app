@@ -294,54 +294,54 @@ export default function ClientPersonalPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-medium mb-3">Basic Details</h3>
-                    <dl className="space-y-2">
-                      <div className="flex justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Date of Birth</dt>
                         <dd className="text-sm font-medium">{formatDate(client.dateOfBirth)}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Age</dt>
                         <dd className="text-sm font-medium">
                           {client.dateOfBirth ? `${new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear()} years` : "Not specified"}
                         </dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Gender</dt>
                         <dd className="text-sm font-medium">{client.gender || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Marital Status</dt>
                         <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
                       </div>
                       {client.maritalStatus === "Married" && (
-                        <div className="flex justify-between">
+                        <div className="space-y-1">
                           <dt className="text-sm text-slate-500">Anniversary</dt>
                           <dd className="text-sm font-medium">{formatDate(client.anniversaryDate)}</dd>
                         </div>
                       )}
-                    </dl>
+                    </div>
                   </div>
                   
                   <div>
                     <h3 className="font-medium mb-3">Contact Preferences</h3>
-                    <dl className="space-y-2">
-                      <div className="flex justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Preferred Contact Method</dt>
                         <dd className="text-sm font-medium">{client.preferredContactMethod || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Preferred Time</dt>
                         <dd className="text-sm font-medium">{client.preferredContactTime || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Communication Frequency</dt>
                         <dd className="text-sm font-medium">{client.communicationFrequency || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Last Contact</dt>
                         <dd className="text-sm font-medium">{formatDate(client.lastContactDate)}</dd>
                       </div>
-                    </dl>
+                    </div>
                   </div>
                 </div>
 
@@ -454,48 +454,48 @@ export default function ClientPersonalPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-medium mb-3">Investment Profile</h3>
-                    <dl className="space-y-2">
-                      <div className="flex justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Investment Horizon</dt>
                         <dd className="text-sm font-medium">{client.investmentHorizon || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Source of Wealth</dt>
                         <dd className="text-sm font-medium">{client.sourceOfWealth || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Net Worth</dt>
                         <dd className="text-sm font-medium">{client.netWorth || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Liquidity Requirements</dt>
                         <dd className="text-sm font-medium">{client.liquidityRequirements || "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Foreign Investments</dt>
                         <dd className="text-sm font-medium">{client.foreignInvestments || "No"}</dd>
                       </div>
-                    </dl>
+                    </div>
                   </div>
                   
                   <div>
                     <h3 className="font-medium mb-3">Transaction Information</h3>
-                    <dl className="space-y-2">
-                      <div className="flex justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Last Transaction Date</dt>
                         <dd className="text-sm font-medium">{formatDate(client.lastTransactionDate)}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Total Transactions (YTD)</dt>
                         <dd className="text-sm font-medium">{client.totalTransactionCount || "0"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Average Transaction Value</dt>
                         <dd className="text-sm font-medium">
                           {client.averageTransactionValue ? `₹${(client.averageTransactionValue/100000).toFixed(2)} L` : "N/A"}
                         </dd>
                       </div>
-                    </dl>
+                    </div>
                   </div>
                 </div>
                 
@@ -563,26 +563,26 @@ export default function ClientPersonalPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-medium mb-3">Family Details</h3>
-                    <dl className="space-y-2">
-                      <div className="flex justify-between">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Marital Status</dt>
                         <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
                       </div>
                       {client.maritalStatus === "Married" && (
-                        <div className="flex justify-between">
+                        <div className="space-y-1">
                           <dt className="text-sm text-slate-500">Spouse</dt>
                           <dd className="text-sm font-medium">{client.spouseName || "Not specified"}</dd>
                         </div>
                       )}
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Dependents</dt>
                         <dd className="text-sm font-medium">{client.dependentsCount !== null ? client.dependentsCount : "Not specified"}</dd>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="space-y-1">
                         <dt className="text-sm text-slate-500">Family Financial Goals</dt>
                         <dd className="text-sm font-medium">{client.familyFinancialGoals || "Not specified"}</dd>
                       </div>
-                    </dl>
+                    </div>
                   </div>
                   
                   <div>
