@@ -916,6 +916,19 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       </div>
 
 
+      {/* Page Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
+          <Button 
+            size="icon" 
+            className="rounded-full"
+            onClick={() => setIsNewAppointmentDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className="p-6">
