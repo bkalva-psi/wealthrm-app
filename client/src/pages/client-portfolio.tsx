@@ -702,14 +702,14 @@ export default function ClientPortfolioPage() {
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
-            <User className="h-8 w-8 text-gray-600" />
+            <User className="h-10 w-10 text-gray-600" />
           </button>
           
           <button 
             className="flex items-center justify-center p-3 rounded-lg bg-blue-50 border border-blue-200"
             title="Portfolio"
           >
-            <PieChart className="h-8 w-8 text-blue-600" />
+            <PieChart className="h-10 w-10 text-blue-600" />
           </button>
           
           <button 
@@ -717,7 +717,7 @@ export default function ClientPortfolioPage() {
             onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
             title="Transactions"
           >
-            <Receipt className="h-8 w-8 text-gray-600" />
+            <Receipt className="h-10 w-10 text-gray-600" />
           </button>
           
           <button 
@@ -725,7 +725,7 @@ export default function ClientPortfolioPage() {
             onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
             title="Appointments"
           >
-            <Calendar className="h-8 w-8 text-gray-600" />
+            <Calendar className="h-10 w-10 text-gray-600" />
           </button>
           
           <button 
@@ -733,7 +733,7 @@ export default function ClientPortfolioPage() {
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
             title="Communications"
           >
-            <MessageCircle className="h-8 w-8 text-gray-600" />
+            <MessageCircle className="h-10 w-10 text-gray-600" />
           </button>
           
           <button 
@@ -741,7 +741,7 @@ export default function ClientPortfolioPage() {
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
             title="Portfolio Report"
           >
-            <FileBarChart className="h-8 w-8 text-gray-600" />
+            <FileBarChart className="h-10 w-10 text-gray-600" />
           </button>
           
           <button 
@@ -749,7 +749,7 @@ export default function ClientPortfolioPage() {
             onClick={() => window.location.hash = `/clients/${clientId}/recommendations`}
             title="Investment Ideas"
           >
-            <Lightbulb className="h-8 w-8 text-gray-600" />
+            <Lightbulb className="h-10 w-10 text-gray-600" />
           </button>
         </div>
       </div>
