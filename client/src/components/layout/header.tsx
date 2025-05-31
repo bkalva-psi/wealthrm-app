@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/context/auth-context";
-import { Search, Bell, MessageSquare, HelpCircle, Menu } from "lucide-react";
+import { Search, Bell, Menu } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -59,8 +59,8 @@ export function Header({
               <div className="flex items-center h-16 px-4 border-b border-slate-200">
                 <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
                 <div className="ml-2 flex flex-col">
-                  <h1 className="text-ujjivan-primary text-sm font-bold leading-tight">Ujjivan SFB</h1>
-                  <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM</span>
+                  <h1 className="text-ujjivan-primary text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
+                  <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM Pro</span>
                 </div>
               </div>
               <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
@@ -71,8 +71,8 @@ export function Header({
           <div className="flex items-center md:hidden ml-2">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
             <div className="ml-2 flex flex-col">
-              <h1 className="text-ujjivan-primary text-sm font-bold leading-tight">Ujjivan SFB</h1>
-              <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM</span>
+              <h1 className="text-ujjivan-primary text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
+              <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM Pro</span>
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@ export function Header({
         </div>
         
         {/* Right Navigation Items */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 pr-2">
           {/* Notification Bell */}
           <div className="relative">
             <DropdownMenu>
@@ -141,16 +141,6 @@ export function Header({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          
-          {/* Messages Icon */}
-          <Button variant="ghost" size="icon" className="p-1 text-slate-500 rounded-full hover:bg-slate-100 focus:outline-none">
-            <MessageSquare className="h-6 w-6" />
-          </Button>
-          
-          {/* Help Icon */}
-          <Button variant="ghost" size="icon" className="p-1 text-slate-500 rounded-full hover:bg-slate-100 focus:outline-none">
-            <HelpCircle className="h-6 w-6" />
-          </Button>
           
           {/* Profile Dropdown */}
           <div className="relative">
