@@ -139,12 +139,12 @@ export class MemStorage implements IStorage {
     
     // Seed with a default user
     this.createUser({
-      username: "rahul.sharma",
+      username: "priya.krishnan",
       password: "password123",
-      fullName: "Rahul Sharma",
+      fullName: "Priya Krishnan",
       role: "relationship_manager",
       jobTitle: "Senior Relationship Manager",
-      email: "rahul.sharma@bank.com",
+      email: "priya.krishnan@ujjivan.com",
       phone: "+91 9876543210"
     });
     
