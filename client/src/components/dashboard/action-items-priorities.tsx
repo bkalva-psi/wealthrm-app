@@ -113,20 +113,20 @@ export function ActionItemsPriorities() {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card text-card-foreground border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01]">
+      <Card className="bg-card text-card-foreground border-unified transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300 focus-enhanced">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 transition-all duration-300 hover:bg-primary/20 hover:scale-110">
-                  <CheckSquare size={20} className="text-primary transition-all duration-300" />
+                <div className="p-2 rounded-lg brand-accent-bg-subtle transition-all duration-300 hover:bg-primary/20 hover:scale-110 interactive-scale">
+                  <CheckSquare size={20} className="brand-accent transition-all duration-300" />
                 </div>
-                <CardTitle className="text-lg transition-colors duration-300">Action Items & Priorities</CardTitle>
+                <CardTitle className="text-lg transition-colors duration-300 brand-accent-subtle">Action Items & Priorities</CardTitle>
               </div>
               {isOpen ? (
-                <ChevronDown size={20} className="transition-all duration-300 text-primary" />
+                <ChevronDown size={20} className="transition-all duration-300 brand-accent" />
               ) : (
-                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary" />
+                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary brand-accent-subtle" />
               )}
             </div>
           </CardHeader>

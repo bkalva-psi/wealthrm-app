@@ -116,40 +116,103 @@ export function BusinessSnapshotStructured() {
     setExpandedMetrics(newExpanded);
   };
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658'];
+  // Enhanced brand-consistent color palette for charts
+  const COLORS = [
+    'hsl(var(--primary))',
+    'hsl(var(--secondary))', 
+    'hsl(220 70% 50%)',
+    'hsl(280 70% 55%)',
+    'hsl(160 70% 45%)',
+    'hsl(30 90% 55%)',
+    'hsl(340 70% 55%)',
+    'hsl(200 80% 50%)'
+  ];
+
+  // Enhanced tooltip component with custom styling
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="chart-tooltip">
+          <p className="font-semibold text-foreground">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {`${entry.name}: ${formatCurrency(entry.value)}`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   const renderChart = (dimension: Dimension) => {
     if (dimension.chartType === 'donut') {
       return (
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={220}>
           <PieChart>
             <Pie
               data={dimension.data}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={5}
+              innerRadius={65}
+              outerRadius={85}
+              paddingAngle={3}
               dataKey="value"
+              animationBegin={0}
+              animationDuration={800}
             >
               {dimension.data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={COLORS[index % COLORS.length]}
+                  stroke="hsl(var(--background))"
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
-            <Tooltip formatter={(value: number) => formatCurrency(value)} />
-            <Legend />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              wrapperStyle={{ 
+                fontSize: '0.875rem',
+                color: 'hsl(var(--muted-foreground))'
+              }}
+              iconType="circle"
+            />
           </PieChart>
         </ResponsiveContainer>
       );
     } else {
       return (
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={dimension.data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="category" />
-            <YAxis tickFormatter={formatCurrency} />
-            <Tooltip formatter={(value: number) => formatCurrency(value)} />
-            <Bar dataKey="value" fill="#8884d8" />
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart 
+            data={dimension.data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="hsl(var(--border))"
+              opacity={0.3}
+            />
+            <XAxis 
+              dataKey="category" 
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+              tickLine={false}
+            />
+            <YAxis 
+              tickFormatter={formatCurrency}
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar 
+              dataKey="value" 
+              fill={COLORS[0]}
+              radius={[4, 4, 0, 0]}
+              animationDuration={800}
+            />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -171,20 +234,20 @@ export function BusinessSnapshotStructured() {
 
   return (
     <Collapsible open={isMainCardExpanded} onOpenChange={setIsMainCardExpanded}>
-      <Card className="bg-card text-card-foreground border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01]">
+      <Card className="bg-card text-card-foreground border-unified transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300 focus-enhanced">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 transition-all duration-300 hover:bg-primary/20 hover:scale-110">
-                  <BarChart3 size={20} className="text-primary transition-all duration-300" />
+                <div className="p-2 rounded-lg brand-accent-bg-subtle transition-all duration-300 hover:bg-primary/20 hover:scale-110 interactive-scale">
+                  <BarChart3 size={20} className="brand-accent transition-all duration-300" />
                 </div>
-                <CardTitle className="text-lg transition-colors duration-300">Key Performance Indicators</CardTitle>
+                <CardTitle className="text-lg transition-colors duration-300 brand-accent-subtle">Key Performance Indicators</CardTitle>
               </div>
               {isMainCardExpanded ? (
-                <ChevronDown size={20} className="transition-all duration-300 text-primary" />
+                <ChevronDown size={20} className="transition-all duration-300 brand-accent" />
               ) : (
-                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary" />
+                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary brand-accent-subtle" />
               )}
             </div>
           </CardHeader>

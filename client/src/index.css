@@ -237,6 +237,112 @@
   padding-bottom: 5rem;
 }
 
+/* Color Accent & Brand Integration */
+.brand-accent {
+  color: hsl(var(--primary));
+}
+
+.brand-accent-bg {
+  background-color: hsl(var(--primary));
+}
+
+.brand-accent-border {
+  border-color: hsl(var(--primary));
+}
+
+.brand-accent-subtle {
+  color: hsl(var(--primary) / 0.8);
+}
+
+.brand-accent-bg-subtle {
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.brand-secondary-accent {
+  color: hsl(var(--secondary));
+}
+
+.brand-secondary-bg {
+  background-color: hsl(var(--secondary));
+}
+
+/* Enhanced Focus States for Accessibility */
+.focus-brand:focus {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.2);
+  transition: all 0.15s ease-in-out;
+}
+
+.focus-enhanced:focus {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px hsl(var(--ring) / 0.2);
+  transition: all 0.15s ease-in-out;
+}
+
+/* Consistent Border Styling */
+.border-unified {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+}
+
+.border-unified-thick {
+  border: 2px solid hsl(var(--border));
+  border-radius: 0.5rem;
+}
+
+.border-brand {
+  border: 1px solid hsl(var(--primary) / 0.3);
+  border-radius: 0.5rem;
+}
+
+.border-brand-thick {
+  border: 2px solid hsl(var(--primary) / 0.5);
+  border-radius: 0.5rem;
+}
+
+/* Interactive States */
+.interactive-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.interactive-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.15);
+}
+
+.interactive-scale:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Chart Enhancement Styles */
+.chart-tooltip {
+  background: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--popover-foreground));
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.chart-data-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  fill: hsl(var(--foreground));
+}
+
 /* Light Theme - Default */
 :root {
       --background: 0 0% 100%;
