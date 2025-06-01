@@ -35,7 +35,7 @@ export default function Dashboard() {
                 {format(new Date(), "EEEE, MMMM d, yyyy")}
               </p>
             </div>
-            <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-4">
               <ThemeSwitcher />
             </div>
           </div>

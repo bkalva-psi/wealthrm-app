@@ -179,94 +179,64 @@
       --radius: 0.75rem;
 }
 
-/* Dark Theme */
-.dark {
-      --background: 222.2 84% 4.9%;
-      --foreground: 210 40% 98%;
-      --muted: 217.2 32.6% 17.5%;
-      --muted-foreground: 215 20.2% 65.1%;
-      --popover: 222.2 84% 4.9%;
-      --popover-foreground: 210 40% 98%;
-      --card: 222.2 84% 4.9%;
-      --card-foreground: 210 40% 98%;
-      --border: 217.2 32.6% 17.5%;
-      --input: 217.2 32.6% 17.5%;
-      --primary: 217.2 91.2% 59.8%;
-      --primary-foreground: 222.2 84% 4.9%;
-      --secondary: 217.2 32.6% 17.5%;
-      --secondary-foreground: 210 40% 98%;
-      --accent: 217.2 32.6% 17.5%;
-      --accent-foreground: 210 40% 98%;
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 210 40% 98%;
-      --ring: 217.2 91.2% 59.8%;
-}
+
 
 /* Ujjivan Brand Theme */
 .ujjivan-theme {
-      /* Primary Ujjivan Teal/Green with Orange accents */
-      --background: 174 44% 98%; /* Light teal background */
-      --foreground: 180 100% 12%; /* Deep teal text */
-      --muted: 174 44% 94%;
-      --muted-foreground: 180 20% 45%;
-      --popover: 174 44% 98%;
-      --popover-foreground: 180 100% 12%;
-      --card: 0 0% 100%;
-      --card-foreground: 180 100% 12%;
-      --border: 174 30% 88%;
-      --input: 174 30% 88%;
+      /* Rich Ujjivan Teal Background */
+      --background: 174 100% 29%; /* Rich teal background - #007A5E */
+      --foreground: 0 0% 100%; /* White text for visibility */
+      --muted: 174 100% 25%; /* Darker teal for muted areas */
+      --muted-foreground: 174 50% 85%; /* Light teal for muted text */
+      --popover: 174 100% 29%;
+      --popover-foreground: 0 0% 100%;
+      --card: 174 100% 25%; /* Slightly darker teal cards */
+      --card-foreground: 0 0% 100%;
+      --border: 174 100% 35%; /* Lighter teal borders */
+      --input: 174 100% 25%;
       
-      /* Primary: Ujjivan Teal */
-      --primary: 174 100% 29%; /* Rich teal */
+      /* Orange as primary on teal background */
+      --primary: 25 100% 55%; /* Ujjivan Orange */
       --primary-foreground: 0 0% 100%;
       
-      /* Secondary: Ujjivan Orange */
-      --secondary: 25 100% 55%; /* Vibrant orange */
-      --secondary-foreground: 0 0% 100%;
+      /* White as secondary */
+      --secondary: 0 0% 100%;
+      --secondary-foreground: 174 100% 29%;
       
-      /* Accent: Light teal */
-      --accent: 174 44% 92%;
-      --accent-foreground: 180 100% 12%;
+      /* Light accent that works on teal */
+      --accent: 174 100% 35%;
+      --accent-foreground: 0 0% 100%;
       
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --ring: 174 100% 29%;
+      --destructive: 0 100% 75%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 25 100% 55%;
 }
   
   .dark {
-      /* Ujjivan Small Finance Bank Dark Theme */
-      --background: 215 28% 17%;
-      --foreground: 210 40% 98%;
-      --muted: 215 27% 25%;
-      --muted-foreground: 217 24% 75%;
-      --popover: 215 28% 17%;
+      /* True Dark Mode */
+      --background: 222 84% 5%; /* Very dark background */
+      --foreground: 210 40% 98%; /* Light text */
+      --muted: 217 33% 17%; /* Dark muted areas */
+      --muted-foreground: 215 20% 65%; /* Muted text */
+      --popover: 222 84% 5%;
       --popover-foreground: 210 40% 98%;
-      --card: 215 28% 17%;
+      --card: 222 47% 11%; /* Dark cards */
       --card-foreground: 210 40% 98%;
-      --border: 215 27% 25%;
-      --input: 215 27% 25%;
+      --border: 217 33% 17%; /* Dark borders */
+      --input: 217 33% 17%;
       
-      /* Ujjivan Brand Colors for Dark Mode */
-      --primary: 212 96% 42%; /* Ujjivan Dark Blue - Lighter for dark mode - #1266C4 */
+      /* Dark mode colors */
+      --primary: 174 100% 29%; /* Teal for primary */
       --primary-foreground: 0 0% 100%;
-      --primary-light: 210 72% 55%; /* Lighter version - #3B8ADF */
-      --primary-dark: 214 85% 30%; /* Darker version - #0B4899 */
       
-      --secondary: 24 100% 60%; /* Ujjivan Orange - Brighter for dark mode - #FF9933 */
+      --secondary: 25 100% 55%; /* Orange for secondary */
       --secondary-foreground: 0 0% 100%;
-      --secondary-light: 24 100% 75%; /* Lighter version - #FFBF80 */
-      --secondary-dark: 24 100% 45%; /* Darker version - #CC6600 */
       
-      /* Supporting Colors for Dark Mode */
-      --success: 142 69% 45%; /* Green - #34C45B */
-      --warning: 38 92% 60%; /* Amber - #FACC4D */
-      --danger: 0 84% 70%; /* Red - #FF6666 */
-      
-      --accent: 215 27% 25%;
+      --accent: 217 33% 17%;
       --accent-foreground: 210 40% 98%;
       --destructive: 0 62.8% 30.6%;
       --destructive-foreground: 0 0% 98%;
-      --ring: 212 96% 42%;
+      --ring: 174 100% 29%;
       --radius: 0.5rem;
   }
 
