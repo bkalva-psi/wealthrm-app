@@ -68,9 +68,15 @@ export default function ClientInsights() {
     
     // Get client ID from URL
     const hash = window.location.hash;
-    const match = hash.match(/\/clients\/(\d+)\/insights/);
+    console.log('Current hash:', hash);
+    const match = hash.match(/\/clients\/(\d+)\/insights/) || hash.match(/\/client-insights\/(\d+)/);
+    console.log('URL match result:', match);
     if (match && match[1]) {
-      setClientId(Number(match[1]));
+      const id = Number(match[1]);
+      console.log('Setting client ID to:', id);
+      setClientId(id);
+    } else {
+      console.log('No client ID found in URL');
     }
   }, []);
   
