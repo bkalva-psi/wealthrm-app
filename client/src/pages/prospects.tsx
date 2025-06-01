@@ -81,9 +81,9 @@ function ProspectCard({ prospect, onClick }: ProspectCardProps) {
           <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm transition-all duration-300 hover:bg-primary/20 hover:scale-110">
             {prospect.initials}
           </div>
-          <h3 className="text-sm font-semibold text-foreground ml-3 tracking-tight">{prospect.fullName}</h3>
+          <h3 className="text-sm font-medium text-foreground ml-3">{prospect.fullName}</h3>
         </div>
-        <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full transition-all duration-300 hover:bg-primary/20">
+        <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full transition-all duration-300 hover:bg-primary/20">
           {prospect.probabilityScore}%
         </span>
       </div>
@@ -166,7 +166,7 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   return (
     <Card className="mb-6 !bg-card !border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Sales Pipeline Funnel</h3>
+        <h3 className="text-lg font-medium text-foreground mb-4 text-center">Sales Pipeline Funnel</h3>
         
         {funnelData.length === 0 || funnelData.every(item => item.count === 0) ? (
           <div className="text-center py-8 text-muted-foreground">
@@ -277,7 +277,7 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
               <div 
                 className={`w-3 h-3 rounded-full mr-2 ${stageColor.bg}`}
               ></div>
-              <h3 className={`font-semibold ${stageColor.text}`}>{title}</h3>
+              <h3 className={`font-medium ${stageColor.text}`}>{title}</h3>
             </div>
             <span className="text-xs font-medium bg-background rounded-full px-2 py-0.5 text-foreground">
               {prospects.length}

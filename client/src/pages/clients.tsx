@@ -124,7 +124,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               onClick={(e) => handleSectionClick(e, 'personal')}
               title="View client personal information"
             >
-              <h3 className="font-medium text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
+              <h3 className="text-sm font-medium text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
             </div>
             
             {/* Phone - clickable to dial */}
