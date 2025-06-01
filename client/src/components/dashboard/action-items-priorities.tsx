@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Calendar, Clock, TrendingUp, AlertTriangle, MessageSquare, ChevronDown, ChevronRight } from "lucide-react";
+import { Calendar, Clock, TrendingUp, AlertTriangle, MessageSquare, ChevronDown, ChevronRight, CheckSquare } from "lucide-react";
 import { format } from "date-fns";
 
 export function ActionItemsPriorities() {
@@ -117,7 +117,12 @@ export function ActionItemsPriorities() {
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <CheckSquare size={20} className="text-primary" />
+                </div>
+                <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
+              </div>
               {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </div>
           </CardHeader>

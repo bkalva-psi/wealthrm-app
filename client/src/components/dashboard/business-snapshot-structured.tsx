@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight, TrendingUp, Users, DollarSign, Target } from 'lucide-react';
+import { ChevronDown, ChevronRight, TrendingUp, Users, DollarSign, Target, BarChart3 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // Types for authentic database data
@@ -174,7 +174,12 @@ export function BusinessSnapshotStructured() {
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Key Performance Indicators</CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <BarChart3 size={20} className="text-primary" />
+                </div>
+                <CardTitle className="text-lg">Key Performance Indicators</CardTitle>
+              </div>
               {isMainCardExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </div>
           </CardHeader>

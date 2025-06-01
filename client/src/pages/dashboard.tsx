@@ -42,12 +42,12 @@ export default function Dashboard() {
         </div>
         
         {/* Business Snapshot with Enhanced Spacing */}
-        <div className="mb-8">
+        <div className="mb-10">
           <BusinessSnapshotStructured />
         </div>
         
-        {/* Enhanced Grid Layout with Staggered Animations */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+        {/* Enhanced Grid Layout with Improved Spacing */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-10">
           {/* Left Column: Priority Actions - Takes more space */}
           <div className="xl:col-span-1 animate-stagger-1">
             <ActionItemsPriorities />
