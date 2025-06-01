@@ -99,12 +99,21 @@ export function TalkingPointsCard() {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card text-card-foreground border-border">
+      <Card className="bg-card text-card-foreground border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01]">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Market Insights</CardTitle>
-              <ChevronRight size={20} className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 transition-all duration-300 hover:bg-primary/20 hover:scale-110">
+                  <Lightbulb size={20} className="text-primary transition-all duration-300" />
+                </div>
+                <CardTitle className="text-lg transition-colors duration-300">Market Insights</CardTitle>
+              </div>
+              {isOpen ? (
+                <ChevronDown size={20} className="transition-all duration-300 text-primary" />
+              ) : (
+                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary" />
+              )}
             </div>
           </CardHeader>
         </CollapsibleTrigger>
