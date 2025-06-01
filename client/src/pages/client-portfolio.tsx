@@ -206,7 +206,7 @@ function MetricCard({ title, value, icon, description, color = "blue", trend, is
             {icon}
           </div>
           <div className="flex-1">
-            <p className="text-sm text-muted-foreground">{title}</p>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
             <div className="mt-1 flex items-baseline">
               {isLoading ? (
                 <Skeleton className="h-8 w-24" />
@@ -243,7 +243,7 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
   
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium">{title}</h3>
+      <h3 className="text-lg font-medium">{title}</h3>
       <div className="space-y-2">
         {Object.entries(data).map(([key, value], index) => (
           <div key={key} className="space-y-1">
