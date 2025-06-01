@@ -830,7 +830,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
             title="Portfolio"
           >
