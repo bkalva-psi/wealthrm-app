@@ -62,31 +62,31 @@ export function AnnouncementsCard() {
   const categories = {
     campaign: {
       title: 'Campaigns',
-      color: 'text-green-600',
+      color: 'text-primary',
       count: groupedAnnouncements.campaign?.length || 0,
       items: groupedAnnouncements.campaign || []
     },
     policy_update: {
       title: 'Policy Updates',
-      color: 'text-red-600',
+      color: 'text-destructive',
       count: groupedAnnouncements.policy_update?.length || 0,
       items: groupedAnnouncements.policy_update || []
     },
     product_update: {
       title: 'Product Updates',
-      color: 'text-blue-600',
+      color: 'text-secondary',
       count: groupedAnnouncements.product_update?.length || 0,
       items: groupedAnnouncements.product_update || []
     },
     training: {
       title: 'Training',
-      color: 'text-purple-600',
+      color: 'text-primary',
       count: groupedAnnouncements.training?.length || 0,
       items: groupedAnnouncements.training || []
     },
     general: {
       title: 'General',
-      color: 'text-gray-600',
+      color: 'text-muted-foreground',
       count: groupedAnnouncements.general?.length || 0,
       items: groupedAnnouncements.general || []
     }
@@ -116,9 +116,9 @@ export function AnnouncementsCard() {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card>
+      <Card className="bg-card text-card-foreground border-border">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Updates</CardTitle>
               <ChevronRight size={20} className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />

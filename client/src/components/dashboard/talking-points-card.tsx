@@ -45,31 +45,31 @@ export function TalkingPointsCard() {
   const categories = {
     market_analysis: {
       title: 'Market Analysis',
-      color: 'text-green-600',
+      color: 'text-primary',
       count: groupedPoints.market_analysis?.length || 0,
       items: groupedPoints.market_analysis || []
     },
     regulatory_update: {
       title: 'Regulatory Updates',
-      color: 'text-orange-600',
+      color: 'text-secondary',
       count: groupedPoints.regulatory_update?.length || 0,
       items: groupedPoints.regulatory_update || []
     },
     company_news: {
       title: 'Company News',
-      color: 'text-blue-600',
+      color: 'text-primary',
       count: groupedPoints.company_news?.length || 0,
       items: groupedPoints.company_news || []
     },
     economic_indicator: {
       title: 'Economic Indicators',
-      color: 'text-purple-600',
+      color: 'text-secondary',
       count: groupedPoints.economic_indicator?.length || 0,
       items: groupedPoints.economic_indicator || []
     },
     investment_strategy: {
       title: 'Investment Strategy',
-      color: 'text-amber-600',
+      color: 'text-primary',
       count: groupedPoints.investment_strategy?.length || 0,
       items: groupedPoints.investment_strategy || []
     }
@@ -99,9 +99,9 @@ export function TalkingPointsCard() {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card>
+      <Card className="bg-card text-card-foreground border-border">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Market Insights</CardTitle>
               <ChevronRight size={20} className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />
