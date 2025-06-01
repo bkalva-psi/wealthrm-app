@@ -170,10 +170,7 @@ export function BusinessSnapshotStructured() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Business Snapshot - Authentic Data Only</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          All data fetched from database tables. Pipeline: {formatCurrency(businessMetrics?.pipelineValue || 0)}
-        </p>
+        <CardTitle>Key Performance Indicators</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {Object.entries(metricsConfig).map(([key, config]) => {
@@ -204,11 +201,11 @@ export function BusinessSnapshotStructured() {
                 </CollapsibleTrigger>
                 
                 <CollapsibleContent className="mt-4">
-                  <div className="text-sm text-muted-foreground mb-2">
-                    Drill-down data will be populated from authentic database sources
-                  </div>
-                  <div className="text-xs text-orange-600">
-                    Note: Previously showing hardcoded mock data - now requires real API integration
+                  <div className="text-sm text-muted-foreground">
+                    {key === 'aum' && 'View breakdown by asset class, product type, and client tier to analyze portfolio composition and identify growth opportunities.'}
+                    {key === 'clients' && 'Analyze client distribution by tier (Platinum, Gold, Silver) and risk profile to optimize relationship management strategies.'}
+                    {key === 'revenue' && 'Track revenue streams by product categories and commission structures to identify top-performing investment areas.'}
+                    {key === 'pipeline' && 'Monitor prospect pipeline stages and expected closure dates to forecast upcoming business opportunities.'}
                   </div>
                 </CollapsibleContent>
               </div>
