@@ -813,7 +813,7 @@ export default function ClientTransactions() {
             </div>
             
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Product Type</Label>
+              <Label className="text-sm font-medium text-foreground mb-2 block">Product Type</Label>
               <Select 
                 value={productType} 
                 onValueChange={setProductType}
@@ -833,7 +833,7 @@ export default function ClientTransactions() {
             </div>
             
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Security</Label>
+              <Label className="text-sm font-medium text-foreground mb-2 block">Security</Label>
               <Select 
                 value={securityFilter} 
                 onValueChange={setSecurityFilter}
@@ -924,7 +924,7 @@ export default function ClientTransactions() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Transaction Details</h3>
-          <p className="text-sm text-gray-500">Showing {Math.min(visibleCount, sortedTransactions.length)} of {sortedTransactions.length} transactions</p>
+          <p className="text-sm text-muted-foreground">Showing {Math.min(visibleCount, sortedTransactions.length)} of {sortedTransactions.length} transactions</p>
         </div>
         
         {isTransactionsLoading ? (
@@ -936,7 +936,7 @@ export default function ClientTransactions() {
         ) : sortedTransactions.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
-              <p className="text-gray-500">No transactions found. Try adjusting your filters.</p>
+              <p className="text-muted-foreground">No transactions found. Try adjusting your filters.</p>
             </CardContent>
           </Card>
         ) : (
@@ -948,22 +948,22 @@ export default function ClientTransactions() {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-medium text-lg">{transaction.productName}</p>
-                      <p className="text-sm text-gray-500">{transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}</p>
+                      <p className="text-sm text-muted-foreground">{transaction.productType.charAt(0).toUpperCase() + transaction.productType.slice(1)}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-lg">{formatCurrency(transaction.totalAmount)}</p>
-                      <p className="text-sm text-gray-500">{format(new Date(transaction.transactionDate), 'dd MMM yyyy')}</p>
+                      <p className="text-sm text-muted-foreground">{format(new Date(transaction.transactionDate), 'dd MMM yyyy')}</p>
                     </div>
                   </div>
                   
                   {/* Details Row - Two Column Layout */}
                   <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
                     <div>
-                      <p className="text-sm text-gray-500">Type</p>
+                      <p className="text-sm text-muted-foreground">Type</p>
                       <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Amount</p>
+                      <p className="text-sm text-muted-foreground">Amount</p>
                       <p className="font-medium">{formatCurrency(transaction.amount)}</p>
                     </div>
                     <div>
