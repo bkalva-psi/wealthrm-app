@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, getPercentageChangeColor } from "@/lib/utils";
+import { BarChart3, TrendingUp, PieChart as PieChartIcon, Activity } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -153,12 +154,13 @@ export default function Analytics() {
   
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
-      <div className="mb-6 animate-in slide-in-from-top-4 duration-500">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Performance Analytics</h1>
-        <p className="text-muted-foreground text-sm font-medium mt-1">
-          Comprehensive insights and performance metrics
-        </p>
-      </div>
+      <div className="p-6">
+        <div className="mb-6 animate-in slide-in-from-top-4 duration-500">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Performance Analytics</h1>
+          <p className="text-muted-foreground text-sm font-medium mt-1">
+            Comprehensive insights and performance metrics
+          </p>
+        </div>
       
       {/* Enhanced KPI Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 animate-in slide-in-from-bottom-4 duration-700 delay-200">
@@ -193,19 +195,31 @@ export default function Analytics() {
         )}
       </div>
       
-      <Tabs defaultValue="performance" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="pipeline">Sales Pipeline</TabsTrigger>
-          <TabsTrigger value="clients">Client Analytics</TabsTrigger>
+      <Tabs defaultValue="performance" className="space-y-6 animate-in slide-in-from-bottom-4 duration-700 delay-300">
+        <TabsList className="bg-muted/50 border border-border/50 rounded-xl p-1 h-auto shadow-sm hover:shadow-md transition-all duration-300">
+          <TabsTrigger value="performance" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <Activity className="w-4 h-4 mr-2" />
+            Performance
+          </TabsTrigger>
+          <TabsTrigger value="pipeline" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Sales Pipeline
+          </TabsTrigger>
+          <TabsTrigger value="clients" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <PieChartIcon className="w-4 h-4 mr-2" />
+            Client Analytics
+          </TabsTrigger>
         </TabsList>
         
         {/* Performance Tab */}
-        <TabsContent value="performance">
+        <TabsContent value="performance" className="animate-in fade-in-50 slide-in-from-right-4 duration-500">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Monthly AUM Trend</CardTitle>
+            <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  Monthly AUM Trend
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
@@ -412,6 +426,7 @@ export default function Analytics() {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
