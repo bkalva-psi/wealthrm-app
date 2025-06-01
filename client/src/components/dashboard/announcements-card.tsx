@@ -102,9 +102,12 @@ export function AnnouncementsCard() {
               <div className="p-1.5 rounded-lg bg-white/60">
                 <Megaphone size={18} className="text-blue-600" />
               </div>
-              <span className="text-xs font-medium text-slate-700 flex-1 text-left">
-                Product Updates ({announcements.length})
-              </span>
+              <div className="text-left">
+                <h3 className="font-semibold text-sm">Product Updates</h3>
+                <p className="text-lg font-bold text-blue-600">
+                  {announcements.length}
+                </p>
+              </div>
             </div>
             
             {isLoading ? (

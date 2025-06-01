@@ -75,9 +75,12 @@ export function TalkingPointsCard() {
               <div className="p-1.5 rounded-lg bg-white/60">
                 <Lightbulb size={18} className="text-amber-600" />
               </div>
-              <span className="text-xs font-medium text-slate-700 flex-1 text-left">
-                Key Market Insights ({talkingPoints.length})
-              </span>
+              <div className="text-left">
+                <h3 className="font-semibold text-sm">Key Market Insights</h3>
+                <p className="text-lg font-bold text-amber-600">
+                  {talkingPoints.length}
+                </p>
+              </div>
             </div>
             
             {isLoading ? (
