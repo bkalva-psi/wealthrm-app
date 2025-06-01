@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
+import sravanAvatar from "../../assets/sravan-avatar.svg";
 
 interface HeaderProps {
   isMobileMenuOpen?: boolean;
@@ -112,17 +113,11 @@ export function Header({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center focus:outline-none">
                   <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
-                  {user?.avatarUrl ? (
-                    <img 
-                      className="h-10 w-10 rounded-full border-2 border-ujjivan-primary" 
-                      src={user.avatarUrl} 
-                      alt={`${user.fullName} profile`} 
-                    />
-                  ) : (
-                    <div className="h-10 w-10 rounded-full bg-ujjivan-primary flex items-center justify-center text-white text-sm border-2 border-ujjivan-secondary">
-                      {user?.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-                    </div>
-                  )}
+                  <img 
+                    className="h-10 w-10 rounded-full border-2 border-ujjivan-primary shadow-sm" 
+                    src={sravanAvatar} 
+                    alt={`${user?.fullName} profile`} 
+                  />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

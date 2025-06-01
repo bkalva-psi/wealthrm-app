@@ -209,8 +209,8 @@ export function BusinessSnapshotStructured() {
                             <IconComponent size={18} className="transition-transform duration-300" />
                           </div>
                           <div className="text-left">
-                            <h3 className="font-semibold text-sm transition-colors duration-300">{config.title}</h3>
-                            <p className="text-lg font-bold text-foreground transition-all duration-300 group-hover:scale-105">
+                            <h3 className="font-semibold text-sm text-muted-foreground transition-colors duration-300 leading-tight">{config.title}</h3>
+                            <p className="text-xl font-bold text-foreground transition-all duration-300 group-hover:scale-105 leading-tight tracking-tight">
                               {config.formatter(config.value)}
                             </p>
                           </div>

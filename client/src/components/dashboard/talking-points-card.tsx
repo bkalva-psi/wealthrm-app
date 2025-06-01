@@ -123,8 +123,8 @@ export function TalkingPointsCard() {
             <div className="px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="text-left">
-                  <h3 className="font-semibold text-sm">Market Insights</h3>
-                  <p className="text-lg font-bold text-amber-600">
+                  <h3 className="font-semibold text-sm text-muted-foreground leading-tight">Market Insights</h3>
+                  <p className="text-xl font-bold text-amber-600 leading-tight tracking-tight">
                     {totalTalkingPoints}
                   </p>
                 </div>
