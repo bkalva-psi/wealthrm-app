@@ -380,7 +380,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
         {readOnly ? "Prospect Details" : "Add New Prospect"}
       </h1>
 
-      <Card className="max-w-3xl mx-auto">
+      <Card className="max-w-3xl mx-auto !bg-card !border-border">
         <CardContent>
           {generalError && (
             <Alert variant="destructive" className="mb-6">
