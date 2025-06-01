@@ -65,7 +65,7 @@ export default function TalkingPointsPage() {
           <div className="p-2 bg-primary/10 rounded-lg">
             <Lightbulb className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Market Insights</h1>
+          <h1 className="text-2xl font-bold text-foreground">Market Insights</h1>
           <Badge variant="secondary" className="ml-auto font-semibold">
             {activeTalkingPoints.length} Active Points
           </Badge>
@@ -94,7 +94,7 @@ export default function TalkingPointsPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 space-y-2">
-                      <h3 className="font-semibold text-foreground mb-2 text-lg leading-tight">
+                      <h3 className="text-lg font-medium text-foreground mb-2">
                         {point.title}
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
