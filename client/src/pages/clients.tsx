@@ -124,12 +124,12 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               onClick={(e) => handleSectionClick(e, 'personal')}
               title="View client personal information"
             >
-              <h3 className="font-medium text-slate-800 truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
+              <h3 className="font-medium text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
             </div>
             
             {/* Phone - clickable to dial */}
             {client.phone && (
-              <div className="text-xs text-slate-500 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 <a 
                   href={`tel:${client.phone}`}
                   className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -143,7 +143,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             
             {/* Email - clickable to send email */}
             {client.email && (
-              <div className="text-xs text-slate-500 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 <a 
                   href={`mailto:${client.email}`}
                   className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
@@ -163,31 +163,31 @@ function ClientCard({ client, onClick }: ClientCardProps) {
         <div className="grid grid-cols-2 gap-3 mt-2">
           {/* AUM section - navigates to portfolio page */}
           <div 
-            className="border-r border-slate-200 pr-3 cursor-pointer" 
+            className="border-r border-border pr-3 cursor-pointer" 
             onClick={(e) => handleSectionClick(e, 'portfolio')}
             title="View client portfolio"
           >
-            <div className="text-xs text-slate-500 mb-1">AUM</div>
-            <div className="text-sm font-medium text-slate-700">{client.aum}</div>
+            <div className="text-xs text-muted-foreground mb-1">AUM</div>
+            <div className="text-sm font-medium text-foreground">{client.aum}</div>
             {formatPerformance(client.yearlyPerformance)}
           </div>
           
           {/* Risk profile - non-clickable */}
           <div>
-            <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
-            <div className="text-sm text-slate-700">
+            <div className="text-xs text-muted-foreground mb-1">Risk Profile</div>
+            <div className="text-sm text-foreground">
               {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
             </div>
           </div>
           
           {/* Last contact - navigates to communications page */}
           <div 
-            className="border-r border-slate-200 pr-3 cursor-pointer" 
+            className="border-r border-border pr-3 cursor-pointer" 
             onClick={(e) => handleSectionClick(e, 'communications')}
             title="View client communications"
           >
-            <div className="text-xs text-slate-500 mb-1">Last Contact</div>
-            <div className="text-sm text-slate-500">
+            <div className="text-xs text-muted-foreground mb-1">Last Contact</div>
+            <div className="text-sm text-muted-foreground">
               {formatRelativeDate(client.lastContactDate)}
             </div>
           </div>
@@ -198,8 +198,8 @@ function ClientCard({ client, onClick }: ClientCardProps) {
             onClick={(e) => handleSectionClick(e, 'transactions')}
             title="View client transactions"
           >
-            <div className="text-xs text-slate-500 mb-1">Last Txn</div>
-            <div className="text-sm text-slate-500">
+            <div className="text-xs text-muted-foreground mb-1">Last Txn</div>
+            <div className="text-sm text-muted-foreground">
               {getDaysSinceTransaction(client.lastTransactionDate)}
             </div>
           </div>
@@ -414,8 +414,8 @@ export default function Clients() {
                         />
                       </div>
                       <div className="flex justify-between mt-2">
-                        <span className="text-xs text-slate-500">₹{(filterOptions.minAum / 100000).toFixed(1)}L</span>
-                        <span className="text-xs text-slate-500">₹{(filterOptions.maxAum / 100000).toFixed(0)}L</span>
+                        <span className="text-xs text-muted-foreground">₹{(filterOptions.minAum / 100000).toFixed(1)}L</span>
+                        <span className="text-xs text-muted-foreground">₹{(filterOptions.maxAum / 100000).toFixed(0)}L</span>
                       </div>
                     </div>
                     
@@ -522,19 +522,19 @@ export default function Clients() {
                 </div>
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div>
-                    <div className="text-xs text-slate-500 mb-1">AUM</div>
+                    <div className="text-xs text-muted-foreground mb-1">AUM</div>
                     <Skeleton className="h-4 w-16" />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500 mb-1">Risk Profile</div>
+                    <div className="text-xs text-muted-foreground mb-1">Risk Profile</div>
                     <Skeleton className="h-4 w-20" />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500 mb-1">Last Contact</div>
+                    <div className="text-xs text-muted-foreground mb-1">Last Contact</div>
                     <Skeleton className="h-4 w-24" />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500 mb-1">Contact</div>
+                    <div className="text-xs text-muted-foreground mb-1">Contact</div>
                     <div className="flex space-x-2">
                       <Skeleton className="h-8 w-8 rounded" />
                       <Skeleton className="h-8 w-8 rounded" />
@@ -559,11 +559,11 @@ export default function Clients() {
         <Card>
           <CardContent className="p-6 text-center">
             <div className="py-8">
-              <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+              <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
                 <X className="h-6 w-6 text-slate-400" />
               </div>
               <h3 className="text-lg font-medium text-slate-900 mb-1">No clients found</h3>
-              <p className="text-sm text-slate-500 max-w-md mx-auto">
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
                 {searchQuery || activeFilters > 0 
                   ? "Try adjusting your search or filters to find what you're looking for."
                   : "Add new clients by converting prospects."}

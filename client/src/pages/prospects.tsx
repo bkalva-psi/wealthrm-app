@@ -271,8 +271,7 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
       ) : (
         <>
           <div 
-            className="flex items-center justify-between p-3 border-b border-border"
-            style={{ backgroundColor: `${stageColor.bg}` }}
+            className={`flex items-center justify-between p-3 border-b border-border ${stageColor.bg}`}
           >
             <div className="flex items-center">
               <div 
