@@ -502,7 +502,7 @@ export default function Prospects() {
   }
   
   return (
-    <div className="p-6">
+    <div className="p-6 bg-background min-h-screen">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Prospects</h1>
         <Button 
@@ -523,7 +523,7 @@ export default function Prospects() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input 
               placeholder="Search prospects..." 
-              className="pl-10 bg-background border-input text-foreground" 
+              className="pl-10 !bg-background !border-input !text-foreground" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -531,7 +531,7 @@ export default function Prospects() {
           <div className="flex gap-2">
             <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 relative bg-background border-input text-foreground hover:bg-muted/50">
+                <Button variant="outline" className="flex items-center gap-2 relative !bg-background !border-input !text-foreground hover:!bg-muted/50">
                   <FilterIcon className="h-4 w-4" />
                   Filter
                   {activeFilters > 0 && (
@@ -653,7 +653,7 @@ export default function Prospects() {
             <Button 
               variant="outline" 
               onClick={exportProspects}
-              className="flex items-center gap-2 bg-background border-input text-foreground hover:bg-muted/50"
+              className="flex items-center gap-2 !bg-background !border-input !text-foreground hover:!bg-muted/50"
             >
               <Download className="h-4 w-4" />
               Export
