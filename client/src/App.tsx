@@ -228,6 +228,8 @@ function AuthenticatedApp() {
         return <ClientTasks />;
       case /^\/clients\/\d+\/insights$/.test(currentRoute):
         return <ClientInsights />;
+      case /^\/client-insights\/\d+$/.test(currentRoute):
+        return <ClientInsights />;
       case /^\/clients\/\d+\/portfolio-report$/.test(currentRoute):
         // Extract client ID and open portfolio report
         const clientIdMatch = currentRoute.match(/\/clients\/(\d+)\/portfolio-report/);
