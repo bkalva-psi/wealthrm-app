@@ -141,8 +141,8 @@ export function AnnouncementsCard() {
             <div className="px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="text-left">
-                  <h3 className="font-semibold text-sm">Updates</h3>
-                  <p className="text-lg font-bold text-blue-600">
+                  <h3 className="font-semibold text-sm text-muted-foreground leading-tight">Updates</h3>
+                  <p className="text-xl font-bold text-blue-600 leading-tight tracking-tight">
                     {totalAnnouncements}
                   </p>
                 </div>
