@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { NavigationProvider } from "@/context/navigation-context";
+import { ThemeProvider } from "@/context/theme-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -264,7 +265,7 @@ function AuthenticatedApp() {
   };
   
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header 
@@ -274,12 +275,12 @@ function AuthenticatedApp() {
         
         {/* Offline indicator */}
         {isOffline && (
-          <div className="bg-amber-500 text-white p-2 text-center text-sm font-medium">
+          <div className="bg-amber-500 dark:bg-amber-600 text-white p-2 text-center text-sm font-medium">
             You are currently offline. Some features may be limited.
           </div>
         )}
         
-        <main className="flex-1 overflow-y-auto bg-slate-50 pb-mobile-nav" id="main-content">
+        <main className="flex-1 overflow-y-auto bg-background pb-mobile-nav" id="main-content">
           {renderComponent()}
         </main>
         
@@ -389,14 +390,16 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AccessibilityProvider>
-          <NavigationProvider>
-            <Toaster />
-            {user ? <AuthenticatedApp /> : <LoginPage />}
-          </NavigationProvider>
-        </AccessibilityProvider>
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="system" storageKey="wealth-rm-theme">
+        <TooltipProvider>
+          <AccessibilityProvider>
+            <NavigationProvider>
+              <Toaster />
+              {user ? <AuthenticatedApp /> : <LoginPage />}
+            </NavigationProvider>
+          </AccessibilityProvider>
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

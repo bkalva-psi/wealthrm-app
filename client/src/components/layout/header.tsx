@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 
 interface HeaderProps {
@@ -96,7 +97,10 @@ export function Header({
         </div>
         
         {/* Right Navigation Items */}
-        <div className="flex items-center pr-4 ml-8">
+        <div className="flex items-center gap-2 pr-4 ml-8">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+          
           {/* Profile Dropdown */}
           <div className="relative">
             <DropdownMenu>
