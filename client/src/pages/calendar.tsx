@@ -96,12 +96,12 @@ export default function CalendarPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="h-8 w-48 bg-gray-200 rounded mb-6 animate-pulse" />
+          <div className="h-8 w-48 bg-muted rounded mb-6 animate-pulse" />
           <div className="space-y-4">
             {Array(5).fill(0).map((_, i) => (
-              <div key={i} className="h-24 bg-gray-200 rounded animate-pulse" />
+              <div key={i} className="h-24 bg-muted rounded animate-pulse" />
             ))}
           </div>
         </div>
@@ -110,18 +110,18 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-6 py-4">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
+          <h1 className="text-2xl font-bold text-foreground">Calendar</h1>
         </div>
 
         {/* Filters */}
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <div className="flex-1 min-w-48">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search appointments..."
                 value={searchQuery}
@@ -178,17 +178,17 @@ export default function CalendarPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {getAppointmentIcon(appointment.type)}
-                        <h3 className="font-medium text-gray-900">{appointment.title}</h3>
+                        <h3 className="font-medium text-foreground">{appointment.title}</h3>
                         <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
                           {appointment.priority}
                         </Badge>
                       </div>
                       
                       {appointment.description && (
-                        <p className="text-sm text-gray-600 mb-2">{appointment.description}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
                       )}
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />
                           {format(new Date(appointment.startTime), 'MMM dd, yyyy • h:mm a')}
@@ -209,9 +209,9 @@ export default function CalendarPage() {
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
-                <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments found</h3>
-                <p className="text-gray-500">
+                <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No appointments found</h3>
+                <p className="text-muted-foreground">
                   {searchQuery || filterType !== 'all' || filterPriority !== 'all' || dateFilter !== 'all'
                     ? "No appointments match your current filters."
                     : "No appointments scheduled."}
