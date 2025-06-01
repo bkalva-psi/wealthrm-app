@@ -19,6 +19,19 @@ import {
 import { cn } from "@/lib/utils";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 
+// Icon mapping function to resolve icon strings to components
+const getIconComponent = (iconName: string) => {
+  const iconMap: Record<string, React.ComponentType<any>> = {
+    Users,
+    DollarSign,
+    Calendar,
+    TrendingUp,
+    Award,
+    Target
+  };
+  return iconMap[iconName] || Users;
+};
+
 type Period = "M" | "Q" | "HY" | "Y";
 
 interface PerformanceMetric {
@@ -212,7 +225,7 @@ export function PerformanceCard() {
               <div className="mt-3 space-y-2">
                 {metrics.map((metric) => {
                   const percentage = getProgressPercentage(metric.actual, metric.target);
-                  const IconComponent = metric.icon;
+                  const IconComponent = getIconComponent(metric.icon);
                   return (
                     <div key={metric.name} className="flex items-center gap-2 text-xs">
                       <IconComponent className="h-4 w-4 text-slate-400" />
@@ -240,7 +253,7 @@ export function PerformanceCard() {
             <div className="px-4 py-3 space-y-3">
               {metrics.map((metric) => {
                 const percentage = getProgressPercentage(metric.actual, metric.target);
-                const IconComponent = metric.icon;
+                const IconComponent = getIconComponent(metric.icon);
                 return (
                   <div key={metric.name} className="space-y-2">
                     <div className="flex items-center justify-between">
