@@ -492,8 +492,8 @@ export default function Prospects() {
   
   if (isLoading) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Prospects</h1>
+      <div className="p-6 min-h-screen bg-background transition-colors duration-300">
+        <h1 className="text-2xl font-bold mb-6 text-foreground tracking-tight">Prospects</h1>
         <div className="flex justify-center items-center h-64">
           <p className="text-muted-foreground">Loading prospects...</p>
         </div>
@@ -502,13 +502,13 @@ export default function Prospects() {
   }
   
   return (
-    <div className="p-6 bg-background min-h-screen">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Prospects</h1>
+    <div className="p-6 bg-background min-h-screen transition-colors duration-300">
+      <div className="flex items-center justify-between mb-6 animate-in slide-in-from-top-4 duration-500">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Prospects</h1>
         <Button 
           onClick={handleAddProspectClick}
           size="icon" 
-          className="rounded-full"
+          className="rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UserPlus className="h-4 w-4" />
         </Button>
