@@ -988,24 +988,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid task ID" });
       }
       
-      const task = await storage.getTask(id);
+      const userId = req.session.userId;
+      const { completed } = req.body;
       
-      if (!task) {
-        return res.status(404).json({ message: "Task not found" });
+      // First try to find in regular tasks table
+      const { rows: regularTasks } = await db.$client.query(
+        'SELECT id, assigned_to FROM tasks WHERE id = $1',
+        [id]
+      );
+      
+      if (regularTasks.length > 0) {
+        const task = regularTasks[0];
+        if (task.assigned_to !== userId) {
+          return res.status(403).json({ message: "Not authorized to update this task" });
+        }
+        
+        // Update regular task
+        const { rows: updatedTasks } = await db.$client.query(
+          'UPDATE tasks SET completed = $1 WHERE id = $2 RETURNING *',
+          [completed, id]
+        );
+        
+        return res.json(updatedTasks[0]);
       }
       
-      if (task.assignedTo !== req.session.userId) {
-        return res.status(403).json({ message: "Not authorized to update this task" });
+      // If not found in regular tasks, try communication action items
+      const { rows: actionItems } = await db.$client.query(
+        'SELECT id, assigned_to FROM communication_action_items WHERE id = $1 AND action_type = $2',
+        [id, 'task']
+      );
+      
+      if (actionItems.length > 0) {
+        const actionItem = actionItems[0];
+        if (actionItem.assigned_to !== userId) {
+          return res.status(403).json({ message: "Not authorized to update this task" });
+        }
+        
+        // Update communication action item
+        const completedAt = completed ? new Date().toISOString() : null;
+        const status = completed ? 'completed' : 'pending';
+        
+        const { rows: updatedActionItems } = await db.$client.query(
+          'UPDATE communication_action_items SET completed_at = $1, status = $2 WHERE id = $3 RETURNING *',
+          [completedAt, status, id]
+        );
+        
+        return res.json(updatedActionItems[0]);
       }
       
-      const parseResult = insertTaskSchema.partial().safeParse(req.body);
+      // Task not found in either table
+      return res.status(404).json({ message: "Task not found" });
       
-      if (!parseResult.success) {
-        return res.status(400).json({ message: "Invalid task data", errors: parseResult.error.format() });
-      }
-      
-      const updatedTask = await storage.updateTask(id, parseResult.data);
-      res.json(updatedTask);
     } catch (error) {
       console.error("Update task error:", error);
       res.status(500).json({ message: "Internal server error" });
