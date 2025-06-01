@@ -241,9 +241,9 @@ export default function TasksUpdated() {
   };
   
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-4">
+    <div className="w-full overflow-x-hidden px-4 sm:px-6">
+      <div className="mb-4 max-w-none">
+        <div className="flex items-center justify-between mb-3">
           <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
             <DialogTrigger asChild>
@@ -302,13 +302,13 @@ export default function TasksUpdated() {
         </div>
         
         {/* Search input moved below title */}
-        <div className="relative w-full max-w-md">
+        <div className="relative w-64">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 w-full"
+            className="pl-10 w-full text-sm"
           />
         </div>
       </div>
