@@ -204,7 +204,7 @@ export default function Tasks() {
   };
   
   return (
-    <div className="bg-background min-h-screen p-6">
+    <div className="bg-background min-h-screen p-6" style={{ backgroundColor: 'var(--background)' }}>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Tasks</h1>
@@ -270,8 +270,8 @@ export default function Tasks() {
       
       <div className="space-y-6">
         {/* Tasks Card */}
-        <Card className="!bg-card !border-border">
-          <CardHeader className="cursor-pointer" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
+        <Card className="!bg-card !border-border" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+          <CardHeader className="cursor-pointer !bg-card" onClick={() => setTasksCollapsed(!tasksCollapsed)} style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
                 <CheckSquare className="h-5 w-5 text-blue-600" />
@@ -284,8 +284,8 @@ export default function Tasks() {
           </CardHeader>
           
           {!tasksCollapsed && (
-            <CardContent className="!bg-card">
-              <div className="mb-4">
+            <CardContent className="!bg-card" style={{ backgroundColor: 'var(--card)' }}>
+              <div className="mb-4" style={{ backgroundColor: 'var(--card)' }}>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -293,6 +293,7 @@ export default function Tasks() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 !bg-background !border-input !text-foreground"
+                    style={{ backgroundColor: 'var(--background)', borderColor: 'var(--input)', color: 'var(--foreground)' }}
                   />
                 </div>
               </div>
@@ -389,8 +390,8 @@ export default function Tasks() {
         </Card>
 
         {/* Portfolio Alerts Card */}
-        <Card className="!bg-card !border-border">
-          <CardHeader className="cursor-pointer" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
+        <Card className="!bg-card !border-border" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+          <CardHeader className="cursor-pointer !bg-card" onClick={() => setAlertsCollapsed(!alertsCollapsed)} style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-orange-600" />
