@@ -736,17 +736,17 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   }
   
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Customer Information Band */}
-      <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-border'}`}>
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      {/* Enhanced Customer Information Band */}
+      <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-border'} animate-in slide-in-from-top-4 duration-500`}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => window.location.hash = '/clients'}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-all duration-200 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary/50"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
+                <ArrowLeft className="h-5 w-5 text-foreground" />
               </button>
               
               <div className="flex items-center gap-3">
@@ -806,27 +806,27 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         </div>
       </div>
 
-      {/* Page Title Band with Navigation */}
-      <div className="bg-card border-b border-gray-200 px-1 py-4">
+      {/* Enhanced Page Title Band with Navigation */}
+      <div className="bg-card border-b border-border px-1 py-4 animate-in slide-in-from-top-6 duration-700">
         <div className="flex justify-between items-center px-5 mb-3">
-          <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Appointments</h2>
           <Button 
             size="icon" 
-            className="rounded-full"
+            className="rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
             onClick={() => setIsNewAppointmentDialogOpen(true)}
           >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
         
-        {/* Navigation Icons */}
+        {/* Enhanced Navigation Icons */}
         <div className="grid grid-cols-7 gap-1 px-1">
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-all duration-200 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary/50 h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
-            <User className="h-6 w-6 text-gray-600" />
+            <User className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
