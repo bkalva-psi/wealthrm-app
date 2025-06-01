@@ -983,7 +983,7 @@ export default function ClientPortfolioPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="overflow-hidden border-0 shadow-md">
-              <CardHeader className="pb-3 bg-gradient-to-r from-amber-500/90 to-amber-600/90">
+              <CardHeader className="pb-3 bg-gradient-to-r from-amber-500 to-amber-600">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
                   <AlertCircle className="h-5 w-5 mr-2 text-white" />
                   Portfolio Alerts
@@ -992,31 +992,31 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-4">
-                  <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg shadow-sm">
-                    <h4 className="text-sm font-medium text-amber-800 flex items-center">
+                  <div className="p-4 bg-muted border-l-4 border-amber-500 rounded-r-lg shadow-sm">
+                    <h4 className="text-sm font-medium text-foreground flex items-center">
                       <AlertTriangle className="h-4 w-4 mr-2 text-amber-500" />
                       <span className="font-semibold">Portfolio Rebalancing Due</span>
                     </h4>
-                    <p className="text-xs text-amber-700 mt-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                       Your equity allocation has drifted 5% above target. Consider rebalancing to maintain your risk profile.
                     </p>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-card text-amber-600 border-amber-300 hover:bg-amber-50">
+                      <Button size="sm" variant="outline" className="text-xs">
                         Review Allocation
                       </Button>
                     </div>
                   </div>
                   
-                  <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm">
+                  <div className="p-4 bg-muted border-l-4 border-blue-500 rounded-r-lg shadow-sm">
                     <h4 className="text-sm font-medium text-blue-800 flex items-center">
                       <Clock className="h-4 w-4 mr-2 text-blue-500" />
                       <span className="font-semibold">Fixed Deposit Maturing</span>
                     </h4>
-                    <p className="text-xs text-blue-700 mt-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                       Your HDFC Bank FD of ₹3,00,000 is maturing in 15 days. Contact your RM for reinvestment options.
                     </p>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-card text-blue-600 border-blue-300 hover:bg-blue-50">
+                      <Button size="sm" variant="outline" className="text-xs">
                         View Options
                       </Button>
                     </div>
