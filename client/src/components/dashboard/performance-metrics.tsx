@@ -162,23 +162,23 @@ export function PerformanceMetrics() {
               )}
               
               {retentionMetric && (
-                <div className="bg-slate-50 p-3 rounded-lg">
-                  <p className="text-xs text-slate-500">Client Retention</p>
+                <div className="bg-card p-3 rounded-lg">
+                  <p className="text-xs text-muted-foreground">Client Retention</p>
                   <div className="mt-1 flex items-baseline">
-                    <p className="text-lg font-semibold text-slate-800">
+                    <p className="text-lg font-semibold text-foreground">
                       {retentionMetric.currentValue}%
                     </p>
                     <p className={`ml-2 text-xs ${getPercentageChangeColor(retentionMetric.percentageChange)}`}>
                       {retentionMetric.percentageChange >= 0 ? '+' : ''}{retentionMetric.percentageChange}%
                     </p>
                   </div>
-                  <div className="mt-1 w-full bg-slate-200 rounded-full h-1.5">
+                  <div className="mt-1 w-full bg-muted rounded-full h-1.5">
                     <div 
                       className="bg-success h-1.5 rounded-full" 
                       style={{ width: `${retentionMetric.currentValue}%` }}
                     ></div>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Target: {retentionMetric.targetValue}%
                   </p>
                 </div>
