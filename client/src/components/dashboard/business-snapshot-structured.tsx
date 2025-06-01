@@ -195,7 +195,7 @@ export function BusinessSnapshotStructured() {
                         className="w-full justify-between p-0 h-auto hover:bg-transparent"
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`p-1.5 rounded-lg bg-white/60 ${config.color}`}>
+                          <div className={`p-1.5 rounded-lg bg-background/60 ${config.color}`}>
                             <IconComponent size={18} />
                           </div>
                           <div className="text-left">
