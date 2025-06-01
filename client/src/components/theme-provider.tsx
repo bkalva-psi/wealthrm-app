@@ -19,7 +19,12 @@ export function ThemeProvider({
   storageKey?: string
 }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem(storageKey) as Theme) || defaultTheme
+    const savedTheme = localStorage.getItem(storageKey) as Theme;
+    // If saved theme is ujjivan, default to light for better UX
+    if (savedTheme === 'ujjivan') {
+      return 'light';
+    }
+    return savedTheme || defaultTheme;
   })
 
   useEffect(() => {
