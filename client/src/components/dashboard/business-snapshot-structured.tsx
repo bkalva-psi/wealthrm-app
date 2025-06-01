@@ -31,6 +31,7 @@ interface Dimension {
 }
 
 export function BusinessSnapshotStructured() {
+  const [isMainCardExpanded, setIsMainCardExpanded] = useState(true);
   const [expandedMetrics, setExpandedMetrics] = useState<Set<string>>(new Set());
   const [expandedDimensions, setExpandedDimensions] = useState<Set<string>>(new Set());
 
@@ -56,43 +57,43 @@ export function BusinessSnapshotStructured() {
 
   const formatNumber = (value: number) => value.toLocaleString();
 
-  // Metrics configuration - ALL VALUES FROM AUTHENTIC DATABASE
+  // Metrics configuration with Ujjivan brand colors (teal/green and orange/yellow)
   const metricsConfig = {
     aum: {
       title: 'Total AUM',
       value: businessMetrics?.totalAum || 0,
       formatter: formatCurrency,
       icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-      dimensions: [] // Will be populated by authentic API calls
+      color: 'text-teal-700',
+      bgColor: 'bg-teal-50 border-teal-200',
+      dimensions: []
     },
     clients: {
       title: 'Active Clients',
       value: businessMetrics?.totalClients || 0,
       formatter: formatNumber,
       icon: Users,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50 dark:bg-green-900/20',
-      dimensions: [] // Will be populated by authentic API calls
+      color: 'text-emerald-700',
+      bgColor: 'bg-emerald-50 border-emerald-200',
+      dimensions: []
     },
     revenue: {
       title: 'Revenue MTD',
       value: businessMetrics?.revenueMonthToDate || 0,
       formatter: formatCurrency,
       icon: DollarSign,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-      dimensions: [] // Will be populated by authentic API calls
+      color: 'text-amber-700',
+      bgColor: 'bg-amber-50 border-amber-200',
+      dimensions: []
     },
     pipeline: {
       title: 'Pipeline Value',
       value: businessMetrics?.pipelineValue || 0,
       formatter: formatCurrency,
       icon: Target,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20',
-      dimensions: [] // Will be populated by authentic API calls
+      color: 'text-orange-700',
+      bgColor: 'bg-orange-50 border-orange-200',
+      dimensions: []
     }
   };
 
@@ -168,51 +169,61 @@ export function BusinessSnapshotStructured() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Key Performance Indicators</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {Object.entries(metricsConfig).map(([key, config]) => {
-          const isExpanded = expandedMetrics.has(key);
-          const IconComponent = config.icon;
-          
-          return (
-            <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleMetric(key)}>
-              <div className={`rounded-lg border p-4 ${config.bgColor}`}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-0 h-auto hover:bg-transparent"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg bg-white/50 ${config.color}`}>
-                        <IconComponent size={20} />
+    <Collapsible open={isMainCardExpanded} onOpenChange={setIsMainCardExpanded}>
+      <Card>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Key Performance Indicators</CardTitle>
+              {isMainCardExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+            </div>
+          </CardHeader>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent>
+          <CardContent className="space-y-3 pt-0">
+            {Object.entries(metricsConfig).map(([key, config]) => {
+              const isExpanded = expandedMetrics.has(key);
+              const IconComponent = config.icon;
+              
+              return (
+                <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleMetric(key)}>
+                  <div className={`rounded-lg border p-3 ${config.bgColor}`}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between p-0 h-auto hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-1.5 rounded-lg bg-white/60 ${config.color}`}>
+                            <IconComponent size={18} />
+                          </div>
+                          <div className="text-left">
+                            <h3 className="font-semibold text-sm">{config.title}</h3>
+                            <p className={`text-lg font-bold ${config.color}`}>
+                              {config.formatter(config.value)}
+                            </p>
+                          </div>
+                        </div>
+                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                      </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent className="mt-3">
+                      <div className="text-sm text-muted-foreground">
+                        {key === 'aum' && 'View breakdown by asset class, product type, and client tier to analyze portfolio composition and identify growth opportunities.'}
+                        {key === 'clients' && 'Analyze client distribution by tier (Platinum, Gold, Silver) and risk profile to optimize relationship management strategies.'}
+                        {key === 'revenue' && 'Track revenue streams by product categories and commission structures to identify top-performing investment areas.'}
+                        {key === 'pipeline' && 'Monitor prospect pipeline stages and expected closure dates to forecast upcoming business opportunities.'}
                       </div>
-                      <div className="text-left">
-                        <h3 className="font-semibold text-sm">{config.title}</h3>
-                        <p className={`text-lg font-bold ${config.color}`}>
-                          {config.formatter(config.value)}
-                        </p>
-                      </div>
-                    </div>
-                    {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                  </Button>
-                </CollapsibleTrigger>
-                
-                <CollapsibleContent className="mt-4">
-                  <div className="text-sm text-muted-foreground">
-                    {key === 'aum' && 'View breakdown by asset class, product type, and client tier to analyze portfolio composition and identify growth opportunities.'}
-                    {key === 'clients' && 'Analyze client distribution by tier (Platinum, Gold, Silver) and risk profile to optimize relationship management strategies.'}
-                    {key === 'revenue' && 'Track revenue streams by product categories and commission structures to identify top-performing investment areas.'}
-                    {key === 'pipeline' && 'Monitor prospect pipeline stages and expected closure dates to forecast upcoming business opportunities.'}
+                    </CollapsibleContent>
                   </div>
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-          );
-        })}
-      </CardContent>
-    </Card>
+                </Collapsible>
+              );
+            })}
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 }
