@@ -967,11 +967,11 @@ export default function ClientTransactions() {
                       <p className="font-medium">{formatCurrency(transaction.amount)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Status</p>
+                      <p className="text-sm text-muted-foreground">Status</p>
                       <p className="font-medium">{transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">Fees</p>
+                      <p className="text-sm text-muted-foreground">Fees</p>
                       <p className="font-medium">{formatCurrency(transaction.fees || 0)}</p>
                     </div>
                   </div>
