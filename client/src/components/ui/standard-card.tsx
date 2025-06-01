@@ -55,7 +55,7 @@ export function StandardCard({
   return (
     <Card 
       className={`
-        transition-all duration-200 hover:shadow-lg 
+        w-full transition-all duration-200 hover:shadow-lg 
         ${featured ? 'ring-2 ring-primary/20 bg-primary/5' : ''} 
         ${className}
       `}
