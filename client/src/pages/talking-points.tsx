@@ -51,9 +51,9 @@ export default function TalkingPointsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-6 py-4">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
         <div className="flex items-center space-x-3">
           <Lightbulb className="h-6 w-6 text-ujjivan-primary" />
           <h1 className="text-2xl font-bold text-foreground">Insights</h1>
@@ -165,7 +165,7 @@ export default function TalkingPointsPage() {
         <Card>
           <CardContent className="flex items-center justify-center py-12">
             <div className="text-center">
-              <Lightbulb className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+              <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">No Active Insights</h3>
               <p className="text-muted-foreground">Check back later for new market insights and conversation starters.</p>
             </div>
