@@ -983,7 +983,7 @@ export default function ClientPortfolioPage() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="overflow-hidden border border-border shadow-md">
-              <CardHeader className="pb-3 bg-amber-500 dark:bg-amber-600/90 text-white transition-colors">
+              <CardHeader className="pb-3 bg-amber-500/90 dark:bg-amber-600/80 text-white transition-colors">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
                   <AlertCircle className="h-5 w-5 mr-2 text-white" />
                   Portfolio Alerts
@@ -1026,7 +1026,7 @@ export default function ClientPortfolioPage() {
             </Card>
             
             <Card className="overflow-hidden border border-border shadow-md">
-              <CardHeader className="pb-3 bg-indigo-500 dark:bg-indigo-600/90 text-white transition-colors">
+              <CardHeader className="pb-3 bg-indigo-500/90 dark:bg-indigo-600/80 text-white transition-colors">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
                   <Lightbulb className="h-5 w-5 mr-2 text-white" />
                   Investment Opportunities
