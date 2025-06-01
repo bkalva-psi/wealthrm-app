@@ -630,6 +630,8 @@ export const communicationActionItems = pgTable("communication_action_items", {
 export const insertCommunicationActionItemSchema = createInsertSchema(communicationActionItems).omit({
   id: true,
   createdAt: true,
+}).extend({
+  dueDate: z.string().transform((str) => new Date(str)).optional(),
 });
 
 // Communication Attachments - documents exchanged in communications

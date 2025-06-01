@@ -739,8 +739,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Format error messages to be more user-friendly
         Object.entries(formattedErrors).forEach(([field, error]) => {
-          if (field !== "_errors" && error._errors && error._errors.length > 0) {
-            errorMessages[field] = error._errors;
+          if (field !== "_errors" && (error as any)._errors && (error as any)._errors.length > 0) {
+            errorMessages[field] = (error as any)._errors;
           }
         });
         
@@ -1400,9 +1400,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
 
         return {
-          targets: baseTargets[period] || baseTargets.Q,
-          actuals: baseActuals[period] || baseActuals.Q,
-          peers: basePeerData[period] || basePeerData.Q
+          targets: (baseTargets as any)[period] || baseTargets.Q,
+          actuals: (baseActuals as any)[period] || baseActuals.Q,
+          peers: (basePeerData as any)[period] || basePeerData.Q
         };
       };
 
@@ -1656,7 +1656,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Ensure assignedTo is set to current user if not specified
-      const data = parseResult.data;
+      const data = parseResult.data as any;
       if (!data.assignedTo) {
         data.assignedTo = (req.session as any).userId;
       }
@@ -1687,11 +1687,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // If marking as completed, set completedAt
-      if (parseResult.data.status === 'completed' && !parseResult.data.completedAt) {
-        parseResult.data.completedAt = new Date();
+      const updateData = parseResult.data as any;
+      if (updateData.status === 'completed' && !updateData.completedAt) {
+        updateData.completedAt = new Date();
       }
       
-      const actionItem = await storage.updateCommunicationActionItem(id, parseResult.data);
+      const actionItem = await storage.updateCommunicationActionItem(id, updateData);
       
       if (!actionItem) {
         return res.status(404).json({ message: "Action item not found" });
