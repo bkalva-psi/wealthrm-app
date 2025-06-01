@@ -96,12 +96,12 @@ export default function CalendarPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="min-h-screen bg-background p-6 transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
-          <div className="h-8 w-48 bg-muted rounded mb-6 animate-pulse" />
+          <div className="h-8 w-48 bg-muted/50 rounded-lg mb-6 animate-pulse" />
           <div className="space-y-4">
             {Array(5).fill(0).map((_, i) => (
-              <div key={i} className="h-24 bg-muted rounded animate-pulse" />
+              <div key={i} className="h-24 bg-muted/50 rounded-xl animate-pulse" />
             ))}
           </div>
         </div>

@@ -362,14 +362,14 @@ export default function Clients() {
           </div>
         </div>
       
-        <Card className="mb-6 !bg-card !border-border">
+        <Card className="mb-6 bg-card/50 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-all duration-300 animate-in slide-in-from-bottom-4 duration-700 delay-200">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input 
                 placeholder="Search clients..." 
-                className="pl-10 !bg-background !border-input !text-foreground" 
+                className="pl-10 bg-background border-input text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 transition-all duration-200" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
