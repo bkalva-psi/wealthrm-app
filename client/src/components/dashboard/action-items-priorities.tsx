@@ -113,22 +113,26 @@ export function ActionItemsPriorities() {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card text-card-foreground border-border">
+      <Card className="bg-card text-card-foreground border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01]">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <CheckSquare size={20} className="text-primary" />
+                <div className="p-2 rounded-lg bg-primary/10 transition-all duration-300 hover:bg-primary/20 hover:scale-110">
+                  <CheckSquare size={20} className="text-primary transition-all duration-300" />
                 </div>
-                <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
+                <CardTitle className="text-lg transition-colors duration-300">Action Items & Priorities</CardTitle>
               </div>
-              {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+              {isOpen ? (
+                <ChevronDown size={20} className="transition-all duration-300 text-primary" />
+              ) : (
+                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary" />
+              )}
             </div>
           </CardHeader>
         </CollapsibleTrigger>
         
-        <CollapsibleContent>
+        <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
           <CardContent className="space-y-3 pt-0">
             {Object.entries(actionCategories).map(([key, category]) => {
               const isExpanded = expandedCategories.has(key);
@@ -137,7 +141,7 @@ export function ActionItemsPriorities() {
               
               return (
                 <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleCategory(key)}>
-                  <div className={`rounded-lg border p-3 ${category.bgColor}`}>
+                  <div className={`rounded-lg border p-3 ${category.bgColor} transition-all duration-300 hover:shadow-md hover:scale-[1.02] transform`}>
                     <CollapsibleTrigger asChild>
                       <Button
                         variant="ghost"
