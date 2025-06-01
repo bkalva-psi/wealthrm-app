@@ -351,12 +351,18 @@ export default function Clients() {
   };
   
   return (
-    <div className="p-6 bg-background min-h-screen">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-2 sm:mb-0">Clients</h1>
-      </div>
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      <div className="p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 animate-in slide-in-from-top-4 duration-500">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1">Client Portfolio</h1>
+            <p className="text-muted-foreground text-sm font-medium">
+              {filteredClients.length} of {clients?.length || 0} clients
+            </p>
+          </div>
+        </div>
       
-      <Card className="mb-6 !bg-card !border-border">
+        <Card className="mb-6 !bg-card !border-border">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
             <div className="relative flex-1">
@@ -572,6 +578,7 @@ export default function Clients() {
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   );
 }

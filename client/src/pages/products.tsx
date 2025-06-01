@@ -328,14 +328,19 @@ Ujjivan Small Finance Bank`;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border">
-        <div className="p-6">
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      {/* Enhanced Sticky Header */}
+      <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <div className="p-6 animate-in slide-in-from-top-4 duration-500">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-foreground">Products</h1>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">Investment Products</h1>
+              <p className="text-muted-foreground text-sm font-medium mt-1">
+                {filteredProducts.length} of {products.length} products available
+              </p>
+            </div>
             
-            {/* Filters Dropdown */}
+            {/* Enhanced Filters Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2">

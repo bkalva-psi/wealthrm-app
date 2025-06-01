@@ -152,17 +152,19 @@ export default function Analytics() {
   const kpiSummary = getKpiSummary();
   
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-foreground">Analytics Dashboard</h1>
-
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      <div className="mb-6 animate-in slide-in-from-top-4 duration-500">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Performance Analytics</h1>
+        <p className="text-muted-foreground text-sm font-medium mt-1">
+          Comprehensive insights and performance metrics
+        </p>
       </div>
       
-      {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      {/* Enhanced KPI Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 animate-in slide-in-from-bottom-4 duration-700 delay-200">
         {isLoading ? (
           Array(4).fill(0).map((_, index) => (
-            <Card key={index}>
+            <Card key={index} className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
               <CardContent className="p-6">
                 <Skeleton className="h-5 w-24 mb-2" />
                 <Skeleton className="h-9 w-20 mb-2" />
@@ -175,9 +177,9 @@ export default function Analytics() {
           ))
         ) : (
           kpiSummary.map((kpi, index) => (
-            <Card key={index}>
+            <Card key={index} className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border-l-4 border-l-primary/20 hover:border-l-primary/60">
               <CardContent className="p-6">
-                <p className="text-sm font-medium text-muted-foreground">{kpi.name}</p>
+                <p className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">{kpi.name}</p>
                 <h3 className="text-3xl font-bold text-foreground mt-1">{kpi.value}</h3>
                 <div className="flex items-center mt-1">
                   <span className="text-xs text-muted-foreground mr-2">Target: {kpi.target}</span>
