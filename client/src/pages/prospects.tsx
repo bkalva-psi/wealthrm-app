@@ -71,33 +71,33 @@ interface ProspectCardProps {
 function ProspectCard({ prospect, onClick }: ProspectCardProps) {
   return (
     <div 
-      className="bg-white p-3 rounded-md shadow-sm mb-2 cursor-pointer border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all"
+      className="bg-card p-3 rounded-md shadow-sm mb-2 cursor-pointer border border-border hover:border-primary/50 hover:shadow-md transition-all"
       onClick={() => {
         window.location.hash = `/prospect-detail/${prospect.id}`;
       }}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-medium text-xs">
+          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
             {prospect.initials}
           </div>
-          <h3 className="text-sm font-medium text-slate-800 ml-2">{prospect.fullName}</h3>
+          <h3 className="text-sm font-medium text-foreground ml-2">{prospect.fullName}</h3>
         </div>
-        <span className="text-xs font-medium bg-primary-50 text-primary-600 px-2 py-0.5 rounded-full">
+        <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
           {prospect.probabilityScore}%
         </span>
       </div>
-      <div className="text-xs text-slate-600 mb-1">
+      <div className="text-xs text-muted-foreground mb-1">
         <span className="font-medium">Potential: </span>
         <span>{prospect.potentialAum}</span>
       </div>
       {prospect.productsOfInterest && (
-        <div className="text-xs text-slate-600 mb-1">
+        <div className="text-xs text-muted-foreground mb-1">
           <span className="font-medium">Products: </span>
           <span>{prospect.productsOfInterest}</span>
         </div>
       )}
-      <div className="text-xs text-slate-500">
+      <div className="text-xs text-muted-foreground/70">
         <span className="font-medium">Last Contact: </span>
         <span>{formatRelativeDate(prospect.lastContactDate)}</span>
       </div>
@@ -166,10 +166,10 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   return (
     <Card className="mb-6">
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4 text-center">Sales Pipeline Funnel</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Sales Pipeline Funnel</h3>
         
         {funnelData.length === 0 || funnelData.every(item => item.count === 0) ? (
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-muted-foreground">
             No prospects data available
           </div>
         ) : (
@@ -231,18 +231,17 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
           <CollapsibleTrigger asChild>
             <div 
-              className="flex items-center justify-between p-3 border-b border-slate-200 cursor-pointer"
-              style={{ backgroundColor: `${stageColor}20` }}
+              className="flex items-center justify-between p-3 border-b border-border cursor-pointer"
+              style={{ backgroundColor: `${stageColor.bg}` }}
             >
               <div className="flex items-center">
                 <div 
-                  className="w-3 h-3 rounded-full mr-2"
-                  style={{ backgroundColor: stageColor }}
+                  className={`w-3 h-3 rounded-full mr-2 ${stageColor.bg}`}
                 ></div>
-                <h3 className="font-semibold text-slate-700">{title}</h3>
+                <h3 className={`font-semibold ${stageColor.text}`}>{title}</h3>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium bg-white rounded-full px-2 py-0.5 text-slate-700">
+                <span className="text-xs font-medium bg-background rounded-full px-2 py-0.5 text-foreground">
                   {prospects.length}
                 </span>
                 {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -252,7 +251,7 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
           <CollapsibleContent>
             <CardContent className="p-3 max-h-[60vh] overflow-auto">
               {prospects.length === 0 ? (
-                <div className="text-center py-4 text-sm text-slate-500">
+                <div className="text-center py-4 text-sm text-muted-foreground">
                   No prospects in this stage
                 </div>
               ) : (
