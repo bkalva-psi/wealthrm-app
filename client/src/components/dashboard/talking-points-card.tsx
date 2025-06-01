@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,33 +50,35 @@ export function TalkingPointsCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-slate-500" />
-            <h2 className="text-sm font-medium text-slate-700">Talking Points</h2>
-          </div>
-          {hasMore && (
-            isExpanded ? 
-              <ChevronDown className="h-4 w-4 text-slate-400" /> :
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-          )}
-        </div>
-      </div>
-      
-      <div className="divide-y divide-slate-200">
-        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <div className="px-4 py-3">
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
-                <div className="flex items-center gap-2 w-full">
-                  <Lightbulb className="h-4 w-4 text-amber-600" />
-                  <span className="text-xs font-medium text-slate-700 flex-1 text-left">
-                    Key Market Insights ({talkingPoints.length})
-                  </span>
+      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+        <CardHeader className="px-4 py-3 border-b border-slate-200 bg-white">
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full p-0 h-auto justify-between hover:bg-transparent">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-white/60">
+                  <Lightbulb size={18} className="text-slate-500" />
                 </div>
-              </Button>
-            </CollapsibleTrigger>
+                <h2 className="text-sm font-medium text-slate-700">Talking Points</h2>
+              </div>
+              {hasMore && (
+                isExpanded ? 
+                  <ChevronDown size={20} className="text-slate-400" /> :
+                  <ChevronRight size={20} className="text-slate-400" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+        </CardHeader>
+        
+        <CardContent className="space-y-3 pt-0">
+          <div className="px-4 py-3">
+            <div className="flex items-center gap-2 w-full">
+              <div className="p-1.5 rounded-lg bg-white/60">
+                <Lightbulb size={18} className="text-amber-600" />
+              </div>
+              <span className="text-xs font-medium text-slate-700 flex-1 text-left">
+                Key Market Insights ({talkingPoints.length})
+              </span>
+            </div>
             
             {isLoading ? (
               <div className="space-y-2 mt-3">
@@ -166,8 +168,8 @@ export function TalkingPointsCard() {
               </div>
             )}
           </CollapsibleContent>
-        </Collapsible>
-      </div>
+        </CardContent>
+      </Collapsible>
     </Card>
   );
 }
