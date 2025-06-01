@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Moon, Sun, BellRing, Mail, Shield, Eye, EyeOff } from "lucide-react";
+import { Moon, Sun, BellRing, Mail, Shield, Eye, EyeOff, User, Bell, Monitor } from "lucide-react";
 
 export default function Settings() {
   const { user, logout } = useAuth();
@@ -144,10 +144,13 @@ export default function Settings() {
         </TabsList>
         
         {/* Profile Settings */}
-        <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
+        <TabsContent value="profile" className="animate-in fade-in-50 slide-in-from-right-4 duration-500">
+          <Card className="border-border/50 shadow-sm hover:shadow-md transition-all duration-300 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <User className="w-5 h-5 text-primary" />
+                Profile Information
+              </CardTitle>
               <CardDescription>
                 Update your personal information and profile details
               </CardDescription>
