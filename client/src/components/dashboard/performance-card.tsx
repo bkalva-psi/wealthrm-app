@@ -308,15 +308,15 @@ export function PerformanceCard() {
                 {/* Overall Percentile Score - Bar Chart Display */}
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-4">
                   <div className="text-center mb-3">
-                    <div className="text-sm text-blue-700 font-medium">Overall Percentile Score</div>
+                    <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">Overall Percentile Score</div>
                   </div>
 
                   {/* Horizontal Progress Bar */}
                   <div className="relative mb-3">
                     {/* Background bar */}
-                    <div className="w-full h-4 bg-slate-200 rounded-full relative">
+                    <div className="w-full h-4 bg-muted rounded-full relative">
                       {/* 50% midline marker */}
-                      <div className="absolute top-0 left-1/2 transform -translate-x-0.5 w-0.5 h-4 bg-slate-400"></div>
+                      <div className="absolute top-0 left-1/2 transform -translate-x-0.5 w-0.5 h-4 bg-muted-foreground/40"></div>
                       
                       {/* Progress fill */}
                       <div 
@@ -330,13 +330,13 @@ export function PerformanceCard() {
                     </div>
                     
                     {/* Scale markers */}
-                    <div className="relative flex justify-between text-xs text-slate-500 mt-1">
+                    <div className="relative flex justify-between text-xs text-muted-foreground mt-1">
                       <span>0</span>
                       <span className="font-medium">50</span>
                       <span>100</span>
                       {/* Actual percentile marker */}
                       <span 
-                        className="absolute text-xs text-slate-500 font-medium"
+                        className="absolute text-xs text-muted-foreground font-medium"
                         style={{ left: `${overallAveragePercentile}%`, transform: 'translateX(-50%)' }}
                       >
                         {overallAveragePercentile}
