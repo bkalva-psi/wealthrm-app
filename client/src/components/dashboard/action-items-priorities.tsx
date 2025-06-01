@@ -163,25 +163,25 @@ export function ActionItemsPriorities() {
                       </div>
                       <div className="mt-3 px-3 pb-3 space-y-2">
                         {category.items.length === 0 ? (
-                          <p className="text-xs text-slate-500 italic">No items at this time</p>
+                          <p className="text-xs text-muted-foreground italic">No items at this time</p>
                         ) : (
                           category.items.slice(0, 5).map((item, index) => {
                             const itemKey = `${key}-${item.id || index}`;
                             const isItemExpanded = expandedItems.has(itemKey);
                             
                             return (
-                              <div key={index} className="bg-card rounded border border-border overflow-hidden">
+                              <div key={index} className="bg-background border border-border rounded overflow-hidden">
                                 <Button
                                   variant="ghost"
-                                  className="w-full p-2 h-auto justify-start hover:bg-muted/50"
+                                  className="w-full p-2 h-auto justify-start hover:bg-accent/20 text-foreground"
                                   onClick={() => toggleItem(itemKey)}
                                 >
                                   <div className="flex items-center gap-2 w-full">
                                     <div className="flex-1 text-left">
                                       {key === 'appointments' && (
                                         <div>
-                                          <div className="font-medium text-sm">{item.title}</div>
-                                          <div className="text-xs text-slate-600">
+                                          <div className="font-medium text-sm text-foreground">{item.title}</div>
+                                          <div className="text-xs text-muted-foreground">
                                             {item.clientName} • {formatTime(item.startTime)} - {formatTime(item.endTime)}
                                           </div>
                                         </div>
@@ -189,8 +189,8 @@ export function ActionItemsPriorities() {
                                       
                                       {key === 'tasks' && (
                                         <div>
-                                          <div className="font-medium text-sm">{item.title}</div>
-                                          <div className="text-xs text-slate-600">
+                                          <div className="font-medium text-sm text-foreground">{item.title}</div>
+                                          <div className="text-xs text-muted-foreground">
                                             Priority: {item.priority} • Status: {item.status}
                                           </div>
                                         </div>
@@ -198,8 +198,8 @@ export function ActionItemsPriorities() {
                                       
                                       {key === 'closures' && (
                                         <div>
-                                          <div className="font-medium text-sm">{item.client_name}</div>
-                                          <div className="text-xs text-slate-600">
+                                          <div className="font-medium text-sm text-foreground">{item.client_name}</div>
+                                          <div className="text-xs text-muted-foreground">
                                             Expected: ₹{(item.expected_amount / 100000).toFixed(1)}L • {format(new Date(item.expected_close_date), 'MMM dd')}
                                           </div>
                                         </div>
@@ -207,8 +207,8 @@ export function ActionItemsPriorities() {
                                       
                                       {key === 'complaints' && (
                                         <div>
-                                          <div className="font-medium text-sm">{item.subject}</div>
-                                          <div className="text-xs text-slate-600">
+                                          <div className="font-medium text-sm text-foreground">{item.subject}</div>
+                                          <div className="text-xs text-muted-foreground">
                                             {item.clientName} • {item.severity} • {item.status}
                                           </div>
                                         </div>
@@ -216,8 +216,8 @@ export function ActionItemsPriorities() {
                                       
                                       {key === 'alerts' && (
                                         <div>
-                                          <div className="font-medium text-sm">{item.title}</div>
-                                          <div className="text-xs text-slate-600">
+                                          <div className="font-medium text-sm text-foreground">{item.title}</div>
+                                          <div className="text-xs text-muted-foreground">
                                             Priority: {item.priority}
                                             {item.clientName && ` • Client: ${item.clientName}`}
                                           </div>
@@ -226,33 +226,33 @@ export function ActionItemsPriorities() {
                                     </div>
                                     <ChevronRight 
                                       size={14} 
-                                      className={`text-slate-400 transition-transform ${isItemExpanded ? 'rotate-90' : ''}`} 
+                                      className={`text-muted-foreground transition-transform ${isItemExpanded ? 'rotate-90' : ''}`} 
                                     />
                                   </div>
                                 </Button>
                                 
                                 {isItemExpanded && (
-                                  <div className="px-4 pb-3 space-y-2 bg-slate-25">
+                                  <div className="px-4 pb-3 space-y-2 bg-muted/20">
                                     {key === 'appointments' && (
                                       <div className="space-y-1">
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Client:</span>
-                                          <span className="font-medium text-slate-800">{item.clientName}</span>
+                                          <span className="text-muted-foreground">Client:</span>
+                                          <span className="font-medium text-foreground">{item.clientName}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Time:</span>
-                                          <span className="font-medium text-slate-800">
+                                          <span className="text-muted-foreground">Time:</span>
+                                          <span className="font-medium text-foreground">
                                             {formatTime(item.startTime)} - {formatTime(item.endTime)}
                                           </span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Type:</span>
-                                          <span className="font-medium text-slate-800">{item.type || 'Meeting'}</span>
+                                          <span className="text-muted-foreground">Type:</span>
+                                          <span className="font-medium text-foreground">{item.type || 'Meeting'}</span>
                                         </div>
                                         {item.location && (
                                           <div className="flex justify-between text-xs">
-                                            <span className="text-slate-600">Location:</span>
-                                            <span className="font-medium text-slate-800">{item.location}</span>
+                                            <span className="text-muted-foreground">Location:</span>
+                                            <span className="font-medium text-foreground">{item.location}</span>
                                           </div>
                                         )}
                                       </div>
@@ -261,23 +261,23 @@ export function ActionItemsPriorities() {
                                     {key === 'tasks' && (
                                       <div className="space-y-1">
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Priority:</span>
-                                          <span className="font-medium text-slate-800 capitalize">{item.priority || 'Normal'}</span>
+                                          <span className="text-muted-foreground">Priority:</span>
+                                          <span className="font-medium text-foreground capitalize">{item.priority || 'Normal'}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Due Date:</span>
-                                          <span className="font-medium text-slate-800">
+                                          <span className="text-muted-foreground">Due Date:</span>
+                                          <span className="font-medium text-foreground">
                                             {item.dueDate ? format(new Date(item.dueDate), "MMM dd, yyyy") : 'Not set'}
                                           </span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Status:</span>
-                                          <span className="font-medium text-slate-800 capitalize">{item.status || 'Pending'}</span>
+                                          <span className="text-muted-foreground">Status:</span>
+                                          <span className="font-medium text-foreground capitalize">{item.status || 'Pending'}</span>
                                         </div>
                                         {item.description && (
                                           <div className="text-xs">
-                                            <span className="text-slate-600">Description:</span>
-                                            <p className="font-medium text-slate-800 mt-1">{item.description}</p>
+                                            <span className="text-muted-foreground">Description:</span>
+                                            <p className="font-medium text-foreground mt-1">{item.description}</p>
                                           </div>
                                         )}
                                       </div>
@@ -286,22 +286,22 @@ export function ActionItemsPriorities() {
                                     {key === 'closures' && (
                                       <div className="space-y-1">
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Client:</span>
-                                          <span className="font-medium text-slate-800">{item.client_name}</span>
+                                          <span className="text-muted-foreground">Client:</span>
+                                          <span className="font-medium text-foreground">{item.client_name}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Expected Amount:</span>
-                                          <span className="font-medium text-slate-800">₹{(item.expected_amount / 100000).toFixed(1)}L</span>
+                                          <span className="text-muted-foreground">Expected Amount:</span>
+                                          <span className="font-medium text-foreground">₹{(item.expected_amount / 100000).toFixed(1)}L</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Close Date:</span>
-                                          <span className="font-medium text-slate-800">
+                                          <span className="text-muted-foreground">Close Date:</span>
+                                          <span className="font-medium text-foreground">
                                             {format(new Date(item.expected_close_date), "MMM dd, yyyy")}
                                           </span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Status:</span>
-                                          <span className="font-medium text-slate-800 capitalize">{item.status || 'In Progress'}</span>
+                                          <span className="text-muted-foreground">Status:</span>
+                                          <span className="font-medium text-foreground capitalize">{item.status || 'In Progress'}</span>
                                         </div>
                                       </div>
                                     )}
@@ -309,21 +309,21 @@ export function ActionItemsPriorities() {
                                     {key === 'alerts' && (
                                       <div className="space-y-1">
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Client:</span>
-                                          <span className="font-medium text-slate-800">{item.clientName}</span>
+                                          <span className="text-muted-foreground">Client:</span>
+                                          <span className="font-medium text-foreground">{item.clientName}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Priority:</span>
-                                          <span className="font-medium text-slate-800 capitalize">{item.priority}</span>
+                                          <span className="text-muted-foreground">Priority:</span>
+                                          <span className="font-medium text-foreground capitalize">{item.priority}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Type:</span>
-                                          <span className="font-medium text-slate-800">{item.type || 'General Alert'}</span>
+                                          <span className="text-muted-foreground">Type:</span>
+                                          <span className="font-medium text-foreground">{item.type || 'General Alert'}</span>
                                         </div>
                                         {item.description && (
                                           <div className="text-xs">
-                                            <span className="text-slate-600">Details:</span>
-                                            <p className="font-medium text-slate-800 mt-1">{item.description}</p>
+                                            <span className="text-muted-foreground">Details:</span>
+                                            <p className="font-medium text-foreground mt-1">{item.description}</p>
                                           </div>
                                         )}
                                       </div>
@@ -332,16 +332,16 @@ export function ActionItemsPriorities() {
                                     {key === 'complaints' && (
                                       <div className="space-y-1">
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Client:</span>
-                                          <span className="font-medium text-slate-800">{item.clientName}</span>
+                                          <span className="text-muted-foreground">Client:</span>
+                                          <span className="font-medium text-foreground">{item.clientName}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Category:</span>
-                                          <span className="font-medium text-slate-800">{item.category || 'General'}</span>
+                                          <span className="text-muted-foreground">Category:</span>
+                                          <span className="font-medium text-foreground">{item.category || 'General'}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Priority:</span>
-                                          <span className="font-medium text-slate-800 capitalize">{item.severity || 'Medium'}</span>
+                                          <span className="text-muted-foreground">Priority:</span>
+                                          <span className="font-medium text-foreground capitalize">{item.severity || 'Medium'}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
                                           <span className="text-slate-600">Status:</span>
