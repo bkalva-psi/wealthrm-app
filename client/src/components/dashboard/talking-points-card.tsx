@@ -103,7 +103,7 @@ export function TalkingPointsCard() {
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-gray-50">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Talking Points</CardTitle>
+              <CardTitle className="text-lg">Market Insights</CardTitle>
               <ChevronRight size={20} className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />
             </div>
           </CardHeader>
@@ -114,7 +114,7 @@ export function TalkingPointsCard() {
             <div className="px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="text-left">
-                  <h3 className="font-semibold text-sm">Talking Points</h3>
+                  <h3 className="font-semibold text-sm">Market Insights</h3>
                   <p className="text-lg font-bold text-amber-600">
                     {totalTalkingPoints}
                   </p>
