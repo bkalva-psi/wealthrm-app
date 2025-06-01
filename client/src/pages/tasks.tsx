@@ -204,7 +204,7 @@ export default function Tasks() {
   };
   
   return (
-    <div>
+    <div className="bg-background min-h-screen p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Tasks</h1>
@@ -215,7 +215,7 @@ export default function Tasks() {
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="!bg-card !border-border">
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
               <DialogDescription>
@@ -267,7 +267,7 @@ export default function Tasks() {
       
       <div className="space-y-6">
         {/* Tasks Card */}
-        <Card>
+        <Card className="!bg-card !border-border">
           <CardHeader className="cursor-pointer" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -289,7 +289,7 @@ export default function Tasks() {
                     placeholder="Search tasks..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 !bg-background !border-input !text-foreground"
                   />
                 </div>
               </div>
@@ -386,7 +386,7 @@ export default function Tasks() {
         </Card>
 
         {/* Portfolio Alerts Card */}
-        <Card>
+        <Card className="!bg-card !border-border">
           <CardHeader className="cursor-pointer" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
