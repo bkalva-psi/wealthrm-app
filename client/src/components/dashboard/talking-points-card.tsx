@@ -71,10 +71,7 @@ export function TalkingPointsCard() {
         
         <CardContent className="space-y-3 pt-0">
           <div className="px-4 py-3">
-            <div className="flex items-center gap-2 w-full">
-              <div className="p-1.5 rounded-lg bg-white/60">
-                <Lightbulb size={18} className="text-amber-600" />
-              </div>
+            <div className="flex items-center gap-3">
               <div className="text-left">
                 <h3 className="font-semibold text-sm">Key Market Insights</h3>
                 <p className="text-lg font-bold text-amber-600">

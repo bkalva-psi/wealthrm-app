@@ -98,10 +98,7 @@ export function AnnouncementsCard() {
         
         <CardContent className="space-y-3 pt-0">
           <div className="px-4 py-3">
-            <div className="flex items-center gap-2 w-full">
-              <div className="p-1.5 rounded-lg bg-white/60">
-                <Megaphone size={18} className="text-blue-600" />
-              </div>
+            <div className="flex items-center gap-3">
               <div className="text-left">
                 <h3 className="font-semibold text-sm">Product Updates</h3>
                 <p className="text-lg font-bold text-blue-600">
