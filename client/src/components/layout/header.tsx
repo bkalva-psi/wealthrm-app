@@ -44,13 +44,13 @@ export function Header({
   };
   
   return (
-    <header className="bg-white shadow-sm z-10">
+    <header className="bg-background border-b border-border shadow-sm z-10">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Mobile Menu Button */}
         <div className="flex items-center">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-slate-500 hover:text-slate-600">
+              <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -94,7 +94,7 @@ export function Header({
                 <Search className="h-5 w-5 text-slate-400" />
               </div>
               <input 
-                className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-md leading-5 bg-white placeholder-slate-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
+                className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" 
                 placeholder="Search clients, prospects, or tasks..." 
                 type="search"
                 value={searchQuery}
