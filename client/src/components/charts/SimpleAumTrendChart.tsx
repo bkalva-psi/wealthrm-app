@@ -274,28 +274,28 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
             </div>
           </div>
           
-          <div className="flex text-xs rounded-md overflow-hidden border">
+          <div className="flex text-xs rounded-md overflow-hidden border border-border">
             <button 
               onClick={() => handleTimeRangeChange('3m')}
-              className={`px-2 py-0.5 ${timeRange === '3m' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 transition-colors ${timeRange === '3m' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted text-foreground'}`}
             >
               3M
             </button>
             <button 
               onClick={() => handleTimeRangeChange('6m')}
-              className={`px-2 py-0.5 ${timeRange === '6m' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 transition-colors ${timeRange === '6m' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted text-foreground'}`}
             >
               6M
             </button>
             <button 
               onClick={() => handleTimeRangeChange('1y')}
-              className={`px-2 py-0.5 ${timeRange === '1y' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 transition-colors ${timeRange === '1y' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted text-foreground'}`}
             >
               1Y
             </button>
             <button 
               onClick={() => handleTimeRangeChange('3y')}
-              className={`px-2 py-0.5 ${timeRange === '3y' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 transition-colors ${timeRange === '3y' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-muted text-foreground'}`}
             >
               3Y
             </button>
