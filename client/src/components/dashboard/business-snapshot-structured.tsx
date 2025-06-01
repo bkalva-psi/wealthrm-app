@@ -57,15 +57,15 @@ export function BusinessSnapshotStructured() {
 
   const formatNumber = (value: number) => value.toLocaleString();
 
-  // Metrics configuration with Ujjivan brand colors (teal/green and orange/yellow)
+  // Metrics configuration using theme colors
   const metricsConfig = {
     aum: {
       title: 'Total AUM',
       value: businessMetrics?.totalAum || 0,
       formatter: formatCurrency,
       icon: TrendingUp,
-      color: 'text-teal-700 dark:text-teal-400',
-      bgColor: 'bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800',
+      color: 'text-primary',
+      bgColor: 'bg-muted border-border',
       dimensions: []
     },
     clients: {
@@ -73,8 +73,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.totalClients || 0,
       formatter: formatNumber,
       icon: Users,
-      color: 'text-emerald-700 dark:text-emerald-400',
-      bgColor: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800',
+      color: 'text-secondary',
+      bgColor: 'bg-muted border-border',
       dimensions: []
     },
     revenue: {
@@ -82,8 +82,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.revenueMonthToDate || 0,
       formatter: formatCurrency,
       icon: DollarSign,
-      color: 'text-amber-700 dark:text-amber-400',
-      bgColor: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800',
+      color: 'text-primary',
+      bgColor: 'bg-muted border-border',
       dimensions: []
     },
     pipeline: {
@@ -91,8 +91,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.pipelineValue || 0,
       formatter: formatCurrency,
       icon: Target,
-      color: 'text-orange-700 dark:text-orange-400',
-      bgColor: 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800',
+      color: 'text-secondary',
+      bgColor: 'bg-muted border-border',
       dimensions: []
     }
   };
