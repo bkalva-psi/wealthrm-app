@@ -118,11 +118,18 @@ export function ActionItemsPriorities() {
     alert.priority === 'high' || alert.priority === 'critical'
   ).slice(0, 3);
 
-  // Today's deal closures
-  const todayClosures = dealClosures.filter((closure: DealClosure) => {
+  // Filter urgent customer complaints
+  const urgentComplaints = complaints.filter((complaint: Complaint) => 
+    complaint.status !== 'resolved' && (complaint.severity === 'high' || complaint.severity === 'critical')
+  ).slice(0, 3);
+
+  // This week's deal closures (expanded scope)
+  const weekClosures = dealClosures.filter((closure: DealClosure) => {
     const closeDate = new Date(closure.expected_close_date);
     const today = new Date();
-    return closeDate.toDateString() === today.toDateString();
+    const weekFromNow = new Date();
+    weekFromNow.setDate(today.getDate() + 7);
+    return closeDate >= today && closeDate <= weekFromNow;
   });
 
   const sectionsConfig = {
@@ -146,12 +153,21 @@ export function ActionItemsPriorities() {
     },
     closures: {
       title: 'Expected Closures',
-      count: todayClosures.length,
-      items: todayClosures,
+      count: weekClosures.length,
+      items: weekClosures,
       icon: Users,
       color: 'text-emerald-700',
       bgColor: 'bg-emerald-50 border-emerald-200',
       description: 'Deal closures and prospect conversions expected this week'
+    },
+    complaints: {
+      title: 'Customer Complaints',
+      count: urgentComplaints.length,
+      items: urgentComplaints,
+      icon: AlertTriangle,
+      color: 'text-red-700',
+      bgColor: 'bg-red-50 border-red-200',
+      description: 'Urgent customer complaints requiring immediate resolution'
     },
     alerts: {
       title: 'Priority Alerts',
@@ -254,6 +270,15 @@ export function ActionItemsPriorities() {
                                   <div className="font-medium">{item.client_name}</div>
                                   <div className="text-muted-foreground">
                                     Expected: {formatCurrency(item.expected_amount)} • {format(new Date(item.expected_close_date), 'MMM dd')}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {key === 'complaints' && (
+                                <div>
+                                  <div className="font-medium">{item.subject}</div>
+                                  <div className="text-muted-foreground">
+                                    {item.clientName} • {item.severity} • {item.status}
                                   </div>
                                 </div>
                               )}
