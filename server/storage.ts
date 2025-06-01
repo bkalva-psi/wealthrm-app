@@ -1253,7 +1253,7 @@ export class DatabaseStorage implements IStorage {
       FROM communication_action_items cai
       JOIN communications comm ON cai.communication_id = comm.id
       LEFT JOIN clients cl ON comm.client_id = cl.id
-      WHERE cai.action_type = 'task' AND cai.status = 'pending'
+      WHERE cai.action_type = 'task'
     `;
     
     const params: any[] = [];
