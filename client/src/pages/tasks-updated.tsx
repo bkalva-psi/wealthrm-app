@@ -239,7 +239,7 @@ export default function TasksUpdated() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Tasks</h1>
+          <h1 className="text-2xl font-bold text-foreground">Tasks</h1>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-4">

@@ -181,8 +181,8 @@ export default function Analytics() {
           kpiSummary.map((kpi, index) => (
             <Card key={index} className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border-l-4 border-l-primary/20 hover:border-l-primary/60">
               <CardContent className="p-6">
-                <p className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">{kpi.name}</p>
-                <h3 className="text-3xl font-bold text-foreground mt-1">{kpi.value}</h3>
+                <p className="text-xs font-medium text-muted-foreground tracking-wide uppercase">{kpi.name}</p>
+                <h3 className="text-2xl font-bold text-foreground mt-1">{kpi.value}</h3>
                 <div className="flex items-center mt-1">
                   <span className="text-xs text-muted-foreground mr-2">Target: {kpi.target}</span>
                   <span className={`text-xs ${getPercentageChangeColor(kpi.percentChange)}`}>
