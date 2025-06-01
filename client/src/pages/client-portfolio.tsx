@@ -322,9 +322,9 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
         
         <div className="grid grid-cols-3 gap-2">
           {mediumTermPeriods.map(period => (
-            <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
+            <div key={period.label} className="flex flex-col items-center p-2 bg-muted rounded-md border border-border transition-colors">
               <span className={`text-sm ${
-                period.value >= 0 ? 'text-green-600' : 'text-red-600'
+                period.value >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               } ${
                 period.value === maxValue || period.value === minValue ? 'font-bold' : 'font-medium'
               }`}>
@@ -337,9 +337,9 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
         
         <div className="grid grid-cols-2 gap-2">
           {longTermPeriods.map(period => (
-            <div key={period.label} className="flex flex-col items-center p-2 bg-slate-50 rounded-md">
+            <div key={period.label} className="flex flex-col items-center p-2 bg-muted rounded-md border border-border transition-colors">
               <span className={`text-sm ${
-                period.value >= 0 ? 'text-green-600' : 'text-red-600'
+                period.value >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               } ${
                 period.value === maxValue || period.value === minValue ? 'font-bold' : 'font-medium'
               }`}>
