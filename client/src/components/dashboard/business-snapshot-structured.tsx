@@ -200,7 +200,7 @@ export function BusinessSnapshotStructured() {
                           </div>
                           <div className="text-left">
                             <h3 className="font-semibold text-sm">{config.title}</h3>
-                            <p className={`text-lg font-bold ${config.color}`}>
+                            <p className="text-lg font-bold text-foreground">
                               {config.formatter(config.value)}
                             </p>
                           </div>

@@ -22,16 +22,16 @@ export default function Dashboard() {
   }, []);
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Enhanced Page Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 Welcome back, {user?.fullName.split(' ')[0]}
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg">
+              <p className="text-muted-foreground text-lg">
                 {format(new Date(), "EEEE, MMMM d, yyyy")}
               </p>
             </div>
