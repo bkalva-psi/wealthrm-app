@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Megaphone, Calendar, User, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Bell, Calendar, User, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 
@@ -76,8 +76,8 @@ export default function AnnouncementsPage() {
     <div className="relative">
       <div className="sticky top-0 z-10 bg-card border-b border-border p-6">
         <div className="flex items-center space-x-3">
-          <Megaphone className="h-6 w-6 text-ujjivan-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Announcements</h1>
+          <Bell className="h-6 w-6 text-ujjivan-primary" />
+          <h1 className="text-2xl font-bold text-foreground">Updates</h1>
           <span className="ml-auto text-sm text-muted-foreground">
             {activeAnnouncements.length} Active
           </span>
