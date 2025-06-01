@@ -529,7 +529,7 @@ export default function ClientTransactions() {
 
       {/* Page Title Band with Navigation */}
       <div className="bg-card border-b border-gray-200 px-1 py-4">
-        <h2 className="text-2xl font-bold text-gray-900 px-5 mb-3">Transactions</h2>
+        <h2 className="text-2xl font-bold text-foreground px-5 mb-3">Transactions</h2>
         
         {/* Navigation Icons */}
         <div className="grid grid-cols-7 gap-1 px-1">
@@ -697,13 +697,13 @@ export default function ClientTransactions() {
       {/* Filters - Collapsible */}
       <Card className="overflow-hidden">
         <div 
-          className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+          className="p-4 bg-muted border-b border-border cursor-pointer hover:bg-muted/80 transition-colors"
           onClick={() => setFiltersExpanded(!filtersExpanded)}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-600" />
-              <span className="font-medium text-gray-900">Filters</span>
+              <Filter className="h-5 w-5 text-muted-foreground" />
+              <span className="font-medium text-foreground">Filters</span>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -746,7 +746,7 @@ export default function ClientTransactions() {
             </div>
             <div className="flex items-center space-x-2">
               <ChevronDown 
-                className={`h-5 w-5 text-gray-400 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`}
+                className={`h-5 w-5 text-muted-foreground transition-transform ${filtersExpanded ? 'rotate-180' : ''}`}
               />
             </div>
           </div>
@@ -755,7 +755,7 @@ export default function ClientTransactions() {
         {filtersExpanded && (
           <div className="p-4 space-y-4">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</Label>
+              <Label className="text-sm font-medium text-foreground mb-2 block">Date Range</Label>
               <div className="flex gap-2">
                 <Button
                   variant={selectedPeriod === '1w' ? 'default' : 'outline'}
@@ -793,7 +793,7 @@ export default function ClientTransactions() {
             </div>
             
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">Transaction Type</Label>
+              <Label className="text-sm font-medium text-foreground mb-2 block">Transaction Type</Label>
               <Select 
                 value={transactionType} 
                 onValueChange={setTransactionType}
