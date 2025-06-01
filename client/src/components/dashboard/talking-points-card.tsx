@@ -99,7 +99,7 @@ export function TalkingPointsCard() {
                         onClick={() => toggleItemExpansion(pointKey)}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <IconComponent size={18} className="text-muted-foreground" />
                           <span className="truncate">{point.title}</span>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
@@ -128,7 +128,7 @@ export function TalkingPointsCard() {
             )}
           </div>
           
-          <CollapsibleContent>
+          <CollapsibleContent className="mt-3">
             {talkingPoints.length > 2 && (
               <div className="px-4 py-3 space-y-2">
                 {talkingPoints.slice(2).map((point: any) => {
@@ -142,7 +142,7 @@ export function TalkingPointsCard() {
                         onClick={() => toggleItemExpansion(pointKey)}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <IconComponent size={18} className="text-muted-foreground" />
                           <span className="truncate">{point.title}</span>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
