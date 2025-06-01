@@ -114,18 +114,33 @@ export default function Settings() {
   };
   
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
-
-      </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="display">Display</TabsTrigger>
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      <div className="p-6">
+        <div className="mb-6 animate-in slide-in-from-top-4 duration-500">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Account Settings</h1>
+          <p className="text-muted-foreground text-sm font-medium mt-1">
+            Manage your account preferences and security settings
+          </p>
+        </div>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-in slide-in-from-bottom-4 duration-700 delay-200">
+        <TabsList className="mb-6 bg-muted/50 border border-border/50 rounded-xl p-1 h-auto shadow-sm hover:shadow-md transition-all duration-300">
+          <TabsTrigger value="profile" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <User className="w-4 h-4 mr-2" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="security" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <Shield className="w-4 h-4 mr-2" />
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <Bell className="w-4 h-4 mr-2" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="display" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-background/50">
+            <Monitor className="w-4 h-4 mr-2" />
+            Display
+          </TabsTrigger>
         </TabsList>
         
         {/* Profile Settings */}
@@ -452,6 +467,7 @@ export default function Settings() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
