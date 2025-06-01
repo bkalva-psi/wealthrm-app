@@ -5,7 +5,7 @@ import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
 import { BusinessSnapshotStructured } from "@/components/dashboard/business-snapshot-structured";
-import { PortfolioAlertsClean } from "@/components/dashboard/portfolio-alerts-clean";
+
 import { SimpleComplaints } from "@/components/dashboard/simple-complaints";
 
 import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
@@ -36,7 +36,6 @@ export default function Dashboard() {
         {/* Left Column: Priority Actions & Agenda */}
         <div className="space-y-6">
           <ActionItemsPriorities />
-          <PortfolioAlertsClean />
           <SimpleComplaints />
         </div>
         

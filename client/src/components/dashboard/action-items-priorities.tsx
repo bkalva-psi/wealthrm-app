@@ -71,12 +71,12 @@ export function ActionItemsPriorities() {
     },
     alerts: {
       title: 'Portfolio Alerts',
-      count: priorityAlerts?.filter(alert => alert.priority === 'high').length || 0,
-      items: priorityAlerts?.filter(alert => alert.priority === 'high') || [],
+      count: priorityAlerts?.length || 0,
+      items: priorityAlerts || [],
       icon: AlertTriangle,
       color: 'text-red-700',
       bgColor: 'bg-red-50 border-red-200',
-      description: 'Critical portfolio notifications'
+      description: 'Portfolio alerts and market notifications affecting your clients'
     },
     complaints: {
       title: 'Active Complaints',
