@@ -518,16 +518,16 @@ export function PerformanceCard() {
         </Collapsible>
 
         {/* Incentives Section */}
-        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50">
+        <div className="px-4 py-3 border-t border-border bg-muted/30">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-slate-500" />
-              <h3 className="text-sm font-medium text-slate-700">Performance Incentives</h3>
-              <span className="text-xs text-slate-500">({selectedPeriod})</span>
+              <h3 className="text-sm font-medium text-foreground">Performance Incentives</h3>
+              <span className="text-xs text-muted-foreground">({selectedPeriod})</span>
             </div>
             
             {/* Incentive Chart Visualization */}
-            <div className="bg-white rounded-lg p-4 border border-slate-200">
+            <div className="bg-card rounded-lg p-4 border border-border">
               <div className="space-y-4">
                 {/* Thin Donut Chart */}
                 <div className="flex items-center justify-center">
@@ -573,24 +573,24 @@ export function PerformanceCard() {
                     
                     {/* Center content */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="text-lg font-bold text-slate-800">
+                      <div className="text-lg font-bold text-foreground">
                         {incentivesData?.possible ? Math.round((incentivesData.projected / incentivesData.possible) * 100) : 0}%
                       </div>
-                      <div className="text-xs text-slate-600">Progress</div>
+                      <div className="text-xs text-muted-foreground">Progress</div>
                     </div>
                   </div>
                 </div>
                 
                 {/* Combined Values and Percentages Table */}
-                <div className="space-y-3 pt-2 border-t border-slate-100">
+                <div className="space-y-3 pt-2 border-t border-border/60">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-green-600 rounded-full"></div>
-                      <div className="text-xs font-medium text-slate-700">Earned</div>
+                      <div className="text-xs font-medium text-foreground">Earned</div>
                     </div>
                     <div className="text-xs text-right">
-                      <div className="font-medium text-slate-800">₹{incentivesData?.earned?.toLocaleString('en-IN') || '0'}</div>
-                      <div className="text-slate-500">
+                      <div className="font-medium text-foreground">₹{incentivesData?.earned?.toLocaleString('en-IN') || '0'}</div>
+                      <div className="text-muted-foreground">
                         {incentivesData?.possible ? Math.round((incentivesData.earned / incentivesData.possible) * 100) : 0}%
                       </div>
                     </div>
@@ -599,11 +599,11 @@ export function PerformanceCard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <div className="text-xs font-medium text-slate-700">Projected</div>
+                      <div className="text-xs font-medium text-foreground">Projected</div>
                     </div>
                     <div className="text-xs text-right">
-                      <div className="font-medium text-slate-800">₹{incentivesData?.projected?.toLocaleString('en-IN') || '0'}</div>
-                      <div className="text-slate-500">
+                      <div className="font-medium text-foreground">₹{incentivesData?.projected?.toLocaleString('en-IN') || '0'}</div>
+                      <div className="text-muted-foreground">
                         {incentivesData?.possible ? Math.round((incentivesData.projected / incentivesData.possible) * 100) : 0}%
                       </div>
                     </div>
@@ -612,11 +612,11 @@ export function PerformanceCard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                      <div className="text-xs font-medium text-slate-700">Maximum</div>
+                      <div className="text-xs font-medium text-foreground">Maximum</div>
                     </div>
                     <div className="text-xs text-right">
-                      <div className="font-medium text-slate-800">₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}</div>
-                      <div className="text-slate-500">100%</div>
+                      <div className="font-medium text-foreground">₹{incentivesData?.possible?.toLocaleString('en-IN') || '0'}</div>
+                      <div className="text-muted-foreground">100%</div>
                     </div>
                   </div>
                 </div>
@@ -625,31 +625,31 @@ export function PerformanceCard() {
 
             {/* Incentive Breakdown */}
             {incentivesData?.breakdown && (
-              <div className="bg-white rounded-lg p-3 border border-slate-200">
-                <div className="text-xs font-medium text-slate-700 mb-2">Breakdown Components</div>
+              <div className="bg-card rounded-lg p-3 border border-border">
+                <div className="text-xs font-medium text-foreground mb-2">Breakdown Components</div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {incentivesData.breakdown.base > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Base:</span>
-                      <span className="font-medium">₹{incentivesData.breakdown.base?.toLocaleString('en-IN')}</span>
+                      <span className="text-muted-foreground">Base:</span>
+                      <span className="font-medium text-foreground">₹{incentivesData.breakdown.base?.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                   {incentivesData.breakdown.performance > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Performance:</span>
-                      <span className="font-medium">₹{incentivesData.breakdown.performance?.toLocaleString('en-IN')}</span>
+                      <span className="text-muted-foreground">Performance:</span>
+                      <span className="font-medium text-foreground">₹{incentivesData.breakdown.performance?.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                   {incentivesData.breakdown.team > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Team:</span>
-                      <span className="font-medium">₹{incentivesData.breakdown.team?.toLocaleString('en-IN')}</span>
+                      <span className="text-muted-foreground">Team:</span>
+                      <span className="font-medium text-foreground">₹{incentivesData.breakdown.team?.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                   {incentivesData.breakdown.special > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Special:</span>
-                      <span className="font-medium">₹{incentivesData.breakdown.special?.toLocaleString('en-IN')}</span>
+                      <span className="text-muted-foreground">Special:</span>
+                      <span className="font-medium text-foreground">₹{incentivesData.breakdown.special?.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                 </div>
