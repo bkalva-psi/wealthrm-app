@@ -375,7 +375,7 @@ export default function AddProspect({ prospectId, readOnly = false }: { prospect
   };
 
   return (
-    <div>
+    <div className="p-6 bg-background min-h-screen">
       <h1 className="text-2xl font-semibold text-foreground mb-6">
         {readOnly ? "Prospect Details" : "Add New Prospect"}
       </h1>

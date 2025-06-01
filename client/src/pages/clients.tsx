@@ -96,7 +96,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
   
   return (
     <Card 
-      className={`overflow-hidden hover:shadow-md transition-shadow mb-4 border-l-4 ${tierColors.border}`}
+      className={`overflow-hidden hover:shadow-md transition-shadow mb-4 border-l-4 ${tierColors.border} !bg-card !border-border`}
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3 py-1">
@@ -351,19 +351,19 @@ export default function Clients() {
   };
   
   return (
-    <div className="p-6">
+    <div className="p-6 bg-background min-h-screen">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
         <h1 className="text-2xl font-bold mb-2 sm:mb-0">Clients</h1>
       </div>
       
-      <Card className="mb-6">
+      <Card className="mb-6 !bg-card !border-border">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input 
                 placeholder="Search clients..." 
-                className="pl-10" 
+                className="pl-10 !bg-background !border-input !text-foreground" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -371,7 +371,7 @@ export default function Clients() {
             <div className="flex gap-2">
               <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2 relative">
+                  <Button variant="outline" className="flex items-center gap-2 relative !bg-background !border-input !text-foreground">
                     <FilterIcon className="h-4 w-4" />
                     Filter
                     {activeFilters > 0 && (
@@ -382,7 +382,7 @@ export default function Clients() {
                     <ChevronDown className="h-4 w-4 ml-1" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-4" align="end">
+                <PopoverContent className="w-80 p-4 !bg-card !border-border" align="end">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold">Filter Clients</h3>
                     <Button 
