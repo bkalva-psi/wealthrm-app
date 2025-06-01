@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { HeroMetrics } from "@/components/dashboard/hero-metrics";
 import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
@@ -29,8 +28,8 @@ export default function Dashboard() {
         <p className="text-sm text-slate-600">Here's what's happening with your clients today</p>
       </div>
       
-      {/* Hero Metrics Section */}
-      <HeroMetrics />
+      {/* Business Snapshot at Top */}
+      <BusinessSnapshotStructured />
       
       {/* Improved 2-Column Layout for Better Information Hierarchy */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -43,7 +42,6 @@ export default function Dashboard() {
         
         {/* Right Column: Performance Insights & Updates */}
         <div className="space-y-6">
-          <BusinessSnapshotStructured />
           <TalkingPointsCard />
           <AnnouncementsCard />
         </div>
