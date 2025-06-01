@@ -140,6 +140,7 @@ export const prospects = pgTable("prospects", {
   initials: text("initials"),
   potentialAum: text("potential_aum"),
   potentialAumValue: real("potential_aum_value"),
+  estimatedValue: real("estimated_value"),
   email: text("email"),
   phone: text("phone"),
   stage: text("stage").notNull().default("new"), // new, qualified, proposal, won, lost
@@ -192,9 +193,6 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
 }).extend({
   dueDate: z.string().transform((str) => new Date(str)).optional(),
 });
-
-export type Task = typeof tasks.$inferSelect;
-export type InsertTask = z.infer<typeof insertTaskSchema>;
 
 // Meeting/Appointment model
 export const appointments = pgTable("appointments", {

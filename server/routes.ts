@@ -12,11 +12,13 @@ import MemoryStore from "memorystore";
 import { z } from "zod";
 
 // Type extension for session
+interface AuthenticatedSession extends session.Session {
+  userId?: number;
+  userRole?: string;
+}
+
 interface AuthenticatedRequest extends Request {
-  session: {
-    userId?: number;
-    userRole?: string;
-  } & session.Session & Partial<session.SessionData>;
+  session: AuthenticatedSession;
 }
 import fs from "fs";
 import path from "path";
@@ -40,7 +42,7 @@ import {
 
 // Basic auth middleware
 const authMiddleware = (req: Request, res: Response, next: Function) => {
-  if (!req.session.userId) {
+  if (!(req.session as any).userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
   next();
@@ -203,8 +205,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Set session data
-      req.session.userId = user.id;
-      req.session.userRole = user.role || "admin";
+      (req.session as any).userId = user.id;
+      (req.session as any).userRole = user.role || "admin";
       
       // Don't send password back to client
       const { password: _, ...userWithoutPassword } = user;
@@ -270,8 +272,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/me", async (req, res) => {
     try {
       // For testing purposes - bypass database authentication
-      req.session.userId = 1;
-      req.session.userRole = "admin";
+      (req.session as any).userId = 1;
+      (req.session as any).userRole = "admin";
       
       // Return mock user data for testing
       const userWithoutPassword = {
@@ -311,13 +313,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/clients", async (req, res) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
+      if (!(req.session as any).userId) {
         // This is a development-only authentication bypass for clients page
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
       
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       
       // Fetch all client data directly from the database to ensure all fields are returned
       const result = await pool.query(`
@@ -342,9 +344,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/complaints", async (req, res) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
 
       const complaints = await db
@@ -368,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
         .from(clientComplaints)
         .leftJoin(clients, eq(clientComplaints.clientId, clients.id))
-        .where(eq(clientComplaints.assignedTo, req.session.userId as number))
+        .where(eq(clientComplaints.assignedTo, (req.session as any).userId as number))
         .orderBy(desc(clientComplaints.reportedDate));
 
       res.json(complaints);
@@ -380,13 +382,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/clients/recent", async (req, res) => {
     // For testing purposes - create automatic authentication if not authenticated
-    if (!req.session.userId) {
+    if (!(req.session as any).userId) {
       // This is a development-only authentication bypass for clients page
-      req.session.userId = 1;
-      req.session.userRole = "admin";
+      (req.session as any).userId = 1;
+      (req.session as any).userRole = "admin";
     }
     try {
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       const limit = Number(req.query.limit) || 4;
       
       // Fetch clients data directly from the database to include all fields
@@ -419,10 +421,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
+      if (!(req.session as any).userId) {
         // This is a development-only authentication bypass for client details page
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
       
       // Fetch all client data from the database (including all new fields)
@@ -501,7 +503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const clientData = parseResult.data;
       const client = await storage.createClient({
         ...clientData,
-        assignedTo: req.session.userId
+        assignedTo: (req.session as any).userId
       });
       
       res.status(201).json(client);
@@ -525,7 +527,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Client not found" });
       }
       
-      if (client.assignedTo !== req.session.userId) {
+      if (client.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to update this client" });
       }
       
@@ -557,7 +559,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Client not found" });
       }
       
-      if (client.assignedTo !== req.session.userId) {
+      if (client.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to delete this client" });
       }
       
@@ -578,9 +580,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/clients/:clientId/transactions", async (req, res) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
       
       const clientId = Number(req.params.clientId);
@@ -616,9 +618,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/clients/:clientId/transactions/summary", async (req, res) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
       
       const clientId = Number(req.params.clientId);
@@ -680,12 +682,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/prospects", async (req, res) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
       
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       const prospects = await storage.getProspects(assignedTo);
       res.json(prospects);
     } catch (error) {
@@ -697,7 +699,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/prospects/stage/:stage", authMiddleware, async (req, res) => {
     try {
       const { stage } = req.params;
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       const prospects = await storage.getProspectsByStage(stage, assignedTo);
       res.json(prospects);
     } catch (error) {
@@ -768,7 +770,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const prospectData = parseResult.data;
       const prospect = await storage.createProspect({
         ...prospectData,
-        assignedTo: req.session.userId
+        assignedTo: (req.session as any).userId
       });
       
       res.status(201).json(prospect);
@@ -792,7 +794,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Prospect not found" });
       }
       
-      if (prospect.assignedTo !== req.session.userId) {
+      if (prospect.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to update this prospect" });
       }
       
@@ -854,7 +856,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Prospect not found" });
       }
       
-      if (prospect.assignedTo !== req.session.userId) {
+      if (prospect.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to delete this prospect" });
       }
       
@@ -926,7 +928,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Task routes
   app.get("/api/tasks", authMiddleware, async (req, res) => {
     try {
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       const completed = req.query.completed === "true" ? true : 
                       req.query.completed === "false" ? false : 
                       undefined;
@@ -978,7 +980,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const taskData = parseResult.data;
       const task = await storage.createTask({
         ...taskData,
-        assignedTo: req.session.userId
+        assignedTo: (req.session as any).userId
       });
       
       res.status(201).json(task);
@@ -1002,7 +1004,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Task not found" });
       }
       
-      if (task.assignedTo !== req.session.userId) {
+      if (task.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to update this task" });
       }
       
@@ -1034,7 +1036,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Task not found" });
       }
       
-      if (task.assignedTo !== req.session.userId) {
+      if (task.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to delete this task" });
       }
       
@@ -1055,7 +1057,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/appointments", authMiddleware, async (req, res) => {
     try {
       console.log('Appointments API called with query:', req.query);
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       let dateFilter = '';
       let clientFilter = '';
       let params: any[] = [assignedTo];
@@ -1101,7 +1103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/appointments/today", authMiddleware, async (req, res) => {
     try {
-      const assignedTo = req.session.userId;
+      const assignedTo = (req.session as any).userId;
       const appointments = await storage.getTodaysAppointments(assignedTo);
       res.json(appointments);
     } catch (error) {
@@ -1144,7 +1146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const appointmentData = parseResult.data;
       const appointment = await storage.createAppointment({
         ...appointmentData,
-        assignedTo: req.session.userId
+        assignedTo: (req.session as any).userId
       });
       
       res.status(201).json(appointment);
@@ -1168,7 +1170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Appointment not found" });
       }
       
-      if (appointment.assignedTo !== req.session.userId) {
+      if (appointment.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to update this appointment" });
       }
       
@@ -1200,7 +1202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Appointment not found" });
       }
       
-      if (appointment.assignedTo !== req.session.userId) {
+      if (appointment.assignedTo !== (req.session as any).userId) {
         return res.status(403).json({ message: "Not authorized to delete this appointment" });
       }
       
@@ -1331,14 +1333,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/performance", async (req, res) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
 
       const period = req.query.period as string || "Q";
       const year = parseInt(req.query.year as string) || 2025;
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
 
       // Generate period-specific performance data with authentic database values
       const getPerformanceForPeriod = async (period: string, year: number) => {
@@ -1461,7 +1463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/performance-metrics", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const metrics = await storage.getPerformanceMetrics(userId);
       res.json(metrics);
     } catch (error) {
@@ -1473,7 +1475,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AUM Trends routes
   app.get("/api/aum-trends", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const trends = await storage.getAumTrends(userId);
       res.json(trends);
     } catch (error) {
@@ -1485,7 +1487,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sales Pipeline routes
   app.get("/api/sales-pipeline", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const pipeline = await storage.getSalesPipeline(userId);
       res.json(pipeline);
     } catch (error) {
@@ -1513,7 +1515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/communications/recent", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const limit = req.query.limit ? Number(req.query.limit) : 10;
       
       if (isNaN(limit) || limit <= 0) {
@@ -1563,7 +1565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ensure initiatedBy is set to current user if not specified
       const data = parseResult.data;
       if (!data.initiatedBy) {
-        data.initiatedBy = req.session.userId;
+        data.initiatedBy = (req.session as any).userId;
       }
       
       const communication = await storage.createCommunication(data);
@@ -1656,7 +1658,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ensure assignedTo is set to current user if not specified
       const data = parseResult.data;
       if (!data.assignedTo) {
-        data.assignedTo = req.session.userId;
+        data.assignedTo = (req.session as any).userId;
       }
       
       const actionItem = await storage.createCommunicationActionItem(data);
@@ -1721,7 +1723,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/my-pending-action-items", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const actionItems = await storage.getPendingActionItemsByRM(userId);
       res.json(actionItems);
     } catch (error) {
@@ -1808,7 +1810,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Communication templates routes
   app.get("/api/communication-templates", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const templates = await storage.getCommunicationTemplates(userId);
       res.json(templates);
     } catch (error) {
@@ -1819,7 +1821,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/communication-templates/category/:category", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const { category } = req.params;
       
       if (!category) {
@@ -1838,7 +1840,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const parseResult = insertCommunicationTemplateSchema.safeParse({
         ...req.body,
-        createdBy: req.session.userId
+        createdBy: (req.session as any).userId
       });
       
       if (!parseResult.success) {
@@ -1859,7 +1861,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Communication analytics routes
   app.get("/api/communication-analytics", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const { clientId, period = 'monthly', limit = 12 } = req.query;
       
       let clientIdNum: number | null = null;
@@ -1886,7 +1888,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/communication-analytics/generate", authMiddleware, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const { 
         clientId, 
         period = 'monthly',
@@ -1939,12 +1941,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/business-metrics/:userId', async (req: Request, res: Response) => {
     try {
       // For testing purposes - create automatic authentication if not authenticated
-      if (!req.session.userId) {
-        req.session.userId = 1;
-        req.session.userRole = "admin";
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
       }
       
-      const userId = req.session.userId; // Use session userId instead of params
+      const userId = (req.session as any).userId; // Use session userId instead of params
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
@@ -2121,7 +2123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Client Breakdown by Tier
   app.get('/api/business-metrics/:userId/clients/tier', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
 
       const tierBreakdown = await db
         .select({
@@ -2144,7 +2146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Client Breakdown by Risk Profile
   app.get('/api/business-metrics/:userId/clients/risk-profile', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
 
       const riskProfileBreakdown = await db
         .select({
@@ -2167,7 +2169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Revenue Breakdown by Product Type
   app.get('/api/business-metrics/:userId/revenue/product-type', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
@@ -2210,7 +2212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Pipeline Breakdown by Stage
   app.get('/api/business-metrics/:userId/pipeline/stage', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
 
       const pipelineBreakdown = await db
         .select({
@@ -2234,7 +2236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get prospect closures for this week
   app.get('/api/prospects/closures-this-week', async (req: Request, res: Response) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       
       // Get start and end of current week
       const now = new Date();
@@ -2276,7 +2278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/business-metrics/:userId/product/:productName/clients', async (req: Request, res: Response) => {
     try {
       const { productName } = req.params;
-      const userId = req.session.userId;
+      const userId = (req.session as any).userId;
       
       const clientHoldings = await db
         .select({
