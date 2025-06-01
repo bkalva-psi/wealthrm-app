@@ -282,7 +282,7 @@ function AuthenticatedApp() {
           </div>
         )}
         
-        <main className="flex-1 overflow-y-auto bg-slate-50 pb-mobile-nav" id="main-content">
+        <main className="flex-1 overflow-y-auto bg-background pb-mobile-nav" id="main-content">
           {renderComponent()}
         </main>
         
