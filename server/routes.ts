@@ -3,13 +3,21 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { pool } from "./db";
 import { db } from "./db";
-import { eq, sql, and, gt, desc } from "drizzle-orm";
+import { eq, sql, and, gt, desc, or, inArray } from "drizzle-orm";
 import { clients, prospects, transactions, performanceIncentives, clientComplaints, products } from "@shared/schema";
 import communicationsRouter from "./communications";
 import portfolioReportRouter from "./portfolio-report";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { z } from "zod";
+
+// Type extension for session
+interface AuthenticatedRequest extends Request {
+  session: {
+    userId?: number;
+    userRole?: string;
+  } & session.Session & Partial<session.SessionData>;
+}
 import fs from "fs";
 import path from "path";
 import puppeteer from "puppeteer";
