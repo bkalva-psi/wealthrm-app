@@ -179,6 +179,7 @@ export const tasks = pgTable("tasks", {
   description: text("description"),
   dueDate: timestamp("due_date"),
   completed: boolean("completed").default(false),
+  priority: text("priority").default("medium"), // low, medium, high
   clientId: integer("client_id").references(() => clients.id),
   prospectId: integer("prospect_id").references(() => prospects.id),
   assignedTo: integer("assigned_to").references(() => users.id),
@@ -191,6 +192,9 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
 }).extend({
   dueDate: z.string().transform((str) => new Date(str)).optional(),
 });
+
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = z.infer<typeof insertTaskSchema>;
 
 // Meeting/Appointment model
 export const appointments = pgTable("appointments", {

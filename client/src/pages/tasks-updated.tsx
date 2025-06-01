@@ -81,8 +81,8 @@ export default function TasksUpdated() {
       (statusFilter === 'completed' && task.completed) ||
       (statusFilter === 'pending' && !task.completed);
     
-    // Priority filter (assuming tasks have priority field)
-    const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
+    // Priority filter (handling optional priority field)
+    const matchesPriority = priorityFilter === 'all' || (task as any).priority === priorityFilter;
     
     // Due date filter
     let matchesDueDate = true;
