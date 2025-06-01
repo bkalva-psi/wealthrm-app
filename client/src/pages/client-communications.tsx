@@ -360,7 +360,7 @@ const ClientCommunications: React.FC = () => {
 
   // Main component return
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Client Header - Only show for client-specific view */}
       {!isGlobalView && (
         <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
@@ -369,9 +369,9 @@ const ClientCommunications: React.FC = () => {
               <div className="flex items-center gap-4">
                 <button 
                   onClick={() => window.location.hash = '/clients'}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-muted rounded-lg transition-colors"
                 >
-                  <ArrowLeft className="h-5 w-5 text-gray-600" />
+                  <ArrowLeft className="h-5 w-5 text-muted-foreground" />
                 </button>
                 
                 <div className="flex items-center gap-3">
@@ -420,7 +420,7 @@ const ClientCommunications: React.FC = () => {
                       )}
                     </div>
                   ) : (
-                    <div className="text-gray-500">Client not found</div>
+                    <div className="text-muted-foreground">Client not found</div>
                   )}
                 </div>
               </div>
@@ -432,7 +432,7 @@ const ClientCommunications: React.FC = () => {
       {/* Page Title Band with Navigation */}
       <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
-          <h2 className="text-2xl font-bold text-gray-900">Notes</h2>
+          <h2 className="text-2xl font-bold text-foreground">Notes</h2>
           {!isGlobalView && (
             <Button 
               size="sm" 
@@ -528,7 +528,7 @@ const ClientCommunications: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Filter className="h-5 w-5 text-gray-600" />
-                <span className="font-medium text-gray-900">Filters</span>
+                <span className="font-medium text-foreground">Filters</span>
                 {(searchQuery !== '' || selectedCustomer !== 'all' || filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
                   <div className="flex items-center space-x-2 ml-2">
                     {searchQuery !== '' && (
@@ -689,7 +689,7 @@ const ClientCommunications: React.FC = () => {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-1">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {communicationType} • {channel}
                         </div>
                         <div className="text-sm text-gray-600">
@@ -712,7 +712,7 @@ const ClientCommunications: React.FC = () => {
                     {/* Show subject/title in summary if available */}
                     {communication.subject && (
                       <div className="mt-2">
-                        <p className="text-sm font-medium text-gray-900 line-clamp-1">
+                        <p className="text-sm font-medium text-foreground line-clamp-1">
                           {communication.subject}
                         </p>
                       </div>
@@ -725,7 +725,7 @@ const ClientCommunications: React.FC = () => {
                       {/* Summary */}
                       {communication.summary && (
                         <div>
-                          <h4 className="text-sm font-medium text-gray-900 mb-2">Summary</h4>
+                          <h4 className="text-sm font-medium text-foreground mb-2">Summary</h4>
                           <p className="text-sm text-gray-700">
                             {communication.summary}
                           </p>
@@ -735,7 +735,7 @@ const ClientCommunications: React.FC = () => {
                       {/* Notes/Details */}
                       {communication.notes && (
                         <div>
-                          <h4 className="text-sm font-medium text-gray-900 mb-2">Notes</h4>
+                          <h4 className="text-sm font-medium text-foreground mb-2">Notes</h4>
                           <div className="bg-gray-50 p-3 rounded-lg">
                             <p className="text-sm text-gray-700">
                               {communication.notes}
@@ -747,7 +747,7 @@ const ClientCommunications: React.FC = () => {
                       {/* Tags */}
                       {communication.tags && communication.tags.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-gray-900 mb-2">Tags</h4>
+                          <h4 className="text-sm font-medium text-foreground mb-2">Tags</h4>
                           <div className="flex flex-wrap gap-1">
                             {communication.tags.map((tag, index) => (
                               <span key={index} className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -762,32 +762,32 @@ const ClientCommunications: React.FC = () => {
                       <div className="pt-2 border-t border-gray-100">
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="text-gray-500">Direction:</span>
-                            <span className="ml-2 text-gray-900">{communication.direction}</span>
+                            <span className="text-muted-foreground">Direction:</span>
+                            <span className="ml-2 text-foreground">{communication.direction}</span>
                           </div>
                           {communication.duration && (
                             <div>
-                              <span className="text-gray-500">Duration:</span>
-                              <span className="ml-2 text-gray-900">{communication.duration} min</span>
+                              <span className="text-muted-foreground">Duration:</span>
+                              <span className="ml-2 text-foreground">{communication.duration} min</span>
                             </div>
                           )}
                           {communication.sentiment && (
                             <div>
-                              <span className="text-gray-500">Sentiment:</span>
-                              <span className="ml-2 text-gray-900">{communication.sentiment}</span>
+                              <span className="text-muted-foreground">Sentiment:</span>
+                              <span className="ml-2 text-foreground">{communication.sentiment}</span>
                             </div>
                           )}
                           {communication.action_item_count > 0 && (
                             <div>
-                              <span className="text-gray-500">Action Items:</span>
-                              <span className="ml-2 text-gray-900">{communication.action_item_count}</span>
+                              <span className="text-muted-foreground">Action Items:</span>
+                              <span className="ml-2 text-foreground">{communication.action_item_count}</span>
                             </div>
                           )}
                         </div>
                         
                         {communication.next_steps && (
                           <div className="mt-3">
-                            <h4 className="text-sm font-medium text-gray-900 mb-1">Next Steps</h4>
+                            <h4 className="text-sm font-medium text-foreground mb-1">Next Steps</h4>
                             <p className="text-sm text-gray-700">
                               {communication.next_steps}
                             </p>
@@ -827,8 +827,8 @@ const ClientCommunications: React.FC = () => {
         ) : (
           <Card className="p-8 text-center">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No notes found</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-medium text-foreground mb-2">No notes found</h3>
+            <p className="text-muted-foreground">
               {clientId ? "No communication records found for this client." : "No communication records found."}
             </p>
           </Card>
