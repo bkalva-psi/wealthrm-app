@@ -93,11 +93,9 @@ export function StandardCard({
                 className="p-1 h-auto w-auto"
                 onClick={toggleExpanded}
               >
-                {isExpanded ? (
-                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                )}
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ease-in-out ${
+                  isExpanded ? 'rotate-180' : 'rotate-0'
+                }`} />
               </Button>
             )}
           </div>
@@ -113,14 +111,20 @@ export function StandardCard({
           {summary}
         </div>
 
-        {/* Detailed Section - Expandable */}
-        {details && isExpanded && (
-          <div className="border-t border-border pt-4 mb-4">
-            <div className="space-y-3">
-              {details}
+        {/* Detailed Section - Expandable with Animation */}
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            details && isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          {details && (
+            <div className="border-t border-border pt-4 mb-4">
+              <div className="space-y-3">
+                {details}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Actions Section */}
         {actions && (
