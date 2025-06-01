@@ -242,18 +242,18 @@ export default function TasksUpdated() {
   
   return (
     <div className="w-full overflow-x-hidden">
-      <div className="flex items-center justify-between mb-6 gap-4">
+      <div className="flex items-center justify-between mb-6 gap-2 sm:gap-4">
         <div className="flex-shrink-0">
-          <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-800">Tasks</h1>
         </div>
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="relative flex-1 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 max-w-xs sm:max-w-none sm:flex-initial">
+          <div className="relative flex-1 sm:flex-initial sm:w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="Search tasks..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full min-w-[200px] max-w-[300px]"
+              className="pl-10 w-full text-sm"
             />
           </div>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
