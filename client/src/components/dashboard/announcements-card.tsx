@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
@@ -77,33 +77,35 @@ export function AnnouncementsCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Megaphone className="h-4 w-4 text-slate-500" />
-            <h2 className="text-sm font-medium text-slate-700">Announcements</h2>
-          </div>
-          {hasMore && (
-            isExpanded ? 
-              <ChevronDown className="h-4 w-4 text-slate-400" /> :
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-          )}
-        </div>
-      </div>
-      
-      <div className="divide-y divide-slate-200">
-        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <div className="px-4 py-3">
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
-                <div className="flex items-center gap-2 w-full">
-                  <Megaphone className="h-4 w-4 text-blue-600" />
-                  <span className="text-xs font-medium text-slate-700 flex-1 text-left">
-                    Product Updates ({announcements.length})
-                  </span>
+      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+        <CardHeader className="px-4 py-3 border-b border-slate-200 bg-white">
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full p-0 h-auto justify-between hover:bg-transparent">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-white/60">
+                  <Megaphone size={18} className="text-slate-500" />
                 </div>
-              </Button>
-            </CollapsibleTrigger>
+                <h2 className="text-sm font-medium text-slate-700">Announcements</h2>
+              </div>
+              {hasMore && (
+                isExpanded ? 
+                  <ChevronDown size={20} className="text-slate-400" /> :
+                  <ChevronRight size={20} className="text-slate-400" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+        </CardHeader>
+        
+        <CardContent className="space-y-3 pt-0">
+          <div className="px-4 py-3">
+            <div className="flex items-center gap-2 w-full">
+              <div className="p-1.5 rounded-lg bg-white/60">
+                <Megaphone size={18} className="text-blue-600" />
+              </div>
+              <span className="text-xs font-medium text-slate-700 flex-1 text-left">
+                Product Updates ({announcements.length})
+              </span>
+            </div>
             
             {isLoading ? (
               <div className="space-y-2 mt-3">
@@ -124,7 +126,7 @@ export function AnnouncementsCard() {
                         onClick={() => toggleItemExpansion(announcementKey)}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <IconComponent size={18} className="text-muted-foreground" />
                           <span className="truncate">{announcement.title}</span>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
@@ -159,7 +161,8 @@ export function AnnouncementsCard() {
             )}
           </div>
           
-          <CollapsibleContent>
+          
+          <CollapsibleContent className="mt-3">
             {announcements.length > 2 && (
               <div className="px-4 py-3 space-y-2">
                 {announcements.slice(2).map((announcement: any) => {
@@ -173,7 +176,7 @@ export function AnnouncementsCard() {
                         onClick={() => toggleItemExpansion(announcementKey)}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <IconComponent className="h-4 w-4 text-muted-foreground" />
+                          <IconComponent size={18} className="text-muted-foreground" />
                           <span className="truncate">{announcement.title}</span>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
@@ -205,8 +208,8 @@ export function AnnouncementsCard() {
               </div>
             )}
           </CollapsibleContent>
-        </Collapsible>
-      </div>
+        </CardContent>
+      </Collapsible>
     </Card>
   );
 }
