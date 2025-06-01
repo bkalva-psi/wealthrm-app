@@ -982,13 +982,13 @@ export default function ClientPortfolioPage() {
           defaultOpen={true}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="overflow-hidden border-0 shadow-md">
-              <CardHeader className="pb-3 bg-gradient-to-r from-amber-500 to-amber-600">
+            <Card className="overflow-hidden border border-border shadow-md">
+              <CardHeader className="pb-3 bg-amber-500 dark:bg-amber-600/90 text-white transition-colors">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
                   <AlertCircle className="h-5 w-5 mr-2 text-white" />
                   Portfolio Alerts
                 </CardTitle>
-                <CardDescription className="text-amber-100">Important notices about your investments</CardDescription>
+                <CardDescription className="text-amber-100 dark:text-amber-200">Important notices about your investments</CardDescription>
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-4">
@@ -1025,13 +1025,13 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
             
-            <Card className="overflow-hidden border-0 shadow-md">
-              <CardHeader className="pb-3 bg-gradient-to-r from-indigo-500 to-indigo-600">
+            <Card className="overflow-hidden border border-border shadow-md">
+              <CardHeader className="pb-3 bg-indigo-500 dark:bg-indigo-600/90 text-white transition-colors">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
                   <Lightbulb className="h-5 w-5 mr-2 text-white" />
                   Investment Opportunities
                 </CardTitle>
-                <CardDescription className="text-indigo-100">Personalized recommendations</CardDescription>
+                <CardDescription className="text-indigo-100 dark:text-indigo-200">Personalized recommendations</CardDescription>
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-4">
