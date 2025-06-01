@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { NavigationProvider } from "@/context/navigation-context";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -389,14 +390,16 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AccessibilityProvider>
-          <NavigationProvider>
-            <Toaster />
-            {user ? <AuthenticatedApp /> : <LoginPage />}
-          </NavigationProvider>
-        </AccessibilityProvider>
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="light">
+        <TooltipProvider>
+          <AccessibilityProvider>
+            <NavigationProvider>
+              <Toaster />
+              {user ? <AuthenticatedApp /> : <LoginPage />}
+            </NavigationProvider>
+          </AccessibilityProvider>
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
