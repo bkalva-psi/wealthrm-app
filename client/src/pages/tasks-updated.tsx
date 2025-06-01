@@ -241,26 +241,15 @@ export default function TasksUpdated() {
   };
   
   return (
-    <div className="w-full overflow-x-hidden">
-      <div className="flex items-center justify-between mb-6 gap-2 sm:gap-4">
-        <div className="flex-shrink-0">
-          <h1 className="text-xl sm:text-2xl font-semibold text-slate-800">Tasks</h1>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 max-w-xs sm:max-w-none sm:flex-initial">
-          <div className="relative flex-1 sm:flex-initial sm:w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full text-sm"
-            />
-          </div>
+    <div className="w-full max-w-full overflow-x-hidden">
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
             <DialogTrigger asChild>
-            <Button size="icon" className="rounded-full">
-              <Plus className="h-4 w-4" />
-            </Button>
+              <Button size="icon" className="rounded-full flex-shrink-0">
+                <Plus className="h-4 w-4" />
+              </Button>
             </DialogTrigger>
             <DialogContent>
             <DialogHeader>
@@ -311,31 +300,17 @@ export default function TasksUpdated() {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
-      
-      {/* Filter buttons below header */}
-      <div className="flex items-center gap-2 mb-6">
-        <Button
-          variant={statusFilter === 'pending' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setStatusFilter('pending')}
-        >
-          Pending
-        </Button>
-        <Button
-          variant={statusFilter === 'completed' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setStatusFilter('completed')}
-        >
-          Completed
-        </Button>
-        <Button
-          variant={statusFilter === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setStatusFilter('all')}
-        >
-          All Tasks
-        </Button>
+        
+        {/* Search input moved below title */}
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 w-full"
+          />
+        </div>
       </div>
       
       <div className="space-y-6">
