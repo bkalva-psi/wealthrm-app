@@ -322,7 +322,7 @@ export default function TasksUpdated() {
       
       <div className="space-y-6">
         {/* Tasks Card */}
-        <Card>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
           <CardHeader className="sticky top-0 bg-card z-10 border-b">
             <div className="flex items-center justify-between cursor-pointer" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -477,7 +477,7 @@ export default function TasksUpdated() {
         </Card>
 
         {/* Portfolio Alerts Card */}
-        <Card>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
           <CardHeader className="cursor-pointer sticky top-16 bg-card z-10 border-b" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">

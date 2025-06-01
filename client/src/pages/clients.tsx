@@ -96,7 +96,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
   
   return (
     <Card 
-      className={`overflow-hidden hover:shadow-md transition-shadow mb-4 border-l-4 ${tierColors.border} !bg-card !border-border`}
+      className={`overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/10 transform interactive-hover mb-4 border-l-4 ${tierColors.border} !bg-card !border-border`}
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3 py-1">
