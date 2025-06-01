@@ -164,7 +164,7 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   const activeCount = prospects.filter(p => !['won', 'lost'].includes(p.stage)).length;
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 !bg-card !border-border">
       <div className="p-4">
         <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Sales Pipeline Funnel</h3>
         
@@ -226,7 +226,7 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
   const stageColor = getStageColor(stage);
 
   return (
-    <Card className={`${isMobile ? 'mb-4 w-full' : 'w-72 shrink-0'}`}>
+    <Card className={`${isMobile ? 'mb-4 w-full' : 'w-72 shrink-0'} !bg-card !border-border`}>
       {isMobile ? (
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
           <CollapsibleTrigger asChild>
