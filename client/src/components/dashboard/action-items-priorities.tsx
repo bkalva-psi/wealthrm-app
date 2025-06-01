@@ -344,13 +344,13 @@ export function ActionItemsPriorities() {
                                           <span className="font-medium text-foreground capitalize">{item.severity || 'Medium'}</span>
                                         </div>
                                         <div className="flex justify-between text-xs">
-                                          <span className="text-slate-600">Status:</span>
-                                          <span className="font-medium text-slate-800 capitalize">{item.status}</span>
+                                          <span className="text-muted-foreground">Status:</span>
+                                          <span className="font-medium text-foreground capitalize">{item.status}</span>
                                         </div>
                                         {item.description && (
                                           <div className="text-xs">
-                                            <span className="text-slate-600">Issue:</span>
-                                            <p className="font-medium text-slate-800 mt-1">{item.description}</p>
+                                            <span className="text-muted-foreground">Issue:</span>
+                                            <p className="font-medium text-foreground mt-1">{item.description}</p>
                                           </div>
                                         )}
                                       </div>
