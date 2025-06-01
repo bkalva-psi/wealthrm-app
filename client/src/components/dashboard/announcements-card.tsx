@@ -188,16 +188,16 @@ export function AnnouncementsCard() {
                                 const isItemExpanded = expandedItems.has(itemKey);
                                 
                                 return (
-                                  <div key={index} className="bg-white rounded border border-slate-100 overflow-hidden">
+                                  <div key={index} className="bg-card rounded border border-border overflow-hidden">
                                     <Button
                                       variant="ghost"
-                                      className="w-full p-2 h-auto justify-start hover:bg-slate-50"
+                                      className="w-full p-2 h-auto justify-start hover:bg-muted/50"
                                       onClick={() => toggleItem(itemKey)}
                                     >
                                       <div className="flex items-center gap-2 w-full">
                                         <div className="flex-1 text-left">
                                           <div className="font-medium text-sm">{item.title}</div>
-                                          <div className="text-xs text-slate-600">
+                                          <div className="text-xs text-muted-foreground">
                                             Priority: {item.priority} • {item.author}
                                           </div>
                                         </div>
