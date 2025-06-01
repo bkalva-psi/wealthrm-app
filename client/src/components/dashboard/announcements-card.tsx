@@ -12,7 +12,8 @@ import {
   AlertCircle,
   Info,
   Star,
-  Calendar
+  Calendar,
+  Bell
 } from "lucide-react";
 
 interface Announcement {
@@ -122,7 +123,7 @@ export function AnnouncementsCard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10 transition-all duration-300 hover:bg-primary/20 hover:scale-110">
-                  <Megaphone size={20} className="text-primary transition-all duration-300" />
+                  <Bell size={20} className="text-primary transition-all duration-300" />
                 </div>
                 <CardTitle className="text-lg transition-colors duration-300">Updates</CardTitle>
               </div>
