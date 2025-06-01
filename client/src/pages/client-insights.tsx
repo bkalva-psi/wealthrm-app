@@ -201,18 +201,18 @@ export default function ClientInsights() {
         </div>
       </div>
 
-      {/* Page Header with Navigation */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-1 py-3">
-        <h2 className="text-2xl font-bold text-foreground mb-3 ml-3">Insights</h2>
+      {/* Enhanced Page Header with Navigation */}
+      <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border/50 px-1 py-3 shadow-sm">
+        <h2 className="text-2xl font-bold text-foreground mb-3 ml-3 tracking-tight">Insights</h2>
         
-        {/* Navigation Icons */}
-        <div className="grid grid-cols-8 gap-3 ml-3">
+        {/* Enhanced Navigation Icons */}
+        <div className="grid grid-cols-8 gap-3 ml-3 animate-in slide-in-from-bottom-4 duration-500">
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-xl hover:bg-muted/80 transition-all duration-200 h-12 w-full hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary/50 group"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
-            <User className="h-6 w-6 text-muted-foreground" />
+            <User className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
           </button>
           
           <button 
