@@ -271,23 +271,22 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
       ) : (
         <>
           <div 
-            className="flex items-center justify-between p-3 border-b border-slate-200"
-            style={{ backgroundColor: `${stageColor}20` }}
+            className="flex items-center justify-between p-3 border-b border-border"
+            style={{ backgroundColor: `${stageColor.bg}` }}
           >
             <div className="flex items-center">
               <div 
-                className="w-3 h-3 rounded-full mr-2"
-                style={{ backgroundColor: stageColor }}
+                className={`w-3 h-3 rounded-full mr-2 ${stageColor.bg}`}
               ></div>
-              <h3 className="font-semibold text-slate-700">{title}</h3>
+              <h3 className={`font-semibold ${stageColor.text}`}>{title}</h3>
             </div>
-            <span className="text-xs font-medium bg-white rounded-full px-2 py-0.5 text-slate-700">
+            <span className="text-xs font-medium bg-background rounded-full px-2 py-0.5 text-foreground">
               {prospects.length}
             </span>
           </div>
           <CardContent className="p-3 h-[calc(100vh-240px)] overflow-auto">
             {prospects.length === 0 ? (
-              <div className="text-center py-4 text-sm text-slate-500">
+              <div className="text-center py-4 text-sm text-muted-foreground">
                 No prospects in this stage
               </div>
             ) : (
@@ -497,7 +496,7 @@ export default function Prospects() {
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Prospects</h1>
         <div className="flex justify-center items-center h-64">
-          <p className="text-slate-500">Loading prospects...</p>
+          <p className="text-muted-foreground">Loading prospects...</p>
         </div>
       </div>
     );
@@ -522,7 +521,7 @@ export default function Prospects() {
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input 
               placeholder="Search prospects..." 
               className="pl-10" 
@@ -575,7 +574,7 @@ export default function Prospects() {
                         }}
                       />
                     </div>
-                    <div className="flex justify-between mt-2 text-xs text-slate-500">
+                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                       <span>{formatCurrency(filterOptions.minPotentialAum)}</span>
                       <span>{formatCurrency(filterOptions.maxPotentialAum)}</span>
                     </div>
@@ -598,7 +597,7 @@ export default function Prospects() {
                         }}
                       />
                     </div>
-                    <div className="flex justify-between mt-2 text-xs text-slate-500">
+                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                       <span>{filterOptions.minProbabilityScore}%</span>
                       <span>{filterOptions.maxProbabilityScore}%</span>
                     </div>
@@ -665,8 +664,8 @@ export default function Prospects() {
       </div>
       
       {filteredProspects.length === 0 ? (
-        <div className="bg-white p-6 rounded-md shadow-sm border border-slate-200 text-center">
-          <p className="text-slate-500 mb-4">No prospects match your search criteria</p>
+        <div className="bg-card p-6 rounded-md shadow-sm border border-border text-center">
+          <p className="text-muted-foreground mb-4">No prospects match your search criteria</p>
           <Button variant="outline" onClick={resetFilters}>
             Reset Filters
           </Button>
