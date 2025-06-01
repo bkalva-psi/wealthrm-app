@@ -68,15 +68,9 @@ export default function ClientInsights() {
     
     // Get client ID from URL
     const hash = window.location.hash;
-    console.log('Current hash:', hash);
     const match = hash.match(/\/clients\/(\d+)\/insights/) || hash.match(/\/client-insights\/(\d+)/);
-    console.log('URL match result:', match);
     if (match && match[1]) {
-      const id = Number(match[1]);
-      console.log('Setting client ID to:', id);
-      setClientId(id);
-    } else {
-      console.log('No client ID found in URL');
+      setClientId(Number(match[1]));
     }
   }, []);
   
@@ -270,10 +264,10 @@ export default function ClientInsights() {
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-primary/10 border border-primary/20 h-12 w-full"
             title="Client Insights"
           >
-            <Lightbulb className="h-6 w-6 text-blue-600" />
+            <Lightbulb className="h-6 w-6 text-primary" />
           </button>
         </div>
       </div>
