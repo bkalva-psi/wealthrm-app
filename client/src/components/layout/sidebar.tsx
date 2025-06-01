@@ -112,22 +112,22 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
   };
   
   const sidebarContent = (
-    <div className={cn("flex flex-col w-full md:w-64 border-r border-slate-200 bg-white h-full")}>
+    <div className={cn("flex flex-col w-full md:w-64 border-r border-unified bg-background text-foreground h-full transition-colors duration-300")}>
       {/* Only show logo in the sidebar when it's not mobile view, as mobile view already has logo in the Sheet header */}
       {!mobile && (
-        <div className="flex items-center justify-center h-16 bg-white border-b border-slate-200">
+        <div className="flex items-center justify-center h-16 bg-background border-b border-unified transition-colors duration-300">
           <div className="flex items-center space-x-2">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto" />
             <div className="flex flex-col">
-              <h1 className="text-ujjivan-primary text-lg font-bold leading-tight">Ujjivan SFB</h1>
-              <span className="text-ujjivan-secondary text-sm font-medium leading-tight">Wealth RM</span>
+              <h1 className="brand-accent text-lg font-bold leading-tight">Ujjivan SFB</h1>
+              <span className="brand-accent-subtle text-sm font-medium leading-tight">Wealth RM</span>
             </div>
           </div>
         </div>
       )}
       
       {/* Navigation Links */}
-      <nav className="flex-1 px-2 py-4 bg-white space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 py-4 bg-background space-y-1 overflow-y-auto transition-colors duration-300">
         {navigationItems.map((item) => {
           const isActive = currentPath === item.href;
           const hasNotification = getNotificationStatus(item.href);
@@ -138,18 +138,18 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
               href={`#${item.href}`}
               onClick={handleNavigation(item.href)}
               className={cn(
-                "group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md relative",
+                "group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md relative transition-all duration-300 focus-enhanced",
                 isActive
-                  ? "bg-ujjivan-primary text-white font-semibold"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "brand-accent-bg text-white font-semibold shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground interactive-hover"
               )}
             >
               <div className="flex items-center">
                 <div className="relative mr-3">
                   <item.icon
                     className={cn(
-                      "h-5 w-5",
-                      isActive ? "text-white" : "text-slate-400 group-hover:text-slate-500"
+                      "h-5 w-5 transition-colors duration-300",
+                      isActive ? "text-white" : "text-muted-foreground group-hover:text-foreground"
                     )}
                   />
                   {hasNotification && (

@@ -319,6 +319,26 @@
 
 /* Chart Enhancement Styles */
 .chart-tooltip {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  font-size: 0.875rem;
+  min-width: 120px;
+  z-index: 1000;
+}
+
+.chart-tooltip p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.chart-tooltip p:not(:last-child) {
+  margin-bottom: 4px;
+}
+.chart-tooltip {
   background: hsl(var(--popover));
   border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;
