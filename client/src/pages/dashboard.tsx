@@ -32,7 +32,7 @@ export default function Dashboard() {
                 Welcome back, {user?.fullName.split(' ')[0]}
               </h1>
               <p className="text-slate-600 dark:text-slate-400 text-lg">
-                {format(new Date(), "EEEE, MMMM d, yyyy")} • Here's what's happening with your clients today
+                {format(new Date(), "EEEE, MMMM d, yyyy")}
               </p>
             </div>
             <div className="hidden md:flex items-center gap-4">

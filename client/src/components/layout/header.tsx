@@ -75,6 +75,15 @@ export function Header({
               <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM Pro</span>
             </div>
           </div>
+          
+          {/* Ujjivan Logo (visible on desktop) */}
+          <div className="hidden md:flex items-center">
+            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+            <div className="ml-2 flex flex-col">
+              <h1 className="text-ujjivan-primary text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
+              <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM Pro</span>
+            </div>
+          </div>
         </div>
         
         {/* Search Bar */}
