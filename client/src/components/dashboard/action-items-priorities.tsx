@@ -2,6 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight, Calendar, CheckSquare, Users, AlertCircle, AlertTriangle } from "lucide-react";
@@ -11,6 +12,7 @@ export function ActionItemsPriorities() {
   const today = new Date();
   const formattedDate = format(today, "EEEE, MMMM d");
   const [isOpen, setIsOpen] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   
   // Fetch all data types for comprehensive action items
   const { data: appointments, isLoading: appointmentsLoading } = useQuery({
@@ -107,51 +109,66 @@ export function ActionItemsPriorities() {
 
   const totalActionItems = Object.values(actionCategories).reduce((sum, category) => sum + category.count, 0);
 
+  const toggleCategory = (categoryKey: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryKey)) {
+      newExpanded.delete(categoryKey);
+    } else {
+      newExpanded.add(categoryKey);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="overflow-hidden">
+      <Card>
         <CollapsibleTrigger asChild>
-          <CardHeader className="p-3 hover:bg-slate-50 cursor-pointer transition-colors">
+          <CardHeader className="cursor-pointer hover:bg-gray-50">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                Action Items & Priorities
-                <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                  {totalActionItems}
-                </span>
-              </CardTitle>
-              <span className="text-xs text-slate-500">{formattedDate}</span>
+              <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
+              {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </div>
           </CardHeader>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <CardContent className="p-3 space-y-3">
+          <CardContent className="space-y-3 pt-0">
             {Object.entries(actionCategories).map(([key, category]) => {
-              const Icon = category.icon;
+              const isExpanded = expandedCategories.has(key);
+              const IconComponent = category.icon;
+              
               return (
-                <Collapsible key={key}>
-                  <div className={cn("border rounded-lg", category.bgColor)}>
+                <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleCategory(key)}>
+                  <div className={`rounded-lg border p-3 ${category.bgColor}`}>
                     <CollapsibleTrigger asChild>
-                      <div className="p-3 hover:bg-white/50 cursor-pointer transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Icon className={cn("h-4 w-4", category.color)} />
-                            <span className="text-sm font-medium">{category.title}</span>
-                            {category.count > 0 && (
-                              <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium", category.color, "bg-white")}>
-                                {category.count}
-                              </span>
-                            )}
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between p-0 h-auto hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-1.5 rounded-lg bg-white/60 ${category.color}`}>
+                            <IconComponent size={18} />
                           </div>
-                          <ChevronRight className="h-4 w-4 text-slate-400" />
+                          <div className="text-left">
+                            <h3 className="font-semibold text-sm">{category.title}</h3>
+                            <p className={`text-lg font-bold ${category.color}`}>
+                              {category.count}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-slate-600 mt-1">{category.description}</p>
-                      </div>
+                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                      </Button>
                     </CollapsibleTrigger>
                     
-                    <CollapsibleContent>
-                      <div className="px-3 pb-3 space-y-2">
+                    <CollapsibleContent className="mt-3">
+                      <div className="text-sm text-muted-foreground">
+                        {key === 'appointments' && 'Today\'s scheduled client meetings and appointments requiring your attention.'}
+                        {key === 'tasks' && 'Pending tasks and follow-ups that need completion today.'}
+                        {key === 'closures' && 'Deal closures and prospect conversions expected this week.'}
+                        {key === 'complaints' && 'Active client complaints requiring immediate resolution.'}
+                        {key === 'alerts' && 'Portfolio alerts and market notifications affecting your clients.'}
+                      </div>
+                      <div className="mt-3 px-3 pb-3 space-y-2">
                         {category.items.length === 0 ? (
                           <p className="text-xs text-slate-500 italic">No items at this time</p>
                         ) : (
