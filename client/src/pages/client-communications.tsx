@@ -67,14 +67,14 @@ const getTierColor = (tier: string) => {
       };
     case 'silver':
       return { 
-        bg: 'bg-gray-100 dark:bg-gray-800', 
+        bg: 'bg-muted dark:bg-gray-800', 
         text: 'text-gray-800 dark:text-gray-300',
         border: 'border-gray-300 dark:border-gray-600'
       };
     default:
       return { 
-        bg: 'bg-blue-100 dark:bg-blue-900/30', 
-        text: 'text-blue-800 dark:text-blue-400',
+        bg: 'bg-primary/10 dark:bg-blue-900/30', 
+        text: 'text-primary dark:text-blue-400',
         border: 'border-blue-300 dark:border-blue-700'
       };
   }
@@ -397,7 +397,7 @@ const ClientCommunications: React.FC = () => {
                           <Phone className="h-4 w-4 text-muted-foreground" />
                           <a 
                             href={`tel:${client.phone}`}
-                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                            className="text-sm text-blue-600 hover:text-primary hover:underline transition-colors"
                             title="Call client"
                           >
                             {client.phone}
@@ -411,7 +411,7 @@ const ClientCommunications: React.FC = () => {
                           <Mail className="h-4 w-4 text-muted-foreground" />
                           <a 
                             href={`mailto:${client.email}`}
-                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                            className="text-sm text-blue-600 hover:text-primary hover:underline transition-colors"
                             title="Send email to client"
                           >
                             {client.email}
@@ -447,35 +447,35 @@ const ClientCommunications: React.FC = () => {
         {!isGlobalView && clientId && (
           <div className="grid grid-cols-7 gap-1 px-1">
             <button 
-              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
               onClick={() => window.location.hash = `/clients/${clientId}/personal`}
               title="Personal Profile"
             >
-              <User className="h-6 w-6 text-gray-600" />
+              <User className="h-6 w-6 text-muted-foreground" />
             </button>
             
             <button 
-              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
               onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
               title="Portfolio"
             >
-              <PieChart className="h-6 w-6 text-gray-600" />
+              <PieChart className="h-6 w-6 text-muted-foreground" />
             </button>
             
             <button 
-              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
               onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
               title="Transactions"
             >
-              <Receipt className="h-6 w-6 text-gray-600" />
+              <Receipt className="h-6 w-6 text-muted-foreground" />
             </button>
             
             <button 
-              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
               onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
               title="Appointments"
             >
-              <Calendar className="h-6 w-6 text-gray-600" />
+              <Calendar className="h-6 w-6 text-muted-foreground" />
             </button>
             
             <button 
@@ -486,19 +486,19 @@ const ClientCommunications: React.FC = () => {
             </button>
             
             <button 
-              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
               onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
               title="Portfolio Report"
             >
-              <FileBarChart className="h-6 w-6 text-gray-600" />
+              <FileBarChart className="h-6 w-6 text-muted-foreground" />
             </button>
             
             <button 
-              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+              className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
               onClick={() => window.location.hash = `/clients/${clientId}/insights`}
               title="Client Insights"
             >
-              <Lightbulb className="h-6 w-6 text-gray-600" />
+              <Lightbulb className="h-6 w-6 text-muted-foreground" />
             </button>
           </div>
         )}
@@ -509,7 +509,7 @@ const ClientCommunications: React.FC = () => {
       <div className="p-4 space-y-4">
         {/* Search Box - Always visible */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search in notes, subject, or customer name..."
@@ -522,12 +522,12 @@ const ClientCommunications: React.FC = () => {
         {/* Filter Controls - Collapsible */}
         <Card className="overflow-hidden">
           <div 
-            className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+            className="p-4 bg-muted border-b cursor-pointer hover:bg-muted transition-colors"
             onClick={() => setFiltersExpanded(!filtersExpanded)}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Filter className="h-5 w-5 text-gray-600" />
+                <Filter className="h-5 w-5 text-muted-foreground" />
                 <span className="font-medium text-foreground">Filters</span>
                 {(searchQuery !== '' || selectedCustomer !== 'all' || filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
                   <div className="flex items-center space-x-2 ml-2">
@@ -542,7 +542,7 @@ const ClientCommunications: React.FC = () => {
                       </span>
                     )}
                     {filters.noteType !== 'all' && (
-                      <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                      <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">
                         {filters.noteType.replace('_', ' ').toUpperCase()}
                       </span>
                     )}
@@ -564,7 +564,7 @@ const ClientCommunications: React.FC = () => {
                 )}
               </div>
               <ChevronDown 
-                className={`h-5 w-5 text-gray-400 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`}
+                className={`h-5 w-5 text-muted-foreground transition-transform ${filtersExpanded ? 'rotate-180' : ''}`}
               />
             </div>
           </div>
@@ -574,7 +574,7 @@ const ClientCommunications: React.FC = () => {
               {/* Customer Filter - Only show for global view */}
               {isGlobalView && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Customer</label>
+                  <label className="text-sm font-medium text-foreground mb-2 block">Customer</label>
                   <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select customer" />
@@ -592,7 +592,7 @@ const ClientCommunications: React.FC = () => {
               )}
 
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Note Type</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Note Type</label>
                 <Select value={filters.noteType} onValueChange={(value) => setFilters(prev => ({...prev, noteType: value}))}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select note type" />
@@ -614,7 +614,7 @@ const ClientCommunications: React.FC = () => {
               </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Channel</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Channel</label>
                 <Select value={filters.channel} onValueChange={(value) => setFilters(prev => ({...prev, channel: value}))}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select channel" />
@@ -631,7 +631,7 @@ const ClientCommunications: React.FC = () => {
               </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Date Range</label>
                 <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({...prev, dateRange: value}))}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select date range" />
@@ -684,7 +684,7 @@ const ClientCommunications: React.FC = () => {
                 <Card key={communication.id} className="overflow-hidden">
                   {/* Summary Band - Always Visible */}
                   <div 
-                    className="p-4 bg-gray-50 border-b cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="p-4 bg-muted border-b cursor-pointer hover:bg-muted transition-colors"
                     onClick={() => toggleNoteExpansion(communication.id)}
                   >
                     <div className="flex items-start justify-between">
@@ -692,7 +692,7 @@ const ClientCommunications: React.FC = () => {
                         <div className="text-sm font-medium text-foreground">
                           {communicationType} • {channel}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-muted-foreground">
                           {date}
                         </div>
                         {/* Show customer name in global view */}
@@ -704,7 +704,7 @@ const ClientCommunications: React.FC = () => {
                       </div>
                       <div className="flex items-center">
                         <ChevronDown 
-                          className={`h-5 w-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                          className={`h-5 w-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                         />
                       </div>
                     </div>
@@ -726,7 +726,7 @@ const ClientCommunications: React.FC = () => {
                       {communication.summary && (
                         <div>
                           <h4 className="text-sm font-medium text-foreground mb-2">Summary</h4>
-                          <p className="text-sm text-gray-700">
+                          <p className="text-sm text-foreground">
                             {communication.summary}
                           </p>
                         </div>
@@ -736,8 +736,8 @@ const ClientCommunications: React.FC = () => {
                       {communication.notes && (
                         <div>
                           <h4 className="text-sm font-medium text-foreground mb-2">Notes</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg">
-                            <p className="text-sm text-gray-700">
+                          <div className="bg-muted p-3 rounded-lg">
+                            <p className="text-sm text-foreground">
                               {communication.notes}
                             </p>
                           </div>
@@ -750,7 +750,7 @@ const ClientCommunications: React.FC = () => {
                           <h4 className="text-sm font-medium text-foreground mb-2">Tags</h4>
                           <div className="flex flex-wrap gap-1">
                             {communication.tags.map((tag, index) => (
-                              <span key={index} className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                              <span key={index} className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                                 {tag}
                               </span>
                             ))}
@@ -788,7 +788,7 @@ const ClientCommunications: React.FC = () => {
                         {communication.next_steps && (
                           <div className="mt-3">
                             <h4 className="text-sm font-medium text-foreground mb-1">Next Steps</h4>
-                            <p className="text-sm text-gray-700">
+                            <p className="text-sm text-foreground">
                               {communication.next_steps}
                             </p>
                           </div>
@@ -826,7 +826,7 @@ const ClientCommunications: React.FC = () => {
           </div>
         ) : (
           <Card className="p-8 text-center">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium text-foreground mb-2">No notes found</h3>
             <p className="text-muted-foreground">
               {clientId ? "No communication records found for this client." : "No communication records found."}
