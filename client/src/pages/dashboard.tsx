@@ -33,7 +33,7 @@ export default function Dashboard() {
       <BusinessSnapshotStructured />
       
       {/* Action Items & Priorities */}
-      <div className="mt-6">
+      <div className="mt-4">
         <ActionItemsPriorities />
       </div>
       

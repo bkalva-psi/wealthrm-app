@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, Calendar, CheckSquare, Users, AlertCircle } from "lucide-react";
+import { ChevronDown, ChevronRight, Calendar, CheckSquare, Users, AlertCircle, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 
 interface Appointment {
@@ -38,6 +38,18 @@ interface Alert {
   clientName?: string;
 }
 
+interface Complaint {
+  id: number;
+  clientId: number;
+  clientName: string;
+  subject: string;
+  description: string;
+  severity: string;
+  status: string;
+  createdAt: string;
+  resolvedAt?: string;
+}
+
 export function ActionItemsPriorities() {
   const [isMainCardExpanded, setIsMainCardExpanded] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
@@ -62,7 +74,12 @@ export function ActionItemsPriorities() {
     queryKey: ['/api/portfolio-alerts']
   });
 
-  const isLoading = appointmentsLoading || tasksLoading || dealClosuresLoading || alertsLoading;
+  // Fetch customer complaints
+  const { data: complaints = [], isLoading: complaintsLoading } = useQuery({
+    queryKey: ['/api/complaints']
+  });
+
+  const isLoading = appointmentsLoading || tasksLoading || dealClosuresLoading || alertsLoading || complaintsLoading;
 
   const toggleSection = (sectionKey: string) => {
     const newExpanded = new Set(expandedSections);
