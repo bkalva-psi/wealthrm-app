@@ -1008,7 +1008,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   
                   <div className="p-4 bg-muted border-l-4 border-blue-500 rounded-r-lg shadow-sm">
-                    <h4 className="text-sm font-medium text-blue-800 flex items-center">
+                    <h4 className="text-sm font-medium text-foreground flex items-center">
                       <Clock className="h-4 w-4 mr-2 text-blue-500" />
                       <span className="font-semibold">Fixed Deposit Maturing</span>
                     </h4>
@@ -1026,7 +1026,7 @@ export default function ClientPortfolioPage() {
             </Card>
             
             <Card className="overflow-hidden border-0 shadow-md">
-              <CardHeader className="pb-3 bg-gradient-to-r from-indigo-500/90 to-indigo-600/90">
+              <CardHeader className="pb-3 bg-gradient-to-r from-indigo-500 to-indigo-600">
                 <CardTitle className="flex items-center text-lg text-white font-semibold">
                   <Lightbulb className="h-5 w-5 mr-2 text-white" />
                   Investment Opportunities
@@ -1035,39 +1035,39 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-4">
-                  <div className="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg shadow-sm">
-                    <h4 className="text-sm font-medium text-indigo-800 flex items-center">
+                  <div className="p-4 bg-muted border-l-4 border-indigo-500 rounded-r-lg shadow-sm">
+                    <h4 className="text-sm font-medium text-foreground flex items-center">
                       <Wallet className="h-4 w-4 mr-2 text-indigo-500" />
                       <span className="font-semibold">Increase Tax-Efficient Investments</span>
                     </h4>
-                    <p className="text-xs text-indigo-700 mt-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                       Based on your tax bracket, consider additional ELSS funds to optimize tax savings.
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">ELSS Funds</Badge>
-                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">Tax Planning</Badge>
+                      <Badge variant="outline">ELSS Funds</Badge>
+                      <Badge variant="outline">Tax Planning</Badge>
                     </div>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-card text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                      <Button size="sm" variant="outline" className="text-xs">
                         Explore Options
                       </Button>
                     </div>
                   </div>
                   
-                  <div className="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg shadow-sm">
-                    <h4 className="text-sm font-medium text-indigo-800 flex items-center">
+                  <div className="p-4 bg-muted border-l-4 border-indigo-500 rounded-r-lg shadow-sm">
+                    <h4 className="text-sm font-medium text-foreground flex items-center">
                       <Globe className="h-4 w-4 mr-2 text-indigo-500" />
                       <span className="font-semibold">International Diversification</span>
                     </h4>
-                    <p className="text-xs text-indigo-700 mt-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                       Add exposure to US markets through index funds to increase geographic diversification.
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">International Equity</Badge>
-                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">Diversification</Badge>
+                      <Badge variant="outline">International Equity</Badge>
+                      <Badge variant="outline">Diversification</Badge>
                     </div>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-card text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                      <Button size="sm" variant="outline" className="text-xs">
                         View Funds
                       </Button>
                     </div>
