@@ -128,7 +128,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
           )}
         </div>
-        <span className="text-xs mt-1">Tasks</span>
+        <span className="text-xs font-medium mt-1">Tasks</span>
       </button>
       
       <button 

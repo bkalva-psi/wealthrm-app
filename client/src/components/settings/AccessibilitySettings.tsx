@@ -16,7 +16,7 @@ const AccessibilitySettings: React.FC = () => {
   return (
     <Card className="animate-fade-in">
       <CardHeader>
-        <CardTitle className="text-xl">Accessibility Settings</CardTitle>
+        <CardTitle className="text-lg font-medium">Accessibility Settings</CardTitle>
         <CardDescription>Customize the application to meet your accessibility needs</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -26,7 +26,7 @@ const AccessibilitySettings: React.FC = () => {
               <Eye className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <Label htmlFor="high-contrast" className="text-base font-medium">
+              <Label htmlFor="high-contrast" className="text-sm font-medium">
                 High Contrast Mode
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -48,7 +48,7 @@ const AccessibilitySettings: React.FC = () => {
               <Speaker className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <Label htmlFor="screen-reader" className="text-base font-medium">
+              <Label htmlFor="screen-reader" className="text-sm font-medium">
                 Screen Reader Optimization
               </Label>
               <p className="text-sm text-muted-foreground">

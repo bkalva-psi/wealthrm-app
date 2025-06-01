@@ -437,7 +437,7 @@ export default function Settings() {
               <Separator />
               
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-foreground">Interface Options</h3>
+                <h3 className="text-lg font-medium text-foreground">Interface Options</h3>
                 <div className="flex items-center justify-between">
                   <Label htmlFor="compactView" className="text-sm">Compact View</Label>
                   <Switch 

@@ -453,18 +453,18 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     </CardHeader>
                     <CardContent className="pb-3 pt-0">
                       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm">
-                        <div className="flex items-center text-muted-foreground">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           <Clock className="h-4 w-4 mr-1" />
                           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                         </div>
                         {appointment.location && (
-                          <div className="flex items-center text-muted-foreground">
+                          <div className="flex items-center text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4 mr-1" />
                             {appointment.location}
                           </div>
                         )}
                         {appointment.assignedTo && (
-                          <div className="flex items-center text-muted-foreground">
+                          <div className="flex items-center text-sm text-muted-foreground">
                             <User className="h-4 w-4 mr-1" />
                             RM: {appointment.assignedTo}
                           </div>
