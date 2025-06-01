@@ -22,50 +22,72 @@ export default function Dashboard() {
   }, []);
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8">
-        {/* Optimized Page Header */}
-        <div className="mb-6 sm:mb-8 lg:mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
-            <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2 leading-tight">
-                Welcome back, {user?.fullName.split(' ')[0]}
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8 space-y-6 sm:space-y-8 lg:space-y-10">
+        {/* Enhanced Page Header with Better Typography */}
+        <div className="animate-in slide-in-from-top-4 duration-500">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+            <div className="flex-1 space-y-2">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight tracking-tight">
+                Welcome back, <span className="text-primary font-extrabold">{user?.fullName.split(' ')[0]}</span>
               </h1>
-              <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">
+              <p className="text-muted-foreground text-sm sm:text-base lg:text-lg font-medium leading-relaxed">
                 {format(new Date(), "EEEE, MMMM d, yyyy")}
               </p>
             </div>
             <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-center">
-              <ThemeSwitcher />
+              <div className="transition-transform duration-200 hover:scale-105">
+                <ThemeSwitcher />
+              </div>
             </div>
           </div>
         </div>
         
-        {/* Business Snapshot with Optimized Spacing */}
-        <div className="mb-6 sm:mb-8 lg:mb-12">
+        {/* Enhanced Business Snapshot with Animation */}
+        <div className="animate-in slide-in-from-bottom-4 duration-700 delay-100">
           <BusinessSnapshotStructured />
         </div>
         
-        {/* Optimized Responsive Grid Layout */}
+        {/* Enhanced Responsive Grid Layout with Better Spacing */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 xl:gap-10">
-          {/* Action Items Section - Optimized proportions */}
-          <div className="lg:col-span-5 xl:col-span-4 animate-stagger-1">
-            <ActionItemsPriorities />
+          {/* Action Items Section - Optimized proportions with enhanced animation */}
+          <div className="lg:col-span-5 xl:col-span-4 animate-in slide-in-from-left-4 duration-700 delay-300">
+            <div className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+              <ActionItemsPriorities />
+            </div>
           </div>
           
-          {/* Market Insights & Updates - Better proportions for content */}
+          {/* Market Insights & Updates - Better proportions with staggered animations */}
           <div className="lg:col-span-7 xl:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-            <div className="animate-stagger-2">
-              <TalkingPointsCard />
+            <div className="animate-in slide-in-from-right-4 duration-700 delay-400">
+              <div className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <TalkingPointsCard />
+              </div>
             </div>
-            <div className="animate-stagger-3">
-              <AnnouncementsCard />
+            <div className="animate-in slide-in-from-right-4 duration-700 delay-500">
+              <div className="transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <AnnouncementsCard />
+              </div>
             </div>
           </div>
         </div>
         
-        {/* Additional spacing for mobile scroll */}
-        <div className="pb-6 sm:pb-8 lg:pb-12"></div>
+        {/* Performance Metrics Section with enhanced spacing */}
+        <div className="animate-in slide-in-from-bottom-4 duration-800 delay-600">
+          <div className="transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
+            <PerformanceMetrics />
+          </div>
+        </div>
+        
+        {/* Additional Performance Card if needed */}
+        <div className="animate-in fade-in duration-800 delay-700">
+          <div className="transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
+            <PerformanceCard />
+          </div>
+        </div>
+        
+        {/* Additional spacing for mobile scroll with better padding */}
+        <div className="pb-8 sm:pb-12 lg:pb-16"></div>
       </div>
     </div>
   );

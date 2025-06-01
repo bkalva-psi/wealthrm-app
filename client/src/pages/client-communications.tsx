@@ -360,12 +360,12 @@ const ClientCommunications: React.FC = () => {
 
   // Main component return
   return (
-    <div className="min-h-screen bg-background">
-      {/* Client Header - Only show for client-specific view */}
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      {/* Enhanced Client Header - Only show for client-specific view */}
       {!isGlobalView && (
-        <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
+        <div className={`bg-card shadow-sm border-l-4 transition-all duration-300 hover:shadow-md ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+          <div className="px-6 py-4 animate-in slide-in-from-top-4 duration-500">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <button 
                   onClick={() => window.location.hash = '/clients'}

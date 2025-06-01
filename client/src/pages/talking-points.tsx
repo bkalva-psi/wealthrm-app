@@ -31,8 +31,15 @@ export default function TalkingPointsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading talking points...</div>
+      <div className="min-h-screen bg-background transition-colors duration-300">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center space-y-4">
+              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+              <div className="text-muted-foreground font-medium">Loading talking points...</div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -51,45 +58,53 @@ export default function TalkingPointsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4">
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      {/* Enhanced Sticky Header */}
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-6 py-4 backdrop-blur-sm bg-card/95 animate-in slide-in-from-top-4 duration-500">
         <div className="flex items-center space-x-3">
-          <Lightbulb className="h-6 w-6 text-ujjivan-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Insights</h1>
-          <Badge variant="secondary" className="ml-auto">
-            {activeTalkingPoints.length} Active
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Lightbulb className="h-6 w-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Market Insights</h1>
+          <Badge variant="secondary" className="ml-auto font-semibold">
+            {activeTalkingPoints.length} Active Points
           </Badge>
         </div>
         
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground mt-2 font-medium leading-relaxed">
           Market insights and conversation starters to enhance client discussions
         </p>
       </div>
 
-      {/* Main Content */}
-      <div className="p-6 space-y-6">
+      {/* Enhanced Main Content */}
+      <div className="p-6 space-y-6 animate-in fade-in duration-700 delay-200">
         {activeTalkingPoints.length > 0 ? (
-        <Card>
+        <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
           <CardContent className="p-0">
             {displayedPoints.map((point, index) => {
               const isExpanded = expandedItems.has(point.id);
               return (
                 <div
                   key={point.id}
-                  className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
-                    index !== displayedPoints.length - 1 ? 'border-b border-border' : ''
+                  className={`p-6 cursor-pointer hover:bg-muted/30 transition-all duration-300 hover:scale-[1.01] animate-in slide-in-from-left-4 duration-500 ${
+                    index !== displayedPoints.length - 1 ? 'border-b border-border/50' : ''
                   }`}
+                  style={{ animationDelay: `${index * 100}ms` }}
                   onClick={() => toggleExpanded(point.id)}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-foreground mb-1">
+                    <div className="flex-1 space-y-2">
+                      <h3 className="font-semibold text-foreground mb-2 text-lg leading-tight">
                         {point.title}
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="capitalize">{point.category.replace('_', ' ')}</span>
-                        <span>{format(new Date(point.created_at), 'MMM dd')}</span>
+                        <Badge variant="outline" className="capitalize font-medium">
+                          {point.category.replace('_', ' ')}
+                        </Badge>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span className="font-medium">{format(new Date(point.created_at), 'MMM dd, yyyy')}</span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
