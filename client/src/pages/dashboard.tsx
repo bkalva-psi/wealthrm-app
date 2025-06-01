@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
-import { ActionItemsPriorities } from "@/components/dashboard/action-items-priorities";
+import { ActionItemsPriorities } from "@/components/dashboard/action-items-priorities-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";

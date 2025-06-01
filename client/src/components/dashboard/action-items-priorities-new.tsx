@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, Calendar, CheckSquare, Users, AlertCircle, AlertTriangle } from "lucide-react";
-import { cn, formatTime } from "@/lib/utils";
+import { Calendar, Clock, TrendingUp, AlertTriangle, MessageSquare, ChevronDown, ChevronRight } from "lucide-react";
+import { format } from "date-fns";
 
 export function ActionItemsPriorities() {
   const today = new Date();
@@ -38,10 +36,14 @@ export function ActionItemsPriorities() {
   
   const isLoading = appointmentsLoading || tasksLoading || closuresLoading || alertsLoading || complaintsLoading;
   
+  const formatTime = (dateTime: string | Date) => {
+    return format(new Date(dateTime), "h:mm a");
+  };
+
   // Organize data into actionable categories
   const actionCategories = {
     appointments: {
-      title: 'Upcoming Meetings',
+      title: 'Today\'s Meetings',
       count: appointments?.length || 0,
       items: appointments || [],
       icon: Calendar,
@@ -50,63 +52,42 @@ export function ActionItemsPriorities() {
       description: 'Client meetings and calls scheduled for today'
     },
     tasks: {
-      title: 'Urgent Tasks',
+      title: 'Urgent Tasks', 
       count: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent').length || 0,
       items: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent') || [],
-      icon: CheckSquare,
-      color: 'text-amber-700',
-      bgColor: 'bg-amber-50 border-amber-200',
-      description: 'High-priority tasks and overdue items requiring immediate attention'
+      icon: Clock,
+      color: 'text-orange-700',
+      bgColor: 'bg-orange-50 border-orange-200',
+      description: 'High priority tasks requiring immediate attention'
     },
     closures: {
-      title: 'Expected Closures',
+      title: 'Expected Deal Closures',
       count: weekClosures?.length || 0,
       items: weekClosures || [],
-      icon: Users,
-      color: 'text-emerald-700',
-      bgColor: 'bg-emerald-50 border-emerald-200',
-      description: 'Deal closures and prospect conversions expected this week'
+      icon: TrendingUp,
+      color: 'text-green-700',
+      bgColor: 'bg-green-50 border-green-200',
+      description: 'Prospects likely to close this week'
     },
-    complaints: {
-      title: 'Customer Complaints',
-      count: urgentComplaints?.filter(complaint => complaint.severity === 'high' || complaint.severity === 'urgent').length || 0,
-      items: urgentComplaints?.filter(complaint => complaint.severity === 'high' || complaint.severity === 'urgent') || [],
+    alerts: {
+      title: 'Portfolio Alerts',
+      count: priorityAlerts?.filter(alert => alert.priority === 'high').length || 0,
+      items: priorityAlerts?.filter(alert => alert.priority === 'high') || [],
       icon: AlertTriangle,
       color: 'text-red-700',
       bgColor: 'bg-red-50 border-red-200',
-      description: 'Urgent customer complaints requiring immediate resolution'
+      description: 'Critical portfolio notifications'
     },
-    alerts: {
-      title: 'Priority Alerts',
-      count: priorityAlerts?.length || 0,
-      items: priorityAlerts || [],
-      icon: AlertCircle,
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-50 border-orange-200',
-      description: 'Portfolio alerts and client issues requiring immediate review'
+    complaints: {
+      title: 'Active Complaints',
+      count: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress').length || 0,
+      items: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress') || [],
+      icon: MessageSquare,
+      color: 'text-purple-700',
+      bgColor: 'bg-purple-50 border-purple-200',
+      description: 'Unresolved client issues requiring attention'
     }
   };
-
-  if (isLoading) {
-    return (
-      <Card className="overflow-hidden">
-        <CardHeader className="p-3">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        </CardHeader>
-        <CardContent className="p-3 space-y-3">
-          {Array(3).fill(0).map((_, index) => (
-            <div key={index} className="p-3 border rounded-lg">
-              <Skeleton className="h-4 w-3/4 mb-2" />
-              <Skeleton className="h-3 w-1/2" />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    );
-  }
 
   const totalActionItems = Object.values(actionCategories).reduce((sum, category) => sum + category.count, 0);
 
@@ -134,44 +115,45 @@ export function ActionItemsPriorities() {
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card>
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
-              {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+          <Button variant="ghost" className="w-full p-3 h-auto justify-start hover:bg-transparent">
+            <div className="flex items-center gap-3 w-full">
+              <div className="p-1.5 rounded-lg bg-white/60">
+                <Clock size={20} className="text-slate-700" />
+              </div>
+              <div className="flex-1 text-left">
+                <h2 className="text-sm font-medium text-slate-700">Action Items & Priorities</h2>
+                <p className="text-xs text-slate-500">{formattedDate} • {totalActionItems} items requiring attention</p>
+              </div>
+              <ChevronRight size={20} className={`text-slate-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
             </div>
-          </CardHeader>
+          </Button>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <CardContent className="space-y-3 pt-0">
+          <CardContent className="p-3 space-y-3 mt-4">
             {Object.entries(actionCategories).map(([key, category]) => {
               const isExpanded = expandedCategories.has(key);
-              const IconComponent = category.icon;
+              if (category.count === 0) return null;
               
               return (
                 <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleCategory(key)}>
-                  <div className={`rounded-lg border p-3 ${category.bgColor}`}>
+                  <div className="border border-slate-200 rounded-lg overflow-hidden">
                     <CollapsibleTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-between p-0 h-auto hover:bg-transparent"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`p-1.5 rounded-lg bg-white/60 ${category.color}`}>
-                            <IconComponent size={18} />
+                      <Button variant="ghost" className="w-full p-3 h-auto justify-start hover:bg-slate-50">
+                        <div className="flex items-center gap-3 w-full">
+                          <div className={`p-1.5 rounded-lg ${category.bgColor}`}>
+                            <category.icon size={14} className={category.color} />
                           </div>
-                          <div className="text-left">
-                            <h3 className="font-semibold text-sm">{category.title}</h3>
-                            <p className={`text-lg font-bold ${category.color}`}>
-                              {category.count}
-                            </p>
+                          <div className="flex-1 text-left">
+                            <h3 className="text-sm font-medium text-slate-700">{category.title}</h3>
+                            <p className="text-xs text-slate-500">{category.count} item{category.count !== 1 ? 's' : ''}</p>
                           </div>
+                          <ChevronRight size={14} className={`text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                         </div>
-                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </Button>
                     </CollapsibleTrigger>
                     
-                    <CollapsibleContent className="mt-3">
+                    <CollapsibleContent>
                       <div className="text-sm text-muted-foreground">
                         {key === 'appointments' && 'Today\'s scheduled client meetings and appointments requiring your attention.'}
                         {key === 'tasks' && 'Pending tasks and follow-ups that need completion today.'}
@@ -251,7 +233,6 @@ export function ActionItemsPriorities() {
                                 
                                 {isItemExpanded && (
                                   <div className="px-4 pb-3 space-y-2 bg-slate-25">
-                                    {/* Detailed information based on item type */}
                                     {key === 'appointments' && (
                                       <div className="space-y-1">
                                         <div className="flex justify-between text-xs">
@@ -378,7 +359,7 @@ export function ActionItemsPriorities() {
                                 )}
                               </div>
                             );
-                          })}
+                          })
                         )}
                       </div>
                     </CollapsibleContent>
