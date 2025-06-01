@@ -120,7 +120,7 @@ export function TalkingPointsCard() {
         
         <CollapsibleContent>
           <CardContent className="space-y-3 pt-0">
-            <div className="px-4 py-3">
+            <div className="px-3 sm:px-4 py-3 sm:py-4">
               <div className="flex items-center gap-3">
                 <div className="text-left">
                   <h3 className="font-semibold text-sm text-muted-foreground leading-tight">Market Insights</h3>

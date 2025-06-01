@@ -141,7 +141,7 @@ export function ActionItemsPriorities() {
               
               return (
                 <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleCategory(key)}>
-                  <div className={`rounded-lg border p-3 ${category.bgColor} transition-all duration-300 hover:shadow-md hover:scale-[1.02] transform`}>
+                  <div className={`rounded-lg border p-3 sm:p-4 ${category.bgColor} transition-all duration-300 hover:shadow-md hover:scale-[1.02] transform`}>
                     <CollapsibleTrigger asChild>
                       <Button
                         variant="ghost"
