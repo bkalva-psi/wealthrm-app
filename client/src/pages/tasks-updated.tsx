@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StandardCard, TaskCard } from "@/components/ui/standard-card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,10 +30,6 @@ interface Task {
   completed: boolean;
   clientId?: number;
   prospectId?: number;
-  priority?: string;
-  status?: string;
-  assignedTo?: string;
-  notes?: string;
 }
 
 // NEW UPDATED Tasks page with two-card layout
@@ -70,7 +65,7 @@ export default function TasksUpdated() {
   }, []);
   
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['/api/tasks', { completed: statusFilter === 'completed' ? true : statusFilter === 'pending' ? false : undefined }],
+    queryKey: ['/api/tasks'],
   });
 
   const { data: portfolioAlerts, isLoading: alertsLoading } = useQuery({
@@ -241,15 +236,38 @@ export default function TasksUpdated() {
   };
   
   return (
-    <div className="w-full overflow-x-hidden px-4 sm:px-6">
-      <div className="mb-4 max-w-none">
-        <div className="flex items-center justify-between mb-3">
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
           <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-64"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tasks</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="icon" className="rounded-full flex-shrink-0">
-                <Plus className="h-4 w-4" />
-              </Button>
+            <Button size="icon" className="rounded-full">
+              <Plus className="h-4 w-4" />
+            </Button>
             </DialogTrigger>
             <DialogContent>
             <DialogHeader>
@@ -299,17 +317,6 @@ export default function TasksUpdated() {
             </form>
             </DialogContent>
           </Dialog>
-        </div>
-        
-        {/* Search input moved below title */}
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 w-full text-sm"
-          />
         </div>
       </div>
       
@@ -392,29 +399,47 @@ export default function TasksUpdated() {
                     return currentFilteredTasks.length > 0 ? (
                       <>
                         {tasksToShow.map((task: Task, index: number) => {
+                          const isExpanded = expandedTasks.has(task.id);
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <TaskCard
-                              key={`task-${task.id}-${index}`}
-                              task={{
-                                ...task,
-                                status: task.completed ? 'completed' : 
-                                        dueStatus.text === 'Overdue' ? 'overdue' : 'pending'
-                              }}
-                              onComplete={(task) => handleTaskToggle(task, true)}
-                              onEdit={(task) => {
-                                setNewTask({
-                                  title: task.title,
-                                  description: task.description || '',
-                                  dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
-                                });
-                                setIsNewTaskDialogOpen(true);
-                              }}
-                              onView={(task) => {
-                                alert(`Task Details:\n\nTitle: ${task.title}\nDescription: ${task.description || 'No description'}\nDue Date: ${task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}\nStatus: ${task.status}\nClient: ${task.clientName || 'Not assigned'}`);
-                              }}
-                            />
+                            <div key={`task-${task.id}-${index}`} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                              <div 
+                                className="flex items-start space-x-3 p-3 cursor-pointer"
+                                onClick={() => toggleTaskExpansion(task.id)}
+                              >
+                                <Checkbox
+                                  id={`task-${task.id}`}
+                                  checked={task.completed}
+                                  onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
+                                  className="h-4 w-4 mt-1"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                <div className="flex-1">
+                                  <label
+                                    htmlFor={`task-${task.id}`}
+                                    className={`block text-sm font-medium ${
+                                      task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                                    }`}
+                                  >
+                                    {task.title}
+                                  </label>
+                                  <span className={`text-xs ${dueStatus.color} mt-1 block`}>
+                                    {task.completed ? "Completed" : dueStatus.text}
+                                  </span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                              </div>
+                              {isExpanded && task.description && (
+                                <div className="px-3 pb-3 pt-0 border-t">
+                                  <p className={`text-xs mt-2 ${
+                                    task.completed ? "text-slate-400" : "text-slate-600"
+                                  }`}>
+                                    {task.description}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           );
                         })}
                         
@@ -487,41 +512,42 @@ export default function TasksUpdated() {
                     
                     return alerts.length > 0 ? (
                       <>
-                        {alertsToShow.map((alert: any) => (
-                          <StandardCard
-                            key={alert.id}
-                            title={alert.title}
-                            subtitle={alert.client_name ? `Client: ${alert.client_name}` : undefined}
-                            status={{
-                              label: alert.severity,
-                              variant: alert.severity === 'high' ? 'destructive' : 
-                                      alert.severity === 'medium' ? 'default' : 'secondary'
-                            }}
-                            summary={
-                              <p className="text-sm text-muted-foreground line-clamp-2">
-                                {alert.message}
-                              </p>
-                            }
-                            details={
-                              alert.created_at && (
-                                <div className="text-sm">
-                                  <p className="text-muted-foreground mb-1">Created</p>
-                                  <p>{new Date(alert.created_at).toLocaleDateString()}</p>
+                        {alertsToShow.map((alert: any) => {
+                          const isExpanded = expandedAlerts.has(alert.id);
+                          return (
+                            <div key={alert.id} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                              <div 
+                                className="flex items-start space-x-3 p-3 cursor-pointer"
+                                onClick={() => toggleAlertExpansion(alert.id)}
+                              >
+                                <div className={`h-4 w-4 mt-1 rounded-full ${
+                                  alert.severity === 'high' ? 'bg-red-500' : 
+                                  alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
+                                }`} />
+                                <div className="flex-1">
+                                  <h4 className="text-sm font-medium text-slate-800">{alert.title}</h4>
+                                  <span className="text-xs text-slate-500 mt-1 block">
+                                    {alert.client_name ? `Client: ${alert.client_name}` : ''}
+                                  </span>
                                 </div>
-                              )
-                            }
-                            actions={
-                              <div className="flex gap-2">
-                                <Button variant="outline" size="sm">
-                                  View Details
-                                </Button>
-                                <Button variant="default" size="sm">
-                                  Resolve
-                                </Button>
+                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                               </div>
-                            }
-                          />
-                        ))}
+                              {isExpanded && (
+                                <div className="px-3 pb-3 pt-0 border-t">
+                                  <p className="text-xs text-slate-600 mt-2">{alert.message}</p>
+                                  <div className="flex items-center justify-between mt-2">
+                                    <span className={`text-xs px-2 py-1 rounded-full ${
+                                      alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
+                                      alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
+                                    }`}>
+                                      Severity: {alert.severity}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                         
                         {/* Show More/Less button for Portfolio Alerts */}
                         {alerts.length > 2 && (

@@ -1253,7 +1253,7 @@ export class DatabaseStorage implements IStorage {
       FROM communication_action_items cai
       JOIN communications comm ON cai.communication_id = comm.id
       LEFT JOIN clients cl ON comm.client_id = cl.id
-      WHERE cai.action_type = 'task'
+      WHERE cai.action_type = 'task' AND cai.status = 'pending'
     `;
     
     const params: any[] = [];
@@ -1275,10 +1275,6 @@ export class DatabaseStorage implements IStorage {
       }
       params.push(completed);
       paramIndex++;
-    } else {
-      // Default behavior: show only pending tasks
-      regularTasksSQL += ` AND t.completed = false`;
-      actionItemsSQL += ` AND cai.completed_at IS NULL`;
     }
     
     if (clientId !== undefined) {
