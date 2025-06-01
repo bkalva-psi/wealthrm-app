@@ -174,15 +174,15 @@ export function PerformanceCard() {
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+      <div className="px-4 py-3 border-b border-border bg-card">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-slate-500" />
-            <h2 className="text-sm font-medium text-slate-700">Performance</h2>
+            <h2 className="text-sm font-medium text-foreground">Performance</h2>
           </div>
           <div className="flex items-center gap-2">
             {/* Period Selector */}
-            <div className="flex bg-slate-100 rounded-md p-0.5">
+            <div className="flex bg-muted rounded-md p-0.5">
               {Object.entries(PERIOD_LABELS).map(([key, label]) => (
                 <button
                   key={key}
@@ -190,8 +190,8 @@ export function PerformanceCard() {
                   className={cn(
                     "px-2 py-1 text-xs rounded transition-colors",
                     selectedPeriod === key
-                      ? "bg-white text-slate-700 shadow-sm"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {key}
@@ -202,7 +202,7 @@ export function PerformanceCard() {
         </div>
       </div>
       
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-border">
         {/* Performance vs Targets Section */}
         <Collapsible open={targetsExpanded} onOpenChange={setTargetsExpanded}>
           <div className="px-4 py-3">
@@ -306,7 +306,7 @@ export function PerformanceCard() {
             {!peersExpanded && (
               <div className="mt-3">
                 {/* Overall Percentile Score - Bar Chart Display */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-4">
                   <div className="text-center mb-3">
                     <div className="text-sm text-blue-700 font-medium">Overall Percentile Score</div>
                   </div>

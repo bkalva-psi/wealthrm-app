@@ -73,8 +73,8 @@ export function PerformanceMetrics() {
   
   return (
     <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
-        <h2 className="text-sm font-medium text-slate-700">Your Performance</h2>
+      <div className="px-4 py-3 border-b border-border bg-card">
+        <h2 className="text-sm font-medium text-foreground">Your Performance</h2>
       </div>
       <CardContent className="p-4">
         <div className="grid grid-cols-2 gap-4">
