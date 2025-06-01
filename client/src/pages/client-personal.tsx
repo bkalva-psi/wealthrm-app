@@ -349,7 +349,7 @@ export default function ClientPersonalPage() {
                 
                 <div>
                   <h3 className="font-medium mb-3">Home Address</h3>
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted p-4 rounded-lg">
                     <p className="mb-1">{client.homeAddress || "Address not provided"}</p>
                     <p className="text-sm">
                       {client.homeCity && <span>{client.homeCity}, </span>}
@@ -363,7 +363,7 @@ export default function ClientPersonalPage() {
                 
                 <div>
                   <h3 className="font-medium mb-3">Work Address</h3>
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted p-4 rounded-lg">
                     <p className="mb-1">{client.workAddress || "Address not provided"}</p>
                     <p className="text-sm">
                       {client.workCity && <span>{client.workCity}, </span>}
