@@ -25,7 +25,7 @@ export default function ClientPersonalPage() {
   
   // Set page title
   useEffect(() => {
-    document.title = "Client Information | Wealth RM";
+    document.title = "Client Information | Intellect WealthForce";
   }, []);
 
   // Extract client ID from URL path
@@ -167,7 +167,7 @@ export default function ClientPersonalPage() {
       {/* Page Title Band with Navigation */}
       <div className="bg-card border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
-          <h2 className="text-2xl font-bold text-gray-900">Personal Details</h2>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Personal Details</h2>
         </div>
         
         <div className="grid grid-cols-7 gap-1 px-1">

@@ -20,7 +20,7 @@ export default function ProspectDetail() {
 
   // Set page title
   useEffect(() => {
-    document.title = "Prospect Details | Wealth RM";
+    document.title = "Prospect Details | Intellect WealthForce";
   }, []);
 
   // Fetch prospect data

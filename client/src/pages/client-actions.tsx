@@ -11,7 +11,7 @@ export default function ClientActionsPage() {
   
   // Set page title
   useEffect(() => {
-    document.title = "Client Actions | Wealth RM";
+    document.title = "Client Actions | Intellect WealthForce";
     
     // Get client ID from URL
     const hash = window.location.hash;
@@ -42,7 +42,7 @@ export default function ClientActionsPage() {
   if (!clientId) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Client not found</h1>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight mb-6">Client not found</h1>
         <Button onClick={handleBackClick}>Back to Clients</Button>
       </div>
     );

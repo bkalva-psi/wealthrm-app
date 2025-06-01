@@ -411,7 +411,7 @@ export default function Analytics() {
                 <CardTitle>Client Segmentation</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
-                <p className="text-muted-foreground">Client analytics data will be available in the next update.</p>
+                <p className="text-sm text-muted-foreground">Client analytics data will be available in the next update.</p>
               </CardContent>
             </Card>
             
@@ -420,7 +420,7 @@ export default function Analytics() {
                 <CardTitle>Client Acquisition Trend</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
-                <p className="text-muted-foreground">Client acquisition data will be available in the next update.</p>
+                <p className="text-sm text-muted-foreground">Client acquisition data will be available in the next update.</p>
               </CardContent>
             </Card>
           </div>

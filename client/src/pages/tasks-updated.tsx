@@ -60,7 +60,7 @@ export default function TasksUpdated() {
   
   // Set page title and force reload indicator
   useEffect(() => {
-    document.title = "Tasks | Wealth RM - NEW VERSION";
+    document.title = "Tasks | Intellect WealthForce";
     console.log("NEW UPDATED TASKS PAGE LOADED SUCCESSFULLY");
   }, []);
   
