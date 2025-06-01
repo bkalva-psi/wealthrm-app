@@ -202,53 +202,53 @@ export default function ClientInsights() {
       </div>
 
       {/* Page Header with Navigation */}
-      <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-1 py-3">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Insights</h2>
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-1 py-3">
+        <h2 className="text-2xl font-bold text-foreground mb-3 ml-3">Insights</h2>
         
         {/* Navigation Icons */}
         <div className="grid grid-cols-8 gap-3 ml-3">
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
-            <User className="h-6 w-6 text-gray-600" />
+            <User className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
             title="Portfolio"
           >
-            <PieChart className="h-6 w-6 text-gray-600" />
+            <PieChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
             title="Transactions"
           >
-            <Receipt className="h-6 w-6 text-gray-600" />
+            <Receipt className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
             title="Appointments"
           >
-            <Calendar className="h-6 w-6 text-gray-600" />
+            <Calendar className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
             title="Notes"
           >
-            <FileText className="h-6 w-6 text-gray-600" />
+            <FileText className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => {
               const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
               
@@ -260,7 +260,7 @@ export default function ClientInsights() {
             }}
             title="Portfolio Report"
           >
-            <FileBarChart className="h-6 w-6 text-gray-600" />
+            <FileBarChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
@@ -277,7 +277,7 @@ export default function ClientInsights() {
         <Card>
           <Collapsible open={showPortfolioAlerts} onOpenChange={setShowPortfolioAlerts}>
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-gray-50">
+              <CardHeader className="cursor-pointer hover:bg-muted">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base font-medium flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 text-red-500" />
@@ -294,17 +294,17 @@ export default function ClientInsights() {
                     {portfolioAlerts.slice(0, showAllInsights ? portfolioAlerts.length : 3).map((alert: any) => {
                       const isExpanded = expandedAlerts.has(alert.id);
                       return (
-                        <div key={alert.id} className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => toggleAlertExpansion(alert.id)}>
+                        <div key={alert.id} className="p-3 border rounded-lg cursor-pointer hover:bg-muted transition-colors" onClick={() => toggleAlertExpansion(alert.id)}>
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-sm">{alert.title}</span>
-                            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                           </div>
                           {isExpanded && (
                             <div className="mt-3 pt-3 border-t">
-                              <p className="text-xs text-gray-600 mb-2">{alert.description}</p>
-                              <p className="text-xs font-medium text-gray-700">Action: {alert.action}</p>
+                              <p className="text-xs text-muted-foreground mb-2">{alert.description}</p>
+                              <p className="text-xs font-medium text-foreground">Action: {alert.action}</p>
                               {alert.severity && (
-                                <p className="text-xs text-gray-500 mt-1">Severity: {alert.severity}</p>
+                                <p className="text-xs text-muted-foreground mt-1">Severity: {alert.severity}</p>
                               )}
                             </div>
                           )}
@@ -323,8 +323,8 @@ export default function ClientInsights() {
                     )}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  <div className="text-center py-8 text-muted-foreground">
+                    <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-sm">No portfolio alerts at the moment.</p>
                   </div>
                 )}
@@ -337,7 +337,7 @@ export default function ClientInsights() {
         <Card>
           <Collapsible open={showInvestmentOpportunities} onOpenChange={setShowInvestmentOpportunities}>
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-gray-50">
+              <CardHeader className="cursor-pointer hover:bg-muted">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base font-medium flex items-center gap-2">
                     <Target className="h-4 w-4 text-green-500" />
@@ -353,20 +353,20 @@ export default function ClientInsights() {
                   {investmentOpportunities.slice(0, showAllInsights ? investmentOpportunities.length : 3).map((opportunity: any) => {
                     const isExpanded = expandedOpportunities.has(opportunity.id);
                     return (
-                      <div key={opportunity.id} className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => toggleOpportunityExpansion(opportunity.id)}>
+                      <div key={opportunity.id} className="p-3 border rounded-lg cursor-pointer hover:bg-muted transition-colors" onClick={() => toggleOpportunityExpansion(opportunity.id)}>
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm">{opportunity.title}</span>
-                          <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </div>
                         {isExpanded && (
                           <div className="mt-3 pt-3 border-t">
-                            <p className="text-xs text-gray-600 mb-2">{opportunity.description}</p>
-                            <p className="text-xs font-medium text-gray-700">Category: {opportunity.category}</p>
+                            <p className="text-xs text-muted-foreground mb-2">{opportunity.description}</p>
+                            <p className="text-xs font-medium text-foreground">Category: {opportunity.category}</p>
                             {opportunity.recommendation && (
-                              <p className="text-xs text-gray-600 mt-1">Recommendation: {opportunity.recommendation}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Recommendation: {opportunity.recommendation}</p>
                             )}
                             {opportunity.impact && (
-                              <p className="text-xs text-gray-500 mt-1">Impact: {opportunity.impact}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Impact: {opportunity.impact}</p>
                             )}
                           </div>
                         )}
