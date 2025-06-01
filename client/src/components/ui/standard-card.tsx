@@ -105,8 +105,11 @@ export function StandardCard({
       </CardHeader>
 
       <CardContent className="pt-0">
-        {/* Summary Section - Always Visible */}
-        <div className="mb-4">
+        {/* Summary Section - Always Visible, Clickable for expansion */}
+        <div 
+          className={`mb-4 ${expandable && details ? 'cursor-pointer hover:bg-muted/50 rounded-md p-2 -m-2 transition-colors' : ''}`}
+          onClick={expandable && details ? toggleExpanded : undefined}
+        >
           {summary}
         </div>
 
@@ -278,11 +281,6 @@ export function TaskCard({ task, onComplete, onEdit, onView }: any) {
     <StandardCard
       title={task.title}
       subtitle={task.dueDate ? `Due: ${new Date(task.dueDate).toLocaleDateString()}` : undefined}
-      status={{
-        label: task.status || 'Pending',
-        variant: task.status === 'completed' ? 'secondary' : 
-                task.status === 'overdue' ? 'destructive' : 'default'
-      }}
       summary={
         <div className="space-y-2">
           {task.assignedTo && (
@@ -305,16 +303,21 @@ export function TaskCard({ task, onComplete, onEdit, onView }: any) {
               <p className="whitespace-pre-wrap">{task.description}</p>
             </div>
           )}
-          {task.notes && (
-            <div>
-              <p className="text-muted-foreground mb-2">Notes</p>
-              <p className="whitespace-pre-wrap">{task.notes}</p>
-            </div>
-          )}
+          <div>
+            <p className="text-muted-foreground mb-1">Status</p>
+            <p className="capitalize">{task.status === 'completed' ? 'Completed' : 
+                                      task.status === 'overdue' ? 'Overdue' : 'Pending'}</p>
+          </div>
           {task.priority && (
             <div>
               <p className="text-muted-foreground mb-1">Priority</p>
               <p className="capitalize">{task.priority}</p>
+            </div>
+          )}
+          {task.notes && (
+            <div>
+              <p className="text-muted-foreground mb-2">Notes</p>
+              <p className="whitespace-pre-wrap">{task.notes}</p>
             </div>
           )}
         </div>

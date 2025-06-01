@@ -247,26 +247,14 @@ export default function TasksUpdated() {
           <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search tasks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Tasks</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-64"
+            />
           </div>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
             <DialogTrigger asChild>
@@ -323,6 +311,31 @@ export default function TasksUpdated() {
             </DialogContent>
           </Dialog>
         </div>
+      </div>
+      
+      {/* Filter buttons below header */}
+      <div className="flex items-center gap-2 mb-6">
+        <Button
+          variant={statusFilter === 'pending' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setStatusFilter('pending')}
+        >
+          Pending
+        </Button>
+        <Button
+          variant={statusFilter === 'completed' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setStatusFilter('completed')}
+        >
+          Completed
+        </Button>
+        <Button
+          variant={statusFilter === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setStatusFilter('all')}
+        >
+          All Tasks
+        </Button>
       </div>
       
       <div className="space-y-6">
