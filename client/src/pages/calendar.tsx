@@ -185,10 +185,10 @@ export default function CalendarPage() {
                       </div>
                       
                       {appointment.description && (
-                        <p className="text-sm font-medium text-muted-foreground mb-2">{appointment.description}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
                       )}
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />
                           {format(new Date(appointment.startTime), 'MMM dd, yyyy • h:mm a')}
