@@ -231,6 +231,7 @@ export default function Tasks() {
                     placeholder="Enter task title" 
                     value={newTask.title}
                     onChange={e => setNewTask({...newTask, title: e.target.value})}
+                    className="!bg-background !border-input !text-foreground"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -240,6 +241,7 @@ export default function Tasks() {
                     placeholder="Enter task description" 
                     value={newTask.description}
                     onChange={e => setNewTask({...newTask, description: e.target.value})}
+                    className="!bg-background !border-input !text-foreground"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -249,6 +251,7 @@ export default function Tasks() {
                     type="date" 
                     value={newTask.dueDate}
                     onChange={e => setNewTask({...newTask, dueDate: e.target.value})}
+                    className="!bg-background !border-input !text-foreground"
                   />
                 </div>
               </div>
