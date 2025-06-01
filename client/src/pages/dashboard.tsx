@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
+import { HeroMetrics } from "@/components/dashboard/hero-metrics";
 import { AgendaCard } from "@/components/dashboard/agenda-card-new";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
@@ -21,28 +22,28 @@ export default function Dashboard() {
   }, []);
   
   return (
-    <div>
+    <div className="p-6">
       {/* Page Header */}
-      <div className="mb-6 mt-6">
+      <div className="mb-6">
         <h1 className="text-2xl font-semibold text-slate-800">Welcome back, {user?.fullName.split(' ')[0]}</h1>
         <p className="text-sm text-slate-600">Here's what's happening with your clients today</p>
       </div>
       
-      {/* Grid Layout for Dashboard Content - Responsive for all device sizes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Column 1: Today's Agenda */}
-        <div className="space-y-4 sm:space-y-6">
+      {/* Hero Metrics Section */}
+      <HeroMetrics />
+      
+      {/* Improved 2-Column Layout for Better Information Hierarchy */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Priority Actions & Agenda */}
+        <div className="space-y-6">
           <AgendaCard />
+          <PortfolioAlertsClean />
+          <SimpleComplaints />
         </div>
         
-        {/* Column 2: Performance + Business Snapshot */}
-        <div className="space-y-4 sm:space-y-6">
-          <PerformanceCard />
+        {/* Right Column: Performance Insights & Updates */}
+        <div className="space-y-6">
           <BusinessSnapshotStructured />
-        </div>
-        
-        {/* Column 3: Talking Points + Announcements */}
-        <div className="space-y-4 sm:space-y-6">
           <TalkingPointsCard />
           <AnnouncementsCard />
         </div>
