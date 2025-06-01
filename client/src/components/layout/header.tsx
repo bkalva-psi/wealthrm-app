@@ -36,7 +36,7 @@ export function Header({
     staleTime: 60000, // 1 minute
   });
   
-  const unreadAlertsCount = portfolioAlerts?.length || 0;
+  const unreadAlertsCount = Array.isArray(portfolioAlerts) ? portfolioAlerts.length : 0;
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +45,7 @@ export function Header({
   };
   
   return (
-    <header className="bg-white shadow-sm z-10">
+    <header className="bg-card border-b border-border shadow-sm z-10">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Mobile Menu Button */}
         <div className="flex items-center">
@@ -106,7 +106,7 @@ export function Header({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center focus:outline-none">
-                  <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
+                  <span className="hidden md:block mr-2 text-sm font-medium text-foreground">{user?.fullName}</span>
                   {user?.avatarUrl ? (
                     <img 
                       className="h-10 w-10 rounded-full border-2 border-ujjivan-primary" 
