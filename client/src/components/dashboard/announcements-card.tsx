@@ -161,10 +161,10 @@ export function AnnouncementsCard() {
                         <CollapsibleTrigger asChild>
                           <Button
                             variant="ghost"
-                            className="w-full p-2 h-auto justify-between hover:bg-slate-50"
+                            className="w-full p-2 h-auto justify-between hover:bg-muted/50"
                           >
                             <div className="flex items-center gap-3">
-                              <div className={`p-1.5 rounded-lg bg-white/60 ${category.color}`}>
+                              <div className={`p-1.5 rounded-lg bg-background/60 ${category.color}`}>
                                 <IconComponent size={18} />
                               </div>
                               <div className="text-left">
@@ -181,7 +181,7 @@ export function AnnouncementsCard() {
                         <CollapsibleContent className="mt-3">
                           <div className="mt-3 px-3 pb-3 space-y-2">
                             {category.items.length === 0 ? (
-                              <p className="text-xs text-slate-500 italic">No items at this time</p>
+                              <p className="text-xs text-muted-foreground italic">No items at this time</p>
                             ) : (
                               category.items.slice(0, 5).map((item: Announcement, index: number) => {
                                 const itemKey = `${key}-${item.id || index}`;
