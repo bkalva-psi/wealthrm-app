@@ -327,7 +327,7 @@ export default function Tasks() {
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-slate-50 cursor-pointer">
+                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50 cursor-pointer !bg-card">
                               <Checkbox
                                 id={`task-${task.id}`}
                                 checked={task.completed}
@@ -424,7 +424,7 @@ export default function Tasks() {
                     return alerts.length > 0 ? (
                       <>
                         {alerts.map((alert: any) => (
-                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-slate-50 cursor-pointer">
+                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50 cursor-pointer !bg-card">
                             <div className={`h-4 w-4 mt-1 rounded-full ${
                               alert.severity === 'high' ? 'bg-red-500' : 
                               alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
