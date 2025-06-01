@@ -57,10 +57,8 @@ export function StandardCard({
       className={`
         transition-all duration-200 hover:shadow-lg 
         ${featured ? 'ring-2 ring-primary/20 bg-primary/5' : ''} 
-        ${expandable && details ? 'cursor-pointer' : ''} 
         ${className}
       `}
-      onClick={expandable && details ? toggleExpanded : undefined}
     >
       {/* Header Section */}
       <CardHeader className="pb-4">
@@ -93,10 +91,7 @@ export function StandardCard({
                 variant="ghost"
                 size="sm"
                 className="p-1 h-auto w-auto"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleExpanded();
-                }}
+                onClick={toggleExpanded}
               >
                 {isExpanded ? (
                   <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -290,35 +285,74 @@ export function TaskCard({ task, onComplete, onEdit, onView }: any) {
       }}
       summary={
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {task.description}
-          </p>
           {task.assignedTo && (
             <p className="text-sm">
               <span className="text-muted-foreground">Assigned to:</span> {task.assignedTo}
             </p>
           )}
+          {task.clientName && (
+            <p className="text-sm">
+              <span className="text-muted-foreground">Client:</span> {task.clientName}
+            </p>
+          )}
         </div>
       }
       details={
-        task.notes && (
-          <div className="text-sm">
-            <p className="text-muted-foreground mb-1">Notes</p>
-            <p>{task.notes}</p>
-          </div>
-        )
+        <div className="space-y-3 text-sm">
+          {task.description && (
+            <div>
+              <p className="text-muted-foreground mb-2">Description</p>
+              <p className="whitespace-pre-wrap">{task.description}</p>
+            </div>
+          )}
+          {task.notes && (
+            <div>
+              <p className="text-muted-foreground mb-2">Notes</p>
+              <p className="whitespace-pre-wrap">{task.notes}</p>
+            </div>
+          )}
+          {task.priority && (
+            <div>
+              <p className="text-muted-foreground mb-1">Priority</p>
+              <p className="capitalize">{task.priority}</p>
+            </div>
+          )}
+        </div>
       }
+      expandable={true}
+      defaultExpanded={false}
       actions={
         <div className="flex gap-2">
-          {task.status !== 'completed' && (
-            <Button variant="default" size="sm" onClick={() => onComplete?.(task)}>
+          {!task.completed && task.status !== 'completed' && (
+            <Button 
+              variant="default" 
+              size="sm" 
+              onClick={(e) => {
+                e.stopPropagation();
+                onComplete?.(task);
+              }}
+            >
               Complete
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => onEdit?.(task)}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.(task);
+            }}
+          >
             Edit
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => onView?.(task)}>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onView?.(task);
+            }}
+          >
             View
           </Button>
         </div>

@@ -416,12 +416,15 @@ export default function TasksUpdated() {
                               }}
                               onComplete={(task) => handleTaskToggle(task, true)}
                               onEdit={(task) => {
-                                // TODO: Implement edit functionality
-                                console.log('Edit task:', task);
+                                setNewTask({
+                                  title: task.title,
+                                  description: task.description || '',
+                                  dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+                                });
+                                setIsNewTaskDialogOpen(true);
                               }}
                               onView={(task) => {
-                                // TODO: Implement view functionality
-                                console.log('View task:', task);
+                                alert(`Task Details:\n\nTitle: ${task.title}\nDescription: ${task.description || 'No description'}\nDue Date: ${task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}\nStatus: ${task.status}\nClient: ${task.clientName || 'Not assigned'}`);
                               }}
                             />
                           );
