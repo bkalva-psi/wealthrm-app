@@ -38,7 +38,7 @@ interface Alert {
   clientName?: string;
 }
 
-export function TodaysActionItems() {
+export function ActionItemsPriorities() {
   const [isMainCardExpanded, setIsMainCardExpanded] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
@@ -110,13 +110,13 @@ export function TodaysActionItems() {
 
   const sectionsConfig = {
     appointments: {
-      title: 'Today\'s Appointments',
+      title: 'Upcoming Meetings',
       count: appointments.length,
       items: appointments,
       icon: Calendar,
       color: 'text-teal-700',
       bgColor: 'bg-teal-50 border-teal-200',
-      description: 'Scheduled client meetings and consultations for today'
+      description: 'Scheduled client meetings and consultations requiring preparation'
     },
     tasks: {
       title: 'Urgent Tasks',
@@ -125,7 +125,7 @@ export function TodaysActionItems() {
       icon: CheckSquare,
       color: 'text-amber-700',
       bgColor: 'bg-amber-50 border-amber-200',
-      description: 'High-priority tasks requiring immediate attention'
+      description: 'High-priority tasks and overdue items requiring immediate attention'
     },
     closures: {
       title: 'Expected Closures',
@@ -134,7 +134,7 @@ export function TodaysActionItems() {
       icon: Users,
       color: 'text-emerald-700',
       bgColor: 'bg-emerald-50 border-emerald-200',
-      description: 'Deal closures expected today and this week'
+      description: 'Deal closures and prospect conversions expected this week'
     },
     alerts: {
       title: 'Priority Alerts',
@@ -143,7 +143,7 @@ export function TodaysActionItems() {
       icon: AlertCircle,
       color: 'text-orange-700',
       bgColor: 'bg-orange-50 border-orange-200',
-      description: 'Portfolio and client alerts requiring immediate review'
+      description: 'Portfolio alerts and client issues requiring immediate review'
     }
   };
 
@@ -166,7 +166,7 @@ export function TodaysActionItems() {
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-gray-50">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Today's Action Items</CardTitle>
+              <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
               {isMainCardExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </div>
           </CardHeader>

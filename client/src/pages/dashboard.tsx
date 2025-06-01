@@ -5,7 +5,7 @@ import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
 import { BusinessSnapshotStructured } from "@/components/dashboard/business-snapshot-structured";
-import { TodaysActionItems } from "@/components/dashboard/todays-action-items";
+import { ActionItemsPriorities } from "@/components/dashboard/todays-action-items";
 import { PortfolioAlertsClean } from "@/components/dashboard/portfolio-alerts-clean";
 import { SimpleComplaints } from "@/components/dashboard/simple-complaints";
 
@@ -32,9 +32,9 @@ export default function Dashboard() {
       {/* Business Snapshot at Top */}
       <BusinessSnapshotStructured />
       
-      {/* Today's Action Items */}
+      {/* Action Items & Priorities */}
       <div className="mt-6">
-        <TodaysActionItems />
+        <ActionItemsPriorities />
       </div>
       
       {/* Improved 2-Column Layout for Better Information Hierarchy */}
