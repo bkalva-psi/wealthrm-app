@@ -118,7 +118,7 @@ export default function Settings() {
       <div className="p-6">
         <div className="mb-6 animate-in slide-in-from-top-4 duration-500">
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Account Settings</h1>
-          <p className="text-muted-foreground text-sm font-medium mt-1">
+          <p className="text-sm font-medium text-muted-foreground mt-1">
             Manage your account preferences and security settings
           </p>
         </div>

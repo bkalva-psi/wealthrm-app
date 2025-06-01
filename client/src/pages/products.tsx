@@ -335,7 +335,7 @@ Ujjivan Small Finance Bank`;
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-foreground tracking-tight">Investment Products</h1>
-              <p className="text-muted-foreground text-sm font-medium mt-1">
+              <p className="text-sm font-medium text-muted-foreground mt-1">
                 {filteredProducts.length} of {products.length} products available
               </p>
             </div>

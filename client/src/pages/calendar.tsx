@@ -178,14 +178,14 @@ export default function CalendarPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {getAppointmentIcon(appointment.type)}
-                        <h3 className="font-medium text-foreground">{appointment.title}</h3>
+                        <h3 className="text-lg font-medium text-foreground">{appointment.title}</h3>
                         <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
                           {appointment.priority}
                         </Badge>
                       </div>
                       
                       {appointment.description && (
-                        <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
+                        <p className="text-sm font-medium text-muted-foreground mb-2">{appointment.description}</p>
                       )}
                       
                       <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
