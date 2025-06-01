@@ -31,11 +31,6 @@ export default function Dashboard() {
       {/* Business Snapshot at Top */}
       <BusinessSnapshotStructured />
       
-      {/* Action Items & Priorities */}
-      <div className="mt-4">
-        <ActionItemsPriorities />
-      </div>
-      
       {/* Improved 2-Column Layout for Better Information Hierarchy */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Left Column: Priority Actions & Agenda */}
