@@ -1415,7 +1415,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           { name: "Net New Money", icon: "DollarSign", target: data.targets.netNewMoney, actual: data.actuals.netNewMoney, unit: "L" },
           { name: "Client Meetings", icon: "Calendar", target: data.targets.clientMeetings, actual: data.actuals.clientMeetings, unit: "" },
           { name: "Prospect Pipeline", icon: "TrendingUp", target: data.targets.prospectPipeline, actual: data.actuals.prospectPipeline, unit: "L" },
-          { name: "Revenue", icon: "Target", target: data.targets.revenue, actual: data.actuals.revenue, unit: "L" }
+          { name: "Revenue", icon: "Award", target: data.targets.revenue, actual: data.actuals.revenue, unit: "L" }
         ],
         peers: [
           { 

@@ -23,7 +23,7 @@ type Period = "M" | "Q" | "HY" | "Y";
 
 interface PerformanceMetric {
   name: string;
-  icon: React.ComponentType<any>;
+  icon: string;
   target: number;
   actual: number;
   unit: string;
