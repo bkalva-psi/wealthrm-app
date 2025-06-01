@@ -64,8 +64,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.totalAum || 0,
       formatter: formatCurrency,
       icon: TrendingUp,
-      color: 'text-teal-700',
-      bgColor: 'bg-teal-50 border-teal-200',
+      color: 'text-teal-700 dark:text-teal-400',
+      bgColor: 'bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800',
       dimensions: []
     },
     clients: {
@@ -73,8 +73,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.totalClients || 0,
       formatter: formatNumber,
       icon: Users,
-      color: 'text-emerald-700',
-      bgColor: 'bg-emerald-50 border-emerald-200',
+      color: 'text-emerald-700 dark:text-emerald-400',
+      bgColor: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800',
       dimensions: []
     },
     revenue: {
@@ -82,8 +82,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.revenueMonthToDate || 0,
       formatter: formatCurrency,
       icon: DollarSign,
-      color: 'text-amber-700',
-      bgColor: 'bg-amber-50 border-amber-200',
+      color: 'text-amber-700 dark:text-amber-400',
+      bgColor: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800',
       dimensions: []
     },
     pipeline: {
@@ -91,8 +91,8 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.pipelineValue || 0,
       formatter: formatCurrency,
       icon: Target,
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-50 border-orange-200',
+      color: 'text-orange-700 dark:text-orange-400',
+      bgColor: 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800',
       dimensions: []
     }
   };
@@ -172,7 +172,7 @@ export function BusinessSnapshotStructured() {
     <Collapsible open={isMainCardExpanded} onOpenChange={setIsMainCardExpanded}>
       <Card>
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Key Performance Indicators</CardTitle>
               {isMainCardExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}

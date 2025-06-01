@@ -47,8 +47,8 @@ export function ActionItemsPriorities() {
       count: appointments?.length || 0,
       items: appointments || [],
       icon: Calendar,
-      color: 'text-blue-700',
-      bgColor: 'bg-blue-50 border-blue-200',
+      color: 'text-blue-700 dark:text-blue-400',
+      bgColor: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',
       description: 'Client meetings and calls scheduled for today'
     },
     tasks: {
@@ -56,8 +56,8 @@ export function ActionItemsPriorities() {
       count: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent').length || 0,
       items: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent') || [],
       icon: Clock,
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-50 border-orange-200',
+      color: 'text-orange-700 dark:text-orange-400',
+      bgColor: 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800',
       description: 'High priority tasks requiring immediate attention'
     },
     closures: {
@@ -65,8 +65,8 @@ export function ActionItemsPriorities() {
       count: weekClosures?.length || 0,
       items: weekClosures || [],
       icon: TrendingUp,
-      color: 'text-green-700',
-      bgColor: 'bg-green-50 border-green-200',
+      color: 'text-green-700 dark:text-green-400',
+      bgColor: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800',
       description: 'Prospects likely to close this week'
     },
     alerts: {
@@ -74,8 +74,8 @@ export function ActionItemsPriorities() {
       count: priorityAlerts?.length || 0,
       items: priorityAlerts || [],
       icon: AlertTriangle,
-      color: 'text-red-700',
-      bgColor: 'bg-red-50 border-red-200',
+      color: 'text-red-700 dark:text-red-400',
+      bgColor: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800',
       description: 'Portfolio alerts and market notifications affecting your clients'
     },
     complaints: {
@@ -83,8 +83,8 @@ export function ActionItemsPriorities() {
       count: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress').length || 0,
       items: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress') || [],
       icon: MessageSquare,
-      color: 'text-purple-700',
-      bgColor: 'bg-purple-50 border-purple-200',
+      color: 'text-purple-700 dark:text-purple-400',
+      bgColor: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800',
       description: 'Unresolved client issues requiring attention'
     }
   };
@@ -115,7 +115,7 @@ export function ActionItemsPriorities() {
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card>
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
               {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
@@ -139,7 +139,7 @@ export function ActionItemsPriorities() {
                         className="w-full justify-between p-0 h-auto hover:bg-transparent"
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`p-1.5 rounded-lg bg-white/60 ${category.color}`}>
+                          <div className={`p-1.5 rounded-lg bg-background/60 ${category.color}`}>
                             <IconComponent size={18} />
                           </div>
                           <div className="text-left">
@@ -170,10 +170,10 @@ export function ActionItemsPriorities() {
                             const isItemExpanded = expandedItems.has(itemKey);
                             
                             return (
-                              <div key={index} className="bg-white rounded border border-slate-100 overflow-hidden">
+                              <div key={index} className="bg-card rounded border border-border overflow-hidden">
                                 <Button
                                   variant="ghost"
-                                  className="w-full p-2 h-auto justify-start hover:bg-slate-50"
+                                  className="w-full p-2 h-auto justify-start hover:bg-muted/50"
                                   onClick={() => toggleItem(itemKey)}
                                 >
                                   <div className="flex items-center gap-2 w-full">
