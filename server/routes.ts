@@ -187,7 +187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user = await storage.createUser({
           username: username,
           password: "password",
-          fullName: "Test User",
+          fullName: "Sravan",
           role: "admin",
           email: "test@example.com",
           phone: "+1234567890"
@@ -269,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userWithoutPassword = {
         id: 1,
         username: "test",
-        fullName: "Test User",
+        fullName: "Sravan",
         role: "admin",
         email: "test@example.com",
         phone: "+1234567890"

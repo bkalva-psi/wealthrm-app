@@ -37,12 +37,6 @@ export default function Dashboard() {
             </div>
             <div className="hidden md:flex items-center gap-4">
               <ThemeSwitcher />
-              <div className="bg-white dark:bg-slate-800 rounded-xl px-6 py-3 shadow-sm border border-slate-200 dark:border-slate-700">
-                <div className="text-sm text-slate-500 dark:text-slate-400">Current Time</div>
-                <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-                  {format(new Date(), "h:mm a")}
-                </div>
-              </div>
             </div>
           </div>
         </div>

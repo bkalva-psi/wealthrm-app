@@ -72,7 +72,7 @@ export function Header({
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
             <div className="ml-1 flex flex-col">
               <h1 className="text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap -ml-3">Ujjivan Small Finance Bank</h1>
-              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight">Wealth RM Pro</span>
+              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight">Intellect Wealth Force</span>
             </div>
           </div>
           
@@ -81,7 +81,7 @@ export function Header({
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
             <div className="ml-2 flex flex-col">
               <h1 className="text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
-              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight">Wealth RM Pro</span>
+              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight">Intellect Wealth Force</span>
             </div>
           </div>
         </div>
