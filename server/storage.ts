@@ -1275,6 +1275,10 @@ export class DatabaseStorage implements IStorage {
       }
       params.push(completed);
       paramIndex++;
+    } else {
+      // Default behavior: show only pending tasks
+      regularTasksSQL += ` AND t.completed = false`;
+      actionItemsSQL += ` AND cai.completed_at IS NULL`;
     }
     
     if (clientId !== undefined) {

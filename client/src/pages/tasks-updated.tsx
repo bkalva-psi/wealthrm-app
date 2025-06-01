@@ -70,7 +70,7 @@ export default function TasksUpdated() {
   }, []);
   
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['/api/tasks'],
+    queryKey: ['/api/tasks', { completed: statusFilter === 'completed' ? true : statusFilter === 'pending' ? false : undefined }],
   });
 
   const { data: portfolioAlerts, isLoading: alertsLoading } = useQuery({
