@@ -71,35 +71,35 @@ interface ProspectCardProps {
 function ProspectCard({ prospect, onClick }: ProspectCardProps) {
   return (
     <div 
-      className="bg-card p-3 rounded-md shadow-sm mb-2 cursor-pointer border border-border hover:border-primary/50 hover:shadow-md transition-all"
+      className="bg-card p-4 rounded-lg shadow-sm mb-3 cursor-pointer border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/10 transform interactive-hover"
       onClick={() => {
         window.location.hash = `/prospect-detail/${prospect.id}`;
       }}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
+          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm transition-all duration-300 hover:bg-primary/20 hover:scale-110">
             {prospect.initials}
           </div>
-          <h3 className="text-sm font-medium text-foreground ml-2">{prospect.fullName}</h3>
+          <h3 className="text-sm font-semibold text-foreground ml-3 tracking-tight">{prospect.fullName}</h3>
         </div>
-        <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+        <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full transition-all duration-300 hover:bg-primary/20">
           {prospect.probabilityScore}%
         </span>
       </div>
-      <div className="text-xs text-muted-foreground mb-1">
-        <span className="font-medium">Potential: </span>
-        <span>{prospect.potentialAum}</span>
+      <div className="text-xs text-muted-foreground mb-2 leading-relaxed">
+        <span className="font-semibold text-foreground">Potential: </span>
+        <span className="font-medium">{prospect.potentialAum}</span>
       </div>
       {prospect.productsOfInterest && (
-        <div className="text-xs text-muted-foreground mb-1">
-          <span className="font-medium">Products: </span>
-          <span>{prospect.productsOfInterest}</span>
+        <div className="text-xs text-muted-foreground mb-2 leading-relaxed">
+          <span className="font-semibold text-foreground">Products: </span>
+          <span className="font-medium">{prospect.productsOfInterest}</span>
         </div>
       )}
-      <div className="text-xs text-muted-foreground/70">
-        <span className="font-medium">Last Contact: </span>
-        <span>{formatRelativeDate(prospect.lastContactDate)}</span>
+      <div className="text-xs text-muted-foreground/80 leading-relaxed">
+        <span className="font-semibold text-foreground">Last Contact: </span>
+        <span className="font-medium">{formatRelativeDate(prospect.lastContactDate)}</span>
       </div>
     </div>
   );
@@ -164,7 +164,7 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
   const activeCount = prospects.filter(p => !['won', 'lost'].includes(p.stage)).length;
 
   return (
-    <Card className="mb-6 !bg-card !border-border">
+    <Card className="mb-6 !bg-card !border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
       <div className="p-4">
         <h3 className="text-lg font-semibold text-foreground mb-4 text-center">Sales Pipeline Funnel</h3>
         
@@ -226,7 +226,7 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
   const stageColor = getStageColor(stage);
 
   return (
-    <Card className={`${isMobile ? 'mb-4 w-full' : 'w-72 shrink-0'} !bg-card !border-border`}>
+    <Card className={`${isMobile ? 'mb-4 w-full' : 'w-72 shrink-0'} !bg-card !border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover`}>
       {isMobile ? (
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
           <CollapsibleTrigger asChild>
