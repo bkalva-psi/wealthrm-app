@@ -739,7 +739,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Format error messages to be more user-friendly
         Object.entries(formattedErrors).forEach(([field, error]) => {
-          if (field !== "_errors" && (error as any)._errors && (error as any)._errors.length > 0) {
+          if (field !== "_errors" && error && typeof error === 'object' && '_errors' in error) {
             errorMessages[field] = (error as any)._errors;
           }
         });
