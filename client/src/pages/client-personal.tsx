@@ -97,7 +97,7 @@ export default function ClientPersonalPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="p-6">
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-muted-foreground">
             <p>Could not load client information.</p>
           </div>
         </div>
@@ -108,7 +108,7 @@ export default function ClientPersonalPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Client Header */}
-      <div className={`bg-white border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${getTierColor(client.tier).border.replace('border-', 'border-l-')}`}>
+      <div className={`bg-card border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${getTierColor(client.tier).border.replace('border-', 'border-l-')}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           <div className="flex items-center min-w-0 flex-1">
             <Button 
@@ -140,7 +140,7 @@ export default function ClientPersonalPage() {
                 <div className="mt-1">
                   <a 
                     href={`tel:${client.phone}`}
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
+                    className="text-sm text-muted-foreground dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
                   >
                     <Phone className="h-3 w-3 mr-1" />
                     {client.phone}
@@ -152,7 +152,7 @@ export default function ClientPersonalPage() {
                 <div className="mt-1">
                   <a 
                     href={`mailto:${client.email}`}
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
+                    className="text-sm text-muted-foreground dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
                   >
                     <Mail className="h-3 w-3 mr-1" />
                     {client.email}
@@ -165,7 +165,7 @@ export default function ClientPersonalPage() {
       </div>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-4">
+      <div className="bg-card border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Personal Details</h2>
         </div>
@@ -241,7 +241,7 @@ export default function ClientPersonalPage() {
                     <AvatarFallback>{client.initials || client.fullName.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="text-left">
-                    <p className="text-sm text-slate-500">Client</p>
+                    <p className="text-sm text-muted-foreground">Client</p>
                     <p className="font-medium">{client.fullName}</p>
                   </div>
                 </div>
@@ -249,21 +249,21 @@ export default function ClientPersonalPage() {
               
               <div className="text-left">
                 <div>
-                  <p className="text-sm text-slate-500">Age</p>
+                  <p className="text-sm text-muted-foreground">Age</p>
                   <p>{client.dateOfBirth ? new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear() : "Not provided"}</p>
                 </div>
               </div>
               
               <div className="text-left">
                 <div>
-                  <p className="text-sm text-slate-500">Status</p>
+                  <p className="text-sm text-muted-foreground">Status</p>
                   <p>{client.maritalStatus || "Not provided"}</p>
                 </div>
               </div>
               
               <div className="text-left">
                 <div>
-                  <p className="text-sm text-slate-500">Company</p>
+                  <p className="text-sm text-muted-foreground">Company</p>
                   <p>{client.companyName || "Not provided"}</p>
                 </div>
               </div>
@@ -295,26 +295,26 @@ export default function ClientPersonalPage() {
                   <h3 className="font-medium mb-3">Basic Details</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Date of Birth</dt>
+                      <dt className="text-sm text-muted-foreground">Date of Birth</dt>
                       <dd className="text-sm font-medium">{formatDate(client.dateOfBirth)}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Age</dt>
+                      <dt className="text-sm text-muted-foreground">Age</dt>
                       <dd className="text-sm font-medium">
                         {client.dateOfBirth ? `${new Date().getFullYear() - new Date(client.dateOfBirth).getFullYear()} years` : "Not specified"}
                       </dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Gender</dt>
+                      <dt className="text-sm text-muted-foreground">Gender</dt>
                       <dd className="text-sm font-medium">{client.gender || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Marital Status</dt>
+                      <dt className="text-sm text-muted-foreground">Marital Status</dt>
                       <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
                     </div>
                     {client.maritalStatus === "Married" && (
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Anniversary</dt>
+                        <dt className="text-sm text-muted-foreground">Anniversary</dt>
                         <dd className="text-sm font-medium">{formatDate(client.anniversaryDate)}</dd>
                       </div>
                     )}
@@ -327,19 +327,19 @@ export default function ClientPersonalPage() {
                   <h3 className="font-medium mb-3">Contact Preferences</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Preferred Contact Method</dt>
+                      <dt className="text-sm text-muted-foreground">Preferred Contact Method</dt>
                       <dd className="text-sm font-medium">{client.preferredContactMethod || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Preferred Time</dt>
+                      <dt className="text-sm text-muted-foreground">Preferred Time</dt>
                       <dd className="text-sm font-medium">{client.preferredContactTime || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Communication Frequency</dt>
+                      <dt className="text-sm text-muted-foreground">Communication Frequency</dt>
                       <dd className="text-sm font-medium">{client.communicationFrequency || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Last Contact</dt>
+                      <dt className="text-sm text-muted-foreground">Last Contact</dt>
                       <dd className="text-sm font-medium">{formatDate(client.lastContactDate)}</dd>
                     </div>
                   </div>
@@ -379,27 +379,27 @@ export default function ClientPersonalPage() {
                   <h3 className="font-medium mb-3">Professional Information</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Profession</dt>
+                      <dt className="text-sm text-muted-foreground">Profession</dt>
                       <dd className="text-sm font-medium">{client.profession || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Designation</dt>
+                      <dt className="text-sm text-muted-foreground">Designation</dt>
                       <dd className="text-sm font-medium">{client.designation || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Company</dt>
+                      <dt className="text-sm text-muted-foreground">Company</dt>
                       <dd className="text-sm font-medium">{client.companyName || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Work Experience</dt>
+                      <dt className="text-sm text-muted-foreground">Work Experience</dt>
                       <dd className="text-sm font-medium">{client.workExperience ? `${client.workExperience} years` : "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Sector</dt>
+                      <dt className="text-sm text-muted-foreground">Sector</dt>
                       <dd className="text-sm font-medium">{client.sectorOfEmployment || "Not specified"}</dd>
                     </div>
                     <div className="space-y-1">
-                      <dt className="text-sm text-slate-500">Annual Income</dt>
+                      <dt className="text-sm text-muted-foreground">Annual Income</dt>
                       <dd className="text-sm font-medium">{client.annualIncome || "Not specified"}</dd>
                     </div>
                   </div>
@@ -431,19 +431,19 @@ export default function ClientPersonalPage() {
               <div className="px-4 pb-4 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">AUM</p>
+                    <p className="text-sm text-muted-foreground">AUM</p>
                     <p className="font-medium text-lg">{client.aum}</p>
-                    <p className="text-xs text-slate-500">Tier: {client.tier.toUpperCase()}</p>
+                    <p className="text-xs text-muted-foreground">Tier: {client.tier.toUpperCase()}</p>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">Risk Profile</p>
+                    <p className="text-sm text-muted-foreground">Risk Profile</p>
                     <p className="font-medium text-lg">{client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : "Not specified"}</p>
-                    <p className="text-xs text-slate-500">Score: {client.riskAssessmentScore || "N/A"}/10</p>
+                    <p className="text-xs text-muted-foreground">Score: {client.riskAssessmentScore || "N/A"}/10</p>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">Performance</p>
+                    <p className="text-sm text-muted-foreground">Performance</p>
                     <p className="font-medium text-lg">N/A</p>
-                    <p className="text-xs text-slate-500">1 Year Returns</p>
+                    <p className="text-xs text-muted-foreground">1 Year Returns</p>
                   </div>
                 </div>
                 
@@ -454,23 +454,23 @@ export default function ClientPersonalPage() {
                     <h3 className="font-medium mb-3">Investment Profile</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Investment Horizon</dt>
+                        <dt className="text-sm text-muted-foreground">Investment Horizon</dt>
                         <dd className="text-sm font-medium">{client.investmentHorizon || "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Source of Wealth</dt>
+                        <dt className="text-sm text-muted-foreground">Source of Wealth</dt>
                         <dd className="text-sm font-medium">{client.sourceOfWealth || "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Net Worth</dt>
+                        <dt className="text-sm text-muted-foreground">Net Worth</dt>
                         <dd className="text-sm font-medium">{client.netWorth || "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Liquidity Requirements</dt>
+                        <dt className="text-sm text-muted-foreground">Liquidity Requirements</dt>
                         <dd className="text-sm font-medium">{client.liquidityRequirements || "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Foreign Investments</dt>
+                        <dt className="text-sm text-muted-foreground">Foreign Investments</dt>
                         <dd className="text-sm font-medium">{client.foreignInvestments || "No"}</dd>
                       </div>
                     </div>
@@ -480,15 +480,15 @@ export default function ClientPersonalPage() {
                     <h3 className="font-medium mb-3">Transaction Information</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Last Transaction Date</dt>
+                        <dt className="text-sm text-muted-foreground">Last Transaction Date</dt>
                         <dd className="text-sm font-medium">{formatDate(client.lastTransactionDate)}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Total Transactions (YTD)</dt>
+                        <dt className="text-sm text-muted-foreground">Total Transactions (YTD)</dt>
                         <dd className="text-sm font-medium">{client.totalTransactionCount || "0"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Average Transaction Value</dt>
+                        <dt className="text-sm text-muted-foreground">Average Transaction Value</dt>
                         <dd className="text-sm font-medium">
                           {client.averageTransactionValue ? `₹${(client.averageTransactionValue/100000).toFixed(2)} L` : "N/A"}
                         </dd>
@@ -507,7 +507,7 @@ export default function ClientPersonalPage() {
                         <Badge key={i} variant="outline" className="py-1">
                           {objective.trim()}
                         </Badge>
-                      )) : <p className="text-sm text-slate-500">No objectives specified</p>}
+                      )) : <p className="text-sm text-muted-foreground">No objectives specified</p>}
                     </div>
                   </div>
                   
@@ -518,7 +518,7 @@ export default function ClientPersonalPage() {
                         <Badge key={i} variant="outline" className="py-1">
                           {product.trim()}
                         </Badge>
-                      )) : <p className="text-sm text-slate-500">No preferred products specified</p>}
+                      )) : <p className="text-sm text-muted-foreground">No preferred products specified</p>}
                     </div>
                   </div>
                   
@@ -529,7 +529,7 @@ export default function ClientPersonalPage() {
                         <Badge key={i} variant="outline" className="py-1">
                           {interest.trim()}
                         </Badge>
-                      )) : <p className="text-sm text-slate-500">No financial interests specified</p>}
+                      )) : <p className="text-sm text-muted-foreground">No financial interests specified</p>}
                     </div>
                   </div>
                 </div>
@@ -563,21 +563,21 @@ export default function ClientPersonalPage() {
                     <h3 className="font-medium mb-3">Family Details</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Marital Status</dt>
+                        <dt className="text-sm text-muted-foreground">Marital Status</dt>
                         <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
                       </div>
                       {client.maritalStatus === "Married" && (
                         <div className="space-y-1">
-                          <dt className="text-sm text-slate-500">Spouse</dt>
+                          <dt className="text-sm text-muted-foreground">Spouse</dt>
                           <dd className="text-sm font-medium">{client.spouseName || "Not specified"}</dd>
                         </div>
                       )}
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Dependents</dt>
+                        <dt className="text-sm text-muted-foreground">Dependents</dt>
                         <dd className="text-sm font-medium">{client.dependentsCount !== null ? client.dependentsCount : "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Family Financial Goals</dt>
+                        <dt className="text-sm text-muted-foreground">Family Financial Goals</dt>
                         <dd className="text-sm font-medium">{client.familyFinancialGoals || "Not specified"}</dd>
                       </div>
                     </div>
@@ -592,14 +592,14 @@ export default function ClientPersonalPage() {
                           return nominee ? (
                             <>
                               <p className="font-medium">{nominee.name}</p>
-                              <p className="text-sm text-slate-500">Relation: {nominee.relation}</p>
-                              <p className="text-sm text-slate-500">Share: {nominee.sharePercentage}%</p>
+                              <p className="text-sm text-muted-foreground">Relation: {nominee.relation}</p>
+                              <p className="text-sm text-muted-foreground">Share: {nominee.sharePercentage}%</p>
                             </>
-                          ) : <p className="text-sm text-slate-500">Nominee details not available</p>
+                          ) : <p className="text-sm text-muted-foreground">Nominee details not available</p>
                         })()}
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">No nominee information</p>
+                      <p className="text-sm text-muted-foreground">No nominee information</p>
                     )}
                   </div>
                 </div>
@@ -613,9 +613,9 @@ export default function ClientPersonalPage() {
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="border-b">
-                            <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Name</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Gender</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Age</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Name</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Gender</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Age</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -630,7 +630,7 @@ export default function ClientPersonalPage() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">No children details available</p>
+                    <p className="text-sm text-muted-foreground">No children details available</p>
                   )}
                 </div>
                 
@@ -643,8 +643,8 @@ export default function ClientPersonalPage() {
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="border-b">
-                            <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Type</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Cover Amount</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Type</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Cover Amount</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -658,7 +658,7 @@ export default function ClientPersonalPage() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-500">No insurance coverage details available</p>
+                    <p className="text-sm text-muted-foreground">No insurance coverage details available</p>
                   )}
                 </div>
               </div>
@@ -699,23 +699,23 @@ export default function ClientPersonalPage() {
                     <h3 className="font-medium mb-3">KYC Details</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">KYC Date</dt>
+                        <dt className="text-sm text-muted-foreground">KYC Date</dt>
                         <dd className="text-sm font-medium">{formatDate(client.kycDate)}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">PAN Number</dt>
+                        <dt className="text-sm text-muted-foreground">PAN Number</dt>
                         <dd className="text-sm font-medium">{client.panNumber || "Not available"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Tax Residency Status</dt>
+                        <dt className="text-sm text-muted-foreground">Tax Residency Status</dt>
                         <dd className="text-sm font-medium">{client.taxResidencyStatus || "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">FATCA Status</dt>
+                        <dt className="text-sm text-muted-foreground">FATCA Status</dt>
                         <dd className="text-sm font-medium">{client.fatcaStatus || "Not specified"}</dd>
                       </div>
                       <div className="space-y-1">
-                        <dt className="text-sm text-slate-500">Risk Assessment Score</dt>
+                        <dt className="text-sm text-muted-foreground">Risk Assessment Score</dt>
                         <dd className="text-sm font-medium">{client.riskAssessmentScore ? `${client.riskAssessmentScore}/10` : "Not assessed"}</dd>
                       </div>
                     </div>
@@ -724,14 +724,14 @@ export default function ClientPersonalPage() {
                   <div>
                     <h3 className="font-medium mb-3">Identity Proof</h3>
                     <div className="bg-slate-50 p-4 rounded-lg mb-4">
-                      <p className="text-sm text-slate-500">Document Type</p>
+                      <p className="text-sm text-muted-foreground">Document Type</p>
                       <p className="font-medium">{client.identityProofType || "Not available"}</p>
                       <p className="text-sm font-medium mt-2">{client.identityProofNumber || "Document number not available"}</p>
                     </div>
                     
                     <h3 className="font-medium mb-3">Address Proof</h3>
                     <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="text-sm text-slate-500">Document Type</p>
+                      <p className="text-sm text-muted-foreground">Document Type</p>
                       <p className="font-medium">{client.addressProofType || "Not available"}</p>
                     </div>
                   </div>
@@ -742,7 +742,7 @@ export default function ClientPersonalPage() {
                 <div>
                   <h3 className="font-medium mb-3">Tax Planning</h3>
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">Tax Planning Preferences</p>
+                    <p className="text-sm text-muted-foreground">Tax Planning Preferences</p>
                     <p className="font-medium">{client.taxPlanningPreferences || "Not specified"}</p>
                   </div>
                 </div>
@@ -750,7 +750,7 @@ export default function ClientPersonalPage() {
                 <div>
                   <h3 className="font-medium mb-3">Retirement Planning</h3>
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-500">Retirement Goals</p>
+                    <p className="text-sm text-muted-foreground">Retirement Goals</p>
                     <p className="font-medium">{client.retirementGoals || "Not specified"}</p>
                   </div>
                 </div>

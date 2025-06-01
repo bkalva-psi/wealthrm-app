@@ -136,7 +136,7 @@ export default function ClientInsights() {
   return (
     <div className="px-1 py-4 pb-20 md:pb-6 md:px-6">
       {/* Consistent Header Band */}
-      <div className={`bg-white border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+      <div className={`bg-card border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Back arrow and client info */}
           <div className="flex items-center">
@@ -162,7 +162,7 @@ export default function ClientInsights() {
                   {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
@@ -170,7 +170,7 @@ export default function ClientInsights() {
                   {/* Line 2: Phone Number */}
                   {client?.phone && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-slate-400" />
+                      <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -184,7 +184,7 @@ export default function ClientInsights() {
                   {/* Line 3: Email */}
                   {client?.email && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-slate-400" />
+                      <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -202,7 +202,7 @@ export default function ClientInsights() {
       </div>
 
       {/* Page Header with Navigation */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-1 py-3">
+      <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-1 py-3">
         <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Insights</h2>
         
         {/* Navigation Icons */}

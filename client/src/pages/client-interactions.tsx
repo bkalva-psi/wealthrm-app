@@ -76,7 +76,7 @@ export default function ClientInteractionsPage() {
           
           <div className="space-y-1 mb-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Last Contact:</span>
+              <span className="text-muted-foreground">Last Contact:</span>
               <span className="font-medium">
                 {isLoading ? (
                   <Skeleton className="h-4 w-20" />
@@ -86,11 +86,11 @@ export default function ClientInteractionsPage() {
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Contact Method:</span>
+              <span className="text-muted-foreground">Contact Method:</span>
               <span className="font-medium">Phone Call</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Next Scheduled:</span>
+              <span className="text-muted-foreground">Next Scheduled:</span>
               <span className="font-medium">Next Tuesday at 2:00 PM</span>
             </div>
           </div>
@@ -106,9 +106,9 @@ export default function ClientInteractionsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-medium">Portfolio Review Call</h3>
-                  <p className="text-sm text-slate-600">Discussed recent market volatility and portfolio performance</p>
+                  <p className="text-sm text-muted-foreground">Discussed recent market volatility and portfolio performance</p>
                 </div>
-                <div className="flex items-center gap-2 text-slate-500">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <PhoneCall className="h-4 w-4" />
                   <span className="text-xs">{formatRelativeDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000))}</span>
                 </div>
@@ -119,9 +119,9 @@ export default function ClientInteractionsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-medium">Investment Strategy Meeting</h3>
-                  <p className="text-sm text-slate-600">Quarterly strategy review and allocation adjustments</p>
+                  <p className="text-sm text-muted-foreground">Quarterly strategy review and allocation adjustments</p>
                 </div>
-                <div className="flex items-center gap-2 text-slate-500">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <span className="text-xs">{formatRelativeDate(new Date(Date.now() - 14 * 24 * 60 * 60 * 1000))}</span>
                 </div>
@@ -132,9 +132,9 @@ export default function ClientInteractionsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-medium">Tax Planning Email</h3>
-                  <p className="text-sm text-slate-600">Sent year-end tax planning recommendations</p>
+                  <p className="text-sm text-muted-foreground">Sent year-end tax planning recommendations</p>
                 </div>
-                <div className="flex items-center gap-2 text-slate-500">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="h-4 w-4" />
                   <span className="text-xs">{formatRelativeDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))}</span>
                 </div>
@@ -146,10 +146,10 @@ export default function ClientInteractionsPage() {
       
       <div className="bg-slate-50 p-4 rounded-lg">
         <h2 className="text-lg font-medium mb-4">Placeholder: Interactions Section</h2>
-        <p className="text-slate-600 mb-2">
+        <p className="text-muted-foreground mb-2">
           This is a placeholder for the Client Interactions page. In a full implementation, this would display:
         </p>
-        <ul className="list-disc pl-5 text-slate-600 space-y-1">
+        <ul className="list-disc pl-5 text-muted-foreground space-y-1">
           <li>Complete interaction history across all channels</li>
           <li>Ability to log new interactions (calls, meetings, emails)</li>
           <li>Scheduled future interactions</li>

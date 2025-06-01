@@ -217,7 +217,7 @@ export default function TasksUpdated() {
   };
   
   const getDueStatus = (dueDate?: string) => {
-    if (!dueDate) return { text: "No due date", color: "text-slate-500" };
+    if (!dueDate) return { text: "No due date", color: "text-muted-foreground" };
     
     const date = new Date(dueDate);
     const today = new Date();
@@ -229,9 +229,9 @@ export default function TasksUpdated() {
     } else if (isBefore(date, today)) {
       return { text: "Overdue", color: "text-red-600 font-medium" };
     } else if (isAfter(date, addDays(today, 7))) {
-      return { text: `Due: ${format(date, "MMM d")}`, color: "text-slate-600" };
+      return { text: `Due: ${format(date, "MMM d")}`, color: "text-muted-foreground" };
     } else {
-      return { text: `Due: ${format(date, "MMM d")}`, color: "text-slate-600" };
+      return { text: `Due: ${format(date, "MMM d")}`, color: "text-muted-foreground" };
     }
   };
   
@@ -239,12 +239,12 @@ export default function TasksUpdated() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Tasks</h1>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search tasks..."
                 value={searchQuery}
@@ -323,7 +323,7 @@ export default function TasksUpdated() {
       <div className="space-y-6">
         {/* Tasks Card */}
         <Card>
-          <CardHeader className="sticky top-0 bg-white z-10 border-b">
+          <CardHeader className="sticky top-0 bg-card z-10 border-b">
             <div className="flex items-center justify-between cursor-pointer" onClick={() => setTasksCollapsed(!tasksCollapsed)}>
               <CardTitle className="text-lg flex items-center gap-2">
                 <CheckSquare className="h-5 w-5 text-blue-600" />
@@ -334,7 +334,7 @@ export default function TasksUpdated() {
               </Button>
             </div>
             {!tasksCollapsed && (
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-32 h-8 text-xs">
                     <SelectValue placeholder="Status" />
@@ -381,7 +381,7 @@ export default function TasksUpdated() {
               {isLoading ? (
                 <div className="space-y-4">
                   {Array(2).fill(0).map((_, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md">
+                    <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
                         <Skeleton className="h-5 w-3/4" />
@@ -403,7 +403,7 @@ export default function TasksUpdated() {
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={`task-${task.id}-${index}`} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                            <div key={`task-${task.id}-${index}`} className="border border-border rounded-md hover:bg-muted/50">
                               <div 
                                 className="flex items-start space-x-3 p-3 cursor-pointer"
                                 onClick={() => toggleTaskExpansion(task.id)}
@@ -419,7 +419,7 @@ export default function TasksUpdated() {
                                   <label
                                     htmlFor={`task-${task.id}`}
                                     className={`block text-sm font-medium ${
-                                      task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                                      task.completed ? "text-muted-foreground line-through" : "text-foreground"
                                     }`}
                                   >
                                     {task.title}
@@ -433,7 +433,7 @@ export default function TasksUpdated() {
                               {isExpanded && task.description && (
                                 <div className="px-3 pb-3 pt-0 border-t">
                                   <p className={`text-xs mt-2 ${
-                                    task.completed ? "text-slate-400" : "text-slate-600"
+                                    task.completed ? "text-muted-foreground" : "text-muted-foreground"
                                   }`}>
                                     {task.description}
                                   </p>
@@ -445,7 +445,7 @@ export default function TasksUpdated() {
                         
                         {/* Show More/Less button for Tasks */}
                         {currentFilteredTasks.length > 2 && (
-                          <div className="pt-2 border-t border-slate-100">
+                          <div className="pt-2 border-t border-border">
                             <Button 
                               variant="ghost" 
                               onClick={() => setShowAllTasks(!showAllTasks)}
@@ -459,7 +459,7 @@ export default function TasksUpdated() {
                       </>
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-slate-500">No tasks to display</p>
+                        <p className="text-muted-foreground">No tasks to display</p>
                         <Button
                           variant="outline"
                           className="mt-4"
@@ -478,7 +478,7 @@ export default function TasksUpdated() {
 
         {/* Portfolio Alerts Card */}
         <Card>
-          <CardHeader className="cursor-pointer sticky top-16 bg-white z-10 border-b" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
+          <CardHeader className="cursor-pointer sticky top-16 bg-card z-10 border-b" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-orange-600" />
@@ -495,7 +495,7 @@ export default function TasksUpdated() {
               {alertsLoading ? (
                 <div className="space-y-4">
                   {Array(5).fill(0).map((_, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md">
+                    <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
                         <Skeleton className="h-5 w-3/4" />
@@ -515,7 +515,7 @@ export default function TasksUpdated() {
                         {alertsToShow.map((alert: any) => {
                           const isExpanded = expandedAlerts.has(alert.id);
                           return (
-                            <div key={alert.id} className="border border-slate-200 rounded-md hover:bg-slate-50">
+                            <div key={alert.id} className="border border-border rounded-md hover:bg-muted/50">
                               <div 
                                 className="flex items-start space-x-3 p-3 cursor-pointer"
                                 onClick={() => toggleAlertExpansion(alert.id)}
@@ -525,8 +525,8 @@ export default function TasksUpdated() {
                                   alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
                                 }`} />
                                 <div className="flex-1">
-                                  <h4 className="text-sm font-medium text-slate-800">{alert.title}</h4>
-                                  <span className="text-xs text-slate-500 mt-1 block">
+                                  <h4 className="text-sm font-medium text-foreground">{alert.title}</h4>
+                                  <span className="text-xs text-muted-foreground mt-1 block">
                                     {alert.client_name ? `Client: ${alert.client_name}` : ''}
                                   </span>
                                 </div>
@@ -534,7 +534,7 @@ export default function TasksUpdated() {
                               </div>
                               {isExpanded && (
                                 <div className="px-3 pb-3 pt-0 border-t">
-                                  <p className="text-xs text-slate-600 mt-2">{alert.message}</p>
+                                  <p className="text-xs text-muted-foreground mt-2">{alert.message}</p>
                                   <div className="flex items-center justify-between mt-2">
                                     <span className={`text-xs px-2 py-1 rounded-full ${
                                       alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
@@ -551,7 +551,7 @@ export default function TasksUpdated() {
                         
                         {/* Show More/Less button for Portfolio Alerts */}
                         {alerts.length > 2 && (
-                          <div className="pt-2 border-t border-slate-100">
+                          <div className="pt-2 border-t border-border">
                             <Button 
                               variant="ghost" 
                               onClick={() => setShowAllAlerts(!showAllAlerts)}
@@ -565,8 +565,8 @@ export default function TasksUpdated() {
                       </>
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-slate-500">No portfolio alerts at this time</p>
-                        <p className="text-xs text-slate-400 mt-2">Your clients' portfolios are performing well</p>
+                        <p className="text-muted-foreground">No portfolio alerts at this time</p>
+                        <p className="text-xs text-muted-foreground mt-2">Your clients' portfolios are performing well</p>
                       </div>
                     );
                   })()}

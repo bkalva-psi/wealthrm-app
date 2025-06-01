@@ -157,7 +157,7 @@ const CommunicationItem: React.FC<{
                     />
                     <AvatarFallback>{communication.client_initials || getInitials(communication.client_name)}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-slate-700">{communication.client_name}</span>
+                  <span className="text-sm font-medium text-foreground">{communication.client_name}</span>
                   {communication.client_tier && (
                     <div className={`w-2 h-2 rounded-full ${getTierColor(communication.client_tier).bg}`}></div>
                   )}
@@ -961,7 +961,7 @@ const ClientCommunications: React.FC = () => {
         <h5 className="text-sm font-medium text-gray-700 mb-2">Action Items</h5>
         <div className="space-y-2">
           {validActionItems.map((item: ActionItem) => (
-            <div key={item.id} className="p-3 bg-white border border-gray-200 rounded-lg">
+            <div key={item.id} className="p-3 bg-card border border-gray-200 rounded-lg">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <h6 className="text-sm font-medium text-gray-900">{item.title}</h6>
@@ -1018,7 +1018,7 @@ const ClientCommunications: React.FC = () => {
         <h5 className="text-sm font-medium text-gray-700 mb-2">Attachments</h5>
         <div className="space-y-2">
           {attachments.map((attachment: Attachment) => (
-            <div key={attachment.id} className="p-3 bg-white border border-gray-200 rounded-lg">
+            <div key={attachment.id} className="p-3 bg-card border border-gray-200 rounded-lg">
               <div className="flex items-center gap-3">
                 <Paperclip className="h-4 w-4 text-gray-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -1176,7 +1176,7 @@ const ClientCommunications: React.FC = () => {
 
       {/* Harmonized header band - Mobile Optimized - Only show for client-specific view */}
       {!isGlobalView && (
-        <div className={`bg-white border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+        <div className={`bg-card border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           {/* Left side - Back arrow and client name */}
           <div className="flex items-center min-w-0 flex-1">
@@ -1202,7 +1202,7 @@ const ClientCommunications: React.FC = () => {
                   {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-lg sm:text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer truncate block w-full text-left"
+                    className="text-lg sm:text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer truncate block w-full text-left"
                   >
                     {client.fullName}
                   </button>
@@ -1210,7 +1210,7 @@ const ClientCommunications: React.FC = () => {
                   {/* Line 2: Phone Number */}
                   {client.phone && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-slate-400" />
+                      <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -1224,7 +1224,7 @@ const ClientCommunications: React.FC = () => {
                   {/* Line 3: Email */}
                   {client.email && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-slate-400" />
+                      <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -1244,7 +1244,7 @@ const ClientCommunications: React.FC = () => {
       </div>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-4">
+      <div className="bg-card border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
           {!isGlobalView && (
@@ -1468,7 +1468,7 @@ const ClientCommunications: React.FC = () => {
 };
 
 export default ClientCommunications;
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-card border-b border-gray-200 px-6 py-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Communications</h2>
           {!isGlobalView && (

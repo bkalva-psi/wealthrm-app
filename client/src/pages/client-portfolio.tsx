@@ -206,7 +206,7 @@ function MetricCard({ title, value, icon, description, color = "blue", trend, is
             {icon}
           </div>
           <div className="flex-1">
-            <p className="text-sm text-slate-500">{title}</p>
+            <p className="text-sm text-muted-foreground">{title}</p>
             <div className="mt-1 flex items-baseline">
               {isLoading ? (
                 <Skeleton className="h-8 w-24" />
@@ -222,7 +222,7 @@ function MetricCard({ title, value, icon, description, color = "blue", trend, is
                 </h3>
               )}
             </div>
-            {description && <p className="text-xs text-slate-500 mt-1">{description}</p>}
+            {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
           </div>
         </div>
       </CardContent>
@@ -283,7 +283,7 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
       }`}>
         {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
       </span>
-      <span className="text-xs text-slate-500">{period.label}</span>
+      <span className="text-xs text-muted-foreground">{period.label}</span>
     </div>
   );
   
@@ -315,7 +315,7 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
               }`}>
                 {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
               </span>
-              <span className="text-xs text-slate-500">{period.label}</span>
+              <span className="text-xs text-muted-foreground">{period.label}</span>
             </div>
           ))}
         </div>
@@ -330,7 +330,7 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
               }`}>
                 {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
               </span>
-              <span className="text-xs text-slate-500">{period.label}</span>
+              <span className="text-xs text-muted-foreground">{period.label}</span>
             </div>
           ))}
         </div>
@@ -345,7 +345,7 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
               }`}>
                 {period.value > 0 ? '+' : ''}{period.value.toFixed(1)}%
               </span>
-              <span className="text-xs text-slate-500">{period.label}</span>
+              <span className="text-xs text-muted-foreground">{period.label}</span>
             </div>
           ))}
         </div>
@@ -362,23 +362,23 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200">
-              <th className="px-4 py-3 text-left font-medium text-slate-500">Security</th>
-              <th className="px-4 py-3 text-left font-medium text-slate-500">Type</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">Value</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">Allocation</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">Current Gain</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">1Y Return</th>
-              <th className="px-4 py-3 text-left font-medium text-slate-500">Benchmark</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">Benchmark Return</th>
-              <th className="px-4 py-3 text-right font-medium text-slate-500">Alpha</th>
+            <tr className="border-b border-border">
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Security</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Value</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Allocation</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Current Gain</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">1Y Return</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Benchmark</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Benchmark Return</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Alpha</th>
             </tr>
           </thead>
           <tbody>
             {holdings.map((holding, index) => (
-              <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
+              <tr key={index} className="border-b border-border hover:bg-muted/50">
                 <td className="px-4 py-3 font-medium">{holding.name}</td>
-                <td className="px-4 py-3 text-slate-600">{holding.type}</td>
+                <td className="px-4 py-3 text-muted-foreground">{holding.type}</td>
                 <td className="px-4 py-3 text-right">
                   ₹{(holding.value / 100000).toFixed(2)} L
                 </td>
@@ -389,11 +389,11 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
                 <td className={`px-4 py-3 text-right ${holding.oneYearReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
                 </td>
-                <td className="px-4 py-3 text-slate-600">{holding.benchmark}</td>
+                <td className="px-4 py-3 text-muted-foreground">{holding.benchmark}</td>
                 <td className={`px-4 py-3 text-right ${holding.benchmarkReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
                 </td>
-                <td className={`px-4 py-3 text-right font-medium ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-slate-600'}`}>
+                <td className={`px-4 py-3 text-right font-medium ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
                   {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
                 </td>
               </tr>
@@ -405,41 +405,41 @@ function HoldingsTable({ holdings }: { holdings: any[] }) {
       {/* Card view for mobile */}
       <div className="md:hidden space-y-4">
         {holdings.map((holding, index) => (
-          <div key={index} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+          <div key={index} className="bg-card border border-border rounded-lg p-4 shadow-sm">
             <div className="flex justify-between items-start mb-2">
               <h4 className="font-medium text-sm">{holding.name}</h4>
               <span className={`text-sm font-medium ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {holding.gain > 0 ? '+' : ''}{holding.gain}%
               </span>
             </div>
-            <div className="text-xs text-slate-500 mb-3">{holding.type}</div>
+            <div className="text-xs text-muted-foreground mb-3">{holding.type}</div>
             
-            <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-2">
+            <div className="grid grid-cols-2 gap-3 border-t border-border pt-2">
               <div>
-                <div className="text-xs text-slate-500">Value</div>
+                <div className="text-xs text-muted-foreground">Value</div>
                 <div className="font-medium">₹{(holding.value / 100000).toFixed(2)} L</div>
               </div>
               <div>
-                <div className="text-xs text-slate-500">Allocation</div>
+                <div className="text-xs text-muted-foreground">Allocation</div>
                 <div className="font-medium text-right">{holding.allocation}%</div>
               </div>
               
               <div>
-                <div className="text-xs text-slate-500">1Y Return</div>
+                <div className="text-xs text-muted-foreground">1Y Return</div>
                 <div className={`font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-500">Alpha</div>
-                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-slate-600'}`}>
+                <div className="text-xs text-muted-foreground">Alpha</div>
+                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
                   {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
                 </div>
               </div>
             </div>
             
-            <div className="mt-2 pt-2 border-t border-slate-100">
-              <div className="text-xs text-slate-500">Benchmark</div>
+            <div className="mt-2 pt-2 border-t border-border">
+              <div className="text-xs text-muted-foreground">Benchmark</div>
               <div className="flex justify-between items-center">
                 <div className="font-medium text-sm">{holding.benchmark}</div>
                 <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -468,13 +468,13 @@ function RiskAssessment({ score }: { score: number }) {
         <span className="text-sm font-medium">Risk Score</span>
         <span className="text-sm font-medium">{score}/10</span>
       </div>
-      <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="relative h-2 bg-muted rounded-full overflow-hidden">
         <div 
           className={`absolute top-0 left-0 h-full ${score <= 3 ? 'bg-green-500' : score <= 6 ? 'bg-amber-500' : 'bg-red-500'}`}
           style={{ width: `${score * 10}%` }}
         ></div>
       </div>
-      <div className="text-xs text-slate-500">{getScoreLabel(score)}</div>
+      <div className="text-xs text-muted-foreground">{getScoreLabel(score)}</div>
     </div>
   );
 }
@@ -626,7 +626,7 @@ export default function ClientPortfolioPage() {
   return (
     <div className="px-1 py-4 pb-20 md:pb-6 md:px-6">
       {/* Consistent Header Band */}
-      <div className={`bg-white border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+      <div className={`bg-card border rounded-lg p-4 mb-2 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Back arrow and client info */}
           <div className="flex items-center">
@@ -652,7 +652,7 @@ export default function ClientPortfolioPage() {
                   {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
@@ -660,7 +660,7 @@ export default function ClientPortfolioPage() {
                   {/* Line 2: Phone Number */}
                   {client?.phone && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-slate-400" />
+                      <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -674,7 +674,7 @@ export default function ClientPortfolioPage() {
                   {/* Line 3: Email */}
                   {client?.email && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-slate-400" />
+                      <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -695,7 +695,7 @@ export default function ClientPortfolioPage() {
       </div>
 
       {/* Page Header with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-3">
+      <div className="bg-card border-b border-gray-200 px-1 py-3">
         <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Portfolio</h2>
         
         {/* Navigation Icons */}
@@ -891,7 +891,7 @@ export default function ClientPortfolioPage() {
                       <div className="text-xl font-semibold mt-1">
                         {client?.volatility || 12.4}%
                       </div>
-                      <p className="text-xs text-slate-500">Annual Standard Deviation</p>
+                      <p className="text-xs text-muted-foreground">Annual Standard Deviation</p>
                     </div>
                     
                     <div>
@@ -899,17 +899,17 @@ export default function ClientPortfolioPage() {
                       <div className="text-xl font-semibold mt-1">
                         {client?.sharpeRatio || 1.2}
                       </div>
-                      <p className="text-xs text-slate-500">Risk-adjusted Returns</p>
+                      <p className="text-xs text-muted-foreground">Risk-adjusted Returns</p>
                     </div>
                   </div>
                   
                   <div>
                     <h4 className="text-sm font-medium mb-1">Risk vs Category Average</h4>
-                    <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="relative h-2 bg-muted rounded-full overflow-hidden">
                       <div className="absolute top-0 left-0 h-full bg-amber-500 w-[65%]"></div>
-                      <div className="absolute top-0 left-0 h-full border-r-2 border-slate-700 border-dashed" style={{ left: '45%' }}></div>
+                      <div className="absolute top-0 left-0 h-full border-r-2 border-foreground border-dashed" style={{ left: '45%' }}></div>
                     </div>
-                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
                       <span>Lower Risk</span>
                       <span>Higher Risk</span>
                     </div>
@@ -1001,7 +1001,7 @@ export default function ClientPortfolioPage() {
                       Your equity allocation has drifted 5% above target. Consider rebalancing to maintain your risk profile.
                     </p>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-white text-amber-600 border-amber-300 hover:bg-amber-50">
+                      <Button size="sm" variant="outline" className="text-xs bg-card text-amber-600 border-amber-300 hover:bg-amber-50">
                         Review Allocation
                       </Button>
                     </div>
@@ -1016,7 +1016,7 @@ export default function ClientPortfolioPage() {
                       Your HDFC Bank FD of ₹3,00,000 is maturing in 15 days. Contact your RM for reinvestment options.
                     </p>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-white text-blue-600 border-blue-300 hover:bg-blue-50">
+                      <Button size="sm" variant="outline" className="text-xs bg-card text-blue-600 border-blue-300 hover:bg-blue-50">
                         View Options
                       </Button>
                     </div>
@@ -1044,11 +1044,11 @@ export default function ClientPortfolioPage() {
                       Based on your tax bracket, consider additional ELSS funds to optimize tax savings.
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">ELSS Funds</Badge>
-                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">Tax Planning</Badge>
+                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">ELSS Funds</Badge>
+                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">Tax Planning</Badge>
                     </div>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                      <Button size="sm" variant="outline" className="text-xs bg-card text-indigo-600 border-indigo-300 hover:bg-indigo-50">
                         Explore Options
                       </Button>
                     </div>
@@ -1063,11 +1063,11 @@ export default function ClientPortfolioPage() {
                       Add exposure to US markets through index funds to increase geographic diversification.
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">International Equity</Badge>
-                      <Badge variant="outline" className="bg-white text-indigo-700 border-indigo-300">Diversification</Badge>
+                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">International Equity</Badge>
+                      <Badge variant="outline" className="bg-card text-indigo-700 border-indigo-300">Diversification</Badge>
                     </div>
                     <div className="mt-3">
-                      <Button size="sm" variant="outline" className="text-xs bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50">
+                      <Button size="sm" variant="outline" className="text-xs bg-card text-indigo-600 border-indigo-300 hover:bg-indigo-50">
                         View Funds
                       </Button>
                     </div>
@@ -1109,14 +1109,14 @@ export default function ClientPortfolioPage() {
                     .sort((a, b) => b.gain - a.gain)
                     .slice(0, 5)
                     .map((holding, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-slate-50">
+                      <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-start space-x-2">
                           <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-medium text-xs">
                             #{index + 1}
                           </div>
                           <div>
                             <div className="font-medium text-sm">{holding.name}</div>
-                            <div className="text-xs text-slate-500">{holding.type}</div>
+                            <div className="text-xs text-muted-foreground">{holding.type}</div>
                           </div>
                         </div>
                         <div className="text-green-600 font-medium">+{holding.gain}%</div>
@@ -1140,14 +1140,14 @@ export default function ClientPortfolioPage() {
                     .sort((a, b) => a.gain - b.gain)
                     .slice(0, 5)
                     .map((holding, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-slate-50">
+                      <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-start space-x-2">
                           <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium text-xs">
                             #{index + 1}
                           </div>
                           <div>
                             <div className="font-medium text-sm">{holding.name}</div>
-                            <div className="text-xs text-slate-500">{holding.type}</div>
+                            <div className="text-xs text-muted-foreground">{holding.type}</div>
                           </div>
                         </div>
                         <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -1216,7 +1216,7 @@ export default function ClientPortfolioPage() {
               <CardContent>
                 <div className="space-y-4">
                   {/* Monthly Performance Chart */}
-                  <div className="border rounded-lg p-3 bg-white">
+                  <div className="border rounded-lg p-3 bg-card">
                     <PerformanceComparisonChart 
                       data={performancePeriods.filter(p => ['1M', '3M', '6M'].includes(p.label))} 
                       timeframe="monthly"
@@ -1224,7 +1224,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   
                   {/* Yearly Performance Chart */}
-                  <div className="border rounded-lg p-3 bg-white">
+                  <div className="border rounded-lg p-3 bg-card">
                     <PerformanceComparisonChart 
                       data={performancePeriods.filter(p => ['1Y', '3Y', '5Y'].includes(p.label))} 
                       timeframe="yearly"
@@ -1232,7 +1232,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   
                   {/* Overall Performance Chart */}
-                  <div className="border rounded-lg p-3 bg-white">
+                  <div className="border rounded-lg p-3 bg-card">
                     <PerformanceComparisonChart 
                       data={performancePeriods.filter(p => ['YTD', 'Since Inception'].includes(p.label))} 
                       timeframe="overall"
@@ -1240,7 +1240,7 @@ export default function ClientPortfolioPage() {
                   </div>
                   
                   {/* Summary Text */}
-                  <div className="text-xs text-slate-500 pt-2 px-1">
+                  <div className="text-xs text-muted-foreground pt-2 px-1">
                     <p>
                       <span className="font-medium">Alpha</span> represents excess return over benchmark after adjusting for risk. 
                       Positive values indicate outperformance of the managed portfolio versus the market benchmark.
@@ -1258,7 +1258,7 @@ export default function ClientPortfolioPage() {
                 <div className="text-sm">
                   {/* Risk Adjusted Returns Section */}
                   <div className="mb-4">
-                    <h4 className="font-medium text-slate-800 mb-2">Risk Adjusted Returns</h4>
+                    <h4 className="font-medium text-foreground mb-2">Risk Adjusted Returns</h4>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       <div className="border rounded-lg p-2">
                         <div className="text-muted-foreground text-xs">Standard Deviation (1Y)</div>
@@ -1304,7 +1304,7 @@ export default function ClientPortfolioPage() {
                   
                   {/* Drawdown Analysis Section */}
                   <div className="mb-4">
-                    <h4 className="font-medium text-slate-800 mb-2">Drawdown Analysis</h4>
+                    <h4 className="font-medium text-foreground mb-2">Drawdown Analysis</h4>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       <div className="border rounded-lg p-2">
                         <div className="text-muted-foreground text-xs">Max. Drawdown</div>
@@ -1326,7 +1326,7 @@ export default function ClientPortfolioPage() {
                   
                   {/* Value at Risk Section */}
                   <div className="mb-4">
-                    <h4 className="font-medium text-slate-800 mb-2">Value at Risk</h4>
+                    <h4 className="font-medium text-foreground mb-2">Value at Risk</h4>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       <div className="border rounded-lg p-2">
                         <div className="text-muted-foreground text-xs">VaR (95% Confidence)</div>
@@ -1348,7 +1348,7 @@ export default function ClientPortfolioPage() {
                   
                   {/* Diversification Section */}
                   <div>
-                    <h4 className="font-medium text-slate-800 mb-2">Diversification</h4>
+                    <h4 className="font-medium text-foreground mb-2">Diversification</h4>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       <div className="border rounded-lg p-2">
                         <div className="text-muted-foreground text-xs">Diversification Score</div>
@@ -1457,7 +1457,7 @@ export default function ClientPortfolioPage() {
                       <div className="flex justify-between items-center">
                         <div>
                           <div className="font-medium">Top 5 Holdings</div>
-                          <div className="text-xs text-slate-500">Portfolio Concentration</div>
+                          <div className="text-xs text-muted-foreground">Portfolio Concentration</div>
                         </div>
                         <div className="font-medium">68%</div>
                       </div>
@@ -1465,7 +1465,7 @@ export default function ClientPortfolioPage() {
                       <div className="flex justify-between items-center">
                         <div>
                           <div className="font-medium">Largest Sector</div>
-                          <div className="text-xs text-slate-500">Financial Services</div>
+                          <div className="text-xs text-muted-foreground">Financial Services</div>
                         </div>
                         <div className="font-medium">28%</div>
                       </div>
@@ -1473,7 +1473,7 @@ export default function ClientPortfolioPage() {
                       <div className="flex justify-between items-center">
                         <div>
                           <div className="font-medium">Diversification Score</div>
-                          <div className="text-xs text-slate-500">Overall Assessment</div>
+                          <div className="text-xs text-muted-foreground">Overall Assessment</div>
                         </div>
                         <div className="font-medium">7/10</div>
                       </div>
@@ -1493,14 +1493,14 @@ export default function ClientPortfolioPage() {
                   <div>
                     <h4 className="text-sm font-medium mb-2">Maximum Drawdown</h4>
                     <div className="text-2xl font-bold text-red-600">-18.5%</div>
-                    <div className="text-xs text-slate-500">March 2020 (COVID-19 Crash)</div>
+                    <div className="text-xs text-muted-foreground">March 2020 (COVID-19 Crash)</div>
                   </div>
                   
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <div>
                         <div className="font-medium">Recovery Time</div>
-                        <div className="text-xs text-slate-500">Last Major Drawdown</div>
+                        <div className="text-xs text-muted-foreground">Last Major Drawdown</div>
                       </div>
                       <div className="font-medium">7 Months</div>
                     </div>
@@ -1508,7 +1508,7 @@ export default function ClientPortfolioPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <div className="font-medium">Expected Drawdown</div>
-                        <div className="text-xs text-slate-500">95% Confidence</div>
+                        <div className="text-xs text-muted-foreground">95% Confidence</div>
                       </div>
                       <div className="font-medium text-amber-600">-12.8%</div>
                     </div>
@@ -1516,7 +1516,7 @@ export default function ClientPortfolioPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <div className="font-medium">Value at Risk (Monthly)</div>
-                        <div className="text-xs text-slate-500">95% Confidence</div>
+                        <div className="text-xs text-muted-foreground">95% Confidence</div>
                       </div>
                       <div className="font-medium text-amber-600">-5.2%</div>
                     </div>
@@ -1546,7 +1546,7 @@ export default function ClientPortfolioPage() {
                     <span className="text-sm text-green-600 font-medium">75% Funded</span>
                   </div>
                   <Progress value={75} className="h-2" />
-                  <div className="flex justify-between text-sm text-slate-500">
+                  <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Current: ₹37.5 L</span>
                     <span>Target: ₹50 L</span>
                   </div>
@@ -1558,7 +1558,7 @@ export default function ClientPortfolioPage() {
                     <span className="text-sm text-green-600 font-medium">60% Funded</span>
                   </div>
                   <Progress value={60} className="h-2" />
-                  <div className="flex justify-between text-sm text-slate-500">
+                  <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Current: ₹12 L</span>
                     <span>Target: ₹20 L</span>
                   </div>
@@ -1570,7 +1570,7 @@ export default function ClientPortfolioPage() {
                     <span className="text-sm text-amber-600 font-medium">35% Funded</span>
                   </div>
                   <Progress value={35} className="h-2" indicatorClassName="bg-amber-500" />
-                  <div className="flex justify-between text-sm text-slate-500">
+                  <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Current: ₹17.5 L</span>
                     <span>Target: ₹50 L</span>
                   </div>
@@ -1588,22 +1588,22 @@ export default function ClientPortfolioPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-slate-50 rounded-lg">
-                    <div className="text-sm text-slate-500">Retirement Age</div>
+                    <div className="text-sm text-muted-foreground">Retirement Age</div>
                     <div className="text-xl font-bold">60 years</div>
                   </div>
                   
                   <div className="p-3 bg-slate-50 rounded-lg">
-                    <div className="text-sm text-slate-500">Monthly Income</div>
+                    <div className="text-sm text-muted-foreground">Monthly Income</div>
                     <div className="text-xl font-bold">₹85,000</div>
                   </div>
                   
                   <div className="p-3 bg-slate-50 rounded-lg">
-                    <div className="text-sm text-slate-500">Projected Corpus</div>
+                    <div className="text-sm text-muted-foreground">Projected Corpus</div>
                     <div className="text-xl font-bold">₹2.1 Cr</div>
                   </div>
                   
                   <div className="p-3 bg-slate-50 rounded-lg">
-                    <div className="text-sm text-slate-500">Funding Status</div>
+                    <div className="text-sm text-muted-foreground">Funding Status</div>
                     <div className="text-xl font-bold text-green-600">75%</div>
                   </div>
                 </div>

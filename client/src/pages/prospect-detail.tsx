@@ -55,7 +55,7 @@ export default function ProspectDetail() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back
           </Button>
-          <h1 className="text-2xl font-semibold text-slate-800">Prospect Details</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Prospect Details</h1>
         </div>
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -77,12 +77,12 @@ export default function ProspectDetail() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back
           </Button>
-          <h1 className="text-2xl font-semibold text-slate-800">Prospect Details</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Prospect Details</h1>
         </div>
         <Card className="max-w-3xl mx-auto">
           <CardContent className="p-6">
             <div className="text-center py-8">
-              <p className="text-slate-600">Could not find prospect details. The prospect may have been deleted or you may not have permission to view it.</p>
+              <p className="text-muted-foreground">Could not find prospect details. The prospect may have been deleted or you may not have permission to view it.</p>
               <Button 
                 className="mt-4" 
                 onClick={handleBackClick}
@@ -108,7 +108,7 @@ export default function ProspectDetail() {
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back
         </Button>
-        <h1 className="text-2xl font-semibold text-slate-800">Prospect Details</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Prospect Details</h1>
       </div>
 
       <Card className="max-w-3xl mx-auto">
@@ -119,49 +119,49 @@ export default function ProspectDetail() {
             </div>
             <div>
               <CardTitle className="text-xl">{prospect.fullName}</CardTitle>
-              <p className="text-sm text-slate-500">{prospect.email}</p>
+              <p className="text-sm text-muted-foreground">{prospect.email}</p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-medium text-sm text-slate-500 mb-1">Contact Information</h3>
+              <h3 className="font-medium text-sm text-muted-foreground mb-1">Contact Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-slate-500">Phone</p>
+                  <p className="text-xs text-muted-foreground">Phone</p>
                   <p className="text-sm font-medium">{prospect.phone || "Not provided"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Email</p>
+                  <p className="text-xs text-muted-foreground">Email</p>
                   <p className="text-sm font-medium">{prospect.email}</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="font-medium text-sm text-slate-500 mb-1">Potential Value</h3>
+              <h3 className="font-medium text-sm text-muted-foreground mb-1">Potential Value</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-slate-500">Potential AUM</p>
+                  <p className="text-xs text-muted-foreground">Potential AUM</p>
                   <p className="text-sm font-medium">{prospect.potentialAum || "Not specified"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Probability Score</p>
+                  <p className="text-xs text-muted-foreground">Probability Score</p>
                   <p className="text-sm font-medium">{prospect.probabilityScore}%</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="font-medium text-sm text-slate-500 mb-1">Sales Pipeline</h3>
+              <h3 className="font-medium text-sm text-muted-foreground mb-1">Sales Pipeline</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-slate-500">Current Stage</p>
+                  <p className="text-xs text-muted-foreground">Current Stage</p>
                   <p className="text-sm font-medium capitalize">{prospect.stage}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Last Contact</p>
+                  <p className="text-xs text-muted-foreground">Last Contact</p>
                   <p className="text-sm font-medium">
                     {prospect.lastContactDate 
                       ? formatRelativeDate(prospect.lastContactDate) 
@@ -172,14 +172,14 @@ export default function ProspectDetail() {
             </div>
 
             <div>
-              <h3 className="font-medium text-sm text-slate-500 mb-1">Products & Source</h3>
+              <h3 className="font-medium text-sm text-muted-foreground mb-1">Products & Source</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-slate-500">Products of Interest</p>
+                  <p className="text-xs text-muted-foreground">Products of Interest</p>
                   <p className="text-sm font-medium">{prospect.productsOfInterest || "Not specified"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Source</p>
+                  <p className="text-xs text-muted-foreground">Source</p>
                   <p className="text-sm font-medium capitalize">{prospect.source || "Not specified"}</p>
                 </div>
               </div>
@@ -187,13 +187,13 @@ export default function ProspectDetail() {
           </div>
 
           <div className="mt-6">
-            <h3 className="font-medium text-sm text-slate-500 mb-2">Notes</h3>
+            <h3 className="font-medium text-sm text-muted-foreground mb-2">Notes</h3>
             <div className="bg-slate-50 p-3 rounded-md">
               <p className="text-sm">{prospect.notes || "No notes added yet."}</p>
             </div>
           </div>
 
-          <div className="mt-6 pt-6 border-t border-slate-200 flex flex-col sm:flex-row gap-3 justify-end">
+          <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row gap-3 justify-end">
             <Button 
               variant="outline" 
               className="flex-1 sm:flex-none"

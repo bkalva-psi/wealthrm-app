@@ -360,7 +360,7 @@ export default function Clients() {
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input 
                 placeholder="Search clients..." 
                 className="pl-10" 
@@ -443,7 +443,7 @@ export default function Clients() {
                                 });
                               }}
                             >
-                              <div className="h-5 w-5 rounded-sm border border-slate-300 flex items-center justify-center">
+                              <div className="h-5 w-5 rounded-sm border border-border flex items-center justify-center">
                                 {filterOptions.includedTiers.includes(tier) && (
                                   <Check className="h-3.5 w-3.5 text-primary-600" />
                                 )}
@@ -479,7 +479,7 @@ export default function Clients() {
                                 });
                               }}
                             >
-                              <div className="h-5 w-5 rounded-sm border border-slate-300 flex items-center justify-center">
+                              <div className="h-5 w-5 rounded-sm border border-border flex items-center justify-center">
                                 {filterOptions.riskProfiles.includes(profile) && (
                                   <Check className="h-3.5 w-3.5 text-primary-600" />
                                 )}
@@ -560,9 +560,9 @@ export default function Clients() {
           <CardContent className="p-6 text-center">
             <div className="py-8">
               <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                <X className="h-6 w-6 text-slate-400" />
+                <X className="h-6 w-6 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900 mb-1">No clients found</h3>
+              <h3 className="text-lg font-medium text-foreground mb-1">No clients found</h3>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
                 {searchQuery || activeFilters > 0 
                   ? "Try adjusting your search or filters to find what you're looking for."

@@ -267,7 +267,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
   };
 
   const getDueStatus = (dueDate?: string) => {
-    if (!dueDate) return { text: "No due date", color: "text-slate-500" };
+    if (!dueDate) return { text: "No due date", color: "text-muted-foreground" };
     
     const date = new Date(dueDate);
     
@@ -280,7 +280,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
     } else if (isBefore(date, addDays(new Date(), 2))) {
       return { text: "Due tomorrow", color: "text-amber-600" };
     } else {
-      return { text: `Due: ${format(date, "MMM d")}`, color: "text-slate-600" };
+      return { text: `Due: ${format(date, "MMM d")}`, color: "text-muted-foreground" };
     }
   };
 
@@ -303,7 +303,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
             </Button>
           )}
           <div>
-            <h1 className="text-2xl font-semibold text-slate-800">
+            <h1 className="text-2xl font-semibold text-foreground">
               {isAllTasks ? 'Tasks' : `Tasks - ${currentClient?.fullName || 'Client'}`}
             </h1>
           </div>
@@ -384,7 +384,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
       <Card className="mb-3">
         <CardContent className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search tasks..."
               value={searchQuery}
@@ -397,8 +397,8 @@ function ClientTasks({ clientId }: ClientTasksProps) {
       
       {/* Filter Dropdown */}
       <div className="flex items-center gap-3 mb-3 ml-4">
-        <Filter className="h-4 w-4 text-slate-600" />
-        <span className="text-sm font-medium text-slate-700">Filter Tasks:</span>
+        <Filter className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm font-medium text-foreground">Filter Tasks:</span>
         <Select value={activeTab} onValueChange={setActiveTab}>
           <SelectTrigger className="w-40">
             <SelectValue />
@@ -451,7 +451,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
               {isLoading ? (
                 <div className="space-y-4">
                   {Array(5).fill(0).map((_, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md">
+                    <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
                         <Skeleton className="h-5 w-3/4" />
@@ -473,10 +473,10 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                           const isExpanded = expandedTasks.has(task.id);
                           
                           return (
-                            <div key={task.id} className="border border-slate-200 rounded-md overflow-hidden">
+                            <div key={task.id} className="border border-border rounded-md overflow-hidden">
                               {/* Collapsed View - Essential Details */}
                               <div 
-                                className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-slate-50"
+                                className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-muted/50"
                                 onClick={() => toggleTaskExpansion(task.id)}
                               >
                                 <Checkbox
@@ -491,7 +491,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between">
                                     <span className={`text-sm font-medium ${
-                                      task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                                      task.completed ? "text-muted-foreground line-through" : "text-foreground"
                                     }`}>
                                       {task.title}
                                     </span>
@@ -500,7 +500,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                                         {task.completed ? "Completed" : dueStatus.text}
                                       </span>
                                       <svg 
-                                        className={`h-4 w-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                                        className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
                                         fill="none" 
                                         viewBox="0 0 24 24" 
                                         stroke="currentColor"
@@ -514,12 +514,12 @@ function ClientTasks({ clientId }: ClientTasksProps) {
 
                               {/* Expanded View - Full Details */}
                               {isExpanded && (
-                                <div className="px-3 pb-3 bg-slate-25 border-t border-slate-100">
+                                <div className="px-3 pb-3 bg-slate-25 border-t border-border">
                                   {task.description && (
                                     <div className="mt-3">
-                                      <p className="text-xs font-medium text-slate-700 mb-1">Description:</p>
+                                      <p className="text-xs font-medium text-foreground mb-1">Description:</p>
                                       <p className={`text-xs ${
-                                        task.completed ? "text-slate-400" : "text-slate-600"
+                                        task.completed ? "text-muted-foreground" : "text-muted-foreground"
                                       }`}>
                                         {task.description}
                                       </p>
@@ -528,7 +528,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                                   
                                   {isAllTasks && task.clientName && (
                                     <div className="mt-3">
-                                      <p className="text-xs font-medium text-slate-700 mb-1">Client:</p>
+                                      <p className="text-xs font-medium text-foreground mb-1">Client:</p>
                                       <p className="text-xs text-blue-600">
                                         {task.clientName}
                                       </p>
@@ -543,7 +543,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                                         e.stopPropagation();
                                         toggleTaskExpansion(task.id);
                                       }}
-                                      className="text-xs text-slate-600 hover:text-slate-900 p-0 h-auto"
+                                      className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
                                     >
                                       Show less
                                     </Button>
@@ -584,7 +584,7 @@ function ClientTasks({ clientId }: ClientTasksProps) {
                       </>
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-slate-500">No tasks to display</p>
+                        <p className="text-muted-foreground">No tasks to display</p>
                         <Button
                           variant="outline"
                           className="mt-4"

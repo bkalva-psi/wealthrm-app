@@ -140,9 +140,9 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         };
       default:
         return { 
-          bg: 'bg-slate-100', 
-          text: 'text-slate-800', 
-          border: 'border-slate-200'
+          bg: 'bg-muted', 
+          text: 'text-foreground', 
+          border: 'border-border'
         };
     }
   };
@@ -198,7 +198,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     
     return (
       <div className="rounded-lg overflow-hidden">
-        <div className="bg-white p-4 flex items-center justify-between">
+        <div className="bg-card p-4 flex items-center justify-between">
           <h2 className="font-semibold text-lg">
             {format(calendarDate, 'MMMM yyyy')}
           </h2>
@@ -212,7 +212,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           </div>
         </div>
         
-        <div className="grid grid-cols-7 bg-slate-100">
+        <div className="grid grid-cols-7 bg-muted">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
             <div key={day} className="text-center text-sm font-medium py-2">
               {day}
@@ -220,9 +220,9 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           ))}
         </div>
         
-        <div className="grid grid-cols-7 bg-white">
+        <div className="grid grid-cols-7 bg-card">
           {emptyDaysBefore.map((_, i) => (
-            <div key={`empty-${i}`} className="min-h-[100px] border-b border-r border-slate-200" />
+            <div key={`empty-${i}`} className="min-h-[100px] border-b border-r border-border" />
           ))}
           
           {days.map((day) => {
@@ -234,7 +234,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               <div 
                 key={day.toString()}
                 className={cn(
-                  "min-h-[100px] p-1 border-b border-r border-slate-200 relative",
+                  "min-h-[100px] p-1 border-b border-r border-border relative",
                   !isCurrentMonth && "bg-slate-50",
                   isToday(day) && "bg-blue-50",
                   isSelected && "ring-2 ring-primary ring-inset"
@@ -249,8 +249,8 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     className={cn(
                       "inline-block rounded-full w-7 h-7 text-center leading-7 text-sm",
                       isToday(day) && "bg-primary text-white",
-                      !isToday(day) && isCurrentMonth && "text-slate-900",
-                      !isCurrentMonth && "text-slate-400"
+                      !isToday(day) && isCurrentMonth && "text-foreground",
+                      !isCurrentMonth && "text-muted-foreground"
                     )}
                   >
                     {format(day, 'd')}
@@ -268,7 +268,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                   ))}
                   
                   {dayAppointments.length > 3 && (
-                    <div className="text-xs text-slate-500 text-center">
+                    <div className="text-xs text-muted-foreground text-center">
                       + {dayAppointments.length - 3} more
                     </div>
                   )}
@@ -293,7 +293,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">{dayName}</h2>
-            <p className="text-slate-500">{formattedDate}</p>
+            <p className="text-muted-foreground">{formattedDate}</p>
           </div>
           <div className="flex gap-2">
             <Button 
@@ -315,7 +315,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-card rounded-lg shadow overflow-hidden">
           {isLoading ? (
             <div className="p-4">
               <Skeleton className="h-12 w-full mb-3" />
@@ -326,7 +326,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             <div className="divide-y divide-slate-200">
               {Object.entries(eventsByHour).map(([time, timeAppointments]) => (
                 <div key={time} className="flex">
-                  <div className="w-20 py-3 px-4 text-right text-sm text-slate-500 border-r border-slate-200 bg-slate-50">
+                  <div className="w-20 py-3 px-4 text-right text-sm text-muted-foreground border-r border-border bg-slate-50">
                     {time}
                   </div>
                   <div className="flex-1 p-2 min-h-[60px]">
@@ -412,7 +412,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       <div className="space-y-6">
         {Object.entries(appointmentsByDate).map(([date, dateAppointments]) => (
           <div key={date}>
-            <h3 className="text-sm font-medium text-slate-500 mb-2">
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
               {isToday(new Date(date)) ? 'Today' : format(new Date(date), 'EEEE, MMMM d, yyyy')}
             </h3>
             <div className="space-y-3">
@@ -453,18 +453,18 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     </CardHeader>
                     <CardContent className="pb-3 pt-0">
                       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm">
-                        <div className="flex items-center text-slate-600">
+                        <div className="flex items-center text-muted-foreground">
                           <Clock className="h-4 w-4 mr-1" />
                           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                         </div>
                         {appointment.location && (
-                          <div className="flex items-center text-slate-600">
+                          <div className="flex items-center text-muted-foreground">
                             <MapPin className="h-4 w-4 mr-1" />
                             {appointment.location}
                           </div>
                         )}
                         {appointment.assignedTo && (
-                          <div className="flex items-center text-slate-600">
+                          <div className="flex items-center text-muted-foreground">
                             <User className="h-4 w-4 mr-1" />
                             RM: {appointment.assignedTo}
                           </div>
@@ -738,7 +738,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Customer Information Band */}
-      <div className={`bg-white shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-slate-300'}`}>
+      <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-border'}`}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -762,7 +762,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Line 1: Client Name */}
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer text-left"
+                      className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer text-left"
                     >
                       {client.fullName}
                     </button>
@@ -770,7 +770,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Line 2: Phone Number */}
                     {client.phone && (
                       <div className="mt-1 flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-slate-400" />
+                        <Phone className="h-4 w-4 text-muted-foreground" />
                         <a 
                           href={`tel:${client.phone}`}
                           className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -784,7 +784,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Line 3: Email */}
                     {client.email && (
                       <div className="mt-1 flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-slate-400" />
+                        <Mail className="h-4 w-4 text-muted-foreground" />
                         <a 
                           href={`mailto:${client.email}`}
                           className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -807,7 +807,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       </div>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-4">
+      <div className="bg-card border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
           <Button 
@@ -917,26 +917,26 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             <div className="space-y-4 py-3">
               {selectedAppointment?.description && (
                 <div>
-                  <p className="text-sm font-medium text-slate-500 mb-1">Description</p>
-                  <p className="text-slate-900 dark:text-slate-100">{selectedAppointment.description}</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Description</p>
+                  <p className="text-foreground dark:text-slate-100">{selectedAppointment.description}</p>
                 </div>
               )}
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-500 mb-1">Start Time</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Start Time</p>
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-slate-400" />
-                    <p className="text-slate-900 dark:text-slate-100">
+                    <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <p className="text-foreground dark:text-slate-100">
                       {selectedAppointment && format(new Date(selectedAppointment.startTime), 'MMMM d, yyyy h:mm a')}
                     </p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500 mb-1">End Time</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">End Time</p>
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-slate-400" />
-                    <p className="text-slate-900 dark:text-slate-100">
+                    <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <p className="text-foreground dark:text-slate-100">
                       {selectedAppointment && format(new Date(selectedAppointment.endTime), 'MMMM d, yyyy h:mm a')}
                     </p>
                   </div>
@@ -945,17 +945,17 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               
               {selectedAppointment?.location && (
                 <div>
-                  <p className="text-sm font-medium text-slate-500 mb-1">Location</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Location</p>
                   <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2 text-slate-400" />
-                    <p className="text-slate-900 dark:text-slate-100">{selectedAppointment.location}</p>
+                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <p className="text-foreground dark:text-slate-100">{selectedAppointment.location}</p>
                   </div>
                 </div>
               )}
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-500 mb-1">Type</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Type</p>
                   <Badge className={cn(
                     "mt-1",
                     getAppointmentTypeColor(selectedAppointment?.type || "meeting")
@@ -964,7 +964,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-500 mb-1">Priority</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Priority</p>
                   <Badge variant="outline" className={cn(
                     "mt-1",
                     selectedAppointment && getPriorityColor(selectedAppointment.priority).bg,

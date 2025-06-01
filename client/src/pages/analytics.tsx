@@ -154,7 +154,7 @@ export default function Analytics() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-800">Analytics Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Analytics Dashboard</h1>
 
       </div>
       
@@ -177,10 +177,10 @@ export default function Analytics() {
           kpiSummary.map((kpi, index) => (
             <Card key={index}>
               <CardContent className="p-6">
-                <p className="text-sm font-medium text-slate-500">{kpi.name}</p>
-                <h3 className="text-3xl font-bold text-slate-800 mt-1">{kpi.value}</h3>
+                <p className="text-sm font-medium text-muted-foreground">{kpi.name}</p>
+                <h3 className="text-3xl font-bold text-foreground mt-1">{kpi.value}</h3>
                 <div className="flex items-center mt-1">
-                  <span className="text-xs text-slate-500 mr-2">Target: {kpi.target}</span>
+                  <span className="text-xs text-muted-foreground mr-2">Target: {kpi.target}</span>
                   <span className={`text-xs ${getPercentageChangeColor(kpi.percentChange)}`}>
                     {kpi.percentChange >= 0 ? '+' : ''}{kpi.percentChange}%
                   </span>
@@ -395,7 +395,7 @@ export default function Analytics() {
                 <CardTitle>Client Segmentation</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
-                <p className="text-slate-500">Client analytics data will be available in the next update.</p>
+                <p className="text-muted-foreground">Client analytics data will be available in the next update.</p>
               </CardContent>
             </Card>
             
@@ -404,7 +404,7 @@ export default function Analytics() {
                 <CardTitle>Client Acquisition Trend</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
-                <p className="text-slate-500">Client acquisition data will be available in the next update.</p>
+                <p className="text-muted-foreground">Client acquisition data will be available in the next update.</p>
               </CardContent>
             </Card>
           </div>

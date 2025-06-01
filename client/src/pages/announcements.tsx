@@ -35,7 +35,7 @@ export default function AnnouncementsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-500">Loading announcements...</div>
+        <div className="text-muted-foreground">Loading announcements...</div>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function AnnouncementsPage() {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
       case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-slate-100 text-slate-800 border-slate-200';
+      default: return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -68,17 +68,17 @@ export default function AnnouncementsPage() {
       case 'policy': return 'bg-purple-100 text-purple-800';
       case 'product': return 'bg-indigo-100 text-indigo-800';
       case 'system': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-slate-100 text-slate-800';
+      default: return 'bg-muted text-foreground';
     }
   };
 
   return (
     <div className="relative">
-      <div className="sticky top-0 z-10 bg-white border-b border-slate-200 p-6">
+      <div className="sticky top-0 z-10 bg-card border-b border-border p-6">
         <div className="flex items-center space-x-3">
           <Megaphone className="h-6 w-6 text-ujjivan-primary" />
-          <h1 className="text-2xl font-bold text-slate-900">Announcements</h1>
-          <span className="ml-auto text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-foreground">Announcements</h1>
+          <span className="ml-auto text-sm text-muted-foreground">
             {activeAnnouncements.length} Active
           </span>
         </div>
@@ -93,17 +93,17 @@ export default function AnnouncementsPage() {
               return (
                 <div
                   key={announcement.id}
-                  className={`p-4 cursor-pointer hover:bg-slate-50 transition-colors ${
-                    index !== displayedAnnouncements.length - 1 ? 'border-b border-slate-100' : ''
+                  className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
+                    index !== displayedAnnouncements.length - 1 ? 'border-b border-border' : ''
                   }`}
                   onClick={() => toggleExpanded(announcement.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="font-medium text-slate-900 mb-1">
+                      <h3 className="font-medium text-foreground mb-1">
                         {announcement.title}
                       </h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-500">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>{announcement.author}</span>
                         <span>{format(new Date(announcement.created_at), 'MMM dd')}</span>
                         {announcement.action_required && (
@@ -116,16 +116,16 @@ export default function AnnouncementsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-slate-400" />
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <ChevronDown className="h-4 w-4 text-slate-400" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       )}
                     </div>
                   </div>
 
                   {isExpanded && (
                     <div className="mt-4 space-y-4">
-                      <div className="prose prose-sm text-slate-700">
+                      <div className="prose prose-sm text-foreground">
                         <p className="whitespace-pre-wrap">{announcement.content}</p>
                       </div>
                       
@@ -139,18 +139,18 @@ export default function AnnouncementsPage() {
                         </div>
                       )}
                       
-                      <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-100">
-                        <div className="flex items-center text-sm text-slate-500">
+                      <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-border">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           <User className="h-4 w-4 mr-1" />
                           By: <span className="font-medium ml-1">{announcement.author}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm text-slate-500">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           <Calendar className="h-4 w-4 mr-1" />
                           Valid until: {format(new Date(announcement.valid_until), 'MMM dd, yyyy')}
                         </div>
                         
-                        <div className="flex items-center text-sm text-slate-500">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           Target: <span className="font-medium ml-1 capitalize">{announcement.target_audience.replace('_', ' ')}</span>
                         </div>
                       </div>
@@ -163,10 +163,10 @@ export default function AnnouncementsPage() {
             })}
 
             {activeAnnouncements.length > 3 && (
-              <div className="p-4 border-t border-slate-100">
+              <div className="p-4 border-t border-border">
                 <Button
                   variant="ghost"
-                  className="w-full text-slate-600 hover:text-slate-900"
+                  className="w-full text-muted-foreground hover:text-foreground"
                   onClick={() => setShowAll(!showAll)}
                 >
                   {showAll ? (
@@ -190,8 +190,8 @@ export default function AnnouncementsPage() {
           <CardContent className="flex items-center justify-center py-12">
             <div className="text-center">
               <Megaphone className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">No Active Announcements</h3>
-              <p className="text-slate-500">Check back later for new updates and communications.</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">No Active Announcements</h3>
+              <p className="text-muted-foreground">Check back later for new updates and communications.</p>
             </div>
           </CardContent>
         </Card>

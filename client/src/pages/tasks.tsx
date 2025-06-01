@@ -186,7 +186,7 @@ export default function Tasks() {
   };
   
   const getDueStatus = (dueDate?: string) => {
-    if (!dueDate) return { text: "No due date", color: "text-slate-500" };
+    if (!dueDate) return { text: "No due date", color: "text-muted-foreground" };
     
     const date = new Date(dueDate);
     
@@ -199,7 +199,7 @@ export default function Tasks() {
     } else if (isBefore(date, addDays(new Date(), 2))) {
       return { text: "Due tomorrow", color: "text-amber-600" };
     } else {
-      return { text: `Due: ${format(date, "MMM d")}`, color: "text-slate-600" };
+      return { text: `Due: ${format(date, "MMM d")}`, color: "text-muted-foreground" };
     }
   };
   
@@ -207,7 +207,7 @@ export default function Tasks() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Tasks</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Tasks</h1>
         </div>
         <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
           <DialogTrigger asChild>
@@ -284,7 +284,7 @@ export default function Tasks() {
             <CardContent>
               <div className="mb-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search tasks..."
                     value={searchQuery}
@@ -297,7 +297,7 @@ export default function Tasks() {
               {isLoading ? (
                 <div className="space-y-4">
                   {Array(2).fill(0).map((_, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md">
+                    <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
                         <Skeleton className="h-5 w-3/4" />
@@ -324,7 +324,7 @@ export default function Tasks() {
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md hover:bg-slate-50 cursor-pointer">
+                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-slate-50 cursor-pointer">
                               <Checkbox
                                 id={`task-${task.id}`}
                                 checked={task.completed}
@@ -336,14 +336,14 @@ export default function Tasks() {
                                 <label
                                   htmlFor={`task-${task.id}`}
                                   className={`block text-sm font-medium ${
-                                    task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                                    task.completed ? "text-muted-foreground line-through" : "text-foreground"
                                   }`}
                                 >
                                   {task.title}
                                 </label>
                                 {task.description && (
                                   <p className={`text-xs mt-1 ${
-                                    task.completed ? "text-slate-400" : "text-slate-600"
+                                    task.completed ? "text-muted-foreground" : "text-muted-foreground"
                                   }`}>
                                     {task.description}
                                   </p>
@@ -368,7 +368,7 @@ export default function Tasks() {
                       </>
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-slate-500">No tasks to display</p>
+                        <p className="text-muted-foreground">No tasks to display</p>
                         <Button
                           variant="outline"
                           className="mt-4"
@@ -404,7 +404,7 @@ export default function Tasks() {
               {alertsLoading ? (
                 <div className="space-y-4">
                   {Array(5).fill(0).map((_, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md">
+                    <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
                         <Skeleton className="h-5 w-3/4" />
@@ -421,16 +421,16 @@ export default function Tasks() {
                     return alerts.length > 0 ? (
                       <>
                         {alerts.map((alert: any) => (
-                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-slate-200 rounded-md hover:bg-slate-50 cursor-pointer">
+                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-slate-50 cursor-pointer">
                             <div className={`h-4 w-4 mt-1 rounded-full ${
                               alert.severity === 'high' ? 'bg-red-500' : 
                               alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
                             }`} />
                             <div className="flex-1">
-                              <h4 className="text-sm font-medium text-slate-800">{alert.title}</h4>
-                              <p className="text-xs text-slate-600 mt-1">{alert.message}</p>
+                              <h4 className="text-sm font-medium text-foreground">{alert.title}</h4>
+                              <p className="text-xs text-muted-foreground mt-1">{alert.message}</p>
                               <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-slate-500">
+                                <span className="text-xs text-muted-foreground">
                                   {alert.client_name ? `Client: ${alert.client_name}` : ''}
                                 </span>
                                 <span className={`text-xs px-2 py-1 rounded-full ${
@@ -456,8 +456,8 @@ export default function Tasks() {
                       </>
                     ) : (
                       <div className="text-center py-8">
-                        <p className="text-slate-500">No portfolio alerts at this time</p>
-                        <p className="text-xs text-slate-400 mt-2">Your clients' portfolios are performing well</p>
+                        <p className="text-muted-foreground">No portfolio alerts at this time</p>
+                        <p className="text-xs text-muted-foreground mt-2">Your clients' portfolios are performing well</p>
                       </div>
                     );
                   })()}

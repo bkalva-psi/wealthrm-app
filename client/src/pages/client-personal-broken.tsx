@@ -120,7 +120,7 @@ export default function ClientPersonalPage() {
   return (
     <div>
       {/* New Consistent Header */}
-      <div className={`bg-white border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+      <div className={`bg-card border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Back arrow and client info */}
           <div className="flex items-center">
@@ -146,7 +146,7 @@ export default function ClientPersonalPage() {
                   {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-slate-900 hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
@@ -154,7 +154,7 @@ export default function ClientPersonalPage() {
                   {/* Line 2: Phone Number */}
                   {client?.phone && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-slate-400" />
+                      <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -168,7 +168,7 @@ export default function ClientPersonalPage() {
                   {/* Line 3: Email */}
                   {client?.email && (
                     <div className="mt-1 flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-slate-400" />
+                      <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
                         className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -188,7 +188,7 @@ export default function ClientPersonalPage() {
       </div>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-white border-b border-gray-200 px-1 py-4">
+      <div className="bg-card border-b border-gray-200 px-1 py-4">
         <h2 className="text-2xl font-bold text-gray-900 px-5 mb-3">Personal Profile</h2>
         
         {/* Navigation Icons */}
@@ -284,8 +284,8 @@ export default function ClientPersonalPage() {
                     {/* KYC and AUM in compact layout */}
                     <div className="flex gap-4 mt-3">
                       <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3 text-slate-500" />
-                        <span className="text-sm text-slate-600">KYC {client.kycStatus || "Unknown"}</span>
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">KYC {client.kycStatus || "Unknown"}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Wallet className="h-3 w-3 text-orange-500" />
@@ -298,49 +298,49 @@ export default function ClientPersonalPage() {
                 <div className="w-full md:w-2/3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                      <User className="h-5 w-5 text-slate-400" />
+                      <User className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-slate-500">Client Since</p>
+                        <p className="text-sm text-muted-foreground">Client Since</p>
                         <p>{formatDate(client.createdAt)}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <Clock className="h-5 w-5 text-slate-400" />
+                      <Clock className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-slate-500">Relationship Duration</p>
+                        <p className="text-sm text-muted-foreground">Relationship Duration</p>
                         <p>{calculateDuration(client.createdAt)}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <MapPin className="h-5 w-5 text-slate-400" />
+                      <MapPin className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-slate-500">Home City</p>
+                        <p className="text-sm text-muted-foreground">Home City</p>
                         <p>{client.homeCity || "Not provided"}, {client.homeState || ""}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <Calendar className="h-5 w-5 text-slate-400" />
+                      <Calendar className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-slate-500">Date of Birth</p>
+                        <p className="text-sm text-muted-foreground">Date of Birth</p>
                         <p>{formatDate(client.dateOfBirth)}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <Briefcase className="h-5 w-5 text-slate-400" />
+                      <Briefcase className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-slate-500">Profession</p>
+                        <p className="text-sm text-muted-foreground">Profession</p>
                         <p>{client.profession || "Not provided"}</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <Building className="h-5 w-5 text-slate-400" />
+                      <Building className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-slate-500">Company</p>
+                        <p className="text-sm text-muted-foreground">Company</p>
                         <p>{client.companyName || "Not provided"}</p>
                       </div>
                     </div>
@@ -375,29 +375,29 @@ export default function ClientPersonalPage() {
                       <h3 className="font-medium mb-3">Basic Details</h3>
                       <dl className="space-y-2">
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Full Name</dt>
+                          <dt className="text-sm text-muted-foreground">Full Name</dt>
                           <dd className="text-sm font-medium">{client.fullName}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Date of Birth</dt>
+                          <dt className="text-sm text-muted-foreground">Date of Birth</dt>
                           <dd className="text-sm font-medium">{formatDate(client.dateOfBirth)}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Marital Status</dt>
+                          <dt className="text-sm text-muted-foreground">Marital Status</dt>
                           <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
                         </div>
                         {client.maritalStatus === "Married" && (
                           <div className="flex justify-between">
-                            <dt className="text-sm text-slate-500">Anniversary</dt>
+                            <dt className="text-sm text-muted-foreground">Anniversary</dt>
                             <dd className="text-sm font-medium">{formatDate(client.anniversaryDate)}</dd>
                           </div>
                         )}
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Client Since</dt>
+                          <dt className="text-sm text-muted-foreground">Client Since</dt>
                           <dd className="text-sm font-medium">{formatDate(client.clientSince) || formatDate(client.createdAt)}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Acquisition Source</dt>
+                          <dt className="text-sm text-muted-foreground">Acquisition Source</dt>
                           <dd className="text-sm font-medium">{client.clientAcquisitionSource || "Direct"}</dd>
                         </div>
                       </dl>
@@ -407,19 +407,19 @@ export default function ClientPersonalPage() {
                       <h3 className="font-medium mb-3">Contact Preferences</h3>
                       <dl className="space-y-2">
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Preferred Contact Method</dt>
+                          <dt className="text-sm text-muted-foreground">Preferred Contact Method</dt>
                           <dd className="text-sm font-medium">{client.preferredContactMethod || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Preferred Time</dt>
+                          <dt className="text-sm text-muted-foreground">Preferred Time</dt>
                           <dd className="text-sm font-medium">{client.preferredContactTime || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Communication Frequency</dt>
+                          <dt className="text-sm text-muted-foreground">Communication Frequency</dt>
                           <dd className="text-sm font-medium">{client.communicationFrequency || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Last Contact</dt>
+                          <dt className="text-sm text-muted-foreground">Last Contact</dt>
                           <dd className="text-sm font-medium">{formatDate(client.lastContactDate)}</dd>
                         </div>
                       </dl>
@@ -461,27 +461,27 @@ export default function ClientPersonalPage() {
                     <div className="bg-slate-50 p-4 rounded-lg">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         <div>
-                          <p className="text-sm text-slate-500">Profession</p>
+                          <p className="text-sm text-muted-foreground">Profession</p>
                           <p className="font-medium">{client.profession || "Not specified"}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-500">Designation</p>
+                          <p className="text-sm text-muted-foreground">Designation</p>
                           <p className="font-medium">{client.designation || "Not specified"}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-500">Company</p>
+                          <p className="text-sm text-muted-foreground">Company</p>
                           <p className="font-medium">{client.companyName || "Not specified"}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-500">Work Experience</p>
+                          <p className="text-sm text-muted-foreground">Work Experience</p>
                           <p className="font-medium">{client.workExperience ? `${client.workExperience} years` : "Not specified"}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-500">Sector</p>
+                          <p className="text-sm text-muted-foreground">Sector</p>
                           <p className="font-medium">{client.sectorOfEmployment || "Not specified"}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-500">Annual Income</p>
+                          <p className="text-sm text-muted-foreground">Annual Income</p>
                           <p className="font-medium">{client.annualIncome || "Not specified"}</p>
                         </div>
                       </div>
@@ -503,21 +503,21 @@ export default function ClientPersonalPage() {
                 <CardContent className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="text-sm text-slate-500">AUM</p>
+                      <p className="text-sm text-muted-foreground">AUM</p>
                       <p className="font-medium text-lg">{client.aum}</p>
-                      <p className="text-xs text-slate-500">Tier: {client.tier.toUpperCase()}</p>
+                      <p className="text-xs text-muted-foreground">Tier: {client.tier.toUpperCase()}</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="text-sm text-slate-500">Risk Profile</p>
+                      <p className="text-sm text-muted-foreground">Risk Profile</p>
                       <p className="font-medium text-lg">{client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : "Not specified"}</p>
-                      <p className="text-xs text-slate-500">Score: {client.riskAssessmentScore || "N/A"}/10</p>
+                      <p className="text-xs text-muted-foreground">Score: {client.riskAssessmentScore || "N/A"}/10</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="text-sm text-slate-500">Yearly Performance</p>
+                      <p className="text-sm text-muted-foreground">Yearly Performance</p>
                       <p className={`font-medium text-lg ${(client.yearlyPerformance && client.yearlyPerformance > 0) ? 'text-green-600' : 'text-red-600'}`}>
                         {client.yearlyPerformance ? `${client.yearlyPerformance > 0 ? '+' : ''}${client.yearlyPerformance.toFixed(2)}%` : "N/A"}
                       </p>
-                      <p className="text-xs text-slate-500">1 Year Returns</p>
+                      <p className="text-xs text-muted-foreground">1 Year Returns</p>
                     </div>
                   </div>
                   
@@ -528,23 +528,23 @@ export default function ClientPersonalPage() {
                       <h3 className="font-medium mb-3">Investment Profile</h3>
                       <dl className="space-y-2">
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Investment Horizon</dt>
+                          <dt className="text-sm text-muted-foreground">Investment Horizon</dt>
                           <dd className="text-sm font-medium">{client.investmentHorizon || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Source of Wealth</dt>
+                          <dt className="text-sm text-muted-foreground">Source of Wealth</dt>
                           <dd className="text-sm font-medium">{client.sourceOfWealth || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Net Worth</dt>
+                          <dt className="text-sm text-muted-foreground">Net Worth</dt>
                           <dd className="text-sm font-medium">{client.netWorth || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Liquidity Requirements</dt>
+                          <dt className="text-sm text-muted-foreground">Liquidity Requirements</dt>
                           <dd className="text-sm font-medium">{client.liquidityRequirements || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Foreign Investments</dt>
+                          <dt className="text-sm text-muted-foreground">Foreign Investments</dt>
                           <dd className="text-sm font-medium">{client.foreignInvestments || "No"}</dd>
                         </div>
                       </dl>
@@ -554,15 +554,15 @@ export default function ClientPersonalPage() {
                       <h3 className="font-medium mb-3">Transaction Information</h3>
                       <dl className="space-y-2">
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Last Transaction Date</dt>
+                          <dt className="text-sm text-muted-foreground">Last Transaction Date</dt>
                           <dd className="text-sm font-medium">{formatDate(client.lastTransactionDate)}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Total Transactions (YTD)</dt>
+                          <dt className="text-sm text-muted-foreground">Total Transactions (YTD)</dt>
                           <dd className="text-sm font-medium">{client.totalTransactionCount || "0"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Average Transaction Value</dt>
+                          <dt className="text-sm text-muted-foreground">Average Transaction Value</dt>
                           <dd className="text-sm font-medium">
                             {client.averageTransactionValue ? `₹${(client.averageTransactionValue/100000).toFixed(2)} L` : "N/A"}
                           </dd>
@@ -581,7 +581,7 @@ export default function ClientPersonalPage() {
                           <Badge key={i} variant="outline" className="py-1">
                             {objective.trim()}
                           </Badge>
-                        )) : <p className="text-sm text-slate-500">No objectives specified</p>}
+                        )) : <p className="text-sm text-muted-foreground">No objectives specified</p>}
                       </div>
                     </div>
                     
@@ -592,7 +592,7 @@ export default function ClientPersonalPage() {
                           <Badge key={i} variant="outline" className="py-1">
                             {product.trim()}
                           </Badge>
-                        )) : <p className="text-sm text-slate-500">No preferred products specified</p>}
+                        )) : <p className="text-sm text-muted-foreground">No preferred products specified</p>}
                       </div>
                     </div>
                     
@@ -603,7 +603,7 @@ export default function ClientPersonalPage() {
                           <Badge key={i} variant="outline" className="py-1">
                             {interest.trim()}
                           </Badge>
-                        )) : <p className="text-sm text-slate-500">No financial interests specified</p>}
+                        )) : <p className="text-sm text-muted-foreground">No financial interests specified</p>}
                       </div>
                     </div>
                   </div>
@@ -617,9 +617,9 @@ export default function ClientPersonalPage() {
                         <table className="w-full border-collapse">
                           <thead>
                             <tr className="border-b">
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Type</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Amount</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Frequency</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Type</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Amount</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Frequency</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -634,7 +634,7 @@ export default function ClientPersonalPage() {
                         </table>
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">No recurring investments</p>
+                      <p className="text-sm text-muted-foreground">No recurring investments</p>
                     )}
                   </div>
                   
@@ -645,8 +645,8 @@ export default function ClientPersonalPage() {
                         <table className="w-full border-collapse">
                           <thead>
                             <tr className="border-b">
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Event</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Timeframe</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Event</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Timeframe</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -660,7 +660,7 @@ export default function ClientPersonalPage() {
                         </table>
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">No major life events planned</p>
+                      <p className="text-sm text-muted-foreground">No major life events planned</p>
                     )}
                   </div>
                 </CardContent>
@@ -682,21 +682,21 @@ export default function ClientPersonalPage() {
                       <h3 className="font-medium mb-3">Family Details</h3>
                       <dl className="space-y-2">
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Marital Status</dt>
+                          <dt className="text-sm text-muted-foreground">Marital Status</dt>
                           <dd className="text-sm font-medium">{client.maritalStatus || "Not specified"}</dd>
                         </div>
                         {client.maritalStatus === "Married" && (
                           <div className="flex justify-between">
-                            <dt className="text-sm text-slate-500">Spouse</dt>
+                            <dt className="text-sm text-muted-foreground">Spouse</dt>
                             <dd className="text-sm font-medium">{client.spouseName || "Not specified"}</dd>
                           </div>
                         )}
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Dependents</dt>
+                          <dt className="text-sm text-muted-foreground">Dependents</dt>
                           <dd className="text-sm font-medium">{client.dependentsCount !== null ? client.dependentsCount : "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Family Financial Goals</dt>
+                          <dt className="text-sm text-muted-foreground">Family Financial Goals</dt>
                           <dd className="text-sm font-medium">{client.familyFinancialGoals || "Not specified"}</dd>
                         </div>
                       </dl>
@@ -711,14 +711,14 @@ export default function ClientPersonalPage() {
                             return nominee ? (
                               <>
                                 <p className="font-medium">{nominee.name}</p>
-                                <p className="text-sm text-slate-500">Relation: {nominee.relation}</p>
-                                <p className="text-sm text-slate-500">Share: {nominee.sharePercentage}%</p>
+                                <p className="text-sm text-muted-foreground">Relation: {nominee.relation}</p>
+                                <p className="text-sm text-muted-foreground">Share: {nominee.sharePercentage}%</p>
                               </>
-                            ) : <p className="text-sm text-slate-500">Nominee details not available</p>
+                            ) : <p className="text-sm text-muted-foreground">Nominee details not available</p>
                           })()}
                         </div>
                       ) : (
-                        <p className="text-sm text-slate-500">No nominee information</p>
+                        <p className="text-sm text-muted-foreground">No nominee information</p>
                       )}
                     </div>
                   </div>
@@ -732,9 +732,9 @@ export default function ClientPersonalPage() {
                         <table className="w-full border-collapse">
                           <thead>
                             <tr className="border-b">
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Name</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Gender</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Age</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Name</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Gender</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Age</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -749,7 +749,7 @@ export default function ClientPersonalPage() {
                         </table>
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">No children details available</p>
+                      <p className="text-sm text-muted-foreground">No children details available</p>
                     )}
                   </div>
                   
@@ -762,8 +762,8 @@ export default function ClientPersonalPage() {
                         <table className="w-full border-collapse">
                           <thead>
                             <tr className="border-b">
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Type</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-500">Cover Amount</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Type</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Cover Amount</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -777,7 +777,7 @@ export default function ClientPersonalPage() {
                         </table>
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">No insurance coverage details available</p>
+                      <p className="text-sm text-muted-foreground">No insurance coverage details available</p>
                     )}
                   </div>
                 </CardContent>
@@ -807,23 +807,23 @@ export default function ClientPersonalPage() {
                       <h3 className="font-medium mb-3">KYC Details</h3>
                       <dl className="space-y-2">
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">KYC Date</dt>
+                          <dt className="text-sm text-muted-foreground">KYC Date</dt>
                           <dd className="text-sm font-medium">{formatDate(client.kycDate)}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">PAN Number</dt>
+                          <dt className="text-sm text-muted-foreground">PAN Number</dt>
                           <dd className="text-sm font-medium">{client.panNumber || "Not available"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Tax Residency Status</dt>
+                          <dt className="text-sm text-muted-foreground">Tax Residency Status</dt>
                           <dd className="text-sm font-medium">{client.taxResidencyStatus || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">FATCA Status</dt>
+                          <dt className="text-sm text-muted-foreground">FATCA Status</dt>
                           <dd className="text-sm font-medium">{client.fatcaStatus || "Not specified"}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-sm text-slate-500">Risk Assessment Score</dt>
+                          <dt className="text-sm text-muted-foreground">Risk Assessment Score</dt>
                           <dd className="text-sm font-medium">{client.riskAssessmentScore ? `${client.riskAssessmentScore}/10` : "Not assessed"}</dd>
                         </div>
                       </dl>
@@ -832,14 +832,14 @@ export default function ClientPersonalPage() {
                     <div>
                       <h3 className="font-medium mb-3">Identity Proof</h3>
                       <div className="bg-slate-50 p-4 rounded-lg mb-4">
-                        <p className="text-sm text-slate-500">Document Type</p>
+                        <p className="text-sm text-muted-foreground">Document Type</p>
                         <p className="font-medium">{client.identityProofType || "Not available"}</p>
                         <p className="text-sm font-medium mt-2">{client.identityProofNumber || "Document number not available"}</p>
                       </div>
                       
                       <h3 className="font-medium mb-3">Address Proof</h3>
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <p className="text-sm text-slate-500">Document Type</p>
+                        <p className="text-sm text-muted-foreground">Document Type</p>
                         <p className="font-medium">{client.addressProofType || "Not available"}</p>
                       </div>
                     </div>
@@ -850,7 +850,7 @@ export default function ClientPersonalPage() {
                   <div>
                     <h3 className="font-medium mb-3">Tax Planning</h3>
                     <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="text-sm text-slate-500">Tax Planning Preferences</p>
+                      <p className="text-sm text-muted-foreground">Tax Planning Preferences</p>
                       <p className="font-medium">{client.taxPlanningPreferences || "Not specified"}</p>
                     </div>
                   </div>
@@ -858,7 +858,7 @@ export default function ClientPersonalPage() {
                   <div>
                     <h3 className="font-medium mb-3">Retirement Planning</h3>
                     <div className="bg-slate-50 p-4 rounded-lg">
-                      <p className="text-sm text-slate-500">Retirement Goals</p>
+                      <p className="text-sm text-muted-foreground">Retirement Goals</p>
                       <p className="font-medium">{client.retirementGoals || "Not specified"}</p>
                     </div>
                   </div>
@@ -868,7 +868,7 @@ export default function ClientPersonalPage() {
           </Tabs>
         </>
       ) : (
-        <div className="text-center py-8 text-slate-500">
+        <div className="text-center py-8 text-muted-foreground">
           <p>Could not load client information.</p>
         </div>
       )}

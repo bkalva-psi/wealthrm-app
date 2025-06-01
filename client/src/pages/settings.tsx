@@ -116,7 +116,7 @@ export default function Settings() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-800">Settings</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
 
       </div>
       
@@ -263,10 +263,10 @@ export default function Settings() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <Shield className="h-5 w-5 text-slate-500" />
+                    <Shield className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium text-slate-700">Two-Factor Authentication</p>
-                      <p className="text-xs text-slate-500">Add an extra layer of security to your account</p>
+                      <p className="text-sm font-medium text-foreground">Two-Factor Authentication</p>
+                      <p className="text-xs text-muted-foreground">Add an extra layer of security to your account</p>
                     </div>
                   </div>
                   <Button variant="outline">Enable</Button>
@@ -274,10 +274,10 @@ export default function Settings() {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <Mail className="h-5 w-5 text-slate-500" />
+                    <Mail className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium text-slate-700">Email Verification</p>
-                      <p className="text-xs text-slate-500">Verify your email address</p>
+                      <p className="text-sm font-medium text-foreground">Email Verification</p>
+                      <p className="text-xs text-muted-foreground">Verify your email address</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
@@ -304,10 +304,10 @@ export default function Settings() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-slate-700">Notification Channels</h3>
+                <h3 className="text-sm font-medium text-foreground">Notification Channels</h3>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Mail className="h-4 w-4 text-slate-500" />
+                    <Mail className="h-4 w-4 text-muted-foreground" />
                     <Label htmlFor="emailAlerts" className="text-sm">Email Alerts</Label>
                   </div>
                   <Switch 
@@ -318,7 +318,7 @@ export default function Settings() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <BellRing className="h-4 w-4 text-slate-500" />
+                    <BellRing className="h-4 w-4 text-muted-foreground" />
                     <Label htmlFor="appNotifications" className="text-sm">App Notifications</Label>
                   </div>
                   <Switch 
@@ -329,7 +329,7 @@ export default function Settings() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                     <Label htmlFor="smsAlerts" className="text-sm">SMS Alerts</Label>
@@ -345,7 +345,7 @@ export default function Settings() {
               <Separator />
               
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-slate-700">Notification Types</h3>
+                <h3 className="text-sm font-medium text-foreground">Notification Types</h3>
                 <div className="flex items-center justify-between">
                   <Label htmlFor="clientUpdates" className="text-sm">Client Updates</Label>
                   <Switch 
@@ -389,7 +389,7 @@ export default function Settings() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-slate-700">Theme</h3>
+                <h3 className="text-sm font-medium text-foreground">Theme</h3>
                 <RadioGroup 
                   value={displaySettings.theme}
                   onValueChange={(value) => setDisplaySettings({...displaySettings, theme: value})}
@@ -419,7 +419,7 @@ export default function Settings() {
               <Separator />
               
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-slate-700">Interface Options</h3>
+                <h3 className="text-sm font-medium text-foreground">Interface Options</h3>
                 <div className="flex items-center justify-between">
                   <Label htmlFor="compactView" className="text-sm">Compact View</Label>
                   <Switch 
@@ -472,7 +472,7 @@ const Badge = ({
   return (
     <span 
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-        variant === "outline" ? "border border-slate-200" : "bg-primary-100 text-primary-800"
+        variant === "outline" ? "border border-border" : "bg-primary-100 text-primary-800"
       } ${className}`}
       {...props}
     >

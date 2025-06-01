@@ -77,9 +77,9 @@ export default function ClientActionsPage() {
               {alerts.map((alert: any) => (
                 <div key={alert.id} className="border-l-4 border-red-500 pl-4 py-2">
                   <h3 className="font-medium">{alert.title}</h3>
-                  <p className="text-sm text-slate-600">{alert.description}</p>
+                  <p className="text-sm text-muted-foreground">{alert.description}</p>
                   <div className="flex justify-between mt-2">
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted-foreground">
                       {new Date(alert.createdAt).toLocaleDateString()}
                     </span>
                     <span className="text-xs font-medium bg-red-100 text-red-800 px-2 py-1 rounded">
@@ -90,7 +90,7 @@ export default function ClientActionsPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-muted-foreground">
               <p>No alerts found for this client.</p>
             </div>
           )}
@@ -99,10 +99,10 @@ export default function ClientActionsPage() {
       
       <div className="bg-slate-50 p-4 rounded-lg">
         <h2 className="text-lg font-medium mb-4">Placeholder: Actions Section</h2>
-        <p className="text-slate-600 mb-2">
+        <p className="text-muted-foreground mb-2">
           This is a placeholder for the Client Actions page. In a full implementation, this would display:
         </p>
-        <ul className="list-disc pl-5 text-slate-600 space-y-1">
+        <ul className="list-disc pl-5 text-muted-foreground space-y-1">
           <li>Portfolio alerts requiring attention</li>
           <li>Recommended actions based on market conditions</li>
           <li>Scheduled follow-ups and reminders</li>

@@ -32,7 +32,7 @@ export default function TalkingPointsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-slate-500">Loading talking points...</div>
+        <div className="text-muted-foreground">Loading talking points...</div>
       </div>
     );
   }
@@ -53,16 +53,16 @@ export default function TalkingPointsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
+      <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-6 py-4">
         <div className="flex items-center space-x-3">
           <Lightbulb className="h-6 w-6 text-ujjivan-primary" />
-          <h1 className="text-2xl font-bold text-slate-900">Insights</h1>
+          <h1 className="text-2xl font-bold text-foreground">Insights</h1>
           <Badge variant="secondary" className="ml-auto">
             {activeTalkingPoints.length} Active
           </Badge>
         </div>
         
-        <p className="text-slate-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Market insights and conversation starters to enhance client discussions
         </p>
       </div>
@@ -77,47 +77,47 @@ export default function TalkingPointsPage() {
               return (
                 <div
                   key={point.id}
-                  className={`p-4 cursor-pointer hover:bg-slate-50 transition-colors ${
-                    index !== displayedPoints.length - 1 ? 'border-b border-slate-100' : ''
+                  className={`p-4 cursor-pointer hover:bg-muted/50 transition-colors ${
+                    index !== displayedPoints.length - 1 ? 'border-b border-border' : ''
                   }`}
                   onClick={() => toggleExpanded(point.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="font-medium text-slate-900 mb-1">
+                      <h3 className="font-medium text-foreground mb-1">
                         {point.title}
                       </h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-500">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="capitalize">{point.category.replace('_', ' ')}</span>
                         <span>{format(new Date(point.created_at), 'MMM dd')}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-slate-400" />
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <ChevronDown className="h-4 w-4 text-slate-400" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       )}
                     </div>
                   </div>
 
                   {isExpanded && (
                     <div className="mt-4 space-y-4">
-                      <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg">
+                      <div className="text-sm text-muted-foreground bg-slate-50 p-3 rounded-lg">
                         <strong>Summary:</strong> {point.summary}
                       </div>
                       
-                      <div className="prose prose-sm text-slate-700">
+                      <div className="prose prose-sm text-foreground">
                         <p>{point.detailed_content}</p>
                       </div>
                       
-                      <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-100">
-                        <div className="flex items-center text-sm text-slate-500">
+                      <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-border">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           <Tag className="h-4 w-4 mr-1" />
                           <span className="font-medium">{point.source}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm text-slate-500">
+                        <div className="flex items-center text-sm text-muted-foreground">
                           <Calendar className="h-4 w-4 mr-1" />
                           Valid until: {format(new Date(point.valid_until), 'MMM dd, yyyy')}
                         </div>
@@ -139,10 +139,10 @@ export default function TalkingPointsPage() {
             })}
 
             {activeTalkingPoints.length > 3 && (
-              <div className="p-4 border-t border-slate-100">
+              <div className="p-4 border-t border-border">
                 <Button
                   variant="ghost"
-                  className="w-full text-slate-600 hover:text-slate-900"
+                  className="w-full text-muted-foreground hover:text-foreground"
                   onClick={() => setShowAll(!showAll)}
                 >
                   {showAll ? (
@@ -166,8 +166,8 @@ export default function TalkingPointsPage() {
           <CardContent className="flex items-center justify-center py-12">
             <div className="text-center">
               <Lightbulb className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">No Active Insights</h3>
-              <p className="text-slate-500">Check back later for new market insights and conversation starters.</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">No Active Insights</h3>
+              <p className="text-muted-foreground">Check back later for new market insights and conversation starters.</p>
             </div>
           </CardContent>
         </Card>
