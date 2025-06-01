@@ -114,7 +114,7 @@ export default function Products() {
       case 'high':
         return 'bg-orange-100 text-orange-800';
       case 'very high':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-destructive';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -320,20 +320,20 @@ Ujjivan Small Finance Bank`;
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">Failed to load products. Please try again later.</p>
+        <div className="bg-destructive/10 border border-destructive rounded-lg p-4">
+          <p className="text-destructive">Failed to load products. Please try again later.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-gray-200">
+      <div className="sticky top-0 z-10 bg-card border-b border-border">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+            <h1 className="text-2xl font-bold text-foreground">Products</h1>
             
             {/* Filters Dropdown */}
             <DropdownMenu>
@@ -373,7 +373,7 @@ Ujjivan Small Finance Bank`;
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search products..."
               value={searchTerm}
@@ -391,14 +391,14 @@ Ujjivan Small Finance Bank`;
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
-                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-6 bg-muted rounded mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-2/3"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-20 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-20 bg-muted rounded mb-4"></div>
                   <div className="flex gap-2">
-                    <div className="h-6 bg-gray-200 rounded w-16"></div>
-                    <div className="h-6 bg-gray-200 rounded w-20"></div>
+                    <div className="h-6 bg-muted rounded w-16"></div>
+                    <div className="h-6 bg-muted rounded w-20"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -406,7 +406,7 @@ Ujjivan Small Finance Bank`;
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-500 mb-4">
+            <div className="text-muted-foreground mb-4">
               <Search className="h-12 w-12 mx-auto mb-4" />
               {searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0 
                 ? "No products match your search criteria."
@@ -450,9 +450,9 @@ Ujjivan Small Finance Bank`;
                           </Badge>
                         )}
                         {isExpanded ? (
-                          <ChevronUp className="h-4 w-4 text-gray-400" />
+                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
                         ) : (
-                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
                         )}
                       </div>
                     </div>
