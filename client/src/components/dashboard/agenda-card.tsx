@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MoreVertical } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronRight, Calendar, CheckSquare, Users, AlertCircle, AlertTriangle } from "lucide-react";
 import { cn, formatTime, getPriorityColor } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -15,99 +17,211 @@ import {
 export function AgendaCard() {
   const today = new Date();
   const formattedDate = format(today, "EEEE, MMMM d");
+  const [isOpen, setIsOpen] = useState(true);
   
-  const { data: appointments, isLoading } = useQuery({
+  // Fetch all data types for comprehensive action items
+  const { data: appointments, isLoading: appointmentsLoading } = useQuery({
     queryKey: ['/api/appointments/today'],
   });
   
-  return (
-    <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-slate-700">Today's Agenda</h2>
-          <span className="text-xs text-slate-500">{formattedDate}</span>
-        </div>
-      </div>
-      
-      <div className="divide-y divide-slate-200">
-        {isLoading ? (
-          Array(3).fill(0).map((_, index) => (
-            <div key={index} className="px-4 py-3">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2 w-full">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/3" />
-                  <div className="flex gap-2 mt-1">
-                    <Skeleton className="h-5 w-24" />
-                    <Skeleton className="h-5 w-24" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : appointments && appointments.length > 0 ? (
-          appointments.map((appointment) => {
-            const priorityColors = getPriorityColor(appointment.priority);
-            const isPriorityHigh = appointment.priority === "high";
-            
-            return (
-              <div 
-                key={appointment.id} 
-                className={cn(
-                  "px-4 py-3",
-                  isPriorityHigh ? "bg-amber-50 border-l-4 border-amber-500" : ""
-                )}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">{appointment.title}</p>
-                    {appointment.clientName && (
-                      <p className="text-xs text-blue-600 font-medium">{appointment.clientName}</p>
-                    )}
-                    <p className="text-xs text-slate-500 mt-1">
-                      {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
-                    </p>
-                    <div className="flex items-center mt-2">
-                      <span className={cn(
-                        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-                        priorityColors.bg,
-                        priorityColors.text
-                      )}>
-                        {isPriorityHigh ? "High Priority" : appointment.priority === "medium" ? "Follow-up" : "Regular"}
-                      </span>
-                      <span className="ml-2 text-xs text-slate-500">{appointment.description}</span>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-500">
-                        <span className="sr-only">Open menu</span>
-                        <MoreVertical className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View Details</DropdownMenuItem>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Reschedule</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">Cancel</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="px-4 py-6 text-center">
-            <p className="text-sm text-slate-500">No appointments scheduled for today</p>
+  const { data: tasks, isLoading: tasksLoading } = useQuery({
+    queryKey: ['/api/tasks'],
+  });
+  
+  const { data: weekClosures, isLoading: closuresLoading } = useQuery({
+    queryKey: ['/api/action-items/deal-closures'],
+  });
+  
+  const { data: priorityAlerts, isLoading: alertsLoading } = useQuery({
+    queryKey: ['/api/portfolio-alerts'],
+  });
+  
+  const { data: urgentComplaints, isLoading: complaintsLoading } = useQuery({
+    queryKey: ['/api/complaints'],
+  });
+  
+  const isLoading = appointmentsLoading || tasksLoading || closuresLoading || alertsLoading || complaintsLoading;
+  
+  // Organize data into actionable categories
+  const actionCategories = {
+    appointments: {
+      title: 'Upcoming Meetings',
+      count: appointments?.length || 0,
+      items: appointments || [],
+      icon: Calendar,
+      color: 'text-blue-700',
+      bgColor: 'bg-blue-50 border-blue-200',
+      description: 'Client meetings and calls scheduled for today'
+    },
+    tasks: {
+      title: 'Urgent Tasks',
+      count: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent').length || 0,
+      items: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent') || [],
+      icon: CheckSquare,
+      color: 'text-amber-700',
+      bgColor: 'bg-amber-50 border-amber-200',
+      description: 'High-priority tasks and overdue items requiring immediate attention'
+    },
+    closures: {
+      title: 'Expected Closures',
+      count: weekClosures?.length || 0,
+      items: weekClosures || [],
+      icon: Users,
+      color: 'text-emerald-700',
+      bgColor: 'bg-emerald-50 border-emerald-200',
+      description: 'Deal closures and prospect conversions expected this week'
+    },
+    complaints: {
+      title: 'Customer Complaints',
+      count: urgentComplaints?.filter(complaint => complaint.severity === 'high' || complaint.severity === 'urgent').length || 0,
+      items: urgentComplaints?.filter(complaint => complaint.severity === 'high' || complaint.severity === 'urgent') || [],
+      icon: AlertTriangle,
+      color: 'text-red-700',
+      bgColor: 'bg-red-50 border-red-200',
+      description: 'Urgent customer complaints requiring immediate resolution'
+    },
+    alerts: {
+      title: 'Priority Alerts',
+      count: priorityAlerts?.length || 0,
+      items: priorityAlerts || [],
+      icon: AlertCircle,
+      color: 'text-orange-700',
+      bgColor: 'bg-orange-50 border-orange-200',
+      description: 'Portfolio alerts and client issues requiring immediate review'
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="overflow-hidden">
+        <CardHeader className="p-3">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-24" />
           </div>
-        )}
-      </div>
-      
-      <CardFooter className="px-4 py-3 bg-slate-50 flex justify-center">
-        <Button variant="link" size="sm" className="text-xs font-medium text-primary-600 hover:text-primary-700">
-          View Full Calendar
-        </Button>
-      </CardFooter>
-    </Card>
+        </CardHeader>
+        <CardContent className="p-3 space-y-3">
+          {Array(3).fill(0).map((_, index) => (
+            <div key={index} className="p-3 border rounded-lg">
+              <Skeleton className="h-4 w-3/4 mb-2" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const totalActionItems = Object.values(actionCategories).reduce((sum, category) => sum + category.count, 0);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Card className="overflow-hidden">
+        <CollapsibleTrigger asChild>
+          <CardHeader className="p-3 hover:bg-slate-50 cursor-pointer transition-colors">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                Action Items & Priorities
+                <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                  {totalActionItems}
+                </span>
+              </CardTitle>
+              <span className="text-xs text-slate-500">{formattedDate}</span>
+            </div>
+          </CardHeader>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent>
+          <CardContent className="p-3 space-y-3">
+            {Object.entries(actionCategories).map(([key, category]) => {
+              const Icon = category.icon;
+              return (
+                <Collapsible key={key}>
+                  <div className={cn("border rounded-lg", category.bgColor)}>
+                    <CollapsibleTrigger asChild>
+                      <div className="p-3 hover:bg-white/50 cursor-pointer transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Icon className={cn("h-4 w-4", category.color)} />
+                            <span className="text-sm font-medium">{category.title}</span>
+                            {category.count > 0 && (
+                              <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium", category.color, "bg-white")}>
+                                {category.count}
+                              </span>
+                            )}
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-slate-400" />
+                        </div>
+                        <p className="text-xs text-slate-600 mt-1">{category.description}</p>
+                      </div>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <div className="px-3 pb-3 space-y-2">
+                        {category.items.length === 0 ? (
+                          <p className="text-xs text-slate-500 italic">No items at this time</p>
+                        ) : (
+                          category.items.slice(0, 5).map((item, index) => (
+                            <div key={index} className="bg-white rounded p-2 border border-slate-100">
+                              {key === 'appointments' && (
+                                <div>
+                                  <div className="font-medium text-sm">{item.title}</div>
+                                  <div className="text-xs text-slate-600">
+                                    {item.clientName} • {formatTime(item.startTime)} - {formatTime(item.endTime)}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {key === 'tasks' && (
+                                <div>
+                                  <div className="font-medium text-sm">{item.title}</div>
+                                  <div className="text-xs text-slate-600">
+                                    Priority: {item.priority} • Status: {item.status}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {key === 'closures' && (
+                                <div>
+                                  <div className="font-medium text-sm">{item.client_name}</div>
+                                  <div className="text-xs text-slate-600">
+                                    Expected: ₹{(item.expected_amount / 100000).toFixed(1)}L • {format(new Date(item.expected_close_date), 'MMM dd')}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {key === 'complaints' && (
+                                <div>
+                                  <div className="font-medium text-sm">{item.subject}</div>
+                                  <div className="text-xs text-slate-600">
+                                    {item.clientName} • {item.severity} • {item.status}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {key === 'alerts' && (
+                                <div>
+                                  <div className="font-medium text-sm">{item.title}</div>
+                                  <div className="text-xs text-slate-600">
+                                    Priority: {item.priority}
+                                    {item.clientName && ` • Client: ${item.clientName}`}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </CollapsibleContent>
+                  </div>
+                </Collapsible>
+              );
+            })}
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 }
+
