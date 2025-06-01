@@ -660,4 +660,36 @@
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
+
+  /* Tasks page specific theme fixes - Force override */
+  .tasks-page-container {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  .tasks-page-container .space-y-6 {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  .tasks-page-container > div {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  .tasks-page-container > div > div {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  /* Force remove any white backgrounds in tasks page */
+  .tasks-page-container * {
+    background-color: transparent !important;
+  }
+
+  .tasks-page-container {
+    background-color: hsl(var(--background)) !important;
+  }
+
+  .tasks-page-container .space-y-6,
+  .tasks-page-container > div:first-child,
+  .tasks-page-container > div:nth-child(2) {
+    background-color: hsl(var(--background)) !important;
+  }
 }
