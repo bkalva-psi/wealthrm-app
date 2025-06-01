@@ -298,7 +298,7 @@ export default function Tasks() {
               </div>
               
               {isLoading ? (
-                <div className="space-y-4">
+                <div className="space-y-4 bg-card">
                   {Array(2).fill(0).map((_, index) => (
                     <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
@@ -310,7 +310,7 @@ export default function Tasks() {
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 bg-card">
                   {(() => {
                     const filteredTasks = (tasks as Task[] || [])
                       .filter(task => !task.completed)
@@ -417,7 +417,7 @@ export default function Tasks() {
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 bg-card">
                   {(() => {
                     const alerts = (portfolioAlerts as any[] || []).slice(0, alertsVisibleCount);
                     
