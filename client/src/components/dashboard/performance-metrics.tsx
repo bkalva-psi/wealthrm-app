@@ -80,7 +80,7 @@ export function PerformanceMetrics() {
         <div className="grid grid-cols-2 gap-4">
           {isLoading ? (
             Array(4).fill(0).map((_, index) => (
-              <div key={index} className="bg-slate-50 p-3 rounded-lg">
+              <div key={index} className="bg-card p-3 rounded-lg">
                 <Skeleton className="h-4 w-16 mb-2" />
                 <div className="flex items-baseline space-x-2">
                   <Skeleton className="h-6 w-20" />
@@ -93,69 +93,69 @@ export function PerformanceMetrics() {
           ) : (
             <>
               {newAumMetric && (
-                <div className="bg-slate-50 p-3 rounded-lg">
-                  <p className="text-xs text-slate-500">New AUM</p>
+                <div className="bg-card p-3 rounded-lg">
+                  <p className="text-xs text-muted-foreground">New AUM</p>
                   <div className="mt-1 flex items-baseline">
-                    <p className="text-lg font-semibold text-slate-800">
+                    <p className="text-lg font-semibold text-foreground">
                       {formatCurrency(newAumMetric.currentValue)}
                     </p>
                     <p className={`ml-2 text-xs ${getPercentageChangeColor(newAumMetric.percentageChange)}`}>
                       {newAumMetric.percentageChange >= 0 ? '+' : ''}{newAumMetric.percentageChange}%
                     </p>
                   </div>
-                  <div className="mt-1 w-full bg-slate-200 rounded-full h-1.5">
+                  <div className="mt-1 w-full bg-muted rounded-full h-1.5">
                     <div 
                       className={`${newAumMetric.percentageChange >= 0 ? 'bg-success' : 'bg-amber-500'} h-1.5 rounded-full`} 
                       style={{ width: `${getProgressPercentage(newAumMetric.currentValue, newAumMetric.targetValue)}%` }}
                     ></div>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Target: {formatCurrency(newAumMetric.targetValue)}
                   </p>
                 </div>
               )}
               
               {newClientsMetric && (
-                <div className="bg-slate-50 p-3 rounded-lg">
-                  <p className="text-xs text-slate-500">New Clients</p>
+                <div className="bg-card p-3 rounded-lg">
+                  <p className="text-xs text-muted-foreground">New Clients</p>
                   <div className="mt-1 flex items-baseline">
-                    <p className="text-lg font-semibold text-slate-800">
+                    <p className="text-lg font-semibold text-foreground">
                       {Math.round(newClientsMetric.currentValue)}
                     </p>
                     <p className={`ml-2 text-xs ${getPercentageChangeColor(newClientsMetric.percentageChange)}`}>
                       {newClientsMetric.percentageChange >= 0 ? '+' : ''}{newClientsMetric.percentageChange}%
                     </p>
                   </div>
-                  <div className="mt-1 w-full bg-slate-200 rounded-full h-1.5">
+                  <div className="mt-1 w-full bg-muted rounded-full h-1.5">
                     <div 
                       className={`${newClientsMetric.percentageChange >= 0 ? 'bg-success' : 'bg-amber-500'} h-1.5 rounded-full`} 
                       style={{ width: `${getProgressPercentage(newClientsMetric.currentValue, newClientsMetric.targetValue)}%` }}
                     ></div>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Target: {Math.round(newClientsMetric.targetValue)}
                   </p>
                 </div>
               )}
               
               {revenueMetric && (
-                <div className="bg-slate-50 p-3 rounded-lg">
-                  <p className="text-xs text-slate-500">Revenue Generated</p>
+                <div className="bg-card p-3 rounded-lg">
+                  <p className="text-xs text-muted-foreground">Revenue Generated</p>
                   <div className="mt-1 flex items-baseline">
-                    <p className="text-lg font-semibold text-slate-800">
+                    <p className="text-lg font-semibold text-foreground">
                       {formatCurrency(revenueMetric.currentValue)}
                     </p>
                     <p className={`ml-2 text-xs ${getPercentageChangeColor(revenueMetric.percentageChange)}`}>
                       {revenueMetric.percentageChange >= 0 ? '+' : ''}{revenueMetric.percentageChange}%
                     </p>
                   </div>
-                  <div className="mt-1 w-full bg-slate-200 rounded-full h-1.5">
+                  <div className="mt-1 w-full bg-muted rounded-full h-1.5">
                     <div 
                       className={`${revenueMetric.percentageChange >= 0 ? 'bg-success' : 'bg-amber-500'} h-1.5 rounded-full`} 
                       style={{ width: `${getProgressPercentage(revenueMetric.currentValue, revenueMetric.targetValue)}%` }}
                     ></div>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Target: {formatCurrency(revenueMetric.targetValue)}
                   </p>
                 </div>
