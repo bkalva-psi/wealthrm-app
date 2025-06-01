@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Calendar, Clock, TrendingUp, AlertTriangle, MessageSquare, ChevronDown, ChevronRight } from "lucide-react";
@@ -115,45 +115,45 @@ export function ActionItemsPriorities() {
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" className="w-full p-3 h-auto justify-start hover:bg-transparent">
-            <div className="flex items-center gap-3 w-full">
-              <div className="p-1.5 rounded-lg bg-white/60">
-                <Clock size={20} className="text-slate-700" />
-              </div>
-              <div className="flex-1 text-left">
-                <h2 className="text-sm font-medium text-slate-700">Action Items & Priorities</h2>
-                <p className="text-xs text-slate-500">{formattedDate} • {totalActionItems} items requiring attention</p>
-              </div>
-              <ChevronRight size={20} className={`text-slate-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+          <CardHeader className="cursor-pointer hover:bg-gray-50">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
+              {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
             </div>
-          </Button>
+          </CardHeader>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <CardContent className="p-3 space-y-3 mt-4">
+          <CardContent className="space-y-3 pt-0">
             {Object.entries(actionCategories).map(([key, category]) => {
               const isExpanded = expandedCategories.has(key);
               if (category.count === 0) return null;
+              const IconComponent = category.icon;
               
               return (
                 <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleCategory(key)}>
-                  <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <div className={`rounded-lg border p-3 ${category.bgColor}`}>
                     <CollapsibleTrigger asChild>
-                      <Button variant="ghost" className="w-full p-3 h-auto justify-start hover:bg-slate-50">
-                        <div className="flex items-center gap-3 w-full">
-                          <div className={`p-1.5 rounded-lg ${category.bgColor}`}>
-                            <category.icon size={14} className={category.color} />
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between p-0 h-auto hover:bg-transparent"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-1.5 rounded-lg bg-white/60 ${category.color}`}>
+                            <IconComponent size={18} />
                           </div>
-                          <div className="flex-1 text-left">
-                            <h3 className="text-sm font-medium text-slate-700">{category.title}</h3>
-                            <p className="text-xs text-slate-500">{category.count} item{category.count !== 1 ? 's' : ''}</p>
+                          <div className="text-left">
+                            <h3 className="font-semibold text-sm">{category.title}</h3>
+                            <p className={`text-lg font-bold ${category.color}`}>
+                              {category.count}
+                            </p>
                           </div>
-                          <ChevronRight size={14} className={`text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                         </div>
+                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </Button>
                     </CollapsibleTrigger>
                     
-                    <CollapsibleContent>
+                    <CollapsibleContent className="mt-3">
                       <div className="text-sm text-muted-foreground">
                         {key === 'appointments' && 'Today\'s scheduled client meetings and appointments requiring your attention.'}
                         {key === 'tasks' && 'Pending tasks and follow-ups that need completion today.'}
