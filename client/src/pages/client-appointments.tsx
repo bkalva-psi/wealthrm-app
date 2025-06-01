@@ -112,15 +112,15 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   const getAppointmentTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'meeting':
-        return 'border-blue-500 bg-blue-50';
+        return 'border-blue-500 bg-blue-50 dark:bg-blue-950/30';
       case 'call':
-        return 'border-green-500 bg-green-50';
+        return 'border-green-500 bg-green-50 dark:bg-green-950/30';
       case 'review':
-        return 'border-purple-500 bg-purple-50';
+        return 'border-purple-500 bg-purple-50 dark:bg-purple-950/30';
       case 'onboarding':
-        return 'border-amber-500 bg-amber-50';
+        return 'border-amber-500 bg-amber-50 dark:bg-amber-950/30';
       default:
-        return 'border-slate-500 bg-slate-50';
+        return 'border-slate-500 bg-muted';
     }
   };
   
@@ -128,15 +128,15 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     switch (priority?.toLowerCase()) {
       case 'high':
         return { 
-          bg: 'bg-red-100', 
-          text: 'text-red-800', 
-          border: 'border-red-200'
+          bg: 'bg-red-100 dark:bg-red-950/30', 
+          text: 'text-red-800 dark:text-red-200', 
+          border: 'border-red-200 dark:border-red-800'
         };
       case 'medium':
         return { 
-          bg: 'bg-amber-100', 
-          text: 'text-amber-800', 
-          border: 'border-amber-200'
+          bg: 'bg-amber-100 dark:bg-amber-950/30', 
+          text: 'text-amber-800 dark:text-amber-200', 
+          border: 'border-amber-200 dark:border-amber-800'
         };
       default:
         return { 
@@ -235,8 +235,8 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 key={day.toString()}
                 className={cn(
                   "min-h-[100px] p-1 border-b border-r border-border relative",
-                  !isCurrentMonth && "bg-slate-50",
-                  isToday(day) && "bg-blue-50",
+                  !isCurrentMonth && "bg-muted/50",
+                  isToday(day) && "bg-blue-50 dark:bg-blue-950/30",
                   isSelected && "ring-2 ring-primary ring-inset"
                 )}
                 onClick={() => {
@@ -323,17 +323,17 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               <Skeleton className="h-12 w-full mb-3" />
             </div>
           ) : (
-            <div className="divide-y divide-slate-200">
+            <div className="divide-y divide-border">
               {Object.entries(eventsByHour).map(([time, timeAppointments]) => (
                 <div key={time} className="flex">
-                  <div className="w-20 py-3 px-4 text-right text-sm text-muted-foreground border-r border-border bg-slate-50">
+                  <div className="w-20 py-3 px-4 text-right text-sm text-muted-foreground border-r border-border bg-muted/50">
                     {time}
                   </div>
                   <div className="flex-1 p-2 min-h-[60px]">
                     {timeAppointments.map(appointment => (
                       <div 
                         key={appointment.id} 
-                        className={`p-2 mb-1 text-sm rounded border-l-4 ${getAppointmentTypeColor(appointment.type)} cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}
+                        className={`p-2 mb-1 text-sm rounded border-l-4 ${getAppointmentTypeColor(appointment.type)} cursor-pointer hover:bg-muted/50 transition-colors`}
                         onClick={() => {
                           setSelectedAppointment(appointment);
                           setIsAppointmentDetailsOpen(true);
@@ -341,7 +341,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                       >
                         <div className="font-medium">{appointment.title}</div>
                         {appointment.clientName && (
-                          <div className="text-xs text-blue-600 font-medium">{appointment.clientName}</div>
+                          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">{appointment.clientName}</div>
                         )}
                         <div className="text-xs mt-1 flex justify-between">
                           <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
@@ -443,7 +443,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         </Badge>
                       </div>
                       {appointment.clientName && (
-                        <div className="text-sm text-blue-600 font-medium mb-1">
+                        <div className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-1">
                           Client: {appointment.clientName}
                         </div>
                       )}
