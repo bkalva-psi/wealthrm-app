@@ -144,7 +144,7 @@ export function ActionItemsPriorities() {
                           </div>
                           <div className="text-left">
                             <h3 className="font-semibold text-sm">{category.title}</h3>
-                            <p className={`text-lg font-bold ${category.color}`}>
+                            <p className="text-lg font-bold text-foreground">
                               {category.count}
                             </p>
                           </div>
