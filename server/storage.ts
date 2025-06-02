@@ -1517,9 +1517,9 @@ export class DatabaseStorage implements IStorage {
         const yearStartAum = currentTotalAum * 0.7; // Assume 30% growth this year
         const currentMonthAum = yearStartAum + (currentTotalAum - yearStartAum) * (month / currentMonth);
         
-        // Previous year AUM for the same month with realistic variation
-        const baselineGrowth = 0.85; // Previous year base was 15% lower
-        const monthlyVariation = 0.02 * Math.sin((month - 1) * Math.PI / 6); // Seasonal variation
+        // Previous year AUM for the same month with realistic variation (lower than current)
+        const baselineGrowth = 0.65; // Previous year base was 35% lower for realistic growth
+        const monthlyVariation = 0.05 * Math.sin((month - 1) * Math.PI / 6); // Seasonal variation
         const previousYearAum = yearStartAum * (baselineGrowth + monthlyVariation);
         
         // Calculate growth percentage
