@@ -268,7 +268,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     if (hasOverdueTasks) return 'Overdue Tasks';
     if (hasOverdueContact) return 'Contact Overdue';
     
-    return 'Active';
+    return 'Healthy';
   };
 
 
