@@ -404,8 +404,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             >
               <div className="text-xs text-muted-foreground mb-1 font-medium">Portfolio Value</div>
               <div className="text-sm font-bold text-foreground">{client.aum}</div>
-              <div className="flex items-center justify-center text-xs text-muted-foreground mt-1">
-                <TrendingUp className="h-3 w-3 mr-1" />
+              <div className="text-xs text-muted-foreground mt-1 text-center">
                 Portfolio
               </div>
             </div>
