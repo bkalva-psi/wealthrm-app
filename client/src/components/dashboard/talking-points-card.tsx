@@ -45,31 +45,36 @@ export function TalkingPointsCard() {
   const categories = {
     market_analysis: {
       title: 'Market Analysis',
-      color: 'text-primary',
+      color: 'text-teal-700',
+      bgColor: 'bg-teal-50 border-teal-200',
       count: groupedPoints.market_analysis?.length || 0,
       items: groupedPoints.market_analysis || []
     },
     regulatory_update: {
       title: 'Regulatory Updates',
-      color: 'text-secondary',
+      color: 'text-amber-700',
+      bgColor: 'bg-amber-50 border-amber-200',
       count: groupedPoints.regulatory_update?.length || 0,
       items: groupedPoints.regulatory_update || []
     },
     company_news: {
       title: 'Company News',
-      color: 'text-primary',
+      color: 'text-emerald-700',
+      bgColor: 'bg-emerald-50 border-emerald-200',
       count: groupedPoints.company_news?.length || 0,
       items: groupedPoints.company_news || []
     },
     economic_indicator: {
       title: 'Economic Indicators',
-      color: 'text-secondary',
+      color: 'text-blue-700',
+      bgColor: 'bg-blue-50 border-blue-200',
       count: groupedPoints.economic_indicator?.length || 0,
       items: groupedPoints.economic_indicator || []
     },
     investment_strategy: {
       title: 'Investment Strategy',
-      color: 'text-primary',
+      color: 'text-purple-700',
+      bgColor: 'bg-purple-50 border-purple-200',
       count: groupedPoints.investment_strategy?.length || 0,
       items: groupedPoints.investment_strategy || []
     }
@@ -150,67 +155,46 @@ export function TalkingPointsCard() {
                     
                     return (
                       <Collapsible key={key} open={isExpanded} onOpenChange={() => toggleCategory(key)}>
-                        <CollapsibleTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="w-full p-2 h-auto justify-between hover:bg-muted/50"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`p-1.5 rounded-lg bg-background/60 ${category.color}`}>
-                                <IconComponent size={18} />
+                        <div className={`rounded-lg border p-3 ${category.bgColor}`}>
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-between p-0 h-auto hover:bg-transparent"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`p-1.5 rounded-lg bg-white/60 ${category.color}`}>
+                                  <IconComponent size={18} />
+                                </div>
+                                <div className="text-left">
+                                  <h3 className="font-semibold text-sm">{category.title}</h3>
+                                  <p className={`text-lg font-bold ${category.color}`}>
+                                    {category.count}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="text-left">
-                                <h3 className="font-semibold text-sm">{category.title}</h3>
-                                <p className={`text-lg font-bold ${category.color}`}>
-                                  {category.count}
-                                </p>
-                              </div>
-                            </div>
-                            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                          </Button>
-                        </CollapsibleTrigger>
+                              {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            </Button>
+                          </CollapsibleTrigger>
                         
-                        <CollapsibleContent className="mt-3">
-                          <div className="mt-3 px-3 pb-3 space-y-2">
-                            {category.items.length === 0 ? (
-                              <p className="text-xs text-muted-foreground italic">No items at this time</p>
-                            ) : (
-                              category.items.slice(0, 5).map((item: any, index: number) => {
-                                const itemKey = `${key}-${item.id || index}`;
-                                const isItemExpanded = expandedItems.has(itemKey);
-                                
-                                return (
-                                  <div key={index} className="bg-card rounded border border-border overflow-hidden">
-                                    <Button
-                                      variant="ghost"
-                                      className="w-full p-2 h-auto justify-start hover:bg-muted/50"
-                                      onClick={() => toggleItem(itemKey)}
-                                    >
-                                      <div className="flex items-center gap-2 w-full">
-                                        <div className="flex-1 text-left">
-                                          <div className="font-medium text-sm">{item.title}</div>
-                                          <div className="text-xs text-muted-foreground">
-                                            Relevance: {item.relevance_score}/10 • {item.source}
-                                          </div>
-                                        </div>
-                                        {isItemExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                                      </div>
-                                    </Button>
-                                    {isItemExpanded && (
-                                      <div className="px-3 pb-3">
-                                        <div className="text-sm space-y-2">
-                                          <div><span className="font-medium">Summary:</span> {item.summary}</div>
-                                          <div><span className="font-medium">Details:</span> {item.detailed_content}</div>
-                                          <div><span className="font-medium">Valid until:</span> {format(new Date(item.valid_until), "MMM d, yyyy")}</div>
-                                        </div>
-                                      </div>
-                                    )}
+                          <CollapsibleContent className="mt-3">
+                            <div className="space-y-2">
+                              {category.items.length === 0 ? (
+                                <div className="text-sm text-muted-foreground italic">
+                                  No {category.title.toLowerCase()} at this time
+                                </div>
+                              ) : (
+                                category.items.slice(0, 5).map((item: any, index: number) => (
+                                  <div key={item.id || index} className="bg-white/70 rounded p-2 text-sm">
+                                    <div className="font-medium">{item.title}</div>
+                                    <div className="text-muted-foreground">
+                                      Relevance: {item.relevance_score}/10 • {item.source}
+                                    </div>
                                   </div>
-                                );
-                              })
-                            )}
-                          </div>
-                        </CollapsibleContent>
+                                ))
+                              )}
+                            </div>
+                          </CollapsibleContent>
+                        </div>
                       </Collapsible>
                     );
                   })
