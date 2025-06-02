@@ -184,7 +184,7 @@ export function AnnouncementsCard() {
                                   <IconComponent size={18} />
                                 </div>
                                 <div className="text-left">
-                                  <h3 className="font-semibold text-sm">{category.title}</h3>
+                                  <h3 className="font-semibold text-sm text-foreground">{category.title}</h3>
                                   <p className={`text-lg font-bold ${category.color}`}>
                                     {category.count}
                                   </p>
