@@ -24,7 +24,10 @@ import {
   Check,
   Phone,
   Mail,
-  Bell
+  Bell,
+  Crown,
+  Award,
+  Medal
 } from "lucide-react";
 import { clientApi } from "@/lib/api";
 import { Client } from "@shared/schema";
@@ -39,6 +42,49 @@ interface FilterOptions {
   riskProfiles: string[];
 }
 
+// Helper functions for tier visualization
+const getTierIcon = (tier: string) => {
+  switch (tier?.toLowerCase()) {
+    case 'platinum':
+      return Crown;
+    case 'gold':
+      return Award;
+    case 'silver':
+      return Medal;
+    default:
+      return Medal;
+  }
+};
+
+const getTierBadgeColors = (tier: string) => {
+  switch (tier?.toLowerCase()) {
+    case 'platinum':
+      return {
+        bg: 'bg-gradient-to-r from-slate-400 to-slate-600',
+        text: 'text-white',
+        border: 'border-slate-400'
+      };
+    case 'gold':
+      return {
+        bg: 'bg-gradient-to-r from-yellow-400 to-yellow-600',
+        text: 'text-white',
+        border: 'border-yellow-400'
+      };
+    case 'silver':
+      return {
+        bg: 'bg-gradient-to-r from-gray-300 to-gray-500',
+        text: 'text-white',
+        border: 'border-gray-400'
+      };
+    default:
+      return {
+        bg: 'bg-gradient-to-r from-gray-300 to-gray-500',
+        text: 'text-white',
+        border: 'border-gray-400'
+      };
+  }
+};
+
 // Client Card component
 interface ClientCardProps {
   client: Client;
@@ -47,6 +93,8 @@ interface ClientCardProps {
 
 function ClientCard({ client, onClick }: ClientCardProps) {
   const tierColors = getTierColor(client.tier);
+  const TierIcon = getTierIcon(client.tier);
+  const tierBadge = getTierBadgeColors(client.tier);
   
   // Generate initials if not available
   const getInitials = (name: string) => {
@@ -54,6 +102,22 @@ function ClientCard({ client, onClick }: ClientCardProps) {
       .map(part => part.charAt(0))
       .join('')
       .toUpperCase();
+  };
+
+  // Generate avatar color based on client name
+  const getAvatarColor = (name: string) => {
+    const colors = [
+      'bg-blue-500',
+      'bg-green-500', 
+      'bg-purple-500',
+      'bg-orange-500',
+      'bg-pink-500',
+      'bg-indigo-500',
+      'bg-teal-500',
+      'bg-red-500'
+    ];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
   };
   
   // Format performance value with sign and color
@@ -99,66 +163,85 @@ function ClientCard({ client, onClick }: ClientCardProps) {
       className={`overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/10 transform interactive-hover mb-4 border-l-4 ${tierColors.border} !bg-card !border-border`}
     >
       <CardContent className="p-4">
-        <div className="flex items-start gap-3 py-1">
-          {/* Alert section - navigates to actions page */}
-          {(client.alertCount ?? 0) > 0 && (
-            <div 
-              className="mt-1 relative cursor-pointer" 
-              onClick={(e) => handleSectionClick(e, 'actions')}
-              title="View client alerts and actions"
-            >
-              <div className="h-6 w-6 rounded-full bg-red-500 flex items-center justify-center">
-                <Bell className="h-3.5 w-3.5 text-white" />
+        {/* Header with Avatar and Tier Badge */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            {/* Client Avatar */}
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={client.avatarUrl || undefined} alt={client.fullName} />
+              <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
+                {client.initials || getInitials(client.fullName)}
+              </AvatarFallback>
+            </Avatar>
+            
+            {/* Client Name and Contact */}
+            <div className="flex-1 overflow-hidden">
+              <div 
+                className="cursor-pointer"
+                onClick={(e) => handleSectionClick(e, 'personal')}
+                title="View client personal information"
+              >
+                <h3 className="text-sm font-medium text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
               </div>
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-                {client.alertCount}
-              </span>
+              
+              {/* Phone - clickable to dial */}
+              {client.phone && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  <a 
+                    href={`tel:${client.phone}`}
+                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    title="Call client"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {client.phone}
+                  </a>
+                </div>
+              )}
             </div>
-          )}
+          </div>
           
-          {/* Personal details section */}
-          <div className="flex-1 overflow-hidden">
-            {/* Client name - navigates to personal info page */}
-            <div 
-              className="cursor-pointer"
-              onClick={(e) => handleSectionClick(e, 'personal')}
-              title="View client personal information"
-            >
-              <h3 className="text-sm font-medium text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
+          {/* Tier Badge and Alert */}
+          <div className="flex items-center gap-2">
+            {/* Tier Badge */}
+            <div className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${tierBadge.bg} ${tierBadge.text} border ${tierBadge.border}`}>
+              <TierIcon className="h-3 w-3" />
+              {formatTier(client.tier)}
             </div>
             
-            {/* Phone - clickable to dial */}
-            {client.phone && (
-              <div className="text-xs text-muted-foreground mt-1">
-                <a 
-                  href={`tel:${client.phone}`}
-                  className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                  title="Call client"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {client.phone}
-                </a>
-              </div>
-            )}
-            
-            {/* Email - clickable to send email */}
-            {client.email && (
-              <div className="text-xs text-muted-foreground mt-1">
-                <a 
-                  href={`mailto:${client.email}`}
-                  className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
-                  title="Send email to client"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {client.email}
-                </a>
+            {/* Alert Badge */}
+            {(client.alertCount ?? 0) > 0 && (
+              <div 
+                className="relative cursor-pointer" 
+                onClick={(e) => handleSectionClick(e, 'actions')}
+                title="View client alerts and actions"
+              >
+                <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors">
+                  <Bell className="h-4 w-4 text-white" />
+                </div>
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold">
+                  {client.alertCount}
+                </span>
               </div>
             )}
           </div>
         </div>
+
+        {/* Email section */}
+        {client.email && (
+          <div className="text-xs text-muted-foreground mb-3">
+            <a 
+              href={`mailto:${client.email}`}
+              className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
+              title="Send email to client"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {client.email}
+            </a>
+          </div>
+        )}
         
         {/* Horizontal line below contact info */}
-        <div className="h-px bg-slate-200 my-3"></div>
+        <div className="h-px bg-slate-200 dark:bg-slate-700 my-3"></div>
         
         <div className="grid grid-cols-2 gap-3 mt-2">
           {/* AUM section - navigates to portfolio page */}
