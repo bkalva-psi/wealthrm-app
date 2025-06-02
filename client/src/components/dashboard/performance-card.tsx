@@ -57,7 +57,13 @@ interface PerformanceData {
 interface IncentiveData {
   earned: number;
   projected: number;
-  breakdown: any[];
+  possible: number;
+  breakdown: {
+    base: number;
+    performance: number;
+    team: number;
+    special: number;
+  };
 }
 
 export function PerformanceCard() {
@@ -273,16 +279,15 @@ export function PerformanceCard() {
                                   <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
                                     <div className="text-xs text-muted-foreground mb-1">Projected</div>
                                     <div className="text-lg font-bold text-blue-600">
-                                      {formatCurrency(incentiveData?.projected || 0)}
+                                      {formatCurrency((incentiveData as IncentiveData)?.projected || 0)}
                                     </div>
                                   </div>
                                 </div>
-                                {incentiveData?.breakdown?.map((item: any, index: number) => (
-                                  <div key={index} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
-                                    <span className="text-sm text-muted-foreground">{item.category}</span>
+                                {incentiveData?.breakdown && Object.entries((incentiveData as IncentiveData).breakdown).map(([category, amount]) => (
+                                  <div key={category} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                    <span className="text-sm text-muted-foreground capitalize">{category.replace(/([A-Z])/g, ' $1').trim()}</span>
                                     <div className="text-right">
-                                      <div className="text-sm font-medium">{formatCurrency(item.amount)}</div>
-                                      <div className="text-xs text-muted-foreground">{item.status}</div>
+                                      <div className="text-sm font-medium">{formatCurrency(amount as number)}</div>
                                     </div>
                                   </div>
                                 ))}
