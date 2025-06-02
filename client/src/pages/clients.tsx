@@ -310,18 +310,18 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     >
       <CardContent className="p-4">
         {/* Header with Avatar and Tier Badge */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex gap-3 flex-1">
             {/* Client Avatar */}
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-12 w-12 flex-shrink-0">
               <AvatarImage src={client.avatarUrl || undefined} alt={client.fullName} />
               <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
                 {client.initials || getInitials(client.fullName)}
               </AvatarFallback>
             </Avatar>
             
-            {/* Client Name and Contact */}
-            <div className="flex-1 overflow-hidden">
+            {/* Client Name and Contact - aligned vertically */}
+            <div className="flex-1 min-w-0">
               <div 
                 className="cursor-pointer"
                 onClick={(e) => handleSectionClick(e, 'personal')}
@@ -340,6 +340,20 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                     onClick={(e) => e.stopPropagation()}
                   >
                     {client.phone}
+                  </a>
+                </div>
+              )}
+              
+              {/* Email - clickable to send email */}
+              {client.email && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  <a 
+                    href={`mailto:${client.email}`}
+                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    title="Send email to client"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {client.email}
                   </a>
                 </div>
               )}
