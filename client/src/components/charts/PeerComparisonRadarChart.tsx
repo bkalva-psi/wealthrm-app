@@ -26,16 +26,16 @@ const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ dat
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-slate-200 rounded shadow-sm text-xs">
-          <p className="font-medium mb-1">{data.fullName}</p>
+        <div className="bg-background border border-border rounded shadow-sm text-xs p-3">
+          <p className="font-medium mb-1 text-foreground">{data.fullName}</p>
           <div className="space-y-1">
             <div className="flex justify-between gap-4">
-              <span className="text-blue-600">Your Percentile:</span>
-              <span className="font-medium">{data.percentile}th</span>
+              <span className="text-primary">Your Percentile:</span>
+              <span className="font-medium text-foreground">{data.percentile}th</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-gray-600">Average:</span>
-              <span>50th percentile</span>
+              <span className="text-muted-foreground">Average:</span>
+              <span className="text-foreground">50th percentile</span>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ dat
     <div className="w-full">
       <ResponsiveContainer width="100%" height={300}>
         <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
-          <PolarGrid stroke="#e2e8f0" />
+          <PolarGrid stroke="#f1f5f9" strokeOpacity={0.3} />
           <PolarAngleAxis 
             dataKey="metric" 
             tick={{ fontSize: 10, fill: '#64748b' }}

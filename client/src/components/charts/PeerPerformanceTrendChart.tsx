@@ -27,12 +27,12 @@ const PeerPerformanceTrendChart: React.FC<PeerPerformanceTrendChartProps> = ({ d
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-slate-200 rounded shadow-sm text-xs">
-          <p className="font-medium mb-1">{label}</p>
+        <div className="bg-background border border-border rounded shadow-sm text-xs p-3">
+          <p className="font-medium mb-1 text-foreground">{label}</p>
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex justify-between gap-4">
               <span style={{ color: entry.color }}>{entry.name}:</span>
-              <span className="font-medium">{entry.value}th %ile</span>
+              <span className="font-medium text-foreground">{entry.value}th %ile</span>
             </div>
           ))}
         </div>
@@ -55,7 +55,6 @@ const PeerPerformanceTrendChart: React.FC<PeerPerformanceTrendChartProps> = ({ d
             domain={[0, 100]}
             tick={{ fontSize: 11, fill: '#64748b' }}
             axisLine={{ stroke: '#e2e8f0' }}
-            label={{ value: 'Percentile', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend 

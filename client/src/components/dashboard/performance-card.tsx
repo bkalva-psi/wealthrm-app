@@ -222,6 +222,13 @@ export function PerformanceCard() {
                                     <Tooltip 
                                       formatter={(value: number) => [`₹${value.toFixed(2)} Cr`, '']}
                                       labelFormatter={(label) => `Month: ${label}`}
+                                      contentStyle={{
+                                        backgroundColor: 'hsl(var(--background))',
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '6px',
+                                        color: 'hsl(var(--foreground))',
+                                        fontSize: '12px'
+                                      }}
                                     />
                                     <Bar dataKey="current" fill="hsl(var(--primary))" name="Current Year" />
                                     <Bar dataKey="previous" fill="hsl(var(--muted-foreground))" name="Previous Year" />
@@ -273,7 +280,7 @@ export function PerformanceCard() {
 
                                   {/* Performance Trend Chart */}
                                   <div className="mt-4">
-                                    <h5 className="font-medium text-xs text-muted-foreground mb-3">Performance Trend</h5>
+                                    <h5 className="font-medium text-xs text-muted-foreground mb-3">Percentile Scores</h5>
                                     <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3">
                                       <PeerPerformanceTrendChart />
                                     </div>
