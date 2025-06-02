@@ -258,8 +258,9 @@ export const aumTrends = pgTable("aum_trends", {
   userId: integer("user_id").references(() => users.id).notNull(),
   month: integer("month").notNull(),
   year: integer("year").notNull(),
-  currentValue: real("current_value").notNull(),
-  previousValue: real("previous_value").notNull(),
+  totalAum: real("total_aum").notNull(),
+  previousYearAum: real("previous_year_aum").notNull(),
+  growthPercentage: real("growth_percentage").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

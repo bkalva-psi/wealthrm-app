@@ -1461,7 +1461,104 @@ export class DatabaseStorage implements IStorage {
 
   // AUM Trend methods
   async getAumTrends(userId: number): Promise<AumTrend[]> {
-    return db.select().from(aumTrends).where(eq(aumTrends.userId, userId));
+    try {
+      // Get all clients assigned to this RM
+      const userClients = await db
+        .select({ id: clients.id })
+        .from(clients)
+        .where(eq(clients.assignedTo, userId));
+      
+      const clientIds = userClients.map(client => client.id);
+      
+      if (clientIds.length === 0) {
+        return [];
+      }
+      
+      // Get all transactions for this RM's clients
+      const allTransactions = await db
+        .select({
+          amount: transactions.amount,
+          date: transactions.date,
+          type: transactions.type,
+          clientId: transactions.clientId
+        })
+        .from(transactions)
+        .where(sql`${transactions.clientId} = ANY(${clientIds})`);
+      
+      // Calculate monthly AUM for current year and last year
+      const currentYear = new Date().getFullYear();
+      const lastYear = currentYear - 1;
+      
+      const monthlyAum: Record<string, number> = {};
+      
+      // Initialize months for both years
+      for (let year of [lastYear, currentYear]) {
+        for (let month = 1; month <= 12; month++) {
+          const key = `${year}-${month.toString().padStart(2, '0')}`;
+          monthlyAum[key] = 0;
+        }
+      }
+      
+      // Calculate cumulative AUM for each month
+      for (const transaction of allTransactions) {
+        const transactionDate = new Date(transaction.date);
+        const transactionYear = transactionDate.getFullYear();
+        const transactionMonth = transactionDate.getMonth() + 1;
+        
+        // Only process transactions from the last 2 years
+        if (transactionYear < lastYear || transactionYear > currentYear) {
+          continue;
+        }
+        
+        // Add transaction amount to AUM (positive for inflows, negative for outflows)
+        const amount = transaction.type === 'buy' || transaction.type === 'deposit' 
+          ? transaction.amount 
+          : -transaction.amount;
+        
+        // Update AUM for current and future months in the same year
+        for (let month = transactionMonth; month <= 12; month++) {
+          const key = `${transactionYear}-${month.toString().padStart(2, '0')}`;
+          if (monthlyAum.hasOwnProperty(key)) {
+            monthlyAum[key] += amount;
+          }
+        }
+        
+        // If transaction is from last year, also update all months in current year
+        if (transactionYear === lastYear) {
+          for (let month = 1; month <= 12; month++) {
+            const key = `${currentYear}-${month.toString().padStart(2, '0')}`;
+            monthlyAum[key] += amount;
+          }
+        }
+      }
+      
+      // Convert to AumTrend format
+      const trends: AumTrend[] = [];
+      
+      for (let month = 1; month <= 12; month++) {
+        const currentYearKey = `${currentYear}-${month.toString().padStart(2, '0')}`;
+        const lastYearKey = `${lastYear}-${month.toString().padStart(2, '0')}`;
+        
+        trends.push({
+          id: month,
+          userId: userId,
+          month: month,
+          year: currentYear,
+          totalAum: Math.max(0, monthlyAum[currentYearKey]), // Ensure non-negative
+          previousYearAum: Math.max(0, monthlyAum[lastYearKey]),
+          growthPercentage: monthlyAum[lastYearKey] > 0 
+            ? ((monthlyAum[currentYearKey] - monthlyAum[lastYearKey]) / monthlyAum[lastYearKey]) * 100 
+            : 0,
+          createdAt: new Date()
+        });
+      }
+      
+      return trends;
+      
+    } catch (error) {
+      console.error('Error calculating AUM trends:', error);
+      return [];
+    }
   }
 
   async createAumTrend(insertTrend: InsertAumTrend): Promise<AumTrend> {

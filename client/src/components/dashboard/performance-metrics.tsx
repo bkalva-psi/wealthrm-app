@@ -27,10 +27,13 @@ interface PerformanceMetric {
 
 interface AumTrend {
   id: number;
+  userId: number;
   month: number;
   year: number;
-  currentValue: number;
-  previousValue: number;
+  totalAum: number;
+  previousYearAum: number;
+  growthPercentage: number;
+  createdAt: Date;
 }
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -58,8 +61,9 @@ export function PerformanceMetrics() {
     
     return aumTrends.map((trend: AumTrend) => ({
       name: months[trend.month - 1],
-      current: trend.currentValue,
-      previous: trend.previousValue,
+      currentYear: trend.totalAum / 100000, // Convert to lakhs for better display
+      lastYear: trend.previousYearAum / 100000,
+      growth: trend.growthPercentage,
     }));
   };
   
@@ -216,7 +220,10 @@ export function PerformanceMetrics() {
                   />
                   <YAxis hide />
                   <Tooltip 
-                    formatter={(value: number) => [value.toFixed(0), 'Value']}
+                    formatter={(value: number, name: string) => [
+                      `₹${value.toFixed(1)}L`, 
+                      name === 'currentYear' ? 'Current Year' : 'Last Year'
+                    ]}
                     contentStyle={{ 
                       backgroundColor: 'rgba(15, 23, 42, 0.9)',
                       border: 'none',
@@ -227,13 +234,13 @@ export function PerformanceMetrics() {
                     labelStyle={{ color: 'white' }}
                   />
                   <Bar 
-                    dataKey="previous" 
-                    fill="rgba(59, 130, 246, 0.2)" 
+                    dataKey="lastYear" 
+                    fill="rgba(148, 163, 184, 0.6)" 
                     radius={[2, 2, 0, 0]} 
                     maxBarSize={14}
                   />
                   <Bar 
-                    dataKey="current" 
+                    dataKey="currentYear" 
                     fill="#3b82f6" 
                     radius={[2, 2, 0, 0]} 
                     maxBarSize={10}
