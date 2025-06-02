@@ -404,7 +404,10 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             >
               <div className="text-xs text-muted-foreground mb-1 font-medium">Portfolio Value</div>
               <div className="text-sm font-bold text-foreground">{client.aum}</div>
-              {formatPerformance(client.yearlyPerformance)}
+              <div className="flex items-center justify-center text-xs text-muted-foreground mt-1">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                Portfolio
+              </div>
             </div>
             
             {/* Last Contact with urgency indicator */}
@@ -569,12 +572,18 @@ export default function Clients() {
         })
         // Smart sorting: Attention needed first, then by AUM within each group
         .sort((a, b) => {
-          // Get health status for both clients
-          const aStatus = getClientHealthStatus(a, tasks, appointments, alerts);
-          const bStatus = getClientHealthStatus(b, tasks, appointments, alerts);
+          // Check if clients need attention based on various factors
+          const today = new Date();
+          const daysSinceLastContact = a.lastContactDate 
+            ? Math.floor((today.getTime() - new Date(a.lastContactDate).getTime()) / (1000 * 60 * 60 * 24))
+            : 999;
+          const daysSinceLastContactB = b.lastContactDate 
+            ? Math.floor((today.getTime() - new Date(b.lastContactDate).getTime()) / (1000 * 60 * 60 * 24))
+            : 999;
           
-          const aNeedsAttention = aStatus !== 'Healthy';
-          const bNeedsAttention = bStatus !== 'Healthy';
+          // Determine attention needed: >90 days since contact, or has alerts
+          const aNeedsAttention = daysSinceLastContact > 90 || (a.alertCount && a.alertCount > 0);
+          const bNeedsAttention = daysSinceLastContactB > 90 || (b.alertCount && b.alertCount > 0);
           
           // First, sort by attention needed (attention clients first)
           if (aNeedsAttention && !bNeedsAttention) return -1;
