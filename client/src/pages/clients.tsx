@@ -315,7 +315,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             <div className="flex gap-3 flex-1">
               {/* Client Avatar */}
               <Avatar className="h-12 w-12 flex-shrink-0 ring-2 ring-background shadow-sm">
-                <AvatarImage src={client.avatarUrl || undefined} alt={client.fullName} />
+                <AvatarImage src={generateAvatar(client.fullName, client.id.toString())} alt={client.fullName} />
                 <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
                   {client.initials || getInitials(client.fullName)}
                 </AvatarFallback>
@@ -367,24 +367,24 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             </div>
             
             {/* Tier Badge and Alert */}
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 flex-shrink-0">
               {/* Tier Badge */}
               <div className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${tierBadge.bg} ${tierBadge.text} border ${tierBadge.border} shadow-sm`}>
                 <TierIcon className="h-3 w-3" />
-                {formatTier(client.tier)}
+{client.tier ? client.tier.charAt(0).toUpperCase() : 'S'}
               </div>
               
               {/* Alert Badge */}
               {(client.alertCount ?? 0) > 0 && (
                 <div 
-                  className="relative cursor-pointer" 
+                  className="relative cursor-pointer flex-shrink-0" 
                   onClick={(e) => handleSectionClick(e, 'actions')}
                   title="View client alerts and actions"
                 >
-                  <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
-                    <Bell className="h-4 w-4 text-white" />
+                  <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
+                    <Bell className="h-3 w-3 text-white" />
                   </div>
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold shadow-sm">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold shadow-sm">
                     {client.alertCount}
                   </span>
                 </div>
@@ -567,12 +567,21 @@ export default function Clients() {
           
           return result;
         })
-        // Sort by alert count (descending)
+        // Smart sorting: Attention needed first, then by AUM within each group
         .sort((a, b) => {
-          // Put clients with alerts first, sorted by most alerts
-          const aAlertCount = a.alertCount || 0;
-          const bAlertCount = b.alertCount || 0;
-          return bAlertCount - aAlertCount;
+          // Get health status for both clients
+          const aStatus = getClientHealthStatus(a, tasks, appointments, alerts);
+          const bStatus = getClientHealthStatus(b, tasks, appointments, alerts);
+          
+          const aNeedsAttention = aStatus !== 'Healthy';
+          const bNeedsAttention = bStatus !== 'Healthy';
+          
+          // First, sort by attention needed (attention clients first)
+          if (aNeedsAttention && !bNeedsAttention) return -1;
+          if (!aNeedsAttention && bNeedsAttention) return 1;
+          
+          // Within same attention group, sort by AUM (highest first)
+          return (b.aumValue || 0) - (a.aumValue || 0);
         })
     : [];
   
