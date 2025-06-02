@@ -1411,42 +1411,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Structure the response to match frontend expectations
       const response = {
         targets: [
-          { name: "New Clients", icon: "Users", target: data.targets.newClients, actual: data.actuals.newClients, unit: "" },
-          { name: "Net New Money", icon: "DollarSign", target: data.targets.netNewMoney, actual: data.actuals.netNewMoney, unit: "L" },
-          { name: "Client Meetings", icon: "Calendar", target: data.targets.clientMeetings, actual: data.actuals.clientMeetings, unit: "" },
-          { name: "Prospect Pipeline", icon: "TrendingUp", target: data.targets.prospectPipeline, actual: data.actuals.prospectPipeline, unit: "L" },
-          { name: "Revenue", icon: "Award", target: data.targets.revenue, actual: data.actuals.revenue, unit: "L" }
-        ],
-        peers: [
           { 
             name: "New Clients", 
-            percentile: data.peers.newClientsPercentile, 
-            rank: data.peers.newClientsRank, 
-            totalRMs: data.peers.totalRMs 
+            icon: "Users", 
+            target: data.targets.newClients, 
+            actual: data.actuals.newClients, 
+            unit: "",
+            achievement: Math.round((data.actuals.newClients / data.targets.newClients) * 100)
           },
           { 
             name: "Net New Money", 
-            percentile: data.peers.netNewMoneyPercentile, 
-            rank: data.peers.netNewMoneyRank, 
-            totalRMs: data.peers.totalRMs 
+            icon: "DollarSign", 
+            target: data.targets.netNewMoney, 
+            actual: data.actuals.netNewMoney, 
+            unit: "L",
+            achievement: Math.round((data.actuals.netNewMoney / data.targets.netNewMoney) * 100)
           },
           { 
             name: "Client Meetings", 
-            percentile: data.peers.clientMeetingsPercentile, 
-            rank: data.peers.clientMeetingsRank, 
-            totalRMs: data.peers.totalRMs 
+            icon: "Calendar", 
+            target: data.targets.clientMeetings, 
+            actual: data.actuals.clientMeetings, 
+            unit: "",
+            achievement: Math.round((data.actuals.clientMeetings / data.targets.clientMeetings) * 100)
           },
           { 
             name: "Prospect Pipeline", 
-            percentile: data.peers.prospectPipelinePercentile, 
-            rank: data.peers.prospectPipelineRank, 
-            totalRMs: data.peers.totalRMs 
+            icon: "TrendingUp", 
+            target: data.targets.prospectPipeline, 
+            actual: data.actuals.prospectPipeline, 
+            unit: "L",
+            achievement: Math.round((data.actuals.prospectPipeline / data.targets.prospectPipeline) * 100)
           },
           { 
             name: "Revenue", 
-            percentile: data.peers.revenuePercentile, 
-            rank: data.peers.revenueRank, 
-            totalRMs: data.peers.totalRMs 
+            icon: "Award", 
+            target: data.targets.revenue, 
+            actual: data.actuals.revenue, 
+            unit: "L",
+            achievement: Math.round((data.actuals.revenue / data.targets.revenue) * 100)
+          }
+        ],
+        peerComparison: [
+          { 
+            metric: "New Clients", 
+            yourValue: `${data.peers.newClientsRank}/${data.peers.totalRMs}`,
+            avgValue: `${data.peers.newClientsPercentile}th %ile`,
+            vsAverage: data.peers.newClientsPercentile - 50
+          },
+          { 
+            metric: "Net New Money", 
+            yourValue: `${data.peers.netNewMoneyRank}/${data.peers.totalRMs}`,
+            avgValue: `${data.peers.netNewMoneyPercentile}th %ile`,
+            vsAverage: data.peers.netNewMoneyPercentile - 50
+          },
+          { 
+            metric: "Client Meetings", 
+            yourValue: `${data.peers.clientMeetingsRank}/${data.peers.totalRMs}`,
+            avgValue: `${data.peers.clientMeetingsPercentile}th %ile`,
+            vsAverage: data.peers.clientMeetingsPercentile - 50
+          },
+          { 
+            metric: "Prospect Pipeline", 
+            yourValue: `${data.peers.prospectPipelineRank}/${data.peers.totalRMs}`,
+            avgValue: `${data.peers.prospectPipelinePercentile}th %ile`,
+            vsAverage: data.peers.prospectPipelinePercentile - 50
+          },
+          { 
+            metric: "Revenue", 
+            yourValue: `${data.peers.revenueRank}/${data.peers.totalRMs}`,
+            avgValue: `${data.peers.revenuePercentile}th %ile`,
+            vsAverage: data.peers.revenuePercentile - 50
           }
         ],
         overallPercentile: data.peers.overallPercentile,
@@ -1952,12 +1987,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
 
-      // Calculate metrics from authentic customer transaction data
+      // Calculate metrics from authentic client AUM data (same source as trends)
       const [aumData] = await db
         .select({
-          totalAum: sql<number>`coalesce(sum(${transactions.amount}), 0)`
+          totalAum: sql<number>`coalesce(sum(${clients.aumValue}), 0)`
         })
-        .from(transactions);
+        .from(clients)
+        .where(eq(clients.assignedTo, userId));
 
       const [clientStats] = await db
         .select({

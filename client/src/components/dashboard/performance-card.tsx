@@ -283,7 +283,7 @@ export function PerformanceCard() {
                                     </div>
                                   </div>
                                 </div>
-                                {incentiveData?.breakdown && Object.entries((incentiveData as IncentiveData).breakdown).map(([category, amount]) => (
+                                {(incentiveData as IncentiveData)?.breakdown && Object.entries((incentiveData as IncentiveData).breakdown).map(([category, amount]) => (
                                   <div key={category} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
                                     <span className="text-sm text-muted-foreground capitalize">{category.replace(/([A-Z])/g, ' $1').trim()}</span>
                                     <div className="text-right">

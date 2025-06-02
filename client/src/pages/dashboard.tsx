@@ -73,12 +73,7 @@ export default function Dashboard() {
           </div>
         </div>
         
-        {/* Additional Performance Card if needed */}
-        <div className="animate-in fade-in duration-800 delay-700">
-          <div className="transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
-            <PerformanceCard />
-          </div>
-        </div>
+
         
         {/* Additional spacing for mobile scroll with better padding */}
         <div className="pb-8 sm:pb-12 lg:pb-16"></div>
