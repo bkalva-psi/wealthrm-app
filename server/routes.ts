@@ -2261,7 +2261,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .from(prospects)
         .where(eq(prospects.assignedTo, userId))
         .groupBy(prospects.stage)
-        .orderBy(sql`sum(${prospects.estimatedValue}) desc`);
+        .orderBy(sql`sum(${prospects.potentialAumValue}) desc`);
 
       res.json(pipelineBreakdown);
     } catch (error) {
