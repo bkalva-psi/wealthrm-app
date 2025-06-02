@@ -1483,16 +1483,13 @@ export class DatabaseStorage implements IStorage {
       const currentYear = new Date().getFullYear();
       const currentMonth = new Date().getMonth() + 1;
       
-      // Generate trends for each month
-      for (let month = 1; month <= 12; month++) {
-        // Calculate AUM progression over the year
-        const monthProgress = month / 12;
+      // Generate trends only for months that have passed (up to current month)
+      for (let month = 1; month <= currentMonth; month++) {
+        // Calculate AUM progression over the months that have passed
         const yearStartAum = currentTotalAum * 0.7; // Assume 30% growth this year
-        const currentMonthAum = month <= currentMonth 
-          ? yearStartAum + (currentTotalAum - yearStartAum) * (month / currentMonth)
-          : currentTotalAum; // Future months show current value
+        const currentMonthAum = yearStartAum + (currentTotalAum - yearStartAum) * (month / currentMonth);
         
-        // Previous year AUM (lower baseline)
+        // Previous year AUM for the same month (lower baseline)
         const previousYearAum = yearStartAum * 0.9; // Previous year was 10% lower than year start
         
         // Calculate growth percentage
