@@ -45,36 +45,36 @@ export function TalkingPointsCard() {
   const categories = {
     market_analysis: {
       title: 'Market Analysis',
-      color: 'text-teal-700',
-      bgColor: 'bg-teal-50 border-teal-200',
+      color: 'text-teal-700 dark:text-teal-300',
+      bgColor: 'bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800',
       count: groupedPoints.market_analysis?.length || 0,
       items: groupedPoints.market_analysis || []
     },
     regulatory_update: {
       title: 'Regulatory Updates',
-      color: 'text-amber-700',
-      bgColor: 'bg-amber-50 border-amber-200',
+      color: 'text-amber-700 dark:text-amber-300',
+      bgColor: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800',
       count: groupedPoints.regulatory_update?.length || 0,
       items: groupedPoints.regulatory_update || []
     },
     company_news: {
       title: 'Company News',
-      color: 'text-emerald-700',
-      bgColor: 'bg-emerald-50 border-emerald-200',
+      color: 'text-emerald-700 dark:text-emerald-300',
+      bgColor: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800',
       count: groupedPoints.company_news?.length || 0,
       items: groupedPoints.company_news || []
     },
     economic_indicator: {
       title: 'Economic Indicators',
-      color: 'text-blue-700',
-      bgColor: 'bg-blue-50 border-blue-200',
+      color: 'text-blue-700 dark:text-blue-300',
+      bgColor: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',
       count: groupedPoints.economic_indicator?.length || 0,
       items: groupedPoints.economic_indicator || []
     },
     investment_strategy: {
       title: 'Investment Strategy',
-      color: 'text-purple-700',
-      bgColor: 'bg-purple-50 border-purple-200',
+      color: 'text-purple-700 dark:text-purple-300',
+      bgColor: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800',
       count: groupedPoints.investment_strategy?.length || 0,
       items: groupedPoints.investment_strategy || []
     }
@@ -184,7 +184,7 @@ export function TalkingPointsCard() {
                                 </div>
                               ) : (
                                 category.items.slice(0, 5).map((item: any, index: number) => (
-                                  <div key={item.id || index} className="bg-white/70 rounded p-2 text-sm">
+                                  <div key={item.id || index} className="bg-white/70 dark:bg-gray-800/50 rounded p-2 text-sm">
                                     <div className="font-medium">{item.title}</div>
                                     <div className="text-muted-foreground">
                                       Relevance: {item.relevance_score}/10 • {item.source}

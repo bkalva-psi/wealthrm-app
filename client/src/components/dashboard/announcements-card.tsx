@@ -63,36 +63,36 @@ export function AnnouncementsCard() {
   const categories = {
     campaign: {
       title: 'Campaigns',
-      color: 'text-teal-700',
-      bgColor: 'bg-teal-50 border-teal-200',
+      color: 'text-teal-700 dark:text-teal-300',
+      bgColor: 'bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800',
       count: groupedAnnouncements.campaign?.length || 0,
       items: groupedAnnouncements.campaign || []
     },
     policy_update: {
       title: 'Policy Updates',
-      color: 'text-red-700',
-      bgColor: 'bg-red-50 border-red-200',
+      color: 'text-red-700 dark:text-red-300',
+      bgColor: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800',
       count: groupedAnnouncements.policy_update?.length || 0,
       items: groupedAnnouncements.policy_update || []
     },
     product_update: {
       title: 'Product Updates',
-      color: 'text-amber-700',
-      bgColor: 'bg-amber-50 border-amber-200',
+      color: 'text-amber-700 dark:text-amber-300',
+      bgColor: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800',
       count: groupedAnnouncements.product_update?.length || 0,
       items: groupedAnnouncements.product_update || []
     },
     training: {
       title: 'Training',
-      color: 'text-blue-700',
-      bgColor: 'bg-blue-50 border-blue-200',
+      color: 'text-blue-700 dark:text-blue-300',
+      bgColor: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',
       count: groupedAnnouncements.training?.length || 0,
       items: groupedAnnouncements.training || []
     },
     general: {
       title: 'General',
-      color: 'text-gray-700',
-      bgColor: 'bg-gray-50 border-gray-200',
+      color: 'text-gray-700 dark:text-gray-300',
+      bgColor: 'bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700',
       count: groupedAnnouncements.general?.length || 0,
       items: groupedAnnouncements.general || []
     }
@@ -202,7 +202,7 @@ export function AnnouncementsCard() {
                                 </div>
                               ) : (
                                 category.items.slice(0, 5).map((item: Announcement, index: number) => (
-                                  <div key={item.id || index} className="bg-white/70 rounded p-2 text-sm">
+                                  <div key={item.id || index} className="bg-white/70 dark:bg-gray-800/50 rounded p-2 text-sm">
                                     <div className="font-medium">{item.title}</div>
                                     <div className="text-muted-foreground">
                                       Priority: {item.priority} • {item.author}
