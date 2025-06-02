@@ -195,9 +195,15 @@ export function PerformanceMetrics() {
         <div className="mt-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-medium text-slate-500">Monthly AUM Trend</h3>
-            <div className="text-xs text-slate-500">
-              <span className="inline-block w-3 h-3 bg-primary-500 rounded-full mr-1"></span> Current Year
-              <span className="inline-block w-3 h-3 bg-slate-300 rounded-full ml-2 mr-1"></span> Previous Year
+            <div className="flex items-center gap-4 text-xs text-slate-500">
+              <div className="flex items-center">
+                <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1"></span>
+                Current Year
+              </div>
+              <div className="flex items-center">
+                <span className="inline-block w-3 h-3 bg-slate-400 rounded-full mr-1"></span>
+                Previous Year
+              </div>
             </div>
           </div>
           
@@ -209,6 +215,7 @@ export function PerformanceMetrics() {
                 <BarChart
                   data={chartData}
                   margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
+                  barCategoryGap={2}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
                   <XAxis 
@@ -222,7 +229,7 @@ export function PerformanceMetrics() {
                   <Tooltip 
                     formatter={(value: number, name: string) => [
                       `₹${value.toFixed(1)}L`, 
-                      name === 'currentYear' ? 'Current Year' : 'Last Year'
+                      name === 'currentYear' ? 'Current Year' : 'Previous Year'
                     ]}
                     contentStyle={{ 
                       backgroundColor: 'rgba(15, 23, 42, 0.9)',
@@ -235,15 +242,15 @@ export function PerformanceMetrics() {
                   />
                   <Bar 
                     dataKey="lastYear" 
-                    fill="rgba(148, 163, 184, 0.6)" 
+                    fill="#94a3b8" 
                     radius={[2, 2, 0, 0]} 
-                    maxBarSize={14}
+                    maxBarSize={12}
                   />
                   <Bar 
                     dataKey="currentYear" 
                     fill="#3b82f6" 
                     radius={[2, 2, 0, 0]} 
-                    maxBarSize={10}
+                    maxBarSize={12}
                   />
                 </BarChart>
               </ResponsiveContainer>
