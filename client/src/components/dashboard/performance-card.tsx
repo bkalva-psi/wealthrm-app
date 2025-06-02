@@ -25,6 +25,8 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import PeerComparisonRadarChart from "@/components/charts/PeerComparisonRadarChart";
+import PeerPerformanceTrendChart from "@/components/charts/PeerPerformanceTrendChart";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -77,6 +79,13 @@ export function PerformanceCard() {
   
   const { data: aumTrends, isLoading: trendsLoading } = useQuery({
     queryKey: ['/api/aum-trends'],
+  });
+
+  // Fetch business metrics for consistent AUM data (same source as KPI cards)
+  const { data: businessMetrics, isLoading: businessLoading } = useQuery({
+    queryKey: ['/api/business-metrics/1'],
+    staleTime: 0,
+    refetchOnMount: true
   });
 
   const { data: performanceData, isLoading: performanceLoading } = useQuery({
@@ -187,7 +196,7 @@ export function PerformanceCard() {
                       <div className="mt-4 space-y-4">
                         {key === 'yoy_growth' && (
                           <div>
-                            {trendsLoading ? (
+                            {trendsLoading || businessLoading ? (
                               <Skeleton className="h-48 w-full" />
                             ) : (
                               <div className="space-y-4">
@@ -195,7 +204,7 @@ export function PerformanceCard() {
                                   <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
                                     <div className="text-xs text-muted-foreground mb-1">Current AUM</div>
                                     <div className="text-lg font-bold text-foreground">
-                                      {formatCurrency((aumTrends as AumTrend[])?.[0]?.totalAum || 0)}
+                                      {formatCurrency((businessMetrics as any)?.totalAum || 0)}
                                     </div>
                                   </div>
                                   <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
@@ -244,19 +253,47 @@ export function PerformanceCard() {
                                   ))}
                                 </div>
                                 
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                   <h4 className="font-medium text-sm">Peer Comparison</h4>
-                                  {(performanceData as PerformanceData)?.peerComparison?.map((peer: any, index: number) => (
-                                    <div key={index} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
-                                      <span className="text-sm text-muted-foreground">{peer.metric}</span>
-                                      <div className="text-right">
-                                        <div className="text-sm font-medium">{peer.yourValue}</div>
-                                        <div className={`text-xs ${getPercentageChangeColor(peer.vsAverage)}`}>
-                                          vs avg: {peer.avgValue}
+                                  
+                                  {/* Summary Cards */}
+                                  <div className="space-y-2">
+                                    {(performanceData as PerformanceData)?.peerComparison?.map((peer: any, index: number) => (
+                                      <div key={index} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                        <span className="text-sm text-muted-foreground">{peer.metric}</span>
+                                        <div className="text-right">
+                                          <div className="text-sm font-medium">{peer.yourValue}</div>
+                                          <div className={`text-xs ${getPercentageChangeColor(peer.vsAverage)}`}>
+                                            vs avg: {peer.avgValue}
+                                          </div>
                                         </div>
                                       </div>
+                                    ))}
+                                  </div>
+
+                                  {/* Performance Trend Chart */}
+                                  <div className="mt-4">
+                                    <h5 className="font-medium text-xs text-muted-foreground mb-3">Performance Trend</h5>
+                                    <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3">
+                                      <PeerPerformanceTrendChart />
                                     </div>
-                                  ))}
+                                  </div>
+
+                                  {/* Radar Chart */}
+                                  <div className="mt-4">
+                                    <h5 className="font-medium text-xs text-muted-foreground mb-3">Performance Radar</h5>
+                                    <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3">
+                                      <PeerComparisonRadarChart 
+                                        data={(performanceData as PerformanceData)?.peerComparison?.map((peer: any) => ({
+                                          metric: peer.metric,
+                                          yourValue: peer.yourValue,
+                                          avgValue: peer.avgValue,
+                                          vsAverage: peer.vsAverage,
+                                          percentile: parseInt(peer.avgValue.replace(/[^\d]/g, '')) || 50
+                                        })) || []}
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             )}
