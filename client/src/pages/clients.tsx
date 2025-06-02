@@ -91,7 +91,7 @@ interface ClientCardProps {
   onClick: (id: number) => void;
 }
 
-function ClientCard({ client, onClick }: ClientCardProps) {
+function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [] }: ClientCardProps & { tasks?: any[], appointments?: any[], alerts?: any[] }) {
   const tierColors = getTierColor(client.tier);
   const TierIcon = getTierIcon(client.tier);
   const tierBadge = getTierBadgeColors(client.tier);
@@ -174,37 +174,90 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     }
   };
 
-  // Client health status
-  const getClientHealthColor = (client: Client) => {
-    const alertCount = client.alertCount || 0;
+  // Comprehensive client health status logic
+  const getClientHealthColor = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Check 1: Overdue contact (>90 days)
     const lastContact = client.lastContactDate;
     const daysSinceContact = lastContact ? 
       Math.floor((new Date().getTime() - new Date(lastContact).getTime()) / (1000 * 60 * 60 * 24)) : 999;
-
-    if (alertCount > 0 || daysSinceContact > 30) {
+    const hasOverdueContact = daysSinceContact > 90;
+    
+    // Check 2: Meeting scheduled today
+    const hasMeetingToday = appointments.some(apt => {
+      const aptDate = new Date(apt.startTime);
+      aptDate.setHours(0, 0, 0, 0);
+      return aptDate.getTime() === today.getTime() && apt.clientId === client.id;
+    });
+    
+    // Check 3: Overdue tasks related to this customer
+    const hasOverdueTasks = tasks.some(task => {
+      if (task.clientId !== client.id) return false;
+      if (task.completed) return false;
+      if (!task.dueDate) return false;
+      
+      const dueDate = new Date(task.dueDate);
+      dueDate.setHours(23, 59, 59, 999);
+      return dueDate < new Date();
+    });
+    
+    // Check 4: Complaints from this customer
+    const hasComplaints = alerts.some(alert => 
+      alert.clientId === client.id && 
+      alert.severity === 'high' && 
+      alert.title?.toLowerCase().includes('complaint')
+    );
+    
+    // Red if ANY of these conditions are true
+    if (hasOverdueContact || hasMeetingToday || hasOverdueTasks || hasComplaints) {
       return 'bg-red-500';
-    } else if (daysSinceContact > 21) {
-      return 'bg-yellow-500';
-    } else {
-      return 'bg-green-500';
     }
+    
+    // Green for healthy clients
+    return 'bg-green-500';
   };
 
-  const getClientHealthStatus = (client: Client) => {
-    const alertCount = client.alertCount || 0;
+  const getClientHealthStatus = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Check all conditions
     const lastContact = client.lastContactDate;
     const daysSinceContact = lastContact ? 
       Math.floor((new Date().getTime() - new Date(lastContact).getTime()) / (1000 * 60 * 60 * 24)) : 999;
-
-    if (alertCount > 0) {
-      return 'Needs Attention';
-    } else if (daysSinceContact > 30) {
-      return 'Inactive';
-    } else if (daysSinceContact > 21) {
-      return 'Follow Up';
-    } else {
-      return 'Active';
-    }
+    const hasOverdueContact = daysSinceContact > 90;
+    
+    const hasMeetingToday = appointments.some(apt => {
+      const aptDate = new Date(apt.startTime);
+      aptDate.setHours(0, 0, 0, 0);
+      return aptDate.getTime() === today.getTime() && apt.clientId === client.id;
+    });
+    
+    const hasOverdueTasks = tasks.some(task => {
+      if (task.clientId !== client.id) return false;
+      if (task.completed) return false;
+      if (!task.dueDate) return false;
+      
+      const dueDate = new Date(task.dueDate);
+      dueDate.setHours(23, 59, 59, 999);
+      return dueDate < new Date();
+    });
+    
+    const hasComplaints = alerts.some(alert => 
+      alert.clientId === client.id && 
+      alert.severity === 'high' && 
+      alert.title?.toLowerCase().includes('complaint')
+    );
+    
+    // Return specific status messages
+    if (hasMeetingToday) return 'Meeting Today';
+    if (hasComplaints) return 'Complaint';
+    if (hasOverdueTasks) return 'Overdue Tasks';
+    if (hasOverdueContact) return 'Contact Overdue';
+    
+    return 'Active';
   };
 
 
@@ -336,7 +389,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
               title="View client portfolio"
             >
               <div className="text-xs text-muted-foreground mb-1">Portfolio Value</div>
-              <div className="text-lg font-bold text-foreground">{client.aum}</div>
+              <div className="text-base font-bold text-foreground">{client.aum}</div>
               {formatPerformance(client.yearlyPerformance)}
             </div>
             
@@ -427,6 +480,22 @@ export default function Clients() {
   const { data: clients, isLoading } = useQuery({
     queryKey: ['clients'],
     queryFn: () => clientApi.getClients(),
+  });
+
+  // Fetch additional data for health status calculations
+  const { data: tasks = [] } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: () => fetch('/api/tasks').then(res => res.json()),
+  });
+
+  const { data: appointments = [] } = useQuery({
+    queryKey: ['appointments'],
+    queryFn: () => fetch('/api/appointments').then(res => res.json()),
+  });
+
+  const { data: alerts = [] } = useQuery({
+    queryKey: ['portfolio-alerts'],
+    queryFn: () => fetch('/api/portfolio-alerts').then(res => res.json()),
   });
   
   // Calculate active filters
