@@ -113,18 +113,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
   
   const sidebarContent = (
     <div className={cn("flex flex-col w-full md:w-64 border-r border-unified bg-background text-foreground h-full transition-colors duration-300")}>
-      {/* Only show logo in the sidebar when it's not mobile view, as mobile view already has logo in the Sheet header */}
-      {!mobile && (
-        <div className="flex items-center justify-center h-16 bg-background border-b border-unified transition-colors duration-300">
-          <div className="flex items-center space-x-2">
-            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto" />
-            <div className="flex flex-col">
-              <h1 className="brand-accent text-lg font-bold leading-tight">Ujjivan SFB</h1>
-              <span className="brand-accent-subtle text-sm font-medium leading-tight">Wealth RM</span>
-            </div>
-          </div>
-        </div>
-      )}
+
       
       {/* Navigation Links */}
       <nav className="flex-1 px-2 py-4 bg-background space-y-1 overflow-y-auto transition-colors duration-300">
