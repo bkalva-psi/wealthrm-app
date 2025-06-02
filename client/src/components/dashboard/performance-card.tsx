@@ -84,9 +84,9 @@ export function PerformanceCard() {
   };
 
   const getPercentileColor = (percentile: number) => {
-    if (percentile >= 80) return "text-green-600 bg-green-50";
-    if (percentile >= 60) return "text-yellow-600 bg-yellow-50";
-    return "text-red-600 bg-red-50";
+    if (percentile >= 80) return "text-success bg-success/10 dark:bg-success/20";
+    if (percentile >= 60) return "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20";
+    return "text-destructive bg-destructive/10 dark:bg-destructive/20";
   };
 
   const getRankMedal = (rank: number) => {
@@ -287,17 +287,17 @@ export function PerformanceCard() {
 
         {/* Peer Comparison Section */}
         <Collapsible open={peersExpanded} onOpenChange={setPeersExpanded}>
-          <div className="px-4 py-3">
+          <div className="px-4 py-3 border-b border-border bg-card">
             <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-transparent">
-                <div className="flex items-center gap-2 w-full">
-                  <Award className="h-4 w-4 text-purple-600" />
-                  <span className="text-xs font-medium text-slate-700 flex-1 text-left">
+              <Button variant="ghost" className="w-full p-0 h-auto justify-start hover:bg-muted/50 rounded-md">
+                <div className="flex items-center gap-2 w-full py-1">
+                  <Award className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-foreground flex-1 text-left">
                     Peer Comparison ({PERIOD_LABELS[selectedPeriod]})
                   </span>
                   {peersExpanded ? 
-                    <ChevronDown className="h-4 w-4 text-slate-400" /> :
-                    <ChevronRight className="h-4 w-4 text-slate-400" />
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" /> :
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   }
                 </div>
               </Button>
@@ -306,9 +306,9 @@ export function PerformanceCard() {
             {!peersExpanded && (
               <div className="mt-3">
                 {/* Overall Percentile Score - Bar Chart Display */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-4">
+                <div className="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/10 dark:to-primary/5 rounded-lg p-4">
                   <div className="text-center mb-3">
-                    <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">Overall Percentile Score</div>
+                    <div className="text-sm text-primary font-medium">Overall Percentile Score</div>
                   </div>
 
                   {/* Horizontal Progress Bar */}
@@ -348,9 +348,9 @@ export function PerformanceCard() {
                   <div className="text-center">
                     <div className={cn(
                       "inline-block px-3 py-1 rounded-full text-xs font-medium",
-                      overallAveragePercentile >= 80 ? "bg-green-100 text-green-700" :
-                      overallAveragePercentile >= 60 ? "bg-blue-100 text-blue-700" :
-                      "bg-orange-100 text-orange-700"
+                      overallAveragePercentile >= 80 ? "bg-success/10 text-success dark:bg-success/20" :
+                      overallAveragePercentile >= 60 ? "bg-primary/10 text-primary dark:bg-primary/20" :
+                      "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400"
                     )}>
                       {overallAveragePercentile >= 80 ? "Strong compared to peers" : 
                        overallAveragePercentile >= 60 ? "Average compared to peers" : 
