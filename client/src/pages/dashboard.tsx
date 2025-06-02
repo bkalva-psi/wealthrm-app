@@ -7,10 +7,6 @@ import { PerformanceCard } from "@/components/dashboard/performance-card";
 import { BusinessSnapshotStructured } from "@/components/dashboard/business-snapshot-structured";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
-
-
-import { PerformanceMetrics } from "@/components/dashboard/performance-metrics";
-
 import { format } from "date-fns";
 
 export default function Dashboard() {
@@ -70,10 +66,10 @@ export default function Dashboard() {
           </div>
         </div>
         
-        {/* Performance Metrics Section with enhanced spacing */}
+        {/* Performance Section with enhanced spacing */}
         <div className="animate-in slide-in-from-bottom-4 duration-800 delay-600">
           <div className="transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
-            <PerformanceMetrics />
+            <PerformanceCard />
           </div>
         </div>
         
