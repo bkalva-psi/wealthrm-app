@@ -16,7 +16,7 @@ import {
   communicationTemplates, CommunicationTemplate, InsertCommunicationTemplate,
   communicationAnalytics, CommunicationAnalytic, InsertCommunicationAnalytic
 } from "@shared/schema";
-import { eq, and, gte, lt, lte, desc, sql } from "drizzle-orm";
+import { eq, and, gte, lt, lte, desc, sql, or } from "drizzle-orm";
 import { db } from "./db";
 
 // modify the interface with any CRUD methods
@@ -1474,16 +1474,19 @@ export class DatabaseStorage implements IStorage {
         return [];
       }
       
-      // Get all transactions for this RM's clients
+      // Get all transactions for this RM's clients using individual OR conditions
       const allTransactions = await db
         .select({
           amount: transactions.amount,
-          date: transactions.date,
-          type: transactions.type,
+          date: transactions.transactionDate,
+          type: transactions.transactionType,
           clientId: transactions.clientId
         })
         .from(transactions)
-        .where(sql`${transactions.clientId} = ANY(${clientIds})`);
+        .where(clientIds.length === 1 
+          ? eq(transactions.clientId, clientIds[0])
+          : or(...clientIds.map(id => eq(transactions.clientId, id)))
+        );
       
       // Calculate monthly AUM for current year and last year
       const currentYear = new Date().getFullYear();
