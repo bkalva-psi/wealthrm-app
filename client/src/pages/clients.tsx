@@ -128,19 +128,30 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     return colors[index];
   };
 
-  // Contact urgency indicator
-  const getContactUrgency = (lastContactDate: Date | null | undefined) => {
+  // Contact urgency indicator - show "Contact Soon" only if meeting scheduled in next week or last meeting >75 days ago
+  const getContactUrgency = (lastContactDate: Date | null | undefined, clientId: number, appointments: any[] = []) => {
+    const today = new Date();
+    
+    // Check if there's a meeting scheduled in the next 7 days for this client
+    const hasMeetingNextWeek = appointments.some(apt => {
+      if (apt.clientId !== clientId) return false;
+      
+      const aptDate = new Date(apt.startTime);
+      const diffTime = aptDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      return diffDays >= 0 && diffDays <= 7;
+    });
+    
     if (!lastContactDate) {
       return { isUrgent: true, message: 'No contact record' };
     }
     
-    const today = new Date();
     const contactDate = new Date(lastContactDate);
     const daysSinceContact = Math.floor((today.getTime() - contactDate.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (daysSinceContact > 30) {
-      return { isUrgent: true, message: 'Overdue contact' };
-    } else if (daysSinceContact > 21) {
+    // Show "Contact soon" only if meeting scheduled in next week OR last meeting >75 days ago
+    if (hasMeetingNextWeek || daysSinceContact > 75) {
       return { isUrgent: true, message: 'Contact soon' };
     }
     
@@ -396,7 +407,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             {/* Last Contact with urgency indicator */}
             <div 
               className={`text-center p-3 rounded-lg cursor-pointer transition-colors ${
-                getContactUrgency(client.lastContactDate).isUrgent 
+                getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
                   ? 'bg-orange-100 dark:bg-orange-900/30 hover:bg-orange-200 dark:hover:bg-orange-900/50' 
                   : 'bg-muted/30 hover:bg-muted/50'
               }`}
@@ -405,15 +416,15 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             >
               <div className="text-xs text-muted-foreground mb-1">Last Contact</div>
               <div className={`text-sm font-medium ${
-                getContactUrgency(client.lastContactDate).isUrgent 
+                getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
                   ? 'text-orange-700 dark:text-orange-300' 
                   : 'text-foreground'
               }`}>
                 {formatRelativeDate(client.lastContactDate)}
               </div>
-              {getContactUrgency(client.lastContactDate).isUrgent && (
+              {getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent && (
                 <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                  {getContactUrgency(client.lastContactDate).message}
+                  {getContactUrgency(client.lastContactDate, client.id, appointments).message}
                 </div>
               )}
             </div>
