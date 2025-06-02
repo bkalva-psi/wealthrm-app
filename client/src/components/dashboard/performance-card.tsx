@@ -371,19 +371,19 @@ export function PerformanceCard() {
 
               {/* Individual Performance Indicators */}
               <div className="space-y-3">
-                <div className="text-xs font-medium text-slate-600">Individual Performance Metrics</div>
+                <div className="text-xs font-medium text-muted-foreground">Individual Performance Metrics</div>
                 <div className="grid grid-cols-1 gap-2">
                   {peersData.map((peer) => {
                     const medal = getRankMedal(peer.rank || 0);
                     return (
-                      <div key={peer.name} className="flex items-center justify-between bg-slate-50 rounded-lg p-3">
+                      <div key={peer.name} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
                         <div className="flex items-center gap-3">
                           <div className="w-6 text-center text-sm">
                             {medal || `#${peer.rank}`}
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-slate-900">{peer.name}</div>
-                            <div className="text-xs text-slate-500">
+                            <div className="text-sm font-medium text-foreground">{peer.name}</div>
+                            <div className="text-xs text-muted-foreground">
                               Rank {peer.rank} of {peer.totalRMs} RMs
                             </div>
                           </div>
@@ -401,64 +401,67 @@ export function PerformanceCard() {
               </div>
 
               {/* Quarterly Trend Line Chart */}
-              <div className="bg-slate-50 rounded-lg p-3">
-                <div className="text-xs font-medium text-slate-600 mb-3 text-center">
+              <div className="bg-muted/50 rounded-lg p-3">
+                <div className="text-xs font-medium text-muted-foreground mb-3 text-center">
                   Percentile Performance Trends (Last 8 Quarters)
                 </div>
                 
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={quarterlyTrendData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis 
                         dataKey="quarter" 
-                        tick={{ fontSize: 10, fill: '#64748b' }}
+                        tick={{ fontSize: 10 }}
+                        className="fill-muted-foreground"
                         angle={-45}
                         textAnchor="end"
                         height={60}
                       />
                       <YAxis 
                         domain={getYAxisDomain()}
-                        tick={{ fontSize: 10, fill: '#64748b' }}
-                        label={{ value: 'Percentile', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: '10px', fill: '#64748b' } }}
+                        tick={{ fontSize: 10 }}
+                        className="fill-muted-foreground"
+                        label={{ value: 'Percentile', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: '10px' } }}
                       />
                       <Tooltip 
                         contentStyle={{ 
-                          backgroundColor: 'white', 
-                          border: '1px solid #e2e8f0', 
+                          backgroundColor: 'hsl(var(--background))', 
+                          border: '1px solid hsl(var(--border))', 
                           borderRadius: '6px',
-                          fontSize: '12px'
+                          fontSize: '12px',
+                          color: 'hsl(var(--foreground))'
                         }}
                         formatter={(value: any, name: string) => [`${Math.round(value)}%ile`, name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')]}
                         labelFormatter={(label) => `Quarter: ${label}`}
                       />
-                      <Line type="monotone" dataKey="newClients" stroke="#ef4444" strokeWidth={2} name="newClients" dot={false} />
+                      <Line type="monotone" dataKey="newClients" stroke="hsl(var(--destructive))" strokeWidth={2} name="newClients" dot={false} />
                       <Line type="monotone" dataKey="netNewMoney" stroke="#f59e0b" strokeWidth={2} name="netNewMoney" dot={false} />
-                      <Line type="monotone" dataKey="clientMeetings" stroke="#10b981" strokeWidth={2} name="clientMeetings" dot={false} />
-                      <Line type="monotone" dataKey="prospectPipeline" stroke="#3b82f6" strokeWidth={2} name="prospectPipeline" dot={false} />
+                      <Line type="monotone" dataKey="clientMeetings" stroke="hsl(var(--success))" strokeWidth={2} name="clientMeetings" dot={false} />
+                      <Line type="monotone" dataKey="prospectPipeline" stroke="hsl(var(--primary))" strokeWidth={2} name="prospectPipeline" dot={false} />
                       <Line type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} name="revenue" dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
                 
-                <div className="text-xs text-slate-500 text-center mt-2">
+                <div className="text-xs text-muted-foreground text-center mt-2">
                   Track your improvement over time across all key metrics
                 </div>
               </div>
 
               {/* Current Spider Chart for Reference */}
-              <div className="bg-slate-50 rounded-lg p-3">
+              <div className="bg-muted/50 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-xs font-medium text-slate-600">
+                  <div className="text-xs font-medium text-muted-foreground">
                     Current Quarter Snapshot
                   </div>
                   <button 
                     onClick={() => setShowMobileValues(!showMobileValues)}
-                    className="md:hidden text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="md:hidden text-xs text-primary hover:text-primary/80 flex items-center gap-1"
                   >
                     {showMobileValues ? 'Hide' : 'Show'} Values
-                    <div className="w-3 h-3 border border-blue-600 rounded-full flex items-center justify-center">
-                      <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                    <div className="w-3 h-3 border border-primary rounded-full flex items-center justify-center">
+                      <div className="w-1 h-1 bg-primary rounded-full"></div>
                     </div>
                   </button>
                 </div>
@@ -466,30 +469,32 @@ export function PerformanceCard() {
                 <div className="h-48">
                   <ResponsiveContainer width="100%" height="100%">
                     <RadarChart data={spiderChartData}>
-                      <PolarGrid />
+                      <PolarGrid className="stroke-border" />
                       <PolarAngleAxis 
                         dataKey="metric" 
-                        tick={{ fontSize: 10, fill: '#64748b' }}
+                        tick={{ fontSize: 10 }}
+                        className="fill-muted-foreground"
                       />
                       <PolarRadiusAxis 
                         angle={90}
                         domain={[0, 100]}
-                        tick={{ fontSize: 8, fill: '#94a3b8' }}
+                        tick={{ fontSize: 8 }}
+                        className="fill-muted-foreground"
                         tickCount={5}
                       />
                       <Tooltip content={<CustomTooltip />} />
                       <Radar 
                         name="Your Performance" 
                         dataKey="percentile" 
-                        stroke="#3b82f6" 
-                        fill="#3b82f6" 
+                        stroke="hsl(var(--primary))" 
+                        fill="hsl(var(--primary))" 
                         fillOpacity={0.3}
                         strokeWidth={2}
                       />
                       <Radar 
                         name="Reference" 
                         dataKey="fullWidth" 
-                        stroke="#e2e8f0" 
+                        stroke="hsl(var(--border))" 
                         fill="transparent" 
                         strokeWidth={1}
                         strokeDasharray="2 2"
@@ -499,14 +504,14 @@ export function PerformanceCard() {
                 </div>
                 
                 {showMobileValues && (
-                  <div className="md:hidden mt-3 pt-3 border-t border-slate-300 space-y-2">
-                    <div className="text-xs font-medium text-slate-600 mb-2">Chart Values:</div>
+                  <div className="md:hidden mt-3 pt-3 border-t border-border space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">Chart Values:</div>
                     {spiderChartData.map((item) => (
                       <div key={item.metric} className="flex justify-between items-center text-xs">
-                        <span className="text-slate-600">{item.fullName}:</span>
+                        <span className="text-muted-foreground">{item.fullName}:</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-blue-600 font-medium">{item.percentile}%ile</span>
-                          <span className="text-slate-500">#{item.rank}</span>
+                          <span className="text-primary font-medium">{item.percentile}%ile</span>
+                          <span className="text-muted-foreground">#{item.rank}</span>
                         </div>
                       </div>
                     ))}
