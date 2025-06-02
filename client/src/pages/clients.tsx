@@ -446,8 +446,8 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             <div className="p-2 border border-border rounded">
               <div className="text-xs text-muted-foreground mb-1">Status</div>
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${getClientHealthColor(client)}`}></div>
-                <span className="text-sm text-foreground">{getClientHealthStatus(client)}</span>
+                <div className={`h-2 w-2 rounded-full ${getClientHealthColor(client, tasks, appointments, alerts)}`}></div>
+                <span className="text-sm text-foreground">{getClientHealthStatus(client, tasks, appointments, alerts)}</span>
               </div>
             </div>
           </div>
@@ -821,7 +821,10 @@ export default function Clients() {
             <ClientCard 
               key={client.id} 
               client={client} 
-              onClick={handleClientClick} 
+              onClick={handleClientClick}
+              tasks={tasks}
+              appointments={appointments}
+              alerts={alerts}
             />
           ))}
         </div>
