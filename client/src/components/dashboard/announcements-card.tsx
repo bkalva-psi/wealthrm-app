@@ -42,7 +42,7 @@ const typeIcons = {
 };
 
 export function AnnouncementsCard() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
