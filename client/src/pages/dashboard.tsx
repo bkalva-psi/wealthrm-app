@@ -1,11 +1,19 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
+import { useQuery } from "@tanstack/react-query";
 import { ActionItemsPriorities } from "@/components/dashboard/action-items-priorities";
 import { TalkingPointsCard } from "@/components/dashboard/talking-points-card";
 import { AnnouncementsCard } from "@/components/dashboard/announcements-card";
 import { PerformanceCard } from "@/components/dashboard/performance-card";
 import { BusinessSnapshotStructured } from "@/components/dashboard/business-snapshot-structured";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { 
+  BusinessSnapshotSkeleton,
+  ActionItemsSkeleton, 
+  TalkingPointsSkeleton, 
+  AnnouncementsSkeleton, 
+  PerformanceSkeleton 
+} from "@/components/ui/dashboard-skeleton";
 
 import { format } from "date-fns";
 
@@ -16,7 +24,70 @@ export default function Dashboard() {
   useEffect(() => {
     document.title = "Dashboard | Wealth RM";
   }, []);
+
+  // Fetch all critical dashboard data to coordinate loading
+  const { isLoading: businessMetricsLoading } = useQuery({
+    queryKey: ['/api/business-metrics/1'],
+    staleTime: 0,
+    refetchOnMount: true
+  });
+
+  const { isLoading: tasksLoading } = useQuery({
+    queryKey: ['/api/tasks']
+  });
+
+  const { isLoading: talkingPointsLoading } = useQuery({
+    queryKey: ['/api/talking-points']
+  });
+
+  const { isLoading: announcementsLoading } = useQuery({
+    queryKey: ['/api/announcements']
+  });
+
+  const { isLoading: performanceLoading } = useQuery({
+    queryKey: ['/api/performance']
+  });
+
+  // Show skeleton loading until all critical data is loaded
+  const isLoading = businessMetricsLoading || tasksLoading || talkingPointsLoading || announcementsLoading || performanceLoading;
   
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background transition-colors duration-300">
+        <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8 space-y-6 sm:space-y-8 lg:space-y-10">
+          {/* Page Header Skeleton */}
+          <div className="space-y-2">
+            <div className="h-8 w-80 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            <div className="flex items-center justify-between">
+              <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+          </div>
+          
+          {/* Business Snapshot Skeleton */}
+          <BusinessSnapshotSkeleton />
+          
+          {/* Grid Layout Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 xl:gap-10">
+            {/* Action Items Skeleton */}
+            <div className="lg:col-span-5 xl:col-span-4">
+              <ActionItemsSkeleton />
+            </div>
+            
+            {/* Talking Points & Announcements Skeleton */}
+            <div className="lg:col-span-7 xl:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              <TalkingPointsSkeleton />
+              <AnnouncementsSkeleton />
+            </div>
+          </div>
+          
+          {/* Performance Skeleton */}
+          <PerformanceSkeleton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8 space-y-6 sm:space-y-8 lg:space-y-10">
