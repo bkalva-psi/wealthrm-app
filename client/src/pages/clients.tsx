@@ -95,6 +95,8 @@ function ClientCard({ client, onClick }: ClientCardProps) {
   const tierColors = getTierColor(client.tier);
   const TierIcon = getTierIcon(client.tier);
   const tierBadge = getTierBadgeColors(client.tier);
+
+
   
   // Generate initials if not available
   const getInitials = (name: string) => {
@@ -119,6 +121,87 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   };
+
+  // Contact urgency indicator
+  const getContactUrgency = (lastContactDate: Date | null | undefined) => {
+    if (!lastContactDate) {
+      return { isUrgent: true, message: 'No contact record' };
+    }
+    
+    const today = new Date();
+    const contactDate = new Date(lastContactDate);
+    const daysSinceContact = Math.floor((today.getTime() - contactDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceContact > 30) {
+      return { isUrgent: true, message: 'Overdue contact' };
+    } else if (daysSinceContact > 21) {
+      return { isUrgent: true, message: 'Contact soon' };
+    }
+    
+    return { isUrgent: false, message: '' };
+  };
+
+  // Risk profile color coding
+  const getRiskProfileColor = (riskProfile: string | null) => {
+    switch (riskProfile?.toLowerCase()) {
+      case 'conservative':
+        return 'text-green-600 dark:text-green-400';
+      case 'moderate':
+        return 'text-yellow-600 dark:text-yellow-400';
+      case 'aggressive':
+        return 'text-red-600 dark:text-red-400';
+      default:
+        return 'text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const getRiskProfileBg = (riskProfile: string | null) => {
+    switch (riskProfile?.toLowerCase()) {
+      case 'conservative':
+        return 'bg-green-400';
+      case 'moderate':
+        return 'bg-yellow-400';
+      case 'aggressive':
+        return 'bg-red-400';
+      default:
+        return 'bg-gray-400';
+    }
+  };
+
+  // Client health status
+  const getClientHealthColor = (client: Client) => {
+    const alertCount = client.alertCount || 0;
+    const lastContact = client.lastContactDate;
+    const daysSinceContact = lastContact ? 
+      Math.floor((new Date().getTime() - new Date(lastContact).getTime()) / (1000 * 60 * 60 * 24)) : 999;
+
+    if (alertCount > 0 || daysSinceContact > 30) {
+      return 'bg-red-500';
+    } else if (daysSinceContact > 21) {
+      return 'bg-yellow-500';
+    } else {
+      return 'bg-green-500';
+    }
+  };
+
+  const getClientHealthStatus = (client: Client) => {
+    const alertCount = client.alertCount || 0;
+    const lastContact = client.lastContactDate;
+    const daysSinceContact = lastContact ? 
+      Math.floor((new Date().getTime() - new Date(lastContact).getTime()) / (1000 * 60 * 60 * 24)) : 999;
+
+    if (alertCount > 0) {
+      return 'Needs Attention';
+    } else if (daysSinceContact > 30) {
+      return 'Inactive';
+    } else if (daysSinceContact > 21) {
+      return 'Follow Up';
+    } else {
+      return 'Active';
+    }
+  };
+
+
   
   // Format performance value with sign and color
   const formatPerformance = (performance: number | null | undefined) => {
@@ -243,47 +326,77 @@ function ClientCard({ client, onClick }: ClientCardProps) {
         {/* Horizontal line below contact info */}
         <div className="h-px bg-slate-200 dark:bg-slate-700 my-3"></div>
         
-        <div className="grid grid-cols-2 gap-3 mt-2">
-          {/* AUM section - navigates to portfolio page */}
-          <div 
-            className="border-r border-border pr-3 cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'portfolio')}
-            title="View client portfolio"
-          >
-            <div className="text-xs text-muted-foreground mb-1">AUM</div>
-            <div className="text-sm font-medium text-foreground">{client.aum}</div>
-            {formatPerformance(client.yearlyPerformance)}
-          </div>
-          
-          {/* Risk profile - non-clickable */}
-          <div>
-            <div className="text-xs text-muted-foreground mb-1">Risk Profile</div>
-            <div className="text-sm text-foreground">
-              {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
+        {/* Priority Information Section */}
+        <div className="space-y-3">
+          {/* Primary Metrics Row - Most Critical Info */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* AUM - Primary metric with performance */}
+            <div 
+              className="text-center p-3 bg-muted/30 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors" 
+              onClick={(e) => handleSectionClick(e, 'portfolio')}
+              title="View client portfolio"
+            >
+              <div className="text-xs text-muted-foreground mb-1">Portfolio Value</div>
+              <div className="text-lg font-bold text-foreground">{client.aum}</div>
+              {formatPerformance(client.yearlyPerformance)}
+            </div>
+            
+            {/* Last Contact with urgency indicator */}
+            <div 
+              className={`text-center p-3 rounded-lg cursor-pointer transition-colors ${
+                getContactUrgency(client.lastContactDate).isUrgent 
+                  ? 'bg-orange-100 dark:bg-orange-900/30 hover:bg-orange-200 dark:hover:bg-orange-900/50' 
+                  : 'bg-muted/30 hover:bg-muted/50'
+              }`}
+              onClick={(e) => handleSectionClick(e, 'communications')}
+              title="View client communications"
+            >
+              <div className="text-xs text-muted-foreground mb-1">Last Contact</div>
+              <div className={`text-sm font-medium ${
+                getContactUrgency(client.lastContactDate).isUrgent 
+                  ? 'text-orange-700 dark:text-orange-300' 
+                  : 'text-foreground'
+              }`}>
+                {formatRelativeDate(client.lastContactDate)}
+              </div>
+              {getContactUrgency(client.lastContactDate).isUrgent && (
+                <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                  {getContactUrgency(client.lastContactDate).message}
+                </div>
+              )}
+            </div>
+            
+            {/* Risk Profile with visual indicator */}
+            <div className="text-center p-3 bg-muted/30 rounded-lg">
+              <div className="text-xs text-muted-foreground mb-1">Risk Profile</div>
+              <div className={`text-sm font-medium ${getRiskProfileColor(client.riskProfile)}`}>
+                {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
+              </div>
+              <div className={`h-1 w-full rounded-full mt-2 ${getRiskProfileBg(client.riskProfile)}`}></div>
             </div>
           </div>
-          
-          {/* Last contact - navigates to communications page */}
-          <div 
-            className="border-r border-border pr-3 cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'communications')}
-            title="View client communications"
-          >
-            <div className="text-xs text-muted-foreground mb-1">Last Contact</div>
-            <div className="text-sm text-muted-foreground">
-              {formatRelativeDate(client.lastContactDate)}
+
+          {/* Secondary Metrics Row */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Last Transaction */}
+            <div 
+              className="p-2 border border-border rounded cursor-pointer hover:bg-muted/30 transition-colors" 
+              onClick={(e) => handleSectionClick(e, 'transactions')}
+              title="View client transactions"
+            >
+              <div className="text-xs text-muted-foreground mb-1">Last Transaction</div>
+              <div className="text-sm text-foreground">
+                {getDaysSinceTransaction(client.lastTransactionDate)}
+              </div>
             </div>
-          </div>
-          
-          {/* Last transaction - navigates to transactions page */}
-          <div 
-            className="cursor-pointer" 
-            onClick={(e) => handleSectionClick(e, 'transactions')}
-            title="View client transactions"
-          >
-            <div className="text-xs text-muted-foreground mb-1">Last Txn</div>
-            <div className="text-sm text-muted-foreground">
-              {getDaysSinceTransaction(client.lastTransactionDate)}
+            
+            {/* Client Status/Health Indicator */}
+            <div className="p-2 border border-border rounded">
+              <div className="text-xs text-muted-foreground mb-1">Status</div>
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full ${getClientHealthColor(client)}`}></div>
+                <span className="text-sm text-foreground">{getClientHealthStatus(client)}</span>
+              </div>
             </div>
           </div>
         </div>
