@@ -1407,8 +1407,21 @@ export class DatabaseStorage implements IStorage {
     return alert || undefined;
   }
 
-  async getPortfolioAlerts(read?: boolean): Promise<PortfolioAlert[]> {
-    let query = db.select().from(portfolioAlerts);
+  async getPortfolioAlerts(read?: boolean): Promise<any[]> {
+    let query = db.select({
+      id: portfolioAlerts.id,
+      title: portfolioAlerts.title,
+      description: portfolioAlerts.description,
+      clientId: portfolioAlerts.clientId,
+      severity: portfolioAlerts.severity,
+      read: portfolioAlerts.read,
+      actionRequired: portfolioAlerts.actionRequired,
+      createdAt: portfolioAlerts.createdAt,
+      priority: portfolioAlerts.priority,
+      clientName: clients.fullName
+    })
+    .from(portfolioAlerts)
+    .leftJoin(clients, eq(portfolioAlerts.clientId, clients.id));
     
     if (read !== undefined) {
       query = query.where(eq(portfolioAlerts.read, read));

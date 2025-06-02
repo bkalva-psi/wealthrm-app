@@ -108,9 +108,9 @@ export function ActionItemsPriorities() {
     }
   };
 
-  // Filter urgent tasks (pending status)
+  // Filter urgent tasks (not completed and high/medium priority)
   const urgentTasks = tasks.filter((task: Task) => 
-    task.status === 'pending' || task.status === 'in_progress'
+    !task.completed && (task.priority === 'high' || task.priority === 'medium')
   ).slice(0, 3);
 
   // Filter high priority alerts
