@@ -98,6 +98,12 @@ function ClientCard({ client, onClick }: ClientCardProps) {
 
 
   
+  // Handle section clicks
+  const handleSectionClick = (e: React.MouseEvent, section: string) => {
+    e.stopPropagation();
+    onClick(client.id);
+  };
+
   // Generate initials if not available
   const getInitials = (name: string) => {
     return name.split(' ')
@@ -232,14 +238,7 @@ function ClientCard({ client, onClick }: ClientCardProps) {
     return tier.charAt(0).toUpperCase() + tier.slice(1);
   };
   
-  // Handle section click with preventing event propagation
-  const handleSectionClick = (e: React.MouseEvent, section: string) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    // Navigate based on section clicked
-    window.location.hash = `/clients/${client.id}/${section}`;
-  };
+
   
   return (
     <Card 
