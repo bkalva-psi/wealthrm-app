@@ -113,9 +113,9 @@ export function ActionItemsPriorities() {
     !task.completed && (task.priority === 'high' || task.priority === 'medium')
   ).slice(0, 3);
 
-  // Filter high priority alerts
+  // Filter high priority alerts (high severity)
   const priorityAlerts = alerts.filter((alert: Alert) => 
-    alert.priority === 'high' || alert.priority === 'critical'
+    alert.severity === 'high' || alert.severity === 'critical'
   ).slice(0, 3);
 
   // Filter urgent customer complaints
