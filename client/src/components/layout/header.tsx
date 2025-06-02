@@ -71,18 +71,18 @@ export function Header({
           {/* Ujjivan Logo (visible on mobile) */}
           <div className="flex items-center md:hidden ml-2">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
-            <div className="ml-2 flex flex-col">
-              <h1 className="text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
-              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight">Intellect WealthForce</span>
+            <div className="ml-2 flex flex-col justify-center">
+              <h1 className="text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap text-left">Ujjivan Small Finance Bank</h1>
+              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight text-left">Intellect WealthForce</span>
             </div>
           </div>
           
           {/* Ujjivan Logo (visible on desktop) */}
           <div className="hidden md:flex items-center">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
-            <div className="ml-2 flex flex-col">
-              <h1 className="text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
-              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight">Intellect WealthForce</span>
+            <div className="ml-2 flex flex-col justify-center">
+              <h1 className="text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap text-left">Ujjivan Small Finance Bank</h1>
+              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight text-left">Intellect WealthForce</span>
             </div>
           </div>
         </div>
