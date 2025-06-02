@@ -185,7 +185,7 @@ export function TalkingPointsCard() {
                               ) : (
                                 category.items.slice(0, 5).map((item: any, index: number) => (
                                   <div key={item.id || index} className="bg-white/70 dark:bg-gray-800/50 rounded p-2 text-sm">
-                                    <div className="font-medium">{item.title}</div>
+                                    <div className="font-medium text-foreground">{item.title}</div>
                                     <div className="text-muted-foreground">
                                       Relevance: {item.relevance_score}/10 • {item.source}
                                     </div>
