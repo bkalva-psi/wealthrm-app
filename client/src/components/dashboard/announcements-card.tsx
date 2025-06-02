@@ -117,20 +117,20 @@ export function AnnouncementsCard() {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card text-card-foreground border-border transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01]">
+      <Card className="bg-card text-card-foreground border-unified transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 transform hover:scale-[1.01] interactive-hover">
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-all duration-300 focus-enhanced">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 transition-all duration-300 hover:bg-primary/20 hover:scale-110">
-                  <Bell size={20} className="text-primary transition-all duration-300" />
+                <div className="p-2 rounded-lg brand-accent-bg-subtle transition-all duration-300 hover:bg-primary/20 hover:scale-110 interactive-scale">
+                  <Bell size={20} className="brand-accent transition-all duration-300" />
                 </div>
-                <CardTitle className="text-lg transition-colors duration-300">Updates</CardTitle>
+                <CardTitle className="text-lg transition-colors duration-300 brand-accent-subtle">Updates</CardTitle>
               </div>
               {isOpen ? (
-                <ChevronDown size={20} className="transition-all duration-300 text-primary" />
+                <ChevronDown size={20} className="transition-all duration-300 brand-accent" />
               ) : (
-                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary" />
+                <ChevronRight size={20} className="transition-all duration-300 text-muted-foreground hover:text-primary brand-accent-subtle" />
               )}
             </div>
           </CardHeader>
@@ -142,7 +142,7 @@ export function AnnouncementsCard() {
               <div className="flex items-center gap-3">
                 <div className="text-left">
                   <h3 className="font-semibold text-sm text-muted-foreground leading-tight">Updates</h3>
-                  <p className="text-xl font-bold text-blue-600 leading-tight tracking-tight">
+                  <p className="text-xl font-bold text-foreground transition-all duration-300 group-hover:scale-105 leading-tight tracking-tight">
                     {totalAnnouncements}
                   </p>
                 </div>
