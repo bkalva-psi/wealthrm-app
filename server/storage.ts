@@ -352,10 +352,12 @@ export class MemStorage implements IStorage {
       year: new Date().getFullYear()
     });
     
-    // Seed AUM trends
+    // Seed AUM trends with realistic seasonal patterns
     const months = [1, 2, 3, 4, 5, 6];
+    // Current year (2025) - authentic growth trajectory
     const currentValues = [50, 70, 65, 80, 90, 60];
-    const previousValues = [60, 65, 50, 75, 60, 40];
+    // Previous year (2024) - realistic seasonal variation with overall growth trend
+    const previousValues = [42, 48, 44, 52, 58, 61];
     
     months.forEach((month, index) => {
       this.createAumTrend({
