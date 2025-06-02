@@ -26,16 +26,14 @@ export default function Dashboard() {
       <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8 space-y-6 sm:space-y-8 lg:space-y-10">
         {/* Enhanced Page Header with Better Typography */}
         <div className="animate-in slide-in-from-top-4 duration-500">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
-            <div className="flex-1 space-y-2">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight tracking-tight">
-                Welcome back, <span className="text-primary font-extrabold">{user?.fullName.split(' ')[0]}</span>
-              </h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight tracking-tight">
+              Welcome back, <span className="text-primary font-extrabold">{user?.fullName.split(' ')[0]}</span>
+            </h1>
+            <div className="flex items-center justify-between">
               <p className="text-muted-foreground text-sm sm:text-base lg:text-lg font-medium leading-relaxed">
                 {format(new Date(), "EEEE, MMMM d, yyyy")}
               </p>
-            </div>
-            <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-center">
               <div className="transition-transform duration-200 hover:scale-105">
                 <ThemeSwitcher />
               </div>

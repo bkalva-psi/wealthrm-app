@@ -1361,31 +1361,44 @@ export class DatabaseStorage implements IStorage {
 
   async getTodaysAppointments(assignedTo?: number): Promise<Appointment[]> {
     const today = new Date();
-    // Set to start of day
     today.setHours(0, 0, 0, 0);
     
-    // Set to end of day
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
     
-    // Get all appointments
-    let allAppointments = await db.select().from(appointments);
-    
-    // Filter for today's appointments
-    let todayAppointments = allAppointments.filter(appointment => {
-      const appointmentDate = new Date(appointment.startTime);
-      return appointmentDate >= today && appointmentDate <= endOfDay;
-    });
-    
-    // Filter by assignedTo if provided
-    if (assignedTo) {
-      todayAppointments = todayAppointments.filter(appointment => appointment.assignedTo === assignedTo);
+    try {
+      const result = await db
+        .select({
+          id: appointments.id,
+          title: appointments.title,
+          description: appointments.description,
+          startTime: appointments.startTime,
+          endTime: appointments.endTime,
+          location: appointments.location,
+          clientId: appointments.clientId,
+          prospectId: appointments.prospectId,
+          assignedTo: appointments.assignedTo,
+          priority: appointments.priority,
+          type: appointments.type,
+          createdAt: appointments.createdAt,
+          clientName: clients.fullName
+        })
+        .from(appointments)
+        .leftJoin(clients, eq(appointments.clientId, clients.id))
+        .where(
+          and(
+            gte(appointments.startTime, today),
+            lte(appointments.startTime, endOfDay),
+            assignedTo ? eq(appointments.assignedTo, assignedTo) : undefined
+          )
+        )
+        .orderBy(appointments.startTime);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching today\'s appointments:', error);
+      return [];
     }
-    
-    // Sort by start time
-    return todayAppointments.sort((a, b) => {
-      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-    });
   }
 
   // Portfolio Alert methods
