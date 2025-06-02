@@ -308,127 +308,116 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     <Card 
       className={`overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/10 transform interactive-hover mb-4 border-l-4 ${tierColors.border} !bg-card !border-border`}
     >
-      <CardContent className="p-4">
-        {/* Header with Avatar and Tier Badge */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex gap-3 flex-1">
-            {/* Client Avatar */}
-            <Avatar className="h-12 w-12 flex-shrink-0">
-              <AvatarImage src={client.avatarUrl || undefined} alt={client.fullName} />
-              <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
-                {client.initials || getInitials(client.fullName)}
-              </AvatarFallback>
-            </Avatar>
+      <CardContent className="p-0">
+        {/* Header Section - Client Info */}
+        <div className="p-4 bg-gradient-to-r from-muted/20 to-transparent border-b border-border/30">
+          <div className="flex items-start justify-between">
+            <div className="flex gap-3 flex-1">
+              {/* Client Avatar */}
+              <Avatar className="h-12 w-12 flex-shrink-0 ring-2 ring-background shadow-sm">
+                <AvatarImage src={client.avatarUrl || undefined} alt={client.fullName} />
+                <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
+                  {client.initials || getInitials(client.fullName)}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Client Name and Contact - aligned vertically */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <div 
+                  className="cursor-pointer"
+                  onClick={(e) => handleSectionClick(e, 'personal')}
+                  title="View client personal information"
+                >
+                  <h3 className="text-sm font-semibold text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
+                </div>
+                
+                {/* Contact Information Group */}
+                <div className="space-y-0.5">
+                  {/* Phone - clickable to dial */}
+                  {client.phone && (
+                    <div className="text-xs text-muted-foreground">
+                      <a 
+                        href={`tel:${client.phone}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors flex items-center gap-1"
+                        title="Call client"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Phone className="h-3 w-3" />
+                        {client.phone}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {/* Email - clickable to send email */}
+                  {client.email && (
+                    <div className="text-xs text-muted-foreground">
+                      <a 
+                        href={`mailto:${client.email}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors flex items-center gap-1"
+                        title="Send email to client"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Mail className="h-3 w-3" />
+                        {client.email}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
             
-            {/* Client Name and Contact - aligned vertically */}
-            <div className="flex-1 min-w-0">
-              <div 
-                className="cursor-pointer"
-                onClick={(e) => handleSectionClick(e, 'personal')}
-                title="View client personal information"
-              >
-                <h3 className="text-sm font-medium text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
+            {/* Tier Badge and Alert */}
+            <div className="flex items-start gap-2">
+              {/* Tier Badge */}
+              <div className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${tierBadge.bg} ${tierBadge.text} border ${tierBadge.border} shadow-sm`}>
+                <TierIcon className="h-3 w-3" />
+                {formatTier(client.tier)}
               </div>
               
-              {/* Phone - clickable to dial */}
-              {client.phone && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  <a 
-                    href={`tel:${client.phone}`}
-                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                    title="Call client"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {client.phone}
-                  </a>
-                </div>
-              )}
-              
-              {/* Email - clickable to send email */}
-              {client.email && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  <a 
-                    href={`mailto:${client.email}`}
-                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                    title="Send email to client"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {client.email}
-                  </a>
+              {/* Alert Badge */}
+              {(client.alertCount ?? 0) > 0 && (
+                <div 
+                  className="relative cursor-pointer" 
+                  onClick={(e) => handleSectionClick(e, 'actions')}
+                  title="View client alerts and actions"
+                >
+                  <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
+                    <Bell className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold shadow-sm">
+                    {client.alertCount}
+                  </span>
                 </div>
               )}
             </div>
-          </div>
-          
-          {/* Tier Badge and Alert */}
-          <div className="flex items-center gap-2">
-            {/* Tier Badge */}
-            <div className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${tierBadge.bg} ${tierBadge.text} border ${tierBadge.border}`}>
-              <TierIcon className="h-3 w-3" />
-              {formatTier(client.tier)}
-            </div>
-            
-            {/* Alert Badge */}
-            {(client.alertCount ?? 0) > 0 && (
-              <div 
-                className="relative cursor-pointer" 
-                onClick={(e) => handleSectionClick(e, 'actions')}
-                title="View client alerts and actions"
-              >
-                <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors">
-                  <Bell className="h-4 w-4 text-white" />
-                </div>
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold">
-                  {client.alertCount}
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Email section */}
-        {client.email && (
-          <div className="text-xs text-muted-foreground mb-3">
-            <a 
-              href={`mailto:${client.email}`}
-              className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
-              title="Send email to client"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {client.email}
-            </a>
-          </div>
-        )}
-        
-        {/* Horizontal line below contact info */}
-        <div className="h-px bg-slate-200 dark:bg-slate-700 my-3"></div>
-        
-        {/* Priority Information Section */}
-        <div className="space-y-3">
-          {/* Primary Metrics Row - Most Critical Info */}
-          <div className="grid grid-cols-3 gap-4">
+        {/* Financial Metrics Section */}
+        <div className="p-4 bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-950/20 border-b border-border/30">
+          <div className="grid grid-cols-3 gap-3">
             {/* AUM - Primary metric with performance */}
             <div 
-              className="text-center p-3 bg-muted/30 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors" 
+              className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
               onClick={(e) => handleSectionClick(e, 'portfolio')}
               title="View client portfolio"
             >
-              <div className="text-xs text-muted-foreground mb-1">Portfolio Value</div>
-              <div className="text-base font-bold text-foreground">{client.aum}</div>
+              <div className="text-xs text-muted-foreground mb-1 font-medium">Portfolio Value</div>
+              <div className="text-sm font-bold text-foreground">{client.aum}</div>
               {formatPerformance(client.yearlyPerformance)}
             </div>
             
             {/* Last Contact with urgency indicator */}
             <div 
-              className={`text-center p-3 rounded-lg cursor-pointer transition-colors ${
+              className={`text-center p-3 rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md border border-border/20 ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'bg-orange-100 dark:bg-orange-900/30 hover:bg-orange-200 dark:hover:bg-orange-900/50' 
-                  : 'bg-muted/30 hover:bg-muted/50'
+                  ? 'bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-950/50 border-orange-200/50 dark:border-orange-800/50' 
+                  : 'bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800'
               }`}
               onClick={(e) => handleSectionClick(e, 'communications')}
               title="View client communications"
             >
-              <div className="text-xs text-muted-foreground mb-1">Last Contact</div>
+              <div className="text-xs text-muted-foreground mb-1 font-medium">Last Contact</div>
               <div className={`text-sm font-medium ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
                   ? 'text-orange-700 dark:text-orange-300' 
@@ -437,42 +426,44 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                 {formatRelativeDate(client.lastContactDate)}
               </div>
               {getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent && (
-                <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                <div className="text-xs text-orange-600 dark:text-orange-400 mt-1 font-medium">
                   {getContactUrgency(client.lastContactDate, client.id, appointments).message}
                 </div>
               )}
             </div>
             
             {/* Risk Profile with visual indicator */}
-            <div className="text-center p-3 bg-muted/30 rounded-lg">
-              <div className="text-xs text-muted-foreground mb-1">Risk Profile</div>
+            <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
+              <div className="text-xs text-muted-foreground mb-1 font-medium">Risk Profile</div>
               <div className={`text-sm font-medium ${getRiskProfileColor(client.riskProfile)}`}>
                 {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
               </div>
-              <div className={`h-1 w-full rounded-full mt-2 ${getRiskProfileBg(client.riskProfile)}`}></div>
+              <div className={`h-1.5 w-full rounded-full mt-2 ${getRiskProfileBg(client.riskProfile)} shadow-sm`}></div>
             </div>
           </div>
+        </div>
 
-          {/* Secondary Metrics Row */}
-          <div className="grid grid-cols-2 gap-4">
+        {/* Secondary Metrics Section */}
+        <div className="p-4 bg-gradient-to-r from-slate-50/30 to-transparent dark:from-slate-900/20 border-b border-border/30">
+          <div className="grid grid-cols-2 gap-3">
             {/* Last Transaction */}
             <div 
-              className="p-2 border border-border rounded cursor-pointer hover:bg-muted/30 transition-colors" 
+              className="p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
               onClick={(e) => handleSectionClick(e, 'transactions')}
               title="View client transactions"
             >
-              <div className="text-xs text-muted-foreground mb-1">Last Transaction</div>
-              <div className="text-sm text-foreground">
+              <div className="text-xs text-muted-foreground mb-1 font-medium">Last Transaction</div>
+              <div className="text-sm font-medium text-foreground">
                 {getDaysSinceTransaction(client.lastTransactionDate)}
               </div>
             </div>
             
             {/* Client Status/Health Indicator */}
-            <div className="p-2 border border-border rounded">
-              <div className="text-xs text-muted-foreground mb-1">Status</div>
+            <div className="p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg transition-all duration-200 shadow-sm border border-border/20">
+              <div className="text-xs text-muted-foreground mb-1 font-medium">Status</div>
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${getClientHealthColor(client, tasks, appointments, alerts)}`}></div>
-                <span className="text-sm text-foreground">{getClientHealthStatus(client, tasks, appointments, alerts)}</span>
+                <div className={`h-2.5 w-2.5 rounded-full ${getClientHealthColor(client, tasks, appointments, alerts)} shadow-sm`}></div>
+                <span className="text-sm font-medium text-foreground">{getClientHealthStatus(client, tasks, appointments, alerts)}</span>
               </div>
             </div>
           </div>
