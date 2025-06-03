@@ -219,7 +219,7 @@ export default function CalendarPage() {
     <div className="min-h-screen bg-background transition-colors duration-300">
       {/* Enhanced Header */}
       <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border/50 px-6 py-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
           <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
             <DialogTrigger asChild>
