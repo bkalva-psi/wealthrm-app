@@ -1234,20 +1234,22 @@ export class DatabaseStorage implements IStorage {
     }
     
     // If not found, check if it's a communication action item (these are also displayed as tasks)
-    const [actionItem] = await db.select({
+    const actionItemQuery = await db.select({
       id: communicationActionItems.id,
       title: communicationActionItems.title,
       description: communicationActionItems.description,
       dueDate: communicationActionItems.dueDate,
-      completed: sql<boolean>`${communicationActionItems.completedAt} IS NOT NULL`,
+      completed: sql<boolean>`CASE WHEN ${communicationActionItems.completedAt} IS NOT NULL THEN true ELSE false END`.as('completed'),
       clientId: communications.clientId,
-      prospectId: sql<number | null>`NULL`,
+      prospectId: sql<number | null>`NULL`.as('prospectId'),
       assignedTo: communicationActionItems.assignedTo,
       createdAt: communicationActionItems.createdAt
     })
     .from(communicationActionItems)
     .leftJoin(communications, eq(communicationActionItems.communicationId, communications.id))
     .where(eq(communicationActionItems.id, id));
+    
+    const actionItem = actionItemQuery[0];
     
     return actionItem || undefined;
   }
@@ -1352,14 +1354,14 @@ export class DatabaseStorage implements IStorage {
       
       if (actionItem) {
         // Return the action item in task format
-        const [enrichedActionItem] = await db.select({
+        const enrichedQuery = await db.select({
           id: communicationActionItems.id,
           title: communicationActionItems.title,
           description: communicationActionItems.description,
           dueDate: communicationActionItems.dueDate,
-          completed: sql<boolean>`${communicationActionItems.completedAt} IS NOT NULL`,
+          completed: sql<boolean>`CASE WHEN ${communicationActionItems.completedAt} IS NOT NULL THEN true ELSE false END`.as('completed'),
           clientId: communications.clientId,
-          prospectId: sql<number | null>`NULL`,
+          prospectId: sql<number | null>`NULL`.as('prospectId'),
           assignedTo: communicationActionItems.assignedTo,
           createdAt: communicationActionItems.createdAt
         })
@@ -1367,7 +1369,7 @@ export class DatabaseStorage implements IStorage {
         .leftJoin(communications, eq(communicationActionItems.communicationId, communications.id))
         .where(eq(communicationActionItems.id, id));
         
-        return enrichedActionItem || undefined;
+        return enrichedQuery[0] || undefined;
       }
     }
     
