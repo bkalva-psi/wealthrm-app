@@ -1264,7 +1264,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Standard Deviation (1Y)</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">12.4%</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100/50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200">Moderate</div>
                         </div>
                       </div>
                       
@@ -1310,7 +1310,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Max. Drawdown</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">-9.2%</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Low</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Low</div>
                         </div>
                       </div>
                       
@@ -1318,7 +1318,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Drawdown Recovery</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">68 days</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Fast</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Fast</div>
                         </div>
                       </div>
                     </div>
@@ -1331,16 +1331,16 @@ export default function ClientPortfolioPage() {
                       <div className="border rounded-lg p-2">
                         <div className="text-muted-foreground text-xs">VaR (95% Confidence)</div>
                         <div className="flex items-center mt-1">
-                          <span className="text-base font-medium text-red-600">-7.2%</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                          <span className="text-base font-medium text-red-600 dark:text-red-400">-7.2%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100/50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200">Moderate</div>
                         </div>
                       </div>
                       
                       <div className="border rounded-lg p-2">
                         <div className="text-muted-foreground text-xs">VaR (99% Confidence)</div>
                         <div className="flex items-center mt-1">
-                          <span className="text-base font-medium text-red-600">-11.5%</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Moderate</div>
+                          <span className="text-base font-medium text-red-600 dark:text-red-400">-11.5%</span>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-amber-100/50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200">Moderate</div>
                         </div>
                       </div>
                     </div>
@@ -1354,7 +1354,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Diversification Score</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">8.2/10</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Well Diversified</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Well Diversified</div>
                         </div>
                       </div>
                       
@@ -1362,7 +1362,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Correlation Score</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">0.34</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Low Correlation</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Low Correlation</div>
                         </div>
                       </div>
                     </div>
