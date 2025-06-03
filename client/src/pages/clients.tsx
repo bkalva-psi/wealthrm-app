@@ -462,7 +462,7 @@ export default function Clients() {
   const [activeFilters, setActiveFilters] = useState(0);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     minAum: 0,
-    maxAum: 10000000,
+    maxAum: 100000000, // 10 Cr to include all high-value clients
     includedTiers: ['platinum', 'gold', 'silver'],
     riskProfiles: ['conservative', 'moderate', 'aggressive']
   });
@@ -507,7 +507,7 @@ export default function Clients() {
     let count = 0;
     
     if (filterOptions.minAum > 0) count++;
-    if (filterOptions.maxAum < 10000000) count++;
+    if (filterOptions.maxAum < 100000000) count++;
     if (filterOptions.includedTiers.length < 3) count++;
     if (filterOptions.riskProfiles.length < 3) count++;
     
@@ -577,7 +577,7 @@ export default function Clients() {
   const resetFilters = () => {
     setFilterOptions({
       minAum: 0,
-      maxAum: 10000000,
+      maxAum: 100000000,
       includedTiers: ['platinum', 'gold', 'silver'],
       riskProfiles: ['conservative', 'moderate', 'aggressive']
     });
@@ -695,8 +695,8 @@ export default function Clients() {
                       <div className="mt-6 px-2">
                         <Slider 
                           defaultValue={[filterOptions.minAum, filterOptions.maxAum]}
-                          max={10000000}
-                          step={100000}
+                          max={100000000}
+                          step={1000000}
                           onValueChange={(values) => {
                             setFilterOptions(prev => ({
                               ...prev,
