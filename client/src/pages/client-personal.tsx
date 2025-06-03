@@ -279,7 +279,7 @@ export default function ClientPersonalPage() {
         >
           <Card className="overflow-hidden">
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors py-3 px-4">
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-medium flex items-center gap-2">
                     <User className="h-5 w-5" />
@@ -417,7 +417,7 @@ export default function ClientPersonalPage() {
         >
           <Card className="overflow-hidden">
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors py-3 px-4">
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-medium flex items-center gap-2">
                     <PieChart className="h-5 w-5" />
@@ -430,17 +430,17 @@ export default function ClientPersonalPage() {
             <CollapsibleContent>
               <div className="px-4 pb-4 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted/30 p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground">AUM</p>
                     <p className="font-medium text-lg">{client.aum}</p>
                     <p className="text-xs text-muted-foreground">Tier: {client.tier.toUpperCase()}</p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted/30 p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground">Risk Profile</p>
                     <p className="font-medium text-lg">{client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : "Not specified"}</p>
                     <p className="text-xs text-muted-foreground">Score: {client.riskAssessmentScore || "N/A"}/10</p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted/30 p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground">Performance</p>
                     <p className="font-medium text-lg">N/A</p>
                     <p className="text-xs text-muted-foreground">1 Year Returns</p>
@@ -546,7 +546,7 @@ export default function ClientPersonalPage() {
         >
           <Card className="overflow-hidden">
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors py-3 px-4">
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-medium flex items-center gap-2">
                     <Users className="h-5 w-5" />
@@ -586,7 +586,7 @@ export default function ClientPersonalPage() {
                   <div>
                     <h3 className="font-medium mb-3">Nominee Information</h3>
                     {client.nomineeDetails ? (
-                      <div className="bg-slate-50 p-4 rounded-lg">
+                      <div className="bg-muted/30 p-4 rounded-lg">
                         {(() => {
                           const nominee = parseJsonData(client.nomineeDetails);
                           return nominee ? (
@@ -674,7 +674,7 @@ export default function ClientPersonalPage() {
         >
           <Card className="overflow-hidden">
             <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors py-3 px-4">
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-medium flex items-center gap-2">
                     <Shield className="h-5 w-5" />
