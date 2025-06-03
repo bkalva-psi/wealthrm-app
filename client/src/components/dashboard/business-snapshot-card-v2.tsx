@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
-import { TrendingUp, Users, DollarSign, Target, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
+import { TrendingUp, Users, IndianRupee, Target, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
 
 interface BusinessMetrics {
   totalAum: number;
@@ -205,7 +205,7 @@ export function BusinessSnapshotCard() {
       title: 'Revenue MTD',
       value: businessMetrics?.revenueMonthToDate || 0,
       formatter: formatCurrency,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'text-purple-600',
       dimensions: [
         { id: '/api/revenue-product', name: 'Product Type', chartType: 'bar' as const },

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Users, AlertTriangle, Target, DollarSign } from "lucide-react";
+import { TrendingUp, TrendingDown, Users, AlertTriangle, Target, IndianRupee } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MetricCardProps {
@@ -128,7 +128,7 @@ export function HeroMetrics() {
           value={formatCurrency(totalAum)}
           change="vs last month"
           changeType="positive"
-          icon={<DollarSign className="h-5 w-5" />}
+          icon={<IndianRupee className="h-5 w-5" />}
           priority="high"
         />
         

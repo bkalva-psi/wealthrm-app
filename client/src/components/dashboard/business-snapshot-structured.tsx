@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronDown, ChevronRight, TrendingUp, Users, DollarSign, Target, BarChart3 } from 'lucide-react';
+import { ChevronDown, ChevronRight, TrendingUp, Users, IndianRupee, Target, BarChart3 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // Types for authentic database data
@@ -82,7 +82,7 @@ export function BusinessSnapshotStructured() {
       title: 'Revenue MTD',
       value: businessMetrics?.revenueMonthToDate || 0,
       formatter: formatCurrency,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'text-primary',
       bgColor: 'bg-muted border-border',
       dimensions: []
