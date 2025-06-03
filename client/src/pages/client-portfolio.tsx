@@ -32,13 +32,15 @@ import {
   ChevronDown,
   ChevronUp,
   Calculator,
-  FileText
+  FileText,
+  Filter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { clientApi } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -525,6 +527,8 @@ function PortfolioSection({
 
 export default function ClientPortfolioPage() {
   const [clientId, setClientId] = useState<number | null>(null);
+  const [holdingsSortBy, setHoldingsSortBy] = useState('value_desc');
+  const [showAllHoldings, setShowAllHoldings] = useState(false);
   
   // Set page title
   useEffect(() => {
