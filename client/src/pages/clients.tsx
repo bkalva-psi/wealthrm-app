@@ -299,13 +299,22 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
         <div className="p-4 bg-gradient-to-r from-muted/20 to-transparent border-b border-border/30">
           <div className="flex items-start justify-between">
             <div className="flex gap-3 flex-1">
-              {/* Client Avatar */}
-              <Avatar className="h-12 w-12 flex-shrink-0 ring-2 ring-background shadow-sm">
-                <AvatarImage src={generateAvatar(client.fullName, client.id.toString())} alt={client.fullName} />
-                <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
-                  {client.initials || getInitials(client.fullName)}
-                </AvatarFallback>
-              </Avatar>
+              {/* Avatar and Tier Badge Column */}
+              <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                {/* Client Avatar */}
+                <Avatar className="h-12 w-12 ring-2 ring-background shadow-sm">
+                  <AvatarImage src={generateAvatar(client.fullName, client.id.toString())} alt={client.fullName} />
+                  <AvatarFallback className={`${getAvatarColor(client.fullName)} text-white font-semibold text-sm`}>
+                    {client.initials || getInitials(client.fullName)}
+                  </AvatarFallback>
+                </Avatar>
+                
+                {/* Tier Badge - moved below avatar */}
+                <div className={`px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 ${tierBadge.bg} ${tierBadge.text} border ${tierBadge.border} shadow-sm`}>
+                  <TierIcon className="h-3 w-3" />
+                  {client.tier ? client.tier.charAt(0).toUpperCase() : 'S'}
+                </div>
+              </div>
               
               {/* Client Name and Contact - aligned vertically */}
               <div className="flex-1 min-w-0 space-y-1">
@@ -352,16 +361,9 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               </div>
             </div>
             
-            {/* Tier Badge and Alert */}
-            <div className="flex items-start gap-2 flex-shrink-0">
-              {/* Tier Badge */}
-              <div className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${tierBadge.bg} ${tierBadge.text} border ${tierBadge.border} shadow-sm`}>
-                <TierIcon className="h-3 w-3" />
-{client.tier ? client.tier.charAt(0).toUpperCase() : 'S'}
-              </div>
-              
-              {/* Alert Badge */}
-              {(client.alertCount ?? 0) > 0 && (
+            {/* Alert Badge - positioned more to the left with margin */}
+            {(client.alertCount ?? 0) > 0 && (
+              <div className="flex items-start mr-2">
                 <div 
                   className="relative cursor-pointer flex-shrink-0" 
                   onClick={(e) => handleSectionClick(e, 'actions')}
@@ -374,8 +376,8 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                     {client.alertCount}
                   </span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
