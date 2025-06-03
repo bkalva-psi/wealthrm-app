@@ -223,7 +223,10 @@ export default function CalendarPage() {
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
           <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="h-8 w-8 p-0">
+              <Button 
+                size="icon" 
+                className="rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </DialogTrigger>
