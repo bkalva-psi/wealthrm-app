@@ -53,6 +53,7 @@ export default function Tasks() {
   const [tasksCollapsed, setTasksCollapsed] = useState(false);
   const [alertsCollapsed, setAlertsCollapsed] = useState(false);
   const [tasksVisibleCount, setTasksVisibleCount] = useState(5);
+  const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -127,6 +128,18 @@ export default function Tasks() {
 
   const handleTaskToggle = (task: Task, completed: boolean) => {
     toggleTaskMutation.mutate({ taskId: task.id, completed });
+  };
+
+  const toggleTaskExpansion = (taskId: number) => {
+    setExpandedTasks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(taskId)) {
+        newSet.delete(taskId);
+      } else {
+        newSet.add(taskId);
+      }
+      return newSet;
+    });
   };
 
   const getDueStatus = (dueDate?: string) => {
@@ -287,37 +300,101 @@ export default function Tasks() {
                       <>
                         {filteredTasks.map((task: Task) => {
                           const dueStatus = getDueStatus(task.dueDate);
+                          const isExpanded = expandedTasks.has(task.id);
                           
                           return (
-                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50 cursor-pointer !bg-card w-full min-w-0">
-                              <Checkbox
-                                id={`task-${task.id}`}
-                                checked={task.completed}
-                                onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
-                                className="mt-1"
-                              />
-                              <div className="flex-1 min-w-0 overflow-hidden">
-                                <label
-                                  htmlFor={`task-${task.id}`}
-                                  className={`block text-sm font-medium truncate ${
-                                    task.completed ? "text-muted-foreground line-through" : "text-foreground"
-                                  }`}
-                                >
-                                  {task.title}
-                                </label>
-                                {task.description && (
-                                  <p className={`text-xs mt-1 truncate ${
-                                    task.completed ? "text-muted-foreground" : "text-muted-foreground"
-                                  }`}>
-                                    {task.description}
-                                  </p>
-                                )}
-                                {task.dueDate && (
-                                  <p className={`text-xs mt-1 truncate ${dueStatus.color}`}>
-                                    {dueStatus.text}
-                                  </p>
-                                )}
+                            <div key={task.id} className="border border-border rounded-md !bg-card w-full min-w-0">
+                              <div 
+                                className="flex items-start space-x-3 p-3 hover:bg-muted/50 cursor-pointer"
+                                onClick={() => toggleTaskExpansion(task.id)}
+                              >
+                                <Checkbox
+                                  id={`task-${task.id}`}
+                                  checked={task.completed}
+                                  onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
+                                  className="mt-1"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                <div className="flex-1 min-w-0 overflow-hidden">
+                                  <div className="flex items-center justify-between">
+                                    <label
+                                      htmlFor={`task-${task.id}`}
+                                      className={`block text-sm font-medium ${isExpanded ? '' : 'truncate'} ${
+                                        task.completed ? "text-muted-foreground line-through" : "text-foreground"
+                                      }`}
+                                    >
+                                      {task.title}
+                                    </label>
+                                    <div className="flex items-center space-x-2">
+                                      {task.dueDate && (
+                                        <span className={`text-xs px-2 py-1 rounded-full ${dueStatus.color} bg-muted/50`}>
+                                          {dueStatus.text}
+                                        </span>
+                                      )}
+                                      {isExpanded ? (
+                                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                                      ) : (
+                                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                                      )}
+                                    </div>
+                                  </div>
+                                  {!isExpanded && task.description && (
+                                    <p className={`text-xs mt-1 truncate ${
+                                      task.completed ? "text-muted-foreground" : "text-muted-foreground"
+                                    }`}>
+                                      {task.description}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
+                              
+                              {isExpanded && (
+                                <div className="px-3 pb-3 border-t border-border/50 mt-2 pt-3">
+                                  {task.description && (
+                                    <div className="mb-3">
+                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Description</h4>
+                                      <p className="text-sm text-foreground whitespace-pre-wrap">
+                                        {task.description}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {task.dueDate && (
+                                    <div className="mb-3">
+                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Due Date</h4>
+                                      <p className={`text-sm ${dueStatus.color}`}>
+                                        {format(new Date(task.dueDate), 'EEEE, MMMM d, yyyy')}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {(task.clientId || task.prospectId) && (
+                                    <div className="mb-3">
+                                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Related To</h4>
+                                      <p className="text-sm text-foreground">
+                                        {task.clientId ? `Client ID: ${task.clientId}` : `Prospect ID: ${task.prospectId}`}
+                                      </p>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center justify-between pt-2">
+                                    <span className={`text-xs px-2 py-1 rounded-full ${
+                                      task.completed 
+                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                    }`}>
+                                      {task.completed ? 'Completed' : 'Pending'}
+                                    </span>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleTaskToggle(task, !task.completed);
+                                      }}
+                                    >
+                                      {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
