@@ -306,8 +306,8 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
           
           {/* Visual trend line */}
           <div className="h-40 w-full relative flex items-end mt-4">
-            <div className="absolute w-full h-[1px] bg-gray-200 top-0"></div>
-            <div className="absolute w-full h-[1px] bg-gray-200 bottom-0"></div>
+            <div className="absolute w-full h-[1px] bg-border top-0"></div>
+            <div className="absolute w-full h-[1px] bg-border bottom-0"></div>
             
             <div className="w-full h-full flex items-end">
               <svg 
@@ -318,15 +318,15 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
                 onMouseLeave={handleMouseLeave}
               >
                 {/* Background grid */}
-                <line x1="0" y1="10" x2="100" y2="10" stroke="#f0f0f0" strokeWidth="1" />
-                <line x1="0" y1="20" x2="100" y2="20" stroke="#f0f0f0" strokeWidth="1" />
-                <line x1="0" y1="30" x2="100" y2="30" stroke="#f0f0f0" strokeWidth="1" />
+                <line x1="0" y1="10" x2="100" y2="10" stroke="hsl(var(--border))" strokeWidth="1" />
+                <line x1="0" y1="20" x2="100" y2="20" stroke="hsl(var(--border))" strokeWidth="1" />
+                <line x1="0" y1="30" x2="100" y2="30" stroke="hsl(var(--border))" strokeWidth="1" />
                 
                 {/* Smooth line chart */}
                 <polyline 
                   points={pointsString}
                   fill="none"
-                  stroke="#1e40af" /* Deep blue color that should be clearly visible */
+                  stroke="hsl(var(--primary))"
                   strokeWidth="1.25"
                   strokeLinejoin="round"
                   strokeLinecap="round"
@@ -338,8 +338,8 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
                     cx={tooltipInfo.x} 
                     cy={tooltipInfo.y} 
                     r="4" 
-                    fill="#1e40af"
-                    stroke="#ffffff" 
+                    fill="hsl(var(--primary))"
+                    stroke="hsl(var(--background))" 
                     strokeWidth="1.5"
                   />
                 )}
@@ -348,15 +348,15 @@ const SimpleAumTrendChart: React.FC<SimpleAumTrendChartProps> = ({ aumValue }) =
               {/* Tooltip */}
               {tooltipInfo.visible && (
                 <div 
-                  className="absolute bg-white border border-gray-200 rounded-md shadow-sm px-2 py-1 text-xs"
+                  className="absolute bg-background border border-border rounded-md shadow-sm px-2 py-1 text-xs"
                   style={{ 
                     left: `${tooltipInfo.x}%`, 
                     top: `${tooltipInfo.y}px`,
                     transform: 'translate(-50%, -120%)'
                   }}
                 >
-                  <div className="font-medium">{tooltipInfo.date}</div>
-                  <div>₹{(tooltipInfo.value / 100000).toFixed(2)} L</div>
+                  <div className="font-medium text-foreground">{tooltipInfo.date}</div>
+                  <div className="text-muted-foreground">₹{(tooltipInfo.value / 100000).toFixed(2)} L</div>
                 </div>
               )}
             </div>

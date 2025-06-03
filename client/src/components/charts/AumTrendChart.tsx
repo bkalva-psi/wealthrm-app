@@ -98,17 +98,17 @@ const AumTrendChart: React.FC<AumTrendChartProps> = ({
           data={data}
           margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 12 }}
-            axisLine={{ stroke: '#E5E7EB' }}
+            tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+            axisLine={{ stroke: 'hsl(var(--border))' }}
             tickLine={false}
           />
           <YAxis
             tickFormatter={formatYAxis}
-            tick={{ fontSize: 12 }}
-            axisLine={{ stroke: '#E5E7EB' }}
+            tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+            axisLine={{ stroke: 'hsl(var(--border))' }}
             tickLine={false}
             width={60}
           />
@@ -116,19 +116,20 @@ const AumTrendChart: React.FC<AumTrendChartProps> = ({
             formatter={(value: number) => [formatTooltipValue(value), 'AUM']}
             labelFormatter={(label) => `Date: ${label}`}
             contentStyle={{ 
-              backgroundColor: 'white', 
-              border: '1px solid #e5e7eb',
+              backgroundColor: 'hsl(var(--background))', 
+              border: '1px solid hsl(var(--border))',
               borderRadius: '6px',
-              padding: '8px'
+              padding: '8px',
+              color: 'hsl(var(--foreground))'
             }}
           />
           <Line
             type="monotone"
             dataKey="value"
-            stroke={showFullPeriod ? "#6366f1" : "var(--color-primary)"}
+            stroke={showFullPeriod ? "hsl(var(--primary))" : "hsl(var(--primary))"}
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 6, stroke: showFullPeriod ? "#6366f1" : "var(--color-primary)", strokeWidth: 2, fill: "white" }}
+            activeDot={{ r: 6, stroke: "hsl(var(--primary))", strokeWidth: 2, fill: "hsl(var(--background))" }}
             animationDuration={1000}
           />
         </LineChart>
