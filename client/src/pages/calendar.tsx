@@ -282,56 +282,21 @@ export default function CalendarPage() {
     <div className="min-h-screen bg-background transition-colors duration-300">
       {/* Enhanced Header */}
       <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border/50 px-6 py-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
             
-            {/* View Toggle */}
-            <div className="flex items-center bg-muted rounded-lg p-1">
-              <Button
-                variant={selectedView === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedView('list')}
-                className="h-8 px-3"
-              >
-                <List className="h-4 w-4 mr-1" />
-                List
-              </Button>
-              <Button
-                variant={selectedView === 'day' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => {
-                  setSelectedView('day');
-                  if (!selectedDate) setSelectedDate(new Date());
-                }}
-                className="h-8 px-3"
-              >
-                <Clock className="h-4 w-4 mr-1" />
-                Day
-              </Button>
-              <Button
-                variant={selectedView === 'month' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setSelectedView('month')}
-                className="h-8 px-3"
-              >
-                <CalendarViewIcon className="h-4 w-4 mr-1" />
-                Month
-              </Button>
-            </div>
-          </div>
-          
-          <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                size="icon" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
+            <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  size="icon" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
                 <DialogTitle>Create New Appointment</DialogTitle>
                 <DialogDescription>
                   Schedule a new appointment with a client
@@ -486,6 +451,41 @@ export default function CalendarPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
+          
+          {/* View Toggle */}
+          <div className="flex items-center bg-muted rounded-lg p-1 w-fit">
+            <Button
+              variant={selectedView === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setSelectedView('list')}
+              className="h-8 px-3"
+            >
+              <List className="h-4 w-4 mr-1" />
+              List
+            </Button>
+            <Button
+              variant={selectedView === 'day' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => {
+                setSelectedView('day');
+                if (!selectedDate) setSelectedDate(new Date());
+              }}
+              className="h-8 px-3"
+            >
+              <Clock className="h-4 w-4 mr-1" />
+              Day
+            </Button>
+            <Button
+              variant={selectedView === 'month' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setSelectedView('month')}
+              className="h-8 px-3"
+            >
+              <CalendarViewIcon className="h-4 w-4 mr-1" />
+              Month
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
