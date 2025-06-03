@@ -63,10 +63,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-4">
           <div className="flex flex-col items-center justify-center mb-4">
-            <div className="flex items-center mb-4">
-              <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto" />
-              <div className="ml-3 flex flex-col justify-center">
-                <h1 className="text-teal-700 dark:text-teal-400 text-base font-bold leading-tight whitespace-nowrap">
+            <div className="flex flex-col items-center text-center mb-4">
+              <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto mb-3" />
+              <div className="flex flex-col items-center">
+                <h1 className="text-teal-700 dark:text-teal-400 text-base font-bold leading-tight">
                   Ujjivan Small Finance Bank
                 </h1>
                 <span className="text-orange-600 dark:text-orange-400 text-sm font-medium leading-tight">
