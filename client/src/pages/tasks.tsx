@@ -69,10 +69,7 @@ export default function Tasks() {
 
   // Create task mutation
   const createTaskMutation = useMutation({
-    mutationFn: (taskData: any) => apiRequest("/api/tasks", {
-      method: "POST",
-      body: JSON.stringify(taskData),
-    }),
+    mutationFn: (taskData: any) => apiRequest("POST", "/api/tasks", taskData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       setIsNewTaskDialogOpen(false);
@@ -98,10 +95,7 @@ export default function Tasks() {
   // Toggle task completion
   const toggleTaskMutation = useMutation({
     mutationFn: ({ taskId, completed }: { taskId: number; completed: boolean }) =>
-      apiRequest(`/api/tasks/${taskId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ completed }),
-      }),
+      apiRequest("PATCH", `/api/tasks/${taskId}`, { completed }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       toast({
@@ -229,7 +223,7 @@ export default function Tasks() {
       
       <div className="space-y-4 w-full overflow-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
         {/* Tasks Header */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <CheckSquare className="h-5 w-5 text-blue-600" />
             <h2 className="text-lg font-semibold text-foreground">
@@ -246,17 +240,16 @@ export default function Tasks() {
           </Button>
         </div>
 
-        {/* Search Box */}
+        {/* Search Box - Outside any card */}
         {!tasksCollapsed && (
-          <div className="mb-4 w-full">
-            <div className="relative w-full">
+          <div className="mb-6 w-full bg-transparent">
+            <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search tasks..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 !bg-background !border-input !text-foreground w-full"
-                style={{ backgroundColor: 'var(--background)', borderColor: 'var(--input)', color: 'var(--foreground)' }}
+                className="pl-10 bg-background border-input text-foreground w-full rounded-md"
               />
             </div>
           </div>
