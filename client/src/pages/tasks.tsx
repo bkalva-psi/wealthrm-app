@@ -269,37 +269,45 @@ export default function Tasks() {
         </Dialog>
       </div>
       
-        <div className="space-y-6 w-full overflow-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
-        {/* Tasks Card */}
-        <Card className="!bg-card !border-border w-full" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-          <CardHeader className="cursor-pointer !bg-card" onClick={() => setTasksCollapsed(!tasksCollapsed)} style={{ backgroundColor: 'var(--card)' }}>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <CheckSquare className="h-5 w-5 text-blue-600" />
-                Tasks ({(tasks as Task[] || []).filter(task => !task.completed).length})
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                {tasksCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-              </Button>
+        <div className="space-y-4 w-full overflow-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+        {/* Tasks Header */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <CheckSquare className="h-5 w-5 text-blue-600" />
+            <h2 className="text-lg font-semibold text-foreground">
+              Tasks ({(tasks as Task[] || []).filter(task => !task.completed).length})
+            </h2>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setTasksCollapsed(!tasksCollapsed)}
+            className="text-foreground"
+          >
+            {tasksCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+          </Button>
+        </div>
+
+        {/* Search Box */}
+        {!tasksCollapsed && (
+          <div className="mb-4 w-full">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 !bg-background !border-input !text-foreground w-full"
+                style={{ backgroundColor: 'var(--background)', borderColor: 'var(--input)', color: 'var(--foreground)' }}
+              />
             </div>
-            {!tasksCollapsed && (
-              <div className="mt-4 w-full" style={{ backgroundColor: 'var(--card)' }}>
-                <div className="relative w-full">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search tasks..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 !bg-background !border-input !text-foreground w-full"
-                    style={{ backgroundColor: 'var(--background)', borderColor: 'var(--input)', color: 'var(--foreground)' }}
-                  />
-                </div>
-              </div>
-            )}
-          </CardHeader>
-          
-          {!tasksCollapsed && (
-            <CardContent className="!bg-card w-full overflow-hidden pt-0" style={{ backgroundColor: 'var(--card)' }}>
+          </div>
+        )}
+
+        {/* Tasks Card */}
+        {!tasksCollapsed && (
+          <Card className="!bg-card !border-border w-full" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+            <CardContent className="!bg-card w-full overflow-hidden p-6" style={{ backgroundColor: 'var(--card)' }}>
               
               {isLoading ? (
                 <div className="space-y-4 bg-card">
