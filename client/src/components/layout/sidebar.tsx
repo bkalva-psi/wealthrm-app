@@ -129,7 +129,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
               className={cn(
                 "group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md relative transition-all duration-300 focus-enhanced",
                 isActive
-                  ? "brand-accent-bg text-white font-semibold shadow-sm"
+                  ? "brand-accent-bg text-primary-foreground font-semibold shadow-sm"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground interactive-hover"
               )}
             >
@@ -138,7 +138,7 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
                   <item.icon
                     className={cn(
                       "h-5 w-5 transition-colors duration-300",
-                      isActive ? "text-white" : "text-muted-foreground group-hover:text-foreground"
+                      isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
                     )}
                   />
                   {hasNotification && (
