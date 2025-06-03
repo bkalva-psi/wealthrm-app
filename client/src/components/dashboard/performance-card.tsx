@@ -201,13 +201,13 @@ export function PerformanceCard() {
                             ) : (
                               <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
-                                  <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                  <div className="text-center p-3 bg-card/60 border border-border rounded-lg">
                                     <div className="text-xs text-muted-foreground mb-1">Current AUM</div>
                                     <div className="text-lg font-bold text-foreground">
                                       {formatCurrency((businessMetrics as any)?.totalAum || 0)}
                                     </div>
                                   </div>
-                                  <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                  <div className="text-center p-3 bg-card/60 border border-border rounded-lg">
                                     <div className="text-xs text-muted-foreground mb-1">YoY Growth</div>
                                     <div className={`text-lg font-bold ${getPercentageChangeColor((aumTrends as AumTrend[])?.[0]?.growthPercentage || 0)}`}>
                                       {(aumTrends as AumTrend[])?.[0]?.growthPercentage?.toFixed(1) || 0}%
@@ -216,9 +216,24 @@ export function PerformanceCard() {
                                 </div>
                                 <ResponsiveContainer width="100%" height={200}>
                                   <BarChart data={formatGrowthData()}>
-                                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                                    <XAxis dataKey="month" fontSize={12} />
-                                    <YAxis fontSize={12} />
+                                    <CartesianGrid 
+                                      strokeDasharray="3 3" 
+                                      opacity={0.3} 
+                                      stroke="hsl(var(--border))"
+                                    />
+                                    <XAxis 
+                                      dataKey="month" 
+                                      fontSize={12} 
+                                      tick={{ fill: 'hsl(var(--foreground))' }}
+                                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                                    />
+                                    <YAxis 
+                                      fontSize={12} 
+                                      tick={{ fill: 'hsl(var(--foreground))' }}
+                                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                                    />
                                     <Tooltip 
                                       formatter={(value: number) => [`₹${value.toFixed(2)} Cr`, '']}
                                       labelFormatter={(label) => `Month: ${label}`}
