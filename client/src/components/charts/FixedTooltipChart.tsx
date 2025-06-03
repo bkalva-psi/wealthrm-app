@@ -167,14 +167,14 @@ const FixedTooltipChart: React.FC<FixedTooltipChartProps> = ({
     
     const content = (
       <>
-        <div className="font-medium truncate text-gray-900">{point.name}</div>
-        <div className="text-gray-600 text-[10px] font-medium">{point.type}</div>
-        <div className="grid grid-cols-2 gap-x-4 mt-1 text-gray-800">
-          <div>Risk: <span className="font-semibold text-gray-900">{point.risk.toFixed(1)}%</span></div>
-          <div>Return: <span className={`font-semibold ${point.return >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+        <div className="font-medium truncate text-foreground">{point.name}</div>
+        <div className="text-muted-foreground text-[10px] font-medium">{point.type}</div>
+        <div className="grid grid-cols-2 gap-x-4 mt-1 text-foreground">
+          <div>Risk: <span className="font-semibold text-foreground">{point.risk.toFixed(1)}%</span></div>
+          <div>Return: <span className={`font-semibold ${point.return >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {point.return > 0 ? '+' : ''}{point.return.toFixed(1)}%
           </span></div>
-          <div className="col-span-2">Allocation: <span className="font-semibold text-gray-900">{point.size.toFixed(1)}%</span></div>
+          <div className="col-span-2">Allocation: <span className="font-semibold text-foreground">{point.size.toFixed(1)}%</span></div>
         </div>
       </>
     );

@@ -695,8 +695,8 @@ export default function ClientPortfolioPage() {
       </div>
 
       {/* Page Header with Navigation */}
-      <div className="bg-card border-b border-gray-200 px-1 py-3">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3 ml-3">Portfolio</h2>
+      <div className="bg-card border-b border-border px-1 py-3">
+        <h2 className="text-2xl font-bold text-foreground mb-3 ml-3">Portfolio</h2>
         
         {/* Navigation Icons */}
         <div className="grid grid-cols-8 gap-3 ml-3">

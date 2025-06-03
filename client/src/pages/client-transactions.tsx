@@ -485,7 +485,7 @@ export default function ClientTransactions() {
                 <>
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-xl font-semibold text-card-foreground hover:text-blue-600 transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>

@@ -125,7 +125,7 @@ export default function ClientPersonalPage() {
                 onClick={() => window.location.hash = `/clients/${clientId}/personal`}
                 className="text-left truncate hover:text-blue-600 transition-colors"
               >
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
                   {client.fullName}
                 </h1>
               </button>
