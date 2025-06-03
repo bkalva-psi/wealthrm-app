@@ -973,7 +973,7 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Asset Allocation</CardTitle>
+                <CardTitle>Asset Allocation</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -985,7 +985,7 @@ export default function ClientPortfolioPage() {
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <h3 className="text-sm font-medium mb-2">AUM Trend (3 Years)</h3>
+                    <CardTitle className="text-sm font-medium mb-2">AUM Trends (3 Years)</CardTitle>
                     <div className="flex-1 border rounded-md p-4 h-52">
                       <SimpleAumTrendChart aumValue={client?.aumValue || 5000000} />
                     </div>
@@ -1002,7 +1002,7 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Performance Snapshot</CardTitle>
+                <CardTitle>Performance Snapshot</CardTitle>
                 <CardDescription>Returns across time periods</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1024,7 +1024,7 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Sector Exposure</CardTitle>
+                <CardTitle>Sector Exposure</CardTitle>
                 <CardDescription>Allocation by industry sectors</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1038,7 +1038,7 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Underlying Security Exposure</CardTitle>
+                <CardTitle>Underlying Security Exposure</CardTitle>
                 <CardDescription>Look-through to actual companies</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1172,7 +1172,7 @@ export default function ClientPortfolioPage() {
         >
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Portfolio Holdings</CardTitle>
+              <CardTitle>Portfolio Holdings</CardTitle>
               <CardDescription>All investments with sorting and filtering options</CardDescription>
             </CardHeader>
             <CardContent>
@@ -1189,7 +1189,7 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
+                <CardTitle className="flex items-center">
                   <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
                   Top Performers
                 </CardTitle>
