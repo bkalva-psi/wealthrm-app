@@ -45,16 +45,22 @@ const PeerPerformanceTrendChart: React.FC<PeerPerformanceTrendChartProps> = ({ d
     <div className="w-full">
       <ResponsiveContainer width="100%" height={250}>
         <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke="hsl(var(--border))" 
+            opacity={0.3}
+          />
           <XAxis 
             dataKey="month" 
-            tick={{ fontSize: 11, fill: '#64748b' }}
-            axisLine={{ stroke: '#e2e8f0' }}
+            tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
+            axisLine={{ stroke: 'hsl(var(--border))' }}
+            tickLine={{ stroke: 'hsl(var(--border))' }}
           />
           <YAxis 
             domain={[0, 100]}
-            tick={{ fontSize: 11, fill: '#64748b' }}
-            axisLine={{ stroke: '#e2e8f0' }}
+            tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
+            axisLine={{ stroke: 'hsl(var(--border))' }}
+            tickLine={{ stroke: 'hsl(var(--border))' }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend 

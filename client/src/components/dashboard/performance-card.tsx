@@ -293,9 +293,11 @@ export function PerformanceCard() {
                                     ))}
                                   </div>
 
-                                  {/* Performance Trend Chart */}
-                                  <div className="mt-4">
-                                    <h5 className="font-medium text-xs text-muted-foreground mb-3">Percentile Scores</h5>
+                                  {/* Performance Trend Chart - Full Width */}
+                                  <div className="mt-4 -mx-3">
+                                    <div className="px-3 mb-3">
+                                      <h5 className="font-medium text-xs text-muted-foreground">Percentile Scores</h5>
+                                    </div>
                                     <div className="bg-card/60 border border-border rounded-lg p-3">
                                       <PeerPerformanceTrendChart />
                                     </div>
