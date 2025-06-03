@@ -55,27 +55,27 @@ const getTierColor = (tier: string) => {
   switch (tier?.toLowerCase()) {
     case 'platinum':
       return { 
-        bg: 'bg-purple-100 dark:bg-purple-900/30', 
-        text: 'text-purple-800 dark:text-purple-400',
-        border: 'border-purple-300 dark:border-purple-700'
+        bg: 'bg-accent', 
+        text: 'text-accent-foreground',
+        border: 'border-border'
       };
     case 'gold':
       return { 
-        bg: 'bg-yellow-100 dark:bg-yellow-900/30', 
-        text: 'text-yellow-800 dark:text-yellow-400',
-        border: 'border-yellow-300 dark:border-yellow-700'
+        bg: 'bg-accent', 
+        text: 'text-accent-foreground',
+        border: 'border-border'
       };
     case 'silver':
       return { 
-        bg: 'bg-muted dark:bg-gray-800', 
-        text: 'text-gray-800 dark:text-gray-300',
-        border: 'border-gray-300 dark:border-gray-600'
+        bg: 'bg-muted', 
+        text: 'text-muted-foreground',
+        border: 'border-border'
       };
     default:
       return { 
-        bg: 'bg-primary/10 dark:bg-blue-900/30', 
-        text: 'text-primary dark:text-blue-400',
-        border: 'border-blue-300 dark:border-blue-700'
+        bg: 'bg-muted', 
+        text: 'text-muted-foreground',
+        border: 'border-border'
       };
   }
 };

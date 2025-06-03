@@ -21,31 +21,31 @@ export function getTierColor(tier: string): { bg: string, text: string, border: 
   switch (tier?.toLowerCase()) {
     case 'platinum':
       return { 
-        bg: 'bg-emerald-50', 
-        text: 'text-emerald-800',
-        border: 'border-emerald-300',
-        icon: 'bg-emerald-500'
+        bg: 'bg-accent', 
+        text: 'text-accent-foreground',
+        border: 'border-border',
+        icon: 'bg-primary'
       };
     case 'gold':
       return { 
-        bg: 'bg-amber-50', 
-        text: 'text-amber-800',
-        border: 'border-amber-300',
-        icon: 'bg-amber-500'
+        bg: 'bg-accent', 
+        text: 'text-accent-foreground',
+        border: 'border-border',
+        icon: 'bg-primary'
       };
     case 'silver':
       return { 
-        bg: 'bg-slate-50', 
-        text: 'text-slate-800',
-        border: 'border-slate-300',
-        icon: 'bg-slate-400'
+        bg: 'bg-muted', 
+        text: 'text-muted-foreground',
+        border: 'border-border',
+        icon: 'bg-secondary'
       };
     default:
       return { 
-        bg: 'bg-slate-50', 
-        text: 'text-slate-800',
-        border: 'border-slate-300',
-        icon: 'bg-slate-400'
+        bg: 'bg-muted', 
+        text: 'text-muted-foreground',
+        border: 'border-border',
+        icon: 'bg-secondary'
       };
   }
 }

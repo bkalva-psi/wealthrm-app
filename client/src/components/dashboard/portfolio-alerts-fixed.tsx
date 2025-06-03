@@ -71,17 +71,17 @@ export function PortfolioAlertsFixed() {
   };
 
   const severityColors = {
-    critical: "bg-red-100 text-red-800 border-red-200",
-    high: "bg-orange-100 text-orange-800 border-orange-200",
-    medium: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    low: "bg-blue-100 text-blue-800 border-blue-200"
+    critical: "bg-destructive/10 text-destructive border-destructive/20",
+    high: "bg-muted text-foreground border-border",
+    medium: "bg-muted text-foreground border-border",
+    low: "bg-accent text-accent-foreground border-border"
   };
 
   const priorityColors = {
-    urgent: "bg-red-100 text-red-800 border-red-200",
-    high: "bg-orange-100 text-orange-800 border-orange-200",
-    normal: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    low: "bg-blue-100 text-blue-800 border-blue-200"
+    urgent: "bg-destructive/10 text-destructive border-destructive/20",
+    high: "bg-muted text-foreground border-border",
+    normal: "bg-muted text-foreground border-border",
+    low: "bg-accent text-accent-foreground border-border"
   };
 
   return (
