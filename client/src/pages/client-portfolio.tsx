@@ -1007,9 +1007,7 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  
                   <div>
-                    <h4 className="text-sm font-medium mb-2">Returns by Period</h4>
                     <LocalPerformanceChart periods={performancePeriods} />
                   </div>
                 </div>
