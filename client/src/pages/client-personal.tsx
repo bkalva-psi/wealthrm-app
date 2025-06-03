@@ -15,6 +15,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { clientApi } from "@/lib/api";
 import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
 import { getTierColor } from "@/lib/utils";
+import { ClientPageLayout } from "@/components/layout/ClientPageLayout";
 
 export default function ClientPersonalPage() {
   const [clientId, setClientId] = useState<number | null>(null);
@@ -106,63 +107,7 @@ export default function ClientPersonalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Client Header */}
-      <div className={`bg-card border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${getTierColor(client.tier).border.replace('border-', 'border-l-')}`}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
-          <div className="flex items-center min-w-0 flex-1">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => window.location.hash = `/clients`}
-              className="mr-2 sm:mr-4 p-1 sm:p-2 flex-shrink-0"
-            >
-              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-            </Button>
-            
-            <div className="min-w-0 flex-1">
-              <button 
-                onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                className="text-left truncate hover:text-primary transition-colors"
-              >
-                <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
-                  {client.fullName}
-                </h1>
-              </button>
-              
-              <div className="mt-1">
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTierColor(client.tier).bg} ${getTierColor(client.tier).text}`}>
-                  {client.tier}
-                </span>
-              </div>
-
-              {client.phone && (
-                <div className="mt-1">
-                  <a 
-                    href={`tel:${client.phone}`}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center"
-                  >
-                    <Phone className="h-3 w-3 mr-1" />
-                    {client.phone}
-                  </a>
-                </div>
-              )}
-
-              {client.email && (
-                <div className="mt-1">
-                  <a 
-                    href={`mailto:${client.email}`}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center"
-                  >
-                    <Mail className="h-3 w-3 mr-1" />
-                    {client.email}
-                  </a>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <ClientPageLayout client={client} isLoading={isLoading} clientId={clientId || 0}>
 
       {/* Page Title Band with Navigation */}
       <div className="bg-card border-b border-border px-1 py-4">
@@ -759,6 +704,6 @@ export default function ClientPersonalPage() {
           </Card>
         </Collapsible>
       </div>
-    </div>
+    </ClientPageLayout>
   );
 }
