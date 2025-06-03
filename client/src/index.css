@@ -403,9 +403,9 @@
       --border: 140 40% 30%; /* Lighter green borders */
       --input: 140 50% 25%; /* Dark green for inputs */
       
-      /* Bright orange for better visibility on green */
-      --primary: 25 100% 65%; /* Ujjivan Orange for primary actions */
-      --primary-foreground: 0 0% 100%; /* White text on orange */
+      /* White for primary actions - better readability */
+      --primary: 0 0% 100%; /* White for primary actions */
+      --primary-foreground: 140 60% 15%; /* Dark green text on white */
       
       /* Light green as secondary */
       --secondary: 140 30% 35%; /* Light green secondary */
