@@ -36,7 +36,7 @@ import ClientCommunications from "@/pages/client-communications";
 import ClientAppointments from "@/pages/client-appointments";
 import ClientTasks from "@/pages/client-tasks";
 import ClientInsights from "@/pages/client-insights";
-import TasksUpdated from "@/pages/tasks-updated";
+import Tasks from "@/pages/tasks";
 import Calendar from "@/pages/calendar";
 import { Loader2 } from "lucide-react";
 
@@ -250,7 +250,7 @@ function AuthenticatedApp() {
       case currentRoute === '/appointments':
         return <Calendar />;
       case currentRoute === '/tasks':
-        return <TasksUpdated />;
+        return <Tasks />;
       case currentRoute === '/communications':
         return <ClientCommunications />;
       case currentRoute === '/talking-points':
