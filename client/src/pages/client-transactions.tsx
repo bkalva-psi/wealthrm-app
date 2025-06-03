@@ -462,50 +462,6 @@ export default function ClientTransactions() {
   
   return (
     <ClientPageLayout client={client} isLoading={isClientLoading} clientId={clientId}>
-                <>
-                  <button 
-                    onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-card-foreground hover:text-primary transition-colors cursor-pointer"
-                  >
-                    {client?.fullName}
-                  </button>
-                  {/* Line 2: Phone Number */}
-                  {client?.phone && (
-                    <div className="mt-1 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <a 
-                        href={`tel:${client.phone}`}
-                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
-                        title="Call client"
-                      >
-                        {client.phone}
-                      </a>
-                    </div>
-                  )}
-                  
-                  {/* Line 3: Email */}
-                  {client?.email && (
-                    <div className="mt-1 flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <a 
-                        href={`mailto:${client.email}`}
-                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
-                        title="Send email to client"
-                      >
-                        {client.email}
-                      </a>
-                    </div>
-                  )}
-                  
-
-                </>
-              )}
-            </div>
-          </div>
-
-
-        </div>
-      </div>
 
       {/* Page Title Band with Navigation */}
       <div className="bg-card border-b border-border px-1 py-4">

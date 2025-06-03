@@ -24,7 +24,7 @@ export function ClientPageLayout({ children, client, isLoading, clientId }: Clie
   };
 
   return (
-    <div className="px-1 py-4 pb-20 md:pb-6 md:px-6">
+    <div className="px-4 py-4 pb-20 md:pb-6">
       <ClientHeader
         client={client}
         isLoading={isLoading}

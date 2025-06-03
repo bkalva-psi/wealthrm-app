@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday, startOfDay } from 'date-fns';
 
-import ClientPageLayout from '@/components/layouts/ClientPageLayout';
+import { ClientPageLayout } from '@/components/layout/ClientPageLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
