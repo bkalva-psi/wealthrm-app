@@ -1304,7 +1304,7 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Performance by Time Period</CardTitle>
+                <CardTitle>Performance by Time Period</CardTitle>
                 <CardDescription>Portfolio vs Benchmark comparison across timeframes</CardDescription>
               </CardHeader>
               <CardContent>
@@ -1358,7 +1358,7 @@ export default function ClientPortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Risk and Return Analysis</CardTitle>
+                <CardTitle>Risk and Return Analysis</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-sm">
