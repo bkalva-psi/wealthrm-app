@@ -1030,7 +1030,7 @@ export default function ClientPortfolioPage() {
               <CardContent>
                 <AllocationChart 
                   data={client?.sectorExposure || mockSectorExposure} 
-                  title="Industry Sectors" 
+                  title="" 
                   color="purple" 
                 />
               </CardContent>
@@ -1051,7 +1051,7 @@ export default function ClientPortfolioPage() {
                     "ICICI Bank": 5.1,
                     "Others": 67.1
                   }} 
-                  title="Companies" 
+                  title="" 
                   color="green" 
                 />
               </CardContent>
