@@ -400,28 +400,23 @@ function SortableHoldingsTable({
   return (
     <div>
       {/* Sorting Controls */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Sort by:</span>
-          <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="value_desc">Amount (Highest to Lowest)</SelectItem>
-              <SelectItem value="value_asc">Amount (Lowest to Highest)</SelectItem>
-              <SelectItem value="name_asc">Name (A-Z)</SelectItem>
-              <SelectItem value="name_desc">Name (Z-A)</SelectItem>
-              <SelectItem value="type">Product Type</SelectItem>
-              <SelectItem value="gain_desc">Gain (Highest to Lowest)</SelectItem>
-              <SelectItem value="gain_asc">Gain (Lowest to Highest)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="text-sm text-muted-foreground">
-          Showing {displayedHoldings.length} of {sortedHoldings.length} holdings
-        </div>
+      <div className="flex items-center gap-2 mb-4">
+        <Filter className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">Sort by:</span>
+        <Select value={sortBy} onValueChange={onSortChange}>
+          <SelectTrigger className="w-48 sm:w-56">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="value_desc">Amount (Highest to Lowest)</SelectItem>
+            <SelectItem value="value_asc">Amount (Lowest to Highest)</SelectItem>
+            <SelectItem value="name_asc">Name (A-Z)</SelectItem>
+            <SelectItem value="name_desc">Name (Z-A)</SelectItem>
+            <SelectItem value="type">Product Type</SelectItem>
+            <SelectItem value="gain_desc">Gain (Highest to Lowest)</SelectItem>
+            <SelectItem value="gain_asc">Gain (Lowest to Highest)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table for desktop/tablet */}
