@@ -409,8 +409,7 @@ export default function Prospects() {
         const matchesSearch = !searchQuery || 
           prospect.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
           prospect.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (prospect.productsOfInterest && 
-            prospect.productsOfInterest.toLowerCase().includes(searchQuery.toLowerCase()));
+          (prospect.productsOfInterest?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
         
         // Apply stage filter
         const matchesStage = filterOptions.includedStages.includes(prospect.stage);

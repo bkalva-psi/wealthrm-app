@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bell, Calendar, User, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Bell, Calendar, User, AlertCircle, ChevronDown, ChevronUp, Megaphone } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 
