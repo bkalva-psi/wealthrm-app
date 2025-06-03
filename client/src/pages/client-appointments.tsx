@@ -23,7 +23,7 @@ import {
   FileBarChart,
   Lightbulb
 } from 'lucide-react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday } from 'date-fns';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday, startOfDay } from 'date-fns';
 
 import ClientPageLayout from '@/components/layouts/ClientPageLayout';
 import { Button } from '@/components/ui/button';
@@ -392,9 +392,17 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       );
     }
     
-    // Sort appointments by date (most recent first)
-    const sortedAppointments = [...appointments].sort((a: Appointment, b: Appointment) => {
-      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    // Filter to show only today's and upcoming appointments
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const filteredAppointments = appointments.filter((appointment: Appointment) => {
+      const appointmentDate = new Date(appointment.startTime);
+      return appointmentDate >= today;
+    });
+    
+    // Sort appointments by date (earliest first for upcoming view)
+    const sortedAppointments = [...filteredAppointments].sort((a: Appointment, b: Appointment) => {
+      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
     });
     
     // Group appointments by date
