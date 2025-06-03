@@ -49,227 +49,185 @@ export default function Tasks() {
     dueDate: format(new Date(), "yyyy-MM-dd"),
   });
   
-  // Collapsible state for cards
+  // Collapse states for cards
   const [tasksCollapsed, setTasksCollapsed] = useState(false);
   const [alertsCollapsed, setAlertsCollapsed] = useState(false);
+  const [tasksVisibleCount, setTasksVisibleCount] = useState(5);
   
-  // Pagination state
-  const [tasksVisibleCount, setTasksVisibleCount] = useState(2);
-  const [alertsVisibleCount, setAlertsVisibleCount] = useState(5);
-  
-  const queryClient = useQueryClient();
   const { toast } = useToast();
-  
-  // Set page title and force reload indicator
-  useEffect(() => {
-    document.title = "Tasks | Wealth RM - Updated";
-    console.log("NEW TASKS PAGE LOADED");
-  }, []);
-  
+  const queryClient = useQueryClient();
+
+  // Fetch tasks
   const { data: tasks, isLoading } = useQuery({
-    queryKey: ['/api/tasks'],
+    queryKey: ["/api/tasks"],
   });
 
+  // Fetch portfolio alerts
   const { data: portfolioAlerts, isLoading: alertsLoading } = useQuery({
-    queryKey: ['/api/portfolio-alerts'],
+    queryKey: ["/api/portfolio-alerts"],
   });
-  
-  const updateTaskMutation = useMutation({
-    mutationFn: async ({ id, completed }: { id: number, completed: boolean }) => {
-      await apiRequest("PUT", `/api/tasks/${id}`, { completed });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      toast({
-        title: "Task updated",
-        description: "Task status has been updated successfully.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update task. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
-  
+
+  // Create task mutation
   const createTaskMutation = useMutation({
-    mutationFn: async (taskData: any) => {
-      await apiRequest("POST", "/api/tasks", taskData);
-    },
+    mutationFn: (taskData: any) => apiRequest("/api/tasks", {
+      method: "POST",
+      body: JSON.stringify(taskData),
+    }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      toast({
-        title: "Task created",
-        description: "New task has been created successfully.",
-      });
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       setIsNewTaskDialogOpen(false);
       setNewTask({
         title: "",
         description: "",
         dueDate: format(new Date(), "yyyy-MM-dd"),
       });
+      toast({
+        title: "Success",
+        description: "Task created successfully",
+      });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to create task. Please try again.",
+        description: error.message || "Failed to create task",
         variant: "destructive",
       });
-    }
+    },
   });
-  
-  const handleTaskToggle = (task: Task, completed: boolean) => {
-    updateTaskMutation.mutate({ id: task.id, completed });
-  };
-  
-  const handleCreateTask = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+
+  // Toggle task completion
+  const toggleTaskMutation = useMutation({
+    mutationFn: ({ taskId, completed }: { taskId: number; completed: boolean }) =>
+      apiRequest(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ completed }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({
+        title: "Success",
+        description: "Task updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update task",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreateTask = () => {
     if (!newTask.title.trim()) {
       toast({
-        title: "Validation Error",
-        description: "Task title is required.",
+        title: "Error",
+        description: "Task title is required",
         variant: "destructive",
       });
       return;
     }
-    
-    createTaskMutation.mutate({
-      title: newTask.title,
-      description: newTask.description,
-      dueDate: newTask.dueDate + 'T00:00:00.000Z',
-      completed: false,
-    });
+
+    createTaskMutation.mutate(newTask);
   };
-  
-  const filterTasks = (tasks: Task[] | undefined, status: string) => {
-    if (!tasks) return [];
-    
-    let filtered = [...tasks];
-    
-    // Filter by search query
-    if (searchQuery) {
-      filtered = filtered.filter(task => 
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    }
-    
-    // Filter by tab
-    switch (status) {
-      case "upcoming":
-        return filtered.filter(task => 
-          !task.completed && 
-          task.dueDate && 
-          isAfter(new Date(task.dueDate), new Date())
-        );
-      case "today":
-        return filtered.filter(task => 
-          !task.completed && 
-          task.dueDate && 
-          isToday(new Date(task.dueDate))
-        );
-      case "overdue":
-        return filtered.filter(task => 
-          !task.completed && 
-          task.dueDate && 
-          isBefore(new Date(task.dueDate), new Date()) &&
-          !isToday(new Date(task.dueDate))
-        );
-      case "completed":
-        return filtered.filter(task => task.completed);
-      default:
-        return filtered;
-    }
+
+  const handleTaskToggle = (task: Task, completed: boolean) => {
+    toggleTaskMutation.mutate({ taskId: task.id, completed });
   };
-  
+
   const getDueStatus = (dueDate?: string) => {
-    if (!dueDate) return { text: "No due date", color: "text-muted-foreground" };
+    if (!dueDate) return { text: "", color: "text-muted-foreground" };
     
-    const date = new Date(dueDate);
+    const due = new Date(dueDate);
+    const now = new Date();
     
-    if (isToday(date)) {
-      return { text: "Due today", color: "text-amber-600" };
-    } else if (isYesterday(date)) {
-      return { text: "Due yesterday", color: "text-red-600" };
-    } else if (isBefore(date, new Date())) {
-      return { text: `Overdue: ${format(date, "MMM d")}`, color: "text-red-600" };
-    } else if (isBefore(date, addDays(new Date(), 2))) {
-      return { text: "Due tomorrow", color: "text-amber-600" };
+    if (isToday(due)) {
+      return { text: "Due today", color: "text-orange-600" };
+    } else if (isYesterday(due)) {
+      return { text: "Overdue", color: "text-red-600" };
+    } else if (isBefore(due, now)) {
+      return { text: "Overdue", color: "text-red-600" };
+    } else if (isAfter(due, addDays(now, 3))) {
+      return { text: `Due ${format(due, "MMM d")}`, color: "text-muted-foreground" };
     } else {
-      return { text: `Due: ${format(date, "MMM d")}`, color: "text-muted-foreground" };
+      return { text: `Due ${format(due, "MMM d")}`, color: "text-blue-600" };
     }
   };
-  
+
+  useEffect(() => {
+    console.log("NEW UPDATED TASKS PAGE LOADED SUCCESSFULLY");
+  }, []);
+
   return (
-    <div className="bg-background min-h-screen p-4 sm:p-6 tasks-page-container overflow-x-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
-      <div className="max-w-full mx-auto">
-        <div className="flex items-center justify-between mb-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
-          <div style={{ backgroundColor: 'hsl(222, 84%, 5%)' }} className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Tasks</h1>
-          </div>
-          <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="icon" className="rounded-full">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-          <DialogContent className="!bg-card !border-border">
+    <div className="tasks-page-container min-h-screen p-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Tasks</h1>
+        <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-12 h-12 p-0">
+              <Plus className="h-6 w-6" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
               <DialogDescription>
-                Add a new task to your list. Fill out the details below.
+                Add a new task to your list. Fill in the details below.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleCreateTask}>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="title">Task Title</Label>
-                  <Input 
-                    id="title" 
-                    placeholder="Enter task title" 
-                    value={newTask.title}
-                    onChange={e => setNewTask({...newTask, title: e.target.value})}
-                    className="!bg-background !border-input !text-foreground"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description (Optional)</Label>
-                  <Textarea 
-                    id="description" 
-                    placeholder="Enter task description" 
-                    value={newTask.description}
-                    onChange={e => setNewTask({...newTask, description: e.target.value})}
-                    className="!bg-background !border-input !text-foreground"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="dueDate">Due Date</Label>
-                  <Input 
-                    id="dueDate" 
-                    type="date" 
-                    value={newTask.dueDate}
-                    onChange={e => setNewTask({...newTask, dueDate: e.target.value})}
-                    className="!bg-background !border-input !text-foreground"
-                  />
-                </div>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
+                </Label>
+                <Input
+                  id="title"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  className="col-span-3"
+                  placeholder="Enter task title"
+                />
               </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsNewTaskDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={createTaskMutation.isPending}>
-                  {createTaskMutation.isPending ? "Creating..." : "Create Task"}
-                </Button>
-              </DialogFooter>
-            </form>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className="text-right">
+                  Description
+                </Label>
+                <Textarea
+                  id="description"
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                  className="col-span-3"
+                  placeholder="Enter task description (optional)"
+                  rows={3}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="dueDate" className="text-right">
+                  Due Date
+                </Label>
+                <Input
+                  id="dueDate"
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="submit"
+                onClick={handleCreateTask}
+                disabled={createTaskMutation.isPending}
+              >
+                {createTaskMutation.isPending ? "Creating..." : "Create Task"}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
       
-        <div className="space-y-4 w-full overflow-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+      <div className="space-y-4 w-full overflow-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
         {/* Tasks Header */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -308,14 +266,13 @@ export default function Tasks() {
         {!tasksCollapsed && (
           <Card className="!bg-card !border-border w-full" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
             <CardContent className="!bg-card w-full overflow-hidden p-6" style={{ backgroundColor: 'var(--card)' }}>
-              
               {isLoading ? (
                 <div className="space-y-4 bg-card">
                   {Array(2).fill(0).map((_, index) => (
                     <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
-                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-3 w-1/2" />
                       </div>
                     </div>
@@ -344,61 +301,59 @@ export default function Tasks() {
                                 id={`task-${task.id}`}
                                 checked={task.completed}
                                 onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
-                                className="h-4 w-4 mt-1"
-                                onClick={(e) => e.stopPropagation()}
+                                className="mt-1"
                               />
-                              <div className="flex-1">
+                              <div className="flex-1 min-w-0 overflow-hidden">
                                 <label
                                   htmlFor={`task-${task.id}`}
-                                  className={`block text-sm font-medium ${
+                                  className={`block text-sm font-medium truncate ${
                                     task.completed ? "text-muted-foreground line-through" : "text-foreground"
                                   }`}
                                 >
                                   {task.title}
                                 </label>
                                 {task.description && (
-                                  <p className={`text-xs mt-1 ${
+                                  <p className={`text-xs mt-1 truncate ${
                                     task.completed ? "text-muted-foreground" : "text-muted-foreground"
                                   }`}>
                                     {task.description}
                                   </p>
                                 )}
-                                <span className={`text-xs ${dueStatus.color} mt-1 block`}>
-                                  {task.completed ? "Completed" : dueStatus.text}
-                                </span>
+                                {task.dueDate && (
+                                  <p className={`text-xs mt-1 truncate ${dueStatus.color}`}>
+                                    {dueStatus.text}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           );
                         })}
                         
                         {(tasks as Task[] || []).filter(task => !task.completed).length > tasksVisibleCount && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
+                          <Button
+                            variant="ghost"
                             onClick={() => setTasksVisibleCount(prev => prev + 5)}
+                            className="w-full mt-4 text-blue-600 hover:text-blue-700"
                           >
-                            Show 5 more tasks
+                            Show More Tasks
                           </Button>
                         )}
                       </>
                     ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">No tasks to display</p>
-                        <Button
-                          variant="outline"
-                          className="mt-4"
-                          onClick={() => setIsNewTaskDialogOpen(true)}
-                        >
-                          Create a task
-                        </Button>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No active tasks found</p>
+                        <p className="text-sm mt-2">
+                          {searchQuery ? "Try adjusting your search" : "Create a new task to get started"}
+                        </p>
                       </div>
                     );
                   })()}
                 </div>
               )}
             </CardContent>
-          )}
-        </Card>
+          </Card>
+        )}
 
         {/* Portfolio Alerts Card */}
         <Card className="!bg-card !border-border" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
@@ -415,73 +370,50 @@ export default function Tasks() {
           </CardHeader>
           
           {!alertsCollapsed && (
-            <CardContent className="!bg-card">
+            <CardContent className="!bg-card" style={{ backgroundColor: 'var(--card)' }}>
               {alertsLoading ? (
                 <div className="space-y-4">
-                  {Array(5).fill(0).map((_, index) => (
+                  {Array(3).fill(0).map((_, index) => (
                     <div key={index} className="flex items-start space-x-3 p-3 border border-border rounded-md">
                       <Skeleton className="h-4 w-4 mt-1" />
                       <div className="space-y-2 flex-1">
-                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-3 w-1/2" />
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4 bg-card">
-                  {(() => {
-                    const alerts = (portfolioAlerts as any[] || []).slice(0, alertsVisibleCount);
-                    
-                    return alerts.length > 0 ? (
-                      <>
-                        {alerts.map((alert: any) => (
-                          <div key={alert.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50 cursor-pointer !bg-card">
-                            <div className={`h-4 w-4 mt-1 rounded-full ${
-                              alert.severity === 'high' ? 'bg-red-500' : 
-                              alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
-                            }`} />
-                            <div className="flex-1">
-                              <h4 className="text-sm font-medium text-foreground">{alert.title}</h4>
-                              <p className="text-xs text-muted-foreground mt-1">{alert.message}</p>
-                              <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-muted-foreground">
-                                  {alert.client_name ? `Client: ${alert.client_name}` : ''}
-                                </span>
-                                <span className={`text-xs px-2 py-1 rounded-full ${
-                                  alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
-                                  alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}>
-                                  {alert.severity}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                        
-                        {(portfolioAlerts as any[] || []).length > alertsVisibleCount && (
-                          <Button 
-                            variant="outline" 
-                            className="w-full mt-4"
-                            onClick={() => setAlertsVisibleCount(prev => prev + 5)}
-                          >
-                            Show 5 more alerts
-                          </Button>
-                        )}
-                      </>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">No portfolio alerts at this time</p>
-                        <p className="text-xs text-muted-foreground mt-2">Your clients' portfolios are performing well</p>
+                <div className="space-y-4">
+                  {(portfolioAlerts as any[] || []).length > 0 ? (
+                    (portfolioAlerts as any[]).map((alert: any) => (
+                      <div key={alert.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50">
+                        <AlertTriangle className="h-4 w-4 text-orange-600 mt-1 flex-shrink-0" />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-foreground">{alert.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
+                          {alert.clientName && (
+                            <p className="text-xs text-blue-600 mt-1">Client: {alert.clientName}</p>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground flex items-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {format(new Date(alert.createdAt), "MMM d")}
+                        </div>
                       </div>
-                    );
-                  })()}
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No portfolio alerts</p>
+                      <p className="text-sm mt-2">All portfolios are performing well</p>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
           )}
         </Card>
-        </div>
       </div>
     </div>
   );
