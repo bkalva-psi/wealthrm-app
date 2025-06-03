@@ -1554,14 +1554,6 @@ export default function ClientPortfolioPage() {
                     
                     <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-medium">Expected Drawdown</div>
-                        <div className="text-xs text-muted-foreground">95% Confidence</div>
-                      </div>
-                      <div className="font-medium text-amber-600">-12.8%</div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <div>
                         <div className="font-medium">Value at Risk (Monthly)</div>
                         <div className="text-xs text-muted-foreground">95% Confidence</div>
                       </div>
