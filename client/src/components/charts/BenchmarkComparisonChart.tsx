@@ -211,36 +211,36 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground font-medium">Portfolio</span>
-              <span className="text-xs font-medium text-blue-600">{portfolioFinalValue.toFixed(1)}</span>
+              <span className="text-xs font-medium text-primary">{portfolioFinalValue.toFixed(1)}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground font-medium">Benchmark</span>
-              <span className="text-xs font-medium text-gray-600">{benchmarkFinalValue.toFixed(1)}</span>
+              <span className="text-xs font-medium text-muted-foreground">{benchmarkFinalValue.toFixed(1)}</span>
             </div>
           </div>
           
           <div className="flex text-xs rounded-md overflow-hidden border">
             <button 
               onClick={() => handleTimeRangeChange('3m')}
-              className={`px-2 py-0.5 ${timeRange === '3m' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 ${timeRange === '3m' ? 'bg-primary/10 text-primary' : 'bg-background hover:bg-muted'}`}
             >
               3M
             </button>
             <button 
               onClick={() => handleTimeRangeChange('6m')}
-              className={`px-2 py-0.5 ${timeRange === '6m' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 ${timeRange === '6m' ? 'bg-primary/10 text-primary' : 'bg-background hover:bg-muted'}`}
             >
               6M
             </button>
             <button 
               onClick={() => handleTimeRangeChange('1y')}
-              className={`px-2 py-0.5 ${timeRange === '1y' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 ${timeRange === '1y' ? 'bg-primary/10 text-primary' : 'bg-background hover:bg-muted'}`}
             >
               1Y
             </button>
             <button 
               onClick={() => handleTimeRangeChange('3y')}
-              className={`px-2 py-0.5 ${timeRange === '3y' ? 'bg-blue-100 text-blue-800' : 'bg-white hover:bg-gray-50'}`}
+              className={`px-2 py-0.5 ${timeRange === '3y' ? 'bg-primary/10 text-primary' : 'bg-background hover:bg-muted'}`}
             >
               3Y
             </button>
@@ -251,11 +251,11 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
           {/* Chart legend */}
           <div className="flex items-center justify-center gap-6 text-xs">
             <div className="flex items-center">
-              <div className="w-3 h-1 bg-blue-600 mr-1"></div>
+              <div className="w-3 h-1 bg-primary mr-1"></div>
               <span>Portfolio</span>
             </div>
             <div className="flex items-center">
-              <div className="w-3 h-1 bg-gray-600 mr-1"></div>
+              <div className="w-3 h-1 bg-muted-foreground mr-1"></div>
               <span>Benchmark</span>
             </div>
           </div>
