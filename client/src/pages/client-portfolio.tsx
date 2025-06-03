@@ -496,7 +496,7 @@ function SortableHoldingsTable({
               </div>
               <div>
                 <div className="text-muted-foreground">Alpha</div>
-                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
+                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600 dark:text-green-400' : holding.alphaReturn < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
                   {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
                 </div>
               </div>
@@ -506,7 +506,7 @@ function SortableHoldingsTable({
               <div className="text-xs text-muted-foreground">Benchmark</div>
               <div className="flex justify-between items-center">
                 <div className="font-medium text-sm">{holding.benchmark}</div>
-                <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
                 </div>
               </div>
