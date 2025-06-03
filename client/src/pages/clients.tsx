@@ -88,7 +88,7 @@ const getTierBadgeColors = (tier: string) => {
 // Client Card component
 interface ClientCardProps {
   client: Client;
-  onClick: (id: number) => void;
+  onClick: (id: number, section?: string) => void;
 }
 
 function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [] }: ClientCardProps & { tasks?: any[], appointments?: any[], alerts?: any[] }) {
@@ -101,7 +101,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
   // Handle section clicks
   const handleSectionClick = (e: React.MouseEvent, section: string) => {
     e.stopPropagation();
-    onClick(client.id);
+    onClick(client.id, section);
   };
 
   // Generate initials if not available
@@ -618,8 +618,12 @@ export default function Clients() {
   };
   
   // Handle client click
-  const handleClientClick = (clientId: number) => {
-    window.location.hash = `/clients/${clientId}`;
+  const handleClientClick = (clientId: number, section?: string) => {
+    if (section === 'actions') {
+      window.location.hash = `/clients/${clientId}/portfolio#action-items`;
+    } else {
+      window.location.hash = `/clients/${clientId}`;
+    }
   };
   
   // Handle add prospect click

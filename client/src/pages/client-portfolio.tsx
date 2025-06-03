@@ -534,6 +534,20 @@ export default function ClientPortfolioPage() {
       setClientId(Number(match[1]));
     }
   }, []);
+
+  // Handle hash navigation to specific sections
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('#action-items')) {
+      // Wait for component to render then scroll to Action Items section
+      setTimeout(() => {
+        const actionItemsSection = document.querySelector('[data-section="action-items"]');
+        if (actionItemsSection) {
+          actionItemsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [clientId]);
   
   // Fetch client data
   const { data: client, isLoading } = useQuery({
