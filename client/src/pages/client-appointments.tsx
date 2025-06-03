@@ -96,7 +96,12 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       }
       const data = await response.json();
       console.log('Received appointments:', data);
-      return data;
+      // Sort appointments by date and time
+      return data.sort((a: Appointment, b: Appointment) => {
+        const dateA = new Date(a.startTime);
+        const dateB = new Date(b.startTime);
+        return dateA.getTime() - dateB.getTime();
+      });
     }
   });
   
