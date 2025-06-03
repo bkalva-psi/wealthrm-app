@@ -1233,25 +1233,25 @@ export class DatabaseStorage implements IStorage {
       return task;
     }
     
-    // If not found, check if it's a communication action item (these are also displayed as tasks)
-    const actionItemQuery = await db.select({
-      id: communicationActionItems.id,
-      title: communicationActionItems.title,
-      description: communicationActionItems.description,
-      dueDate: communicationActionItems.dueDate,
-      completed: sql<boolean>`CASE WHEN ${communicationActionItems.completedAt} IS NOT NULL THEN true ELSE false END`.as('completed'),
-      clientId: communications.clientId,
-      prospectId: sql<number | null>`NULL`.as('prospectId'),
-      assignedTo: communicationActionItems.assignedTo,
-      createdAt: communicationActionItems.createdAt
-    })
-    .from(communicationActionItems)
-    .leftJoin(communications, eq(communicationActionItems.communicationId, communications.id))
-    .where(eq(communicationActionItems.id, id));
+    // If not found, check if it's a communication action item
+    const [actionItem] = await db.select().from(communicationActionItems).where(eq(communicationActionItems.id, id));
+    if (actionItem) {
+      // Convert action item to task format
+      const [comm] = await db.select().from(communications).where(eq(communications.id, actionItem.communicationId));
+      return {
+        id: actionItem.id,
+        title: actionItem.title,
+        description: actionItem.description,
+        dueDate: actionItem.dueDate,
+        completed: actionItem.completedAt !== null,
+        clientId: comm?.clientId || null,
+        prospectId: null,
+        assignedTo: actionItem.assignedTo,
+        createdAt: actionItem.createdAt
+      };
+    }
     
-    const actionItem = actionItemQuery[0];
-    
-    return actionItem || undefined;
+    return undefined;
   }
 
   async getTasks(assignedTo?: number, completed?: boolean, clientId?: number): Promise<any[]> {
@@ -1353,23 +1353,21 @@ export class DatabaseStorage implements IStorage {
         .returning();
       
       if (actionItem) {
-        // Return the action item in task format
-        const enrichedQuery = await db.select({
-          id: communicationActionItems.id,
-          title: communicationActionItems.title,
-          description: communicationActionItems.description,
-          dueDate: communicationActionItems.dueDate,
-          completed: sql<boolean>`CASE WHEN ${communicationActionItems.completedAt} IS NOT NULL THEN true ELSE false END`.as('completed'),
-          clientId: communications.clientId,
-          prospectId: sql<number | null>`NULL`.as('prospectId'),
-          assignedTo: communicationActionItems.assignedTo,
-          createdAt: communicationActionItems.createdAt
-        })
-        .from(communicationActionItems)
-        .leftJoin(communications, eq(communicationActionItems.communicationId, communications.id))
-        .where(eq(communicationActionItems.id, id));
+        // Get the associated communication to find clientId
+        const [comm] = await db.select().from(communications).where(eq(communications.id, actionItem.communicationId));
         
-        return enrichedQuery[0] || undefined;
+        // Return the action item in task format
+        return {
+          id: actionItem.id,
+          title: actionItem.title,
+          description: actionItem.description,
+          dueDate: actionItem.dueDate,
+          completed: actionItem.completedAt !== null,
+          clientId: comm?.clientId || null,
+          prospectId: null,
+          assignedTo: actionItem.assignedTo,
+          createdAt: actionItem.createdAt
+        };
       }
     }
     
