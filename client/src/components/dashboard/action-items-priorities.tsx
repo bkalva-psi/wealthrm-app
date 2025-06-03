@@ -56,7 +56,7 @@ export function ActionItemsPriorities() {
       count: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent').length || 0,
       items: tasks?.filter(task => task.priority === 'high' || task.priority === 'urgent') || [],
       icon: Clock,
-      color: 'text-secondary',
+      color: 'text-amber-600 dark:text-amber-400',
       bgColor: 'bg-muted border-border',
       description: 'High priority tasks requiring immediate attention'
     },
@@ -83,7 +83,7 @@ export function ActionItemsPriorities() {
       count: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress').length || 0,
       items: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress') || [],
       icon: MessageSquare,
-      color: 'text-secondary',
+      color: 'text-red-600 dark:text-red-400',
       bgColor: 'bg-muted border-border',
       description: 'Unresolved client issues requiring attention'
     }

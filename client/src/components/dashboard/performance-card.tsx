@@ -130,7 +130,7 @@ export function PerformanceCard() {
     comparative: {
       title: 'Comparative Performance',
       icon: BarChart3,
-      color: 'text-secondary',
+      color: 'text-purple-600 dark:text-purple-400',
       isExpanded: expandedCards.has('comparative')
     },
     incentives: {
