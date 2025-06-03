@@ -225,7 +225,7 @@ export default function CalendarPage() {
             <DialogTrigger asChild>
               <Button 
                 size="icon" 
-                className="rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
               >
                 <Plus className="h-4 w-4" />
               </Button>
