@@ -1102,22 +1102,6 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
           </div>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Portfolio Holdings</CardTitle>
-              <CardDescription>All investments with sorting and filtering options</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SortableHoldingsTable 
-                holdings={mockHoldings}
-                sortBy={holdingsSortBy}
-                onSortChange={setHoldingsSortBy}
-                showAll={showAllHoldings}
-                onToggleShowAll={() => setShowAllHoldings(!showAllHoldings)}
-              />
-            </CardContent>
-          </Card>
 
         </PortfolioSection>
         
@@ -1232,12 +1216,18 @@ export default function ClientPortfolioPage() {
           defaultOpen={true}
         >
           <Card>
-            <CardHeader>
-              <CardTitle>Complete Holdings</CardTitle>
-              <CardDescription>All investments in your portfolio</CardDescription>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Portfolio Holdings</CardTitle>
+              <CardDescription>All investments with sorting and filtering options</CardDescription>
             </CardHeader>
             <CardContent>
-              <HoldingsTable holdings={mockHoldings} />
+              <SortableHoldingsTable 
+                holdings={mockHoldings}
+                sortBy={holdingsSortBy}
+                onSortChange={setHoldingsSortBy}
+                showAll={showAllHoldings}
+                onToggleShowAll={() => setShowAllHoldings(!showAllHoldings)}
+              />
             </CardContent>
           </Card>
           
