@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Eye, EyeOff, Building2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import ujjivanLogo from "../assets/ujjivan_logo.png";
 
 export default function LoginPage() {
   const { login, isAuthenticating, authError, user } = useAuth();
@@ -62,39 +63,21 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-4">
           <div className="flex flex-col items-center justify-center mb-4">
-            <div className="mb-4">
-              <svg
-                width="120"
-                height="40"
-                viewBox="0 0 200 60"
-                className="text-blue-600"
-                fill="currentColor"
-              >
-                {/* Ujjivan Logo - Stylized representation */}
-                <rect x="10" y="15" width="8" height="30" rx="2" />
-                <rect x="22" y="20" width="8" height="25" rx="2" />
-                <rect x="34" y="18" width="8" height="27" rx="2" />
-                <rect x="46" y="22" width="8" height="23" rx="2" />
-                <rect x="58" y="16" width="8" height="29" rx="2" />
-                <rect x="70" y="19" width="8" height="26" rx="2" />
-                <rect x="82" y="21" width="8" height="24" rx="2" />
-                <text x="100" y="25" fontSize="12" fontWeight="bold" className="fill-current">
-                  UJJIVAN
-                </text>
-                <text x="100" y="38" fontSize="8" className="fill-current opacity-80">
-                  Small Finance Bank
-                </text>
-              </svg>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-blue-600 font-medium">
-                Intellect WealthForce
-              </p>
+            <div className="flex items-center mb-4">
+              <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto" />
+              <div className="ml-3 flex flex-col justify-center">
+                <h1 className="text-teal-700 dark:text-teal-400 text-base font-bold leading-tight whitespace-nowrap">
+                  Ujjivan Small Finance Bank
+                </h1>
+                <span className="text-orange-600 dark:text-orange-400 text-sm font-medium leading-tight">
+                  Intellect WealthForce
+                </span>
+              </div>
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
           <CardDescription className="text-center">
-            Access your wealth management dashboard
+            Access your wealth management application
           </CardDescription>
         </CardHeader>
         
