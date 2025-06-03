@@ -305,26 +305,18 @@ export default function Tasks() {
                           return (
                             <div key={task.id} className="border border-border rounded-md !bg-card w-full min-w-0">
                               <div 
-                                className="flex items-start space-x-3 p-3 hover:bg-muted/50 cursor-pointer"
+                                className="flex items-start p-3 hover:bg-muted/50 cursor-pointer"
                                 onClick={() => toggleTaskExpansion(task.id)}
                               >
-                                <Checkbox
-                                  id={`task-${task.id}`}
-                                  checked={task.completed}
-                                  onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
-                                  className="mt-1"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
                                 <div className="flex-1 min-w-0 overflow-hidden">
                                   <div className="flex items-center justify-between">
-                                    <label
-                                      htmlFor={`task-${task.id}`}
+                                    <div
                                       className={`block text-sm font-medium ${isExpanded ? '' : 'truncate'} ${
                                         task.completed ? "text-muted-foreground line-through" : "text-foreground"
                                       }`}
                                     >
                                       {task.title}
-                                    </label>
+                                    </div>
                                     <div className="flex items-center space-x-2">
                                       {task.dueDate && (
                                         <span className={`text-xs px-2 py-1 rounded-full ${dueStatus.color} bg-muted/50`}>
