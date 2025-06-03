@@ -263,7 +263,7 @@ export function PerformanceCard() {
                                 <div className="space-y-3">
                                   <h4 className="font-medium text-sm">Actual vs. Target</h4>
                                   {(performanceData as PerformanceData)?.targets?.map((target: any, index: number) => (
-                                    <div key={index} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                    <div key={index} className="flex justify-between items-center p-3 bg-card/60 border border-border rounded-lg">
                                       <span className="text-sm text-muted-foreground">{target.name}</span>
                                       <div className="text-right">
                                         <div className="text-sm font-medium">{target.actual} / {target.target}</div>
@@ -281,7 +281,7 @@ export function PerformanceCard() {
                                   {/* Summary Cards */}
                                   <div className="space-y-2">
                                     {(performanceData as PerformanceData)?.peerComparison?.map((peer: any, index: number) => (
-                                      <div key={index} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                      <div key={index} className="flex justify-between items-center p-3 bg-card/60 border border-border rounded-lg">
                                         <span className="text-sm text-muted-foreground">{peer.metric}</span>
                                         <div className="text-right">
                                           <div className="text-sm font-medium">{peer.yourValue}</div>
@@ -296,7 +296,7 @@ export function PerformanceCard() {
                                   {/* Performance Trend Chart */}
                                   <div className="mt-4">
                                     <h5 className="font-medium text-xs text-muted-foreground mb-3">Percentile Scores</h5>
-                                    <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3">
+                                    <div className="bg-card/60 border border-border rounded-lg p-3">
                                       <PeerPerformanceTrendChart />
                                     </div>
                                   </div>
@@ -304,7 +304,7 @@ export function PerformanceCard() {
                                   {/* Radar Chart */}
                                   <div className="mt-4">
                                     <h5 className="font-medium text-xs text-muted-foreground mb-3">Performance Radar</h5>
-                                    <div className="bg-white/60 dark:bg-slate-800/60 rounded-lg p-3">
+                                    <div className="bg-card/60 border border-border rounded-lg p-3">
                                       <PeerComparisonRadarChart 
                                         data={(performanceData as PerformanceData)?.peerComparison?.map((peer: any) => ({
                                           metric: peer.metric,
