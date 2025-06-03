@@ -413,7 +413,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             <div 
               className={`text-center p-3 rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md border border-border/20 ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'bg-destructive/10 hover:bg-destructive/20 border-destructive/30' 
+                  ? 'bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30 border-red-300 dark:border-red-700' 
                   : 'bg-card/60 hover:bg-card'
               }`}
               onClick={(e) => handleSectionClick(e, 'communications')}
@@ -422,13 +422,13 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               <div className="text-xs text-muted-foreground mb-1 font-medium">Last Contact</div>
               <div className={`text-sm font-medium ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'text-white' 
+                  ? 'text-red-800 dark:text-red-200' 
                   : 'text-foreground'
               }`}>
                 {formatRelativeDate(client.lastContactDate)}
               </div>
               {getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent && (
-                <div className="text-xs text-white mt-1 font-medium">
+                <div className="text-xs text-red-800 dark:text-red-200 mt-1 font-medium">
                   {getContactUrgency(client.lastContactDate, client.id, appointments).message}
                 </div>
               )}
