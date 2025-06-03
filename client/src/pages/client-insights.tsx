@@ -173,7 +173,7 @@ export default function ClientInsights() {
                       <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                         title="Call client"
                       >
                         {client.phone}
@@ -187,7 +187,7 @@ export default function ClientInsights() {
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                         title="Send email to client"
                       >
                         {client.email}

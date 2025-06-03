@@ -39,10 +39,10 @@ export function PortfolioAlertsClean() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="px-4 py-3 border-b border-slate-200 bg-white">
+      <CardHeader className="px-4 py-3 border-b border-border bg-background">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-orange-500" />
-          <h2 className="text-sm font-medium text-slate-700">Priority Alerts</h2>
+          <h2 className="text-sm font-medium text-foreground">Priority Alerts</h2>
           {!alertsLoading && alerts && alerts.length > 0 && (
             <Badge variant="secondary" className="text-xs">
               {alerts.filter(alert => !alert.read).length} New
@@ -52,7 +52,7 @@ export function PortfolioAlertsClean() {
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-border">
           {alertsLoading ? (
             Array(3).fill(0).map((_, index) => (
               <div key={index} className="px-4 py-3">
@@ -77,16 +77,16 @@ export function PortfolioAlertsClean() {
               const isUrgent = alert.severity === 'critical';
               
               return (
-                <div key={alert.id} className={`px-4 py-3 transition-colors ${alert.read ? 'bg-slate-50' : 'bg-white hover:bg-slate-50'}`}>
+                <div key={alert.id} className={`px-4 py-3 transition-colors ${alert.read ? 'bg-muted/50' : 'bg-background hover:bg-muted/50'}`}>
                   <div className="flex justify-between items-start">
                     <div className="flex-1 space-y-2">
                       <div className="flex items-start gap-2">
                         {isUrgent && <span className="inline-block w-2 h-2 bg-red-500 rounded-full mt-1.5 flex-shrink-0" />}
                         <div className="flex-1">
-                          <p className={`text-sm font-medium leading-tight ${alert.read ? 'text-slate-500' : 'text-slate-900'}`}>
+                          <p className={`text-sm font-medium leading-tight ${alert.read ? 'text-muted-foreground' : 'text-foreground'}`}>
                             {alert.title}
                           </p>
-                          <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                             {alert.description}
                           </p>
                         </div>
@@ -94,9 +94,9 @@ export function PortfolioAlertsClean() {
                       
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${getSeverityColor(alert.severity)}`} />
-                        <span className="text-xs text-slate-500 capitalize">{alert.severity}</span>
-                        <span className="text-xs text-slate-400">•</span>
-                        <span className="text-xs text-slate-500">{alert.alertType}</span>
+                        <span className="text-xs text-muted-foreground capitalize">{alert.severity}</span>
+                        <span className="text-xs text-muted-foreground/60">•</span>
+                        <span className="text-xs text-muted-foreground">{alert.alertType}</span>
                       </div>
                     </div>
                     
