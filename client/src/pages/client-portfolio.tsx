@@ -1387,6 +1387,46 @@ export default function ClientPortfolioPage() {
               </CardContent>
             </Card>
             
+
+          </div>
+        </PortfolioSection>
+        
+        {/* Risk Analysis Section */}
+        <PortfolioSection
+          title="Risk Analysis"
+          icon={<AlertTriangle className="h-5 w-5" />}
+          defaultOpen={false}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <MetricCard 
+              title="Risk Score"
+              value={`${client?.riskScore || 6}/10`}
+              icon={<AlertTriangle className="h-5 w-5" />}
+              description="Moderate Risk"
+              color="amber"
+              isLoading={isLoading}
+            />
+            
+            <MetricCard 
+              title="Volatility"
+              value={`${client?.volatility || 12.4}%`}
+              icon={<LineChart className="h-5 w-5" />}
+              description="Annualized Standard Deviation"
+              color="purple"
+              isLoading={isLoading}
+            />
+            
+            <MetricCard 
+              title="Sharpe Ratio"
+              value={client?.sharpeRatio || 1.2}
+              icon={<BarChart3 className="h-5 w-5" />}
+              description="Risk-adjusted Returns"
+              color="indigo"
+              isLoading={isLoading}
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Risk and Return Analysis</CardTitle>
@@ -1511,45 +1551,7 @@ export default function ClientPortfolioPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </PortfolioSection>
-        
-        {/* Risk Analysis Section */}
-        <PortfolioSection
-          title="Risk Analysis"
-          icon={<AlertTriangle className="h-5 w-5" />}
-          defaultOpen={false}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <MetricCard 
-              title="Risk Score"
-              value={`${client?.riskScore || 6}/10`}
-              icon={<AlertTriangle className="h-5 w-5" />}
-              description="Moderate Risk"
-              color="amber"
-              isLoading={isLoading}
-            />
             
-            <MetricCard 
-              title="Volatility"
-              value={`${client?.volatility || 12.4}%`}
-              icon={<LineChart className="h-5 w-5" />}
-              description="Annualized Standard Deviation"
-              color="purple"
-              isLoading={isLoading}
-            />
-            
-            <MetricCard 
-              title="Sharpe Ratio"
-              value={client?.sharpeRatio || 1.2}
-              icon={<BarChart3 className="h-5 w-5" />}
-              description="Risk-adjusted Returns"
-              color="indigo"
-              isLoading={isLoading}
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
                 <CardTitle>Risk Breakdown</CardTitle>
