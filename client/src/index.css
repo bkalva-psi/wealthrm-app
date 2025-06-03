@@ -7,23 +7,15 @@
   * {
     /* Improved line height for better readability */
     line-height: 1.6;
-    /* Better text rendering for all elements */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
   
   body {
-    /* Enhanced font family stack for better readability */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     /* Better text rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     /* Improved line height for body text */
     line-height: 1.65;
-    /* Better font weight for readability */
-    font-weight: 450;
   }
 
   /* Enhanced font weight hierarchy */
@@ -43,17 +35,9 @@
     line-height: 1.3;
   }
 
-  /* Improved text contrast - especially for Ujjivan theme */
+  /* Improved text contrast */
   .text-muted-foreground {
-    opacity: 0.85;
-    font-weight: 500;
-  }
-  
-  /* Enhanced contrast for Ujjivan theme specifically */
-  .ujjivan-theme .text-muted-foreground {
-    opacity: 1;
-    color: hsl(174 30% 45%);
-    font-weight: 520;
+    opacity: 0.8;
   }
 
   /* Better readability for small text */
@@ -405,44 +389,35 @@
 
 
 
-/* Ujjivan Brand Theme - Refined with Better Contrast */
+/* Ujjivan Brand Theme */
 .ujjivan-theme {
-      /* Subtle teal background - professional and readable */
-      --background: 174 25% 96%; /* Very light teal background #F4FAFA - subtle brand presence */
-      --foreground: 174 100% 15%; /* Dark teal text for excellent contrast */
+      /* Rich Ujjivan Teal Background */
+      --background: 174 100% 29%; /* Rich teal background - #007A5E */
+      --foreground: 0 0% 100%; /* White text for visibility */
+      --muted: 174 100% 25%; /* Darker teal for muted areas */
+      --muted-foreground: 174 50% 85%; /* Light teal for muted text */
+      --popover: 174 100% 29%;
+      --popover-foreground: 0 0% 100%;
+      --card: 174 100% 25%; /* Slightly darker teal cards */
+      --card-foreground: 0 0% 100%;
+      --border: 174 100% 35%; /* Lighter teal borders */
+      --input: 174 100% 25%;
       
-      /* Muted areas with gentle teal tinting */
-      --muted: 174 20% 92%; /* Light teal-gray #EBF5F3 */
-      --muted-foreground: 174 40% 40%; /* Medium teal-gray for good muted text contrast */
+      /* Orange as primary on teal background */
+      --primary: 25 100% 55%; /* Ujjivan Orange */
+      --primary-foreground: 0 0% 100%;
       
-      /* Popover with clean light background */
-      --popover: 0 0% 100%; /* Pure white for popovers */
-      --popover-foreground: 174 100% 15%; /* Dark teal text */
+      /* White as secondary */
+      --secondary: 0 0% 100%;
+      --secondary-foreground: 174 100% 29%;
       
-      /* Cards with subtle teal hint */
-      --card: 0 0% 100%; /* White cards for maximum readability */
-      --card-foreground: 174 100% 15%; /* Dark teal text */
+      /* Light accent that works on teal */
+      --accent: 174 100% 35%;
+      --accent-foreground: 0 0% 100%;
       
-      /* Subtle teal borders for brand consistency */
-      --border: 174 30% 85%; /* Light teal border #D4EEEA */
-      --input: 0 0% 100%; /* White input backgrounds */
-      
-      /* Ujjivan Orange as primary accent */
-      --primary: 25 100% 50%; /* Ujjivan Orange #FF8000 */
-      --primary-foreground: 0 0% 100%; /* White text on orange */
-      
-      /* Ujjivan Teal as secondary */
-      --secondary: 174 100% 29%; /* Ujjivan Teal #007A5E */
-      --secondary-foreground: 0 0% 100%; /* White text on teal */
-      
-      /* Light teal accent areas */
-      --accent: 174 20% 92%; /* Light teal accent */
-      --accent-foreground: 174 100% 15%; /* Dark teal text */
-      
-      /* Status colors with good contrast */
-      --destructive: 0 75% 55%; /* Red for errors */
+      --destructive: 0 100% 75%;
       --destructive-foreground: 0 0% 100%;
-      --ring: 25 100% 50%; /* Orange focus ring */
+      --ring: 25 100% 55%;
 }
   
   .dark {
