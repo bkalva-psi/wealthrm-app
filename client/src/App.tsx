@@ -69,30 +69,36 @@ function useHashRouter() {
     }
     
     const handleHashChange = () => {
-      const path = window.location.hash.replace(/^#/, '') || '/';
-      console.log('Hash changed to:', path);
+      const fullHash = window.location.hash.replace(/^#/, '') || '/';
+      console.log('Hash changed to:', fullHash);
       
-      // Scroll both window and main container
-      const scrollToTop = () => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-          mainContent.scrollTop = 0;
-        }
-      };
+      // Separate route path from fragment (e.g., "/clients/3/portfolio#action-items" -> "/clients/3/portfolio")
+      const [path, fragment] = fullHash.split('#');
+      const routePath = path || '/';
       
-      // Immediate scroll
-      scrollToTop();
+      // Scroll both window and main container only if no fragment (don't interfere with section scrolling)
+      if (!fragment) {
+        const scrollToTop = () => {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          const mainContent = document.getElementById('main-content');
+          if (mainContent) {
+            mainContent.scrollTop = 0;
+          }
+        };
+        
+        // Immediate scroll
+        scrollToTop();
+        
+        // Multiple delayed attempts to override any browser restoration
+        setTimeout(scrollToTop, 10);
+        setTimeout(scrollToTop, 50);
+        setTimeout(scrollToTop, 100);
+        setTimeout(scrollToTop, 200);
+      }
       
-      setCurrentRoute(path);
-      
-      // Multiple delayed attempts to override any browser restoration
-      setTimeout(scrollToTop, 10);
-      setTimeout(scrollToTop, 50);
-      setTimeout(scrollToTop, 100);
-      setTimeout(scrollToTop, 200);
+      setCurrentRoute(routePath);
     };
     
     window.addEventListener('hashchange', handleHashChange);
