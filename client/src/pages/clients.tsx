@@ -422,13 +422,13 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               <div className="text-xs text-muted-foreground mb-1 font-medium">Last Contact</div>
               <div className={`text-sm font-medium ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'text-destructive' 
+                  ? 'text-red-200' 
                   : 'text-foreground'
               }`}>
                 {formatRelativeDate(client.lastContactDate)}
               </div>
               {getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent && (
-                <div className="text-xs text-destructive mt-1 font-medium">
+                <div className="text-xs text-red-200 mt-1 font-medium">
                   {getContactUrgency(client.lastContactDate, client.id, appointments).message}
                 </div>
               )}
