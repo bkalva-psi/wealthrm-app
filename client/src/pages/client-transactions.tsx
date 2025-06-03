@@ -550,30 +550,30 @@ export default function ClientTransactions() {
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-primary/10 border border-primary/20 h-12 w-full"
             title="Transactions"
           >
-            <Receipt className="h-6 w-6 text-blue-600" />
+            <Receipt className="h-6 w-6 text-primary" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
             title="Appointments"
           >
-            <CalendarIconNav className="h-6 w-6 text-gray-600" />
+            <CalendarIconNav className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
             title="Notes"
           >
-            <FileText className="h-6 w-6 text-gray-600" />
+            <FileText className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => {
               // Check if mobile device
               const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -588,15 +588,15 @@ export default function ClientTransactions() {
             }}
             title="Portfolio Report"
           >
-            <FileBarChart className="h-6 w-6 text-gray-600" />
+            <FileBarChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/insights`}
             title="Investment Ideas"
           >
-            <Lightbulb className="h-6 w-6 text-gray-600" />
+            <Lightbulb className="h-6 w-6 text-muted-foreground" />
           </button>
         </div>
       </div>
