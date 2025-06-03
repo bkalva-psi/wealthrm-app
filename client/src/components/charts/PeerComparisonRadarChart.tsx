@@ -48,16 +48,19 @@ const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ dat
     <div className="w-full">
       <ResponsiveContainer width="100%" height={300}>
         <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
-          <PolarGrid stroke="#f1f5f9" strokeOpacity={0.3} />
+          <PolarGrid 
+            stroke="hsl(var(--border))" 
+            strokeOpacity={0.3} 
+          />
           <PolarAngleAxis 
             dataKey="metric" 
-            tick={{ fontSize: 10, fill: '#64748b' }}
+            tick={{ fontSize: 10, fill: 'hsl(var(--foreground))' }}
             className="text-xs"
           />
           <PolarRadiusAxis 
             angle={90} 
             domain={[0, 100]} 
-            tick={{ fontSize: 9, fill: '#94a3b8' }}
+            tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
             tickCount={6}
           />
           <Radar
