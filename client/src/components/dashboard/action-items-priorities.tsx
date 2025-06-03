@@ -83,7 +83,7 @@ export function ActionItemsPriorities() {
       count: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress').length || 0,
       items: urgentComplaints?.filter(complaint => complaint.status === 'open' || complaint.status === 'in_progress') || [],
       icon: MessageSquare,
-      color: 'text-red-600 dark:text-red-400',
+      color: 'text-foreground',
       bgColor: 'bg-muted border-border',
       description: 'Unresolved client issues requiring attention'
     }

@@ -160,16 +160,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
 
   // Risk profile color coding
   const getRiskProfileColor = (riskProfile: string | null) => {
-    switch (riskProfile?.toLowerCase()) {
-      case 'conservative':
-        return 'text-green-600 dark:text-green-400';
-      case 'moderate':
-        return 'text-yellow-600 dark:text-yellow-400';
-      case 'aggressive':
-        return 'text-red-600 dark:text-red-400';
-      default:
-        return 'text-gray-600 dark:text-gray-400';
-    }
+    return 'text-foreground';
   };
 
   const getRiskProfileBg = (riskProfile: string | null) => {
@@ -221,13 +212,8 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
       alert.title?.toLowerCase().includes('complaint')
     );
     
-    // Red if ANY of these conditions are true
-    if (hasOverdueContact || hasMeetingToday || hasOverdueTasks || hasComplaints) {
-      return 'bg-destructive';
-    }
-    
-    // Green for healthy clients
-    return 'bg-accent';
+    // Use consistent background colors
+    return 'bg-muted';
   };
 
   const getClientHealthStatus = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
@@ -416,15 +402,11 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               title="View client communications"
             >
               <div className="text-xs text-muted-foreground mb-1 font-medium">Last Contact</div>
-              <div className={`text-sm font-medium ${
-                getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'text-destructive' 
-                  : 'text-foreground'
-              }`}>
+              <div className="text-sm font-medium text-foreground">
                 {formatRelativeDate(client.lastContactDate)}
               </div>
               {getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent && (
-                <div className="text-xs text-destructive mt-1 font-medium">
+                <div className="text-xs text-muted-foreground mt-1 font-medium">
                   {getContactUrgency(client.lastContactDate, client.id, appointments).message}
                 </div>
               )}
