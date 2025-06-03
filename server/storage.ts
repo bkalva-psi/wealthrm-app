@@ -1227,8 +1227,29 @@ export class DatabaseStorage implements IStorage {
 
   // Task methods
   async getTask(id: number): Promise<Task | undefined> {
+    // First check regular tasks table
     const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
-    return task || undefined;
+    if (task) {
+      return task;
+    }
+    
+    // If not found, check if it's a communication action item (these are also displayed as tasks)
+    const [actionItem] = await db.select({
+      id: communicationActionItems.id,
+      title: communicationActionItems.title,
+      description: communicationActionItems.description,
+      dueDate: communicationActionItems.dueDate,
+      completed: sql<boolean>`${communicationActionItems.completedAt} IS NOT NULL`,
+      clientId: communications.clientId,
+      prospectId: sql<number | null>`NULL`,
+      assignedTo: communicationActionItems.assignedTo,
+      createdAt: communicationActionItems.createdAt
+    })
+    .from(communicationActionItems)
+    .leftJoin(communications, eq(communicationActionItems.communicationId, communications.id))
+    .where(eq(communicationActionItems.id, id));
+    
+    return actionItem || undefined;
   }
 
   async getTasks(assignedTo?: number, completed?: boolean, clientId?: number): Promise<any[]> {
@@ -1309,11 +1330,48 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTask(id: number, taskUpdate: Partial<InsertTask>): Promise<Task | undefined> {
+    // First try to update in regular tasks table
     const [task] = await db.update(tasks)
       .set(taskUpdate)
       .where(eq(tasks.id, id))
       .returning();
-    return task || undefined;
+    
+    if (task) {
+      return task;
+    }
+    
+    // If not found, check if it's a communication action item and update accordingly
+    if (taskUpdate.completed !== undefined) {
+      const [actionItem] = await db.update(communicationActionItems)
+        .set({
+          completedAt: taskUpdate.completed ? new Date() : null,
+          status: taskUpdate.completed ? 'completed' : 'pending'
+        })
+        .where(eq(communicationActionItems.id, id))
+        .returning();
+      
+      if (actionItem) {
+        // Return the action item in task format
+        const [enrichedActionItem] = await db.select({
+          id: communicationActionItems.id,
+          title: communicationActionItems.title,
+          description: communicationActionItems.description,
+          dueDate: communicationActionItems.dueDate,
+          completed: sql<boolean>`${communicationActionItems.completedAt} IS NOT NULL`,
+          clientId: communications.clientId,
+          prospectId: sql<number | null>`NULL`,
+          assignedTo: communicationActionItems.assignedTo,
+          createdAt: communicationActionItems.createdAt
+        })
+        .from(communicationActionItems)
+        .leftJoin(communications, eq(communicationActionItems.communicationId, communications.id))
+        .where(eq(communicationActionItems.id, id));
+        
+        return enrichedActionItem || undefined;
+      }
+    }
+    
+    return undefined;
   }
 
   async deleteTask(id: number): Promise<boolean> {
