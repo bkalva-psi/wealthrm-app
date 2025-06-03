@@ -67,6 +67,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })
   );
   
+  // Authentication routes
+  app.post('/api/auth/login', async (req: Request, res: Response) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Validate credentials for Sravan
+      if (username === 'sravan.suggala@intellectdesign.com' && password === 'Welcome@01') {
+        // Set session
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = 'relationship_manager';
+        
+        // Return user data
+        const user = {
+          id: 1,
+          username: 'sravan.suggala@intellectdesign.com',
+          fullName: 'Sravan Suggala',
+          role: 'Relationship Manager',
+          email: 'sravan.suggala@intellectdesign.com',
+          jobTitle: 'Senior Relationship Manager',
+          avatarUrl: null,
+          phone: '+91 9876543210'
+        };
+        
+        res.json({ user, message: 'Login successful' });
+      } else {
+        res.status(401).json({ message: 'Invalid credentials' });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/auth/logout', (req: Request, res: Response) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).json({ message: 'Logout failed' });
+      }
+      res.clearCookie('connect.sid');
+      res.json({ message: 'Logout successful' });
+    });
+  });
+
+  app.get('/api/auth/me', (req: Request, res: Response) => {
+    if ((req.session as any).userId) {
+      const user = {
+        id: 1,
+        username: 'sravan.suggala@intellectdesign.com',
+        fullName: 'Sravan Suggala',
+        role: 'Relationship Manager',
+        email: 'sravan.suggala@intellectdesign.com',
+        jobTitle: 'Senior Relationship Manager',
+        avatarUrl: null,
+        phone: '+91 9876543210'
+      };
+      res.json({ user });
+    } else {
+      res.status(401).json({ message: 'Not authenticated' });
+    }
+  });
+
   // Test endpoint to verify routing works
   app.get('/api/test-products', (req: Request, res: Response) => {
     console.log('TEST ENDPOINT HIT!');
