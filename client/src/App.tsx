@@ -6,6 +6,7 @@ import { useAuth } from "@/context/auth-context";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { NavigationProvider } from "@/context/navigation-context";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PrivacyOverlay } from "@/components/PrivacyOverlay";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -337,6 +338,7 @@ function App() {
             <NavigationProvider>
               <Toaster />
               {user ? <AuthenticatedApp /> : <LoginPage />}
+              <PrivacyOverlay />
             </NavigationProvider>
           </AccessibilityProvider>
         </TooltipProvider>
