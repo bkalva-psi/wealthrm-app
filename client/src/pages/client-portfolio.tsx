@@ -357,7 +357,191 @@ function LocalPerformanceChart({ periods }: { periods: { label: string, value: n
   );
 }
 
-// Holdings table component
+// Sortable Holdings table component with show more/less functionality
+function SortableHoldingsTable({ 
+  holdings, 
+  sortBy, 
+  onSortChange, 
+  showAll, 
+  onToggleShowAll 
+}: { 
+  holdings: any[]; 
+  sortBy: string; 
+  onSortChange: (value: string) => void;
+  showAll: boolean;
+  onToggleShowAll: () => void;
+}) {
+  // Sort holdings based on selected option
+  const sortedHoldings = [...holdings].sort((a, b) => {
+    switch (sortBy) {
+      case 'value_desc':
+        return b.value - a.value;
+      case 'value_asc':
+        return a.value - b.value;
+      case 'name_asc':
+        return a.name.localeCompare(b.name);
+      case 'name_desc':
+        return b.name.localeCompare(a.name);
+      case 'type':
+        return a.type.localeCompare(b.type);
+      case 'gain_desc':
+        return b.gain - a.gain;
+      case 'gain_asc':
+        return a.gain - b.gain;
+      default:
+        return b.value - a.value;
+    }
+  });
+
+  // Show only top 5 holdings by default, or all if showAll is true
+  const displayedHoldings = showAll ? sortedHoldings : sortedHoldings.slice(0, 5);
+  const hasMoreHoldings = sortedHoldings.length > 5;
+
+  return (
+    <div>
+      {/* Sorting Controls */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Sort by:</span>
+          <Select value={sortBy} onValueChange={onSortChange}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="value_desc">Amount (Highest to Lowest)</SelectItem>
+              <SelectItem value="value_asc">Amount (Lowest to Highest)</SelectItem>
+              <SelectItem value="name_asc">Name (A-Z)</SelectItem>
+              <SelectItem value="name_desc">Name (Z-A)</SelectItem>
+              <SelectItem value="type">Product Type</SelectItem>
+              <SelectItem value="gain_desc">Gain (Highest to Lowest)</SelectItem>
+              <SelectItem value="gain_asc">Gain (Lowest to Highest)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Showing {displayedHoldings.length} of {sortedHoldings.length} holdings
+        </div>
+      </div>
+
+      {/* Table for desktop/tablet */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Security</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Value</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Allocation</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Current Gain</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">1Y Return</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Benchmark</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Benchmark Return</th>
+              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Alpha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedHoldings.map((holding, index) => (
+              <tr key={index} className="border-b border-border hover:bg-muted/50">
+                <td className="px-4 py-3 font-medium">{holding.name}</td>
+                <td className="px-4 py-3 text-muted-foreground">{holding.type}</td>
+                <td className="px-4 py-3 text-right font-medium">₹{(holding.value / 100000).toFixed(1)}L</td>
+                <td className="px-4 py-3 text-right">{holding.allocation}%</td>
+                <td className={`px-4 py-3 text-right font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {holding.gain > 0 ? '+' : ''}{holding.gain}%
+                </td>
+                <td className={`px-4 py-3 text-right font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">{holding.benchmark}</td>
+                <td className={`px-4 py-3 text-right ${holding.benchmarkReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
+                </td>
+                <td className={`px-4 py-3 text-right font-medium ${holding.alphaReturn > 0 ? 'text-green-600 dark:text-green-400' : holding.alphaReturn < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
+                  {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Cards for mobile */}
+      <div className="md:hidden space-y-3">
+        {displayedHoldings.map((holding, index) => (
+          <div key={index} className="p-3 rounded-lg border border-border bg-card">
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <div className="font-medium text-sm">{holding.name}</div>
+                <div className="text-xs text-muted-foreground">{holding.type}</div>
+              </div>
+              <div className="text-right">
+                <div className="font-medium text-sm">₹{(holding.value / 100000).toFixed(1)}L</div>
+                <div className="text-xs text-muted-foreground">{holding.allocation}% allocation</div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <div className="text-muted-foreground">Current Gain</div>
+                <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {holding.gain > 0 ? '+' : ''}{holding.gain}%
+                </div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">1Y Return</div>
+                <div className={`font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
+                </div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">Alpha</div>
+                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600' : holding.alphaReturn < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
+                  {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-2 pt-2 border-t border-border">
+              <div className="text-xs text-muted-foreground">Benchmark</div>
+              <div className="flex justify-between items-center">
+                <div className="font-medium text-sm">{holding.benchmark}</div>
+                <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Show More/Less Button */}
+      {hasMoreHoldings && (
+        <div className="mt-4 text-center">
+          <Button 
+            variant="outline" 
+            onClick={onToggleShowAll}
+            className="text-sm"
+          >
+            {showAll ? (
+              <>
+                Show Less
+                <ChevronUp className="h-4 w-4 ml-1" />
+              </>
+            ) : (
+              <>
+                Show More ({sortedHoldings.length - 5} more holdings)
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Legacy Holdings table component
 function HoldingsTable({ holdings }: { holdings: any[] }) {
   return (
     <div>
@@ -926,21 +1110,18 @@ export default function ClientPortfolioPage() {
           
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Top Holdings</CardTitle>
-              <CardDescription>Largest positions in the portfolio</CardDescription>
+              <CardTitle className="text-lg">Portfolio Holdings</CardTitle>
+              <CardDescription>All investments with sorting and filtering options</CardDescription>
             </CardHeader>
             <CardContent>
-              <HoldingsTable holdings={mockHoldings.slice(0, 5)} />
+              <SortableHoldingsTable 
+                holdings={mockHoldings}
+                sortBy={holdingsSortBy}
+                onSortChange={setHoldingsSortBy}
+                showAll={showAllHoldings}
+                onToggleShowAll={() => setShowAllHoldings(!showAllHoldings)}
+              />
             </CardContent>
-            <CardFooter className="pt-0">
-              <Button variant="link" className="ml-auto" onClick={() => {
-                  const element = document.querySelector('[data-value="holdings"]') as HTMLElement;
-                  if (element) element.click();
-                }}>
-                View All Holdings
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </CardFooter>
           </Card>
 
         </PortfolioSection>
