@@ -415,8 +415,8 @@
       --accent: 140 35% 28%; /* Accent green */
       --accent-foreground: 0 0% 95%; /* Off-white accent text */
       
-      --destructive: 0 70% 60%; /* Red for destructive actions */
-      --destructive-foreground: 0 0% 100%; /* White text on red */
+      --destructive: 0 80% 75%; /* Light red for better contrast on dark green */
+      --destructive-foreground: 140 60% 15%; /* Dark green text on light red background */
       --ring: 25 100% 65%; /* Orange ring color */
 }
   
