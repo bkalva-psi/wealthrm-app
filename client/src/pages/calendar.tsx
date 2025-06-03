@@ -238,11 +238,11 @@ export default function CalendarPage() {
                       <SelectValue placeholder="Select a client" />
                     </SelectTrigger>
                     <SelectContent>
-                      {clients?.map((client: any) => (
+                      {clients && Array.isArray(clients) ? clients.map((client: any) => (
                         <SelectItem key={client.id} value={client.id.toString()}>
                           {client.fullName}
                         </SelectItem>
-                      ))}
+                      )) : null}
                     </SelectContent>
                   </Select>
                 </div>

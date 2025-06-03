@@ -28,6 +28,11 @@ export default function LoginPage() {
       } catch (error) {
         console.error("Error loading saved credentials:", error);
       }
+    } else {
+      // Auto-populate for testing during development
+      setUsername("sravan.suggala@intellectdesign.com");
+      setPassword("Welcome@01");
+      setRememberMe(true);
     }
   }, []);
 
