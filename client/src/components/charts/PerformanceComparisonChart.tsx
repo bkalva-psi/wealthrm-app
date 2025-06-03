@@ -75,6 +75,33 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
     return null;
   };
 
+  // Custom Legend Component
+  const CustomLegend = () => (
+    <div className="flex flex-wrap items-center gap-4 text-xs mt-2 justify-start">
+      <div className="flex items-center gap-1">
+        <div 
+          className="w-3 h-3 rounded-full" 
+          style={{ backgroundColor: colors.portfolio }}
+        />
+        <span className="text-slate-600">Portfolio</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <div 
+          className="w-3 h-3 rounded-full" 
+          style={{ backgroundColor: colors.benchmark }}
+        />
+        <span className="text-slate-600">Benchmark</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <div 
+          className="w-3 h-3 rounded-full" 
+          style={{ backgroundColor: colors.positiveAlpha }}
+        />
+        <span className="text-slate-600">Alpha (Excess Return)</span>
+      </div>
+    </div>
+  );
+
   return (
     <div className="w-full h-full">
       <h3 className="text-sm font-medium text-slate-500 mb-3 text-left">{getChartTitle()}</h3>
@@ -103,16 +130,12 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
             tickLine={false}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend 
-            iconType="circle"
-            wrapperStyle={{ fontSize: 12, paddingTop: 10, textAlign: 'left' }}
-            align="left"
-          />
           <ReferenceLine x={0} stroke="#cbd5e1" />
           <Bar dataKey="Portfolio" fill={colors.portfolio} name="Portfolio" radius={[0, 2, 2, 0]} />
           <Bar dataKey="Benchmark" fill={colors.benchmark} name="Benchmark" radius={[0, 2, 2, 0]} />
           <Bar 
             dataKey="Alpha" 
+            fill={colors.positiveAlpha}
             name="Alpha (Excess Return)" 
             radius={[0, 2, 2, 0]}
           >
@@ -125,6 +148,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      <CustomLegend />
     </div>
   );
 };
