@@ -331,13 +331,13 @@ export function PerformanceCard() {
                             ) : (
                               <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
-                                  <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                  <div className="text-center p-3 bg-card/60 border border-border rounded-lg">
                                     <div className="text-xs text-muted-foreground mb-1">Earned</div>
                                     <div className="text-lg font-bold text-green-600">
                                       {formatCurrency((incentiveData as IncentiveData)?.earned || 0)}
                                     </div>
                                   </div>
-                                  <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                  <div className="text-center p-3 bg-card/60 border border-border rounded-lg">
                                     <div className="text-xs text-muted-foreground mb-1">Projected</div>
                                     <div className="text-lg font-bold text-blue-600">
                                       {formatCurrency((incentiveData as IncentiveData)?.projected || 0)}
@@ -345,7 +345,7 @@ export function PerformanceCard() {
                                   </div>
                                 </div>
                                 {(incentiveData as IncentiveData)?.breakdown && Object.entries((incentiveData as IncentiveData).breakdown).map(([category, amount]) => (
-                                  <div key={category} className="flex justify-between items-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                                  <div key={category} className="flex justify-between items-center p-3 bg-card/60 border border-border rounded-lg">
                                     <span className="text-sm text-muted-foreground capitalize">{category.replace(/([A-Z])/g, ' $1').trim()}</span>
                                     <div className="text-right">
                                       <div className="text-sm font-medium">{formatCurrency(amount as number)}</div>
