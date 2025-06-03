@@ -227,6 +227,7 @@ export default function CalendarPage() {
     
     let filtered = appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.startTime);
+      const today = startOfToday();
       
       const matchesSearch = searchQuery === '' || 
         appointment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -236,9 +237,12 @@ export default function CalendarPage() {
       const matchesType = filterType === 'all' || appointment.type === filterType;
       const matchesPriority = filterPriority === 'all' || appointment.priority === filterPriority;
       
-      // For day view, filter by selected date
+      // For list view, only show today and future appointments
       let matchesDate = true;
-      if (selectedView === 'day' && selectedDate) {
+      if (selectedView === 'list') {
+        matchesDate = appointmentDate >= startOfDay(today);
+      } else if (selectedView === 'day' && selectedDate) {
+        // For day view, filter by selected date (can show past dates when specifically selected)
         matchesDate = isSameDay(appointmentDate, selectedDate);
       }
       
