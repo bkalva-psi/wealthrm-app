@@ -447,17 +447,17 @@ function SortableHoldingsTable({
                 <td className="px-4 py-3 text-muted-foreground">{holding.type}</td>
                 <td className="px-4 py-3 text-right font-medium">₹{(holding.value / 100000).toFixed(1)}L</td>
                 <td className="px-4 py-3 text-right">{holding.allocation}%</td>
-                <td className={`px-4 py-3 text-right font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <td className={`px-4 py-3 text-right font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300'}`}>
                   {holding.gain > 0 ? '+' : ''}{holding.gain}%
                 </td>
-                <td className={`px-4 py-3 text-right font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <td className={`px-4 py-3 text-right font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300'}`}>
                   {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{holding.benchmark}</td>
-                <td className={`px-4 py-3 text-right ${holding.benchmarkReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <td className={`px-4 py-3 text-right ${holding.benchmarkReturn >= 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300'}`}>
                   {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
                 </td>
-                <td className={`px-4 py-3 text-right font-medium ${holding.alphaReturn > 0 ? 'text-green-600 dark:text-green-400' : holding.alphaReturn < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
+                <td className={`px-4 py-3 text-right font-medium ${holding.alphaReturn > 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : holding.alphaReturn < 0 ? 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300' : 'text-muted-foreground'}`}>
                   {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
                 </td>
               </tr>
@@ -484,19 +484,19 @@ function SortableHoldingsTable({
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
                 <div className="text-muted-foreground">Current Gain</div>
-                <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300'}`}>
                   {holding.gain > 0 ? '+' : ''}{holding.gain}%
                 </div>
               </div>
               <div>
                 <div className="text-muted-foreground">1Y Return</div>
-                <div className={`font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <div className={`font-medium ${holding.oneYearReturn >= 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300'}`}>
                   {holding.oneYearReturn > 0 ? '+' : ''}{holding.oneYearReturn}%
                 </div>
               </div>
               <div>
                 <div className="text-muted-foreground">Alpha</div>
-                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600 dark:text-green-400' : holding.alphaReturn < 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
+                <div className={`font-medium text-right ${holding.alphaReturn > 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : holding.alphaReturn < 0 ? 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300' : 'text-muted-foreground'}`}>
                   {holding.alphaReturn > 0 ? '+' : ''}{holding.alphaReturn}%
                 </div>
               </div>
@@ -506,7 +506,7 @@ function SortableHoldingsTable({
               <div className="text-xs text-muted-foreground">Benchmark</div>
               <div className="flex justify-between items-center">
                 <div className="font-medium text-sm">{holding.benchmark}</div>
-                <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <div className={`text-xs ${holding.benchmarkReturn >= 0 ? 'text-green-600 dark:text-green-400 ujjivan-theme:text-green-300' : 'text-red-600 dark:text-red-400 ujjivan-theme:text-red-300'}`}>
                   {holding.benchmarkReturn > 0 ? '+' : ''}{holding.benchmarkReturn}%
                 </div>
               </div>
