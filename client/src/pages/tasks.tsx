@@ -61,6 +61,13 @@ export default function Tasks() {
   // Fetch tasks
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["/api/tasks"],
+    onSuccess: (data) => {
+      console.log("=== TASKS DATA FROM API ===");
+      console.log("All tasks:", data);
+      console.log("Task IDs:", data?.map((t: any) => t.id));
+      console.log("Total tasks:", data?.length);
+      console.log("========================");
+    }
   });
 
   // Fetch clients data for name lookup
