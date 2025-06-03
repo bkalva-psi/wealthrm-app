@@ -405,27 +405,27 @@
 
 
 
-/* Ujjivan Brand Theme - Distinctive Teal with Excellent Readability */
+/* Ujjivan Brand Theme - Matching Logo's Deep Teal */
 .ujjivan-theme {
-      /* Distinctive light teal background that's clearly branded */
-      --background: 174 45% 92%; /* Light teal background #D4F2E9 - clearly teal but highly readable */
-      --foreground: 174 100% 12%; /* Very dark teal text for excellent contrast */
+      /* Deep teal background matching Ujjivan logo */
+      --background: 174 55% 85%; /* Deeper teal background #BEE9D7 - matches logo shade */
+      --foreground: 174 100% 10%; /* Very dark teal text for excellent contrast */
       
-      /* Muted areas with stronger teal presence */
-      --muted: 174 35% 88%; /* Medium teal-gray #C8EDE0 */
-      --muted-foreground: 174 50% 35%; /* Darker teal-gray for readable muted text */
+      /* Muted areas with rich teal presence */
+      --muted: 174 45% 80%; /* Rich teal-gray #A8E0C8 */
+      --muted-foreground: 174 60% 30%; /* Darker teal-gray for readable muted text */
       
-      /* Popover with lighter teal background */
-      --popover: 174 25% 96%; /* Light teal for popovers #F1FAF7 */
-      --popover-foreground: 174 100% 12%; /* Dark teal text */
+      /* Popover with medium teal background */
+      --popover: 174 35% 90%; /* Medium teal for popovers #D9F1E5 */
+      --popover-foreground: 174 100% 10%; /* Dark teal text */
       
-      /* Cards with noticeable teal tint */
-      --card: 174 30% 95%; /* Light teal cards #EDF8F4 */
-      --card-foreground: 174 100% 12%; /* Dark teal text */
+      /* Cards with distinctive teal presence */
+      --card: 174 40% 88%; /* Medium teal cards #CCE8D6 */
+      --card-foreground: 174 100% 10%; /* Dark teal text */
       
-      /* Visible teal borders */
-      --border: 174 40% 82%; /* Noticeable teal border #B8E6D3 */
-      --input: 174 20% 98%; /* Very light teal input backgrounds */
+      /* Strong teal borders */
+      --border: 174 50% 75%; /* Strong teal border #9BD8BC */
+      --input: 174 30% 92%; /* Light teal input backgrounds */
       
       /* Ujjivan Orange as primary accent */
       --primary: 25 100% 50%; /* Ujjivan Orange #FF8000 */
@@ -435,9 +435,9 @@
       --secondary: 174 100% 29%; /* Ujjivan Teal #007A5E */
       --secondary-foreground: 0 0% 100%; /* White text on teal */
       
-      /* Teal accent areas */
-      --accent: 174 35% 88%; /* Teal accent */
-      --accent-foreground: 174 100% 12%; /* Dark teal text */
+      /* Rich teal accent areas */
+      --accent: 174 45% 80%; /* Rich teal accent */
+      --accent-foreground: 174 100% 10%; /* Dark teal text */
       
       /* Status colors with good contrast */
       --destructive: 0 75% 55%; /* Red for errors */
