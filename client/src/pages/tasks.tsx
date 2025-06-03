@@ -204,12 +204,13 @@ export default function Tasks() {
   };
   
   return (
-    <div className="bg-background min-h-screen p-6 tasks-page-container" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
-      <div className="flex items-center justify-between mb-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
-        <div style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
-          <h1 className="text-2xl font-semibold text-foreground">Tasks</h1>
-        </div>
-        <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
+    <div className="bg-background min-h-screen p-4 sm:p-6 tasks-page-container overflow-x-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+      <div className="max-w-full mx-auto">
+        <div className="flex items-center justify-between mb-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+          <div style={{ backgroundColor: 'hsl(222, 84%, 5%)' }} className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Tasks</h1>
+          </div>
+          <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
           <DialogTrigger asChild>
             <Button size="icon" className="rounded-full">
               <Plus className="h-4 w-4" />
@@ -268,7 +269,7 @@ export default function Tasks() {
         </Dialog>
       </div>
       
-      <div className="space-y-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+        <div className="space-y-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
         {/* Tasks Card */}
         <Card className="!bg-card !border-border" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
           <CardHeader className="cursor-pointer !bg-card" onClick={() => setTasksCollapsed(!tasksCollapsed)} style={{ backgroundColor: 'var(--card)' }}>
@@ -470,6 +471,7 @@ export default function Tasks() {
             </CardContent>
           )}
         </Card>
+        </div>
       </div>
     </div>
   );
