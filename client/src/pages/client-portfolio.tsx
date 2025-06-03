@@ -776,9 +776,20 @@ export default function ClientPortfolioPage() {
   // Convert string AUM to numerical value for calculations if needed
   const getAumValue = (aumString?: string): number => {
     if (!aumString) return 0;
-    // Extract numerical value from formatted string (e.g., "₹11.20 L" -> 1120000)
-    const match = aumString.match(/₹([\d\.]+)\s*L/);
-    return match ? parseFloat(match[1]) * 100000 : 0;
+    
+    // Handle crores format (e.g., "₹2.93 Cr" -> 29300000)
+    const crMatch = aumString.match(/₹([\d\.]+)\s*Cr/);
+    if (crMatch) {
+      return parseFloat(crMatch[1]) * 10000000; // 1 Cr = 10,000,000
+    }
+    
+    // Handle lakhs format (e.g., "₹11.20 L" -> 1120000)
+    const lMatch = aumString.match(/₹([\d\.]+)\s*L/);
+    if (lMatch) {
+      return parseFloat(lMatch[1]) * 100000; // 1 L = 100,000
+    }
+    
+    return 0;
   };
   
   // Generate realistic AUM trend data based on current value and relationship start date
