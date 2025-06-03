@@ -395,7 +395,7 @@
       --background: 174 100% 29%; /* Rich teal background - #007A5E */
       --foreground: 0 0% 100%; /* White text for visibility */
       --muted: 174 100% 25%; /* Darker teal for muted areas */
-      --muted-foreground: 174 50% 85%; /* Light teal for muted text */
+      --muted-foreground: 0 0% 100%; /* White for better readability */
       --popover: 174 100% 29%;
       --popover-foreground: 0 0% 100%;
       --card: 174 100% 25%; /* Slightly darker teal cards */
@@ -403,8 +403,8 @@
       --border: 174 100% 35%; /* Lighter teal borders */
       --input: 174 100% 25%;
       
-      /* Orange as primary on teal background */
-      --primary: 25 100% 55%; /* Ujjivan Orange */
+      /* Bright orange for better visibility on teal */
+      --primary: 25 100% 65%; /* Brighter Ujjivan Orange for better contrast */
       --primary-foreground: 0 0% 100%;
       
       /* White as secondary */
@@ -417,7 +417,7 @@
       
       --destructive: 0 100% 75%;
       --destructive-foreground: 0 0% 100%;
-      --ring: 25 100% 55%;
+      --ring: 25 100% 65%;
 }
   
   .dark {
