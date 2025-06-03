@@ -211,11 +211,11 @@ export default function Tasks() {
             <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Tasks</h1>
           </div>
           <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="icon" className="rounded-full">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </DialogTrigger>
+            <DialogTrigger asChild>
+              <Button size="icon" className="rounded-full">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
           <DialogContent className="!bg-card !border-border">
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
