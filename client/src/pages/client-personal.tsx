@@ -723,14 +723,14 @@ export default function ClientPersonalPage() {
                   
                   <div>
                     <h3 className="font-medium mb-3">Identity Proof</h3>
-                    <div className="bg-slate-50 p-4 rounded-lg mb-4">
+                    <div className="bg-muted/30 p-4 rounded-lg mb-4">
                       <p className="text-sm text-muted-foreground">Document Type</p>
                       <p className="font-medium">{client.identityProofType || "Not available"}</p>
                       <p className="text-sm font-medium mt-2">{client.identityProofNumber || "Document number not available"}</p>
                     </div>
                     
                     <h3 className="font-medium mb-3">Address Proof</h3>
-                    <div className="bg-slate-50 p-4 rounded-lg">
+                    <div className="bg-muted/30 p-4 rounded-lg">
                       <p className="text-sm text-muted-foreground">Document Type</p>
                       <p className="font-medium">{client.addressProofType || "Not available"}</p>
                     </div>
@@ -741,7 +741,7 @@ export default function ClientPersonalPage() {
                 
                 <div>
                   <h3 className="font-medium mb-3">Tax Planning</h3>
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted/30 p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground">Tax Planning Preferences</p>
                     <p className="font-medium">{client.taxPlanningPreferences || "Not specified"}</p>
                   </div>
@@ -749,7 +749,7 @@ export default function ClientPersonalPage() {
                 
                 <div>
                   <h3 className="font-medium mb-3">Retirement Planning</h3>
-                  <div className="bg-slate-50 p-4 rounded-lg">
+                  <div className="bg-muted/30 p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground">Retirement Goals</p>
                     <p className="font-medium">{client.retirementGoals || "Not specified"}</p>
                   </div>
