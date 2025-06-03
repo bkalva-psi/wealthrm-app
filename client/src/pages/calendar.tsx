@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { format, startOfDay, endOfDay, isSameWeek, startOfToday } from 'date-fns';
-import { Calendar as CalendarIcon, Clock, Phone, Video, Users, Search, Plus } from 'lucide-react';
+import { format, startOfDay, endOfDay, isSameWeek, startOfToday, addMonths, subMonths, isSameDay, isToday, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
+import { Calendar as CalendarIcon, Clock, Phone, Video, Users, Search, Plus, ChevronLeft, ChevronRight, List, Calendar as CalendarViewIcon } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +34,9 @@ export default function CalendarPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('upcoming');
+  const [selectedView, setSelectedView] = useState<'list' | 'month' | 'day'>('list');
+  const [calendarDate, setCalendarDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isNewAppointmentDialogOpen, setIsNewAppointmentDialogOpen] = useState(false);
   const [newAppointment, setNewAppointment] = useState({
     title: '',
@@ -59,6 +62,54 @@ export default function CalendarPage() {
   const { data: appointments, isLoading } = useQuery<Appointment[]>({
     queryKey: ['/api/appointments'],
   });
+
+  // Helper functions
+  const nextMonth = () => {
+    if (selectedView === 'day' && selectedDate) {
+      setSelectedDate(addMonths(selectedDate, 1));
+    } else {
+      setCalendarDate(addMonths(calendarDate, 1));
+    }
+  };
+  
+  const prevMonth = () => {
+    if (selectedView === 'day' && selectedDate) {
+      setSelectedDate(subMonths(selectedDate, 1));
+    } else {
+      setCalendarDate(subMonths(calendarDate, 1));
+    }
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return format(date, 'h:mm a');
+  };
+
+  const getAppointmentTypeColor = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'meeting':
+        return 'border-blue-500 bg-blue-50 dark:bg-blue-950/30';
+      case 'call':
+        return 'border-green-500 bg-green-50 dark:bg-green-950/30';
+      case 'video_call':
+        return 'border-purple-500 bg-purple-50 dark:bg-purple-950/30';
+      default:
+        return 'border-slate-500 bg-muted';
+    }
+  };
+
+  const getAppointmentTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'meeting':
+        return <Users className="h-4 w-4" />;
+      case 'call':
+        return <Phone className="h-4 w-4" />;
+      case 'video_call':
+        return <Video className="h-4 w-4" />;
+      default:
+        return <CalendarIcon className="h-4 w-4" />;
+    }
+  };
 
   // Fetch clients for dropdown
   const { data: clients } = useQuery({
@@ -171,11 +222,11 @@ export default function CalendarPage() {
     }
   };
 
-  // Filter appointments
+  // Filter and sort appointments
   const filteredAppointments = React.useMemo(() => {
     if (!appointments) return [];
     
-    return appointments.filter((appointment) => {
+    let filtered = appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.startTime);
       const today = startOfToday();
       
@@ -196,9 +247,21 @@ export default function CalendarPage() {
         matchesDate = appointmentDate >= startOfDay(today);
       }
       
+      // For day view, filter by selected date
+      if (selectedView === 'day' && selectedDate) {
+        matchesDate = isSameDay(appointmentDate, selectedDate);
+      }
+      
       return matchesSearch && matchesType && matchesPriority && matchesDate;
     });
-  }, [appointments, searchQuery, filterType, filterPriority, dateFilter]);
+
+    // Sort by date and time
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.startTime);
+      const dateB = new Date(b.startTime);
+      return dateA.getTime() - dateB.getTime();
+    });
+  }, [appointments, searchQuery, filterType, filterPriority, dateFilter, selectedView, selectedDate]);
 
   if (isLoading) {
     return (
@@ -220,7 +283,44 @@ export default function CalendarPage() {
       {/* Enhanced Header */}
       <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border/50 px-6 py-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
+            
+            {/* View Toggle */}
+            <div className="flex items-center bg-muted rounded-lg p-1">
+              <Button
+                variant={selectedView === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setSelectedView('list')}
+                className="h-8 px-3"
+              >
+                <List className="h-4 w-4 mr-1" />
+                List
+              </Button>
+              <Button
+                variant={selectedView === 'day' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => {
+                  setSelectedView('day');
+                  if (!selectedDate) setSelectedDate(new Date());
+                }}
+                className="h-8 px-3"
+              >
+                <Clock className="h-4 w-4 mr-1" />
+                Day
+              </Button>
+              <Button
+                variant={selectedView === 'month' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setSelectedView('month')}
+                className="h-8 px-3"
+              >
+                <CalendarViewIcon className="h-4 w-4 mr-1" />
+                Month
+              </Button>
+            </div>
+          </div>
+          
           <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
             <DialogTrigger asChild>
               <Button 
@@ -441,57 +541,220 @@ export default function CalendarPage() {
       </div>
 
       <div className="p-6">
-        <div className="space-y-4">
-          {filteredAppointments.length > 0 ? (
-            filteredAppointments.map((appointment) => (
-              <Card key={appointment.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {getAppointmentIcon(appointment.type)}
-                        <h3 className="text-lg font-medium text-foreground">{appointment.title}</h3>
-                        <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
-                          {appointment.priority}
-                        </Badge>
-                      </div>
-                      
-                      {appointment.description && (
-                        <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
-                      )}
-                      
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {format(new Date(appointment.startTime), 'MMM dd, yyyy • h:mm a')}
+        {/* Date Navigation for Day and Month Views */}
+        {(selectedView === 'day' || selectedView === 'month') && (
+          <div className="flex items-center justify-between mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={prevMonth}
+              className="flex items-center gap-2"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {selectedView === 'day' ? 'Previous Day' : 'Previous Month'}
+            </Button>
+            
+            <h2 className="text-lg font-semibold">
+              {selectedView === 'day' && selectedDate
+                ? format(selectedDate, 'EEEE, MMMM d, yyyy')
+                : format(calendarDate, 'MMMM yyyy')
+              }
+            </h2>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={nextMonth}
+              className="flex items-center gap-2"
+            >
+              {selectedView === 'day' ? 'Next Day' : 'Next Month'}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* List View */}
+        {selectedView === 'list' && (
+          <div className="space-y-4">
+            {filteredAppointments.length > 0 ? (
+              filteredAppointments.map((appointment) => (
+                <Card key={appointment.id} className={`border-l-4 ${getAppointmentTypeColor(appointment.type)}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          {getAppointmentTypeIcon(appointment.type)}
+                          <h3 className="text-lg font-medium text-foreground">{appointment.title}</h3>
+                          <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
+                            {appointment.priority}
+                          </Badge>
                         </div>
                         
-                        {appointment.clientName && (
+                        {appointment.description && (
+                          <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
+                        )}
+                        
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {appointment.clientName}
+                            <CalendarIcon className="h-3 w-3" />
+                            <span>{format(new Date(appointment.startTime), 'MMM d, yyyy')}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
+                          </div>
+                          {appointment.clientName && (
+                            <div className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              <span>{appointment.clientName}</span>
+                            </div>
+                          )}
+                          {appointment.location && (
+                            <div className="flex items-center gap-1">
+                              <span>📍 {appointment.location}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No appointments found</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {searchQuery || filterType !== 'all' || filterPriority !== 'all' || dateFilter !== 'upcoming'
+                      ? 'Try adjusting your filters to see more appointments.'
+                      : 'You have no upcoming appointments. Create a new one to get started.'
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Day View */}
+        {selectedView === 'day' && (
+          <div className="space-y-4">
+            <div className="grid gap-4">
+              {selectedDate && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
+                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {filteredAppointments.length > 0 ? (
+                      <div className="space-y-3">
+                        {filteredAppointments.map((appointment) => (
+                          <div
+                            key={appointment.id}
+                            className={`p-3 rounded-lg border-l-4 ${getAppointmentTypeColor(appointment.type)}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                {getAppointmentTypeIcon(appointment.type)}
+                                <h4 className="font-medium">{appointment.title}</h4>
+                                <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
+                                  {appointment.priority}
+                                </Badge>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+                              </div>
+                            </div>
+                            {appointment.description && (
+                              <p className="text-sm text-muted-foreground mt-1">{appointment.description}</p>
+                            )}
+                            {appointment.clientName && (
+                              <p className="text-sm text-muted-foreground mt-1">Client: {appointment.clientName}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <CalendarIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No appointments scheduled for this day</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Month View */}
+        {selectedView === 'month' && (
+          <div className="space-y-4">
+            <Card>
+              <CardContent className="p-6">
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-1 mb-4">
+                  {/* Day Headers */}
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                    <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
+                      {day}
+                    </div>
+                  ))}
+                  
+                  {/* Calendar Days */}
+                  {eachDayOfInterval({
+                    start: startOfWeek(startOfMonth(calendarDate)),
+                    end: endOfWeek(endOfMonth(calendarDate))
+                  }).map((day) => {
+                    const dayAppointments = appointments?.filter(apt => 
+                      isSameDay(new Date(apt.startTime), day)
+                    ) || [];
+                    
+                    return (
+                      <div
+                        key={day.toISOString()}
+                        className={`
+                          p-2 min-h-[80px] border rounded-lg cursor-pointer transition-colors
+                          ${isSameDay(day, calendarDate) ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'}
+                          ${isToday(day) ? 'bg-accent border-accent-foreground' : ''}
+                        `}
+                        onClick={() => {
+                          setSelectedDate(day);
+                          setSelectedView('day');
+                        }}
+                      >
+                        <div className={`text-sm ${isSameDay(day, calendarDate) ? 'font-semibold' : ''}`}>
+                          {format(day, 'd')}
+                        </div>
+                        {dayAppointments.length > 0 && (
+                          <div className="mt-1 space-y-1">
+                            {dayAppointments.slice(0, 2).map((apt) => (
+                              <div
+                                key={apt.id}
+                                className={`text-xs p-1 rounded truncate ${getAppointmentTypeColor(apt.type)}`}
+                              >
+                                {apt.title}
+                              </div>
+                            ))}
+                            {dayAppointments.length > 2 && (
+                              <div className="text-xs text-muted-foreground">
+                                +{dayAppointments.length - 2} more
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">No appointments found</h3>
-                <p className="text-muted-foreground">
-                  {searchQuery || filterType !== 'all' || filterPriority !== 'all' || dateFilter !== 'all'
-                    ? "No appointments match your current filters."
-                    : "No appointments scheduled."}
-                </p>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
