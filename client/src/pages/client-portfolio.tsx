@@ -540,16 +540,34 @@ export default function ClientPortfolioPage() {
   // Handle hash navigation to specific sections
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash.includes('#action-items')) {
+    if (hash.includes('action-items')) {
       // Wait for component to render then scroll to Action Items section
       setTimeout(() => {
         const actionItemsSection = document.querySelector('[data-section="action-items"]');
         if (actionItemsSection) {
           actionItemsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 500);
+      }, 1000);
     }
   }, [clientId]);
+
+  // Listen for hash changes while on this page
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash.includes('action-items')) {
+        setTimeout(() => {
+          const actionItemsSection = document.querySelector('[data-section="action-items"]');
+          if (actionItemsSection) {
+            actionItemsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 500);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
   
   // Fetch client data
   const { data: client, isLoading } = useQuery({
