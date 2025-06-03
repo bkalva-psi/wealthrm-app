@@ -79,7 +79,7 @@ export default function ClientPersonalPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <div className="p-6">
           <Skeleton className="h-32 w-full mb-6" />
           <Skeleton className="h-8 w-64 mb-4" />
@@ -95,7 +95,7 @@ export default function ClientPersonalPage() {
 
   if (error || !client) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <div className="p-6">
           <div className="text-center py-8 text-muted-foreground">
             <p>Could not load client information.</p>
@@ -106,7 +106,7 @@ export default function ClientPersonalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Client Header */}
       <div className={`bg-card border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-sm border-l-4 ${getTierColor(client.tier).border.replace('border-', 'border-l-')}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
@@ -123,7 +123,7 @@ export default function ClientPersonalPage() {
             <div className="min-w-0 flex-1">
               <button 
                 onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                className="text-left truncate hover:text-blue-600 transition-colors"
+                className="text-left truncate hover:text-primary transition-colors"
               >
                 <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">
                   {client.fullName}
@@ -140,7 +140,7 @@ export default function ClientPersonalPage() {
                 <div className="mt-1">
                   <a 
                     href={`tel:${client.phone}`}
-                    className="text-sm text-muted-foreground dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center"
                   >
                     <Phone className="h-3 w-3 mr-1" />
                     {client.phone}
@@ -152,7 +152,7 @@ export default function ClientPersonalPage() {
                 <div className="mt-1">
                   <a 
                     href={`mailto:${client.email}`}
-                    className="text-sm text-muted-foreground dark:text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center"
                   >
                     <Mail className="h-3 w-3 mr-1" />
                     {client.email}
