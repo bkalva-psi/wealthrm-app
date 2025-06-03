@@ -102,6 +102,24 @@ export default function Tasks() {
   const toggleTaskMutation = useMutation({
     mutationFn: ({ taskId, completed }: { taskId: number; completed: boolean }) =>
       apiRequest("PATCH", `/api/tasks/${taskId}`, { completed }),
+    onMutate: async ({ taskId, completed }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["/api/tasks"] });
+      
+      // Snapshot the previous value
+      const previousTasks = queryClient.getQueryData(["/api/tasks"]);
+      
+      // Optimistically update to the new value
+      queryClient.setQueryData(["/api/tasks"], (old: any) => {
+        if (!old) return old;
+        return old.map((task: any) => 
+          task.id === taskId ? { ...task, completed } : task
+        );
+      });
+      
+      // Return a context object with the snapshotted value
+      return { previousTasks };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       toast({
@@ -109,7 +127,11 @@ export default function Tasks() {
         description: "Task updated successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousTasks) {
+        queryClient.setQueryData(["/api/tasks"], context.previousTasks);
+      }
       toast({
         title: "Error",
         description: error.message || "Failed to update task",
