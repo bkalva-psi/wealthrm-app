@@ -63,6 +63,11 @@ export default function Tasks() {
     queryKey: ["/api/tasks"],
   });
 
+  // Fetch clients data for name lookup
+  const { data: clients } = useQuery({
+    queryKey: ["/api/clients"],
+  });
+
   // Fetch portfolio alerts
   const { data: portfolioAlerts, isLoading: alertsLoading } = useQuery({
     queryKey: ["/api/portfolio-alerts"],
@@ -159,6 +164,13 @@ export default function Tasks() {
     } else {
       return { text: `Due ${format(due, "MMM d")}`, color: "text-blue-600" };
     }
+  };
+
+  // Helper function to get client name by ID
+  const getClientName = (clientId?: number) => {
+    if (!clientId || !clients) return null;
+    const client = (clients as any[]).find((c: any) => c.id === clientId);
+    return client?.fullName || null;
   };
 
   useEffect(() => {
@@ -362,7 +374,11 @@ export default function Tasks() {
                                     <div className="mb-3">
                                       <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Related To</h4>
                                       <p className="text-sm text-foreground">
-                                        {task.clientId ? `Client ID: ${task.clientId}` : `Prospect ID: ${task.prospectId}`}
+                                        {task.clientId ? (
+                                          getClientName(task.clientId) ? 
+                                            `Client: ${getClientName(task.clientId)}` : 
+                                            `Client ID: ${task.clientId}`
+                                        ) : `Prospect ID: ${task.prospectId}`}
                                       </p>
                                     </div>
                                   )}
