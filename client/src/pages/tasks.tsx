@@ -321,14 +321,16 @@ export default function Tasks() {
               ) : (
                 <div className="space-y-4 bg-card w-full">
                   {(() => {
-                    const filteredTasks = (tasks as Task[] || [])
-                      .filter(task => !task.completed)
+                    const allTasks = (tasks as Task[] || [])
                       .filter(task => 
                         searchQuery === "" || 
                         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )
-                      .slice(0, tasksVisibleCount);
+                      );
+                    
+                    const pendingTasks = allTasks.filter(task => !task.completed).slice(0, tasksVisibleCount);
+                    const completedTasks = allTasks.filter(task => task.completed).slice(0, 3); // Show max 3 completed
+                    const filteredTasks = [...pendingTasks, ...completedTasks];
                     
                     return filteredTasks.length > 0 ? (
                       <>
