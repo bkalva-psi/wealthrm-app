@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ChevronUp, TrendingUp, Users, DollarSign, Target, ExpandIcon, ShrinkIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, Users, IndianRupee, Target, ExpandIcon, ShrinkIcon } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 interface BusinessMetrics {
