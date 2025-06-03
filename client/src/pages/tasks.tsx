@@ -282,11 +282,8 @@ export default function Tasks() {
                 {tasksCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
               </Button>
             </div>
-          </CardHeader>
-          
-          {!tasksCollapsed && (
-            <CardContent className="!bg-card w-full overflow-hidden" style={{ backgroundColor: 'var(--card)' }}>
-              <div className="mb-4 w-full" style={{ backgroundColor: 'var(--card)' }}>
+            {!tasksCollapsed && (
+              <div className="mt-4 w-full" style={{ backgroundColor: 'var(--card)' }}>
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -298,6 +295,11 @@ export default function Tasks() {
                   />
                 </div>
               </div>
+            )}
+          </CardHeader>
+          
+          {!tasksCollapsed && (
+            <CardContent className="!bg-card w-full overflow-hidden pt-0" style={{ backgroundColor: 'var(--card)' }}>
               
               {isLoading ? (
                 <div className="space-y-4 bg-card">
