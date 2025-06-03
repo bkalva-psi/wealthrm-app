@@ -947,20 +947,20 @@ export default function ClientPortfolioPage() {
                 {/* AUM */}
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-1">AUM</div>
-                  <div className="text-lg font-semibold">₹{(aumValue / 100000).toFixed(1)}L</div>
+                  <div className="text-lg font-semibold">₹{Math.round(aumValue / 100000)} L</div>
                 </div>
                 
                 {/* Investment */}
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-1">Investment</div>
-                  <div className="text-lg font-semibold">₹{((aumValue * 0.85) / 100000).toFixed(1)}L</div>
+                  <div className="text-lg font-semibold">₹{Math.round((aumValue * 0.85) / 100000)} L</div>
                 </div>
                 
                 {/* Unrealized Gain */}
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-1">Unrealized Gain</div>
                   <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    ₹{((aumValue * 0.15) / 100000).toFixed(1)}L
+                    ₹{Math.round((aumValue * 0.15) / 100000)} L
                     <span className="text-xs ml-1">↗ 19.05%</span>
                   </div>
                 </div>
