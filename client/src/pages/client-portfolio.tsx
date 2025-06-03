@@ -652,7 +652,7 @@ export default function ClientPortfolioPage() {
                   {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
@@ -663,7 +663,7 @@ export default function ClientPortfolioPage() {
                       <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                         title="Call client"
                       >
                         {client.phone}
@@ -677,7 +677,7 @@ export default function ClientPortfolioPage() {
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                         title="Send email to client"
                       >
                         {client.email}
@@ -798,7 +798,7 @@ export default function ClientPortfolioPage() {
                 
                 {/* Unrealized Gain */}
                 <div className="text-center">
-                  <div className="text-sm text-gray-500 mb-1">Unrealized Gain</div>
+                  <div className="text-sm text-muted-foreground mb-1">Unrealized Gain</div>
                   <div className="text-lg font-semibold text-emerald-600">
                     ₹{((aumValue * 0.15) / 100000).toFixed(1)}L
                     <span className="text-xs ml-1">↗ 19.05%</span>
@@ -807,7 +807,7 @@ export default function ClientPortfolioPage() {
                 
                 {/* XIRR */}
                 <div className="text-center">
-                  <div className="text-sm text-gray-500 mb-1">XIRR</div>
+                  <div className="text-sm text-muted-foreground mb-1">XIRR</div>
                   <div className="text-lg font-semibold">{client?.performance?.xirr || 12.5}%</div>
                 </div>
               </div>
