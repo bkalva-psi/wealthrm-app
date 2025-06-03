@@ -269,9 +269,9 @@ export default function Tasks() {
         </Dialog>
       </div>
       
-        <div className="space-y-6" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
+        <div className="space-y-6 w-full overflow-hidden" style={{ backgroundColor: 'hsl(222, 84%, 5%)' }}>
         {/* Tasks Card */}
-        <Card className="!bg-card !border-border" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+        <Card className="!bg-card !border-border w-full" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
           <CardHeader className="cursor-pointer !bg-card" onClick={() => setTasksCollapsed(!tasksCollapsed)} style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -285,15 +285,15 @@ export default function Tasks() {
           </CardHeader>
           
           {!tasksCollapsed && (
-            <CardContent className="!bg-card" style={{ backgroundColor: 'var(--card)' }}>
-              <div className="mb-4" style={{ backgroundColor: 'var(--card)' }}>
-                <div className="relative">
+            <CardContent className="!bg-card w-full overflow-hidden" style={{ backgroundColor: 'var(--card)' }}>
+              <div className="mb-4 w-full" style={{ backgroundColor: 'var(--card)' }}>
+                <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search tasks..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 !bg-background !border-input !text-foreground"
+                    className="pl-10 !bg-background !border-input !text-foreground w-full"
                     style={{ backgroundColor: 'var(--background)', borderColor: 'var(--input)', color: 'var(--foreground)' }}
                   />
                 </div>
@@ -312,7 +312,7 @@ export default function Tasks() {
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4 bg-card">
+                <div className="space-y-4 bg-card w-full">
                   {(() => {
                     const filteredTasks = (tasks as Task[] || [])
                       .filter(task => !task.completed)
@@ -329,7 +329,7 @@ export default function Tasks() {
                           const dueStatus = getDueStatus(task.dueDate);
                           
                           return (
-                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50 cursor-pointer !bg-card">
+                            <div key={task.id} className="flex items-start space-x-3 p-3 border border-border rounded-md hover:bg-muted/50 cursor-pointer !bg-card w-full min-w-0">
                               <Checkbox
                                 id={`task-${task.id}`}
                                 checked={task.completed}
