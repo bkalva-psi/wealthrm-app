@@ -401,7 +401,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             <div 
               className="text-center p-3 bg-card/60 rounded-lg cursor-pointer hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20"
               onClick={(e) => handleSectionClick(e, 'communications')}
-              title="View client communications"
+              title="View client appointments"
             >
               <div className="text-xs text-muted-foreground mb-1 font-medium">Last Contact</div>
               <div className="text-sm font-medium text-foreground">
@@ -414,23 +414,9 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               )}
             </div>
             
-            {/* Risk Profile with visual indicator */}
-            <div className="text-center p-3 bg-card/60 rounded-lg hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
-              <div className="text-xs text-muted-foreground mb-1 font-medium">Risk Profile</div>
-              <div className={`text-sm font-medium ${getRiskProfileColor(client.riskProfile)}`}>
-                {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
-              </div>
-              <div className={`h-1.5 w-full rounded-full mt-2 ${getRiskProfileBg(client.riskProfile)} shadow-sm`}></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Secondary Metrics Section */}
-        <div className="p-4 bg-gradient-to-r from-slate-50/30 to-transparent dark:from-slate-900/20 border-b border-border/30">
-          <div className="grid grid-cols-2 gap-3">
-            {/* Last Transaction */}
+            {/* Last Transaction - moved to top row */}
             <div 
-              className="p-3 bg-card/60 rounded-lg cursor-pointer hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
+              className="text-center p-3 bg-card/60 rounded-lg cursor-pointer hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
               onClick={(e) => handleSectionClick(e, 'transactions')}
               title="View client transactions"
             >
@@ -438,6 +424,20 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               <div className="text-sm font-medium text-foreground">
                 {getDaysSinceTransaction(client.lastTransactionDate)}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Secondary Metrics Section */}
+        <div className="p-4 bg-gradient-to-r from-slate-50/30 to-transparent dark:from-slate-900/20 border-b border-border/30">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Risk Profile with visual indicator - moved to bottom row */}
+            <div className="p-3 bg-card/60 rounded-lg hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
+              <div className="text-xs text-muted-foreground mb-1 font-medium">Risk Profile</div>
+              <div className={`text-sm font-medium ${getRiskProfileColor(client.riskProfile)}`}>
+                {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
+              </div>
+              <div className={`h-1.5 w-full rounded-full mt-2 ${getRiskProfileBg(client.riskProfile)} shadow-sm`}></div>
             </div>
             
             {/* Client Status/Health Indicator */}
@@ -621,6 +621,12 @@ export default function Clients() {
   const handleClientClick = (clientId: number, section?: string) => {
     if (section === 'actions') {
       window.location.hash = `/clients/${clientId}/portfolio#action-items`;
+    } else if (section === 'portfolio') {
+      window.location.hash = `/clients/${clientId}/portfolio`;
+    } else if (section === 'communications') {
+      window.location.hash = `/clients/${clientId}/appointments`;
+    } else if (section === 'transactions') {
+      window.location.hash = `/clients/${clientId}/transactions`;
     } else {
       window.location.hash = `/clients/${clientId}`;
     }
