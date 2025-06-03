@@ -298,6 +298,7 @@ function AuthenticatedApp() {
 
 function App() {
   const { user, isLoading } = useAuth();
+  const currentRoute = useHashRouter();
 
   if (isLoading) {
     return (
@@ -308,6 +309,18 @@ function App() {
         </div>
       </div>
     );
+  }
+
+  // If not authenticated and not on login page, redirect to login
+  if (!user && currentRoute !== '/login') {
+    window.location.hash = '/login';
+    return null;
+  }
+
+  // If authenticated and on login page, redirect to dashboard
+  if (user && currentRoute === '/login') {
+    window.location.hash = '/';
+    return null;
   }
 
   return (
