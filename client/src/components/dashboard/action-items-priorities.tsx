@@ -152,7 +152,7 @@ export function ActionItemsPriorities() {
                             <IconComponent size={18} />
                           </div>
                           <div className="text-left">
-                            <h3 className="font-semibold text-sm text-muted-foreground leading-tight">{category.title}</h3>
+                            <h3 className="font-semibold text-sm text-foreground leading-tight">{category.title}</h3>
                             <p className="text-xl font-bold text-foreground leading-tight tracking-tight">
                               {category.count}
                             </p>

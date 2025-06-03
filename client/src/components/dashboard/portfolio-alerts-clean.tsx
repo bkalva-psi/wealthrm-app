@@ -100,7 +100,7 @@ export function PortfolioAlertsClean() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-1 text-xs text-slate-500 ml-2">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground ml-2">
                       <Clock className="h-3 w-3" />
                       <span>{format(new Date(alert.createdAt), 'MMM d')}</span>
                     </div>

@@ -16,21 +16,21 @@ function MetricCard({ title, value, change, changeType, icon, priority = 'medium
   return (
     <Card className={cn(
       "relative overflow-hidden transition-all duration-200 hover:shadow-md",
-      priority === 'high' && "ring-2 ring-blue-200 bg-blue-50/30",
-      priority === 'medium' && "border-gray-200",
-      priority === 'low' && "border-gray-100"
+      priority === 'high' && "ring-2 ring-primary/20 bg-primary/5",
+      priority === 'medium' && "border-border",
+      priority === 'low' && "border-border/50"
     )}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-            <p className="text-2xl font-bold text-gray-900 mb-1">{value}</p>
+            <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
+            <p className="text-2xl font-bold text-foreground mb-1">{value}</p>
             {change && (
               <div className={cn(
                 "flex items-center text-sm font-medium",
-                changeType === 'positive' && "text-green-600",
-                changeType === 'negative' && "text-red-600",
-                changeType === 'neutral' && "text-gray-600"
+                changeType === 'positive' && "text-green-600 dark:text-green-400",
+                changeType === 'negative' && "text-red-600 dark:text-red-400",
+                changeType === 'neutral' && "text-muted-foreground"
               )}>
                 {changeType === 'positive' && <TrendingUp className="h-3 w-3 mr-1" />}
                 {changeType === 'negative' && <TrendingDown className="h-3 w-3 mr-1" />}
@@ -40,9 +40,9 @@ function MetricCard({ title, value, change, changeType, icon, priority = 'medium
           </div>
           <div className={cn(
             "p-3 rounded-full",
-            priority === 'high' && "bg-blue-100 text-blue-600",
-            priority === 'medium' && "bg-gray-100 text-gray-600",
-            priority === 'low' && "bg-gray-50 text-gray-500"
+            priority === 'high' && "bg-primary/10 text-primary",
+            priority === 'medium' && "bg-muted text-muted-foreground",
+            priority === 'low' && "bg-muted/50 text-muted-foreground"
           )}>
             {icon}
           </div>
