@@ -33,7 +33,7 @@ export default function CalendarPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('upcoming');
   const [isNewAppointmentDialogOpen, setIsNewAppointmentDialogOpen] = useState(false);
   const [newAppointment, setNewAppointment] = useState({
     title: '',
@@ -97,6 +97,26 @@ export default function CalendarPage() {
       });
     },
   });
+
+  // Auto-populate end time when start time changes
+  const handleStartTimeChange = (startTime: string) => {
+    setNewAppointment(prev => {
+      const newState = { ...prev, startTime };
+      
+      // Auto-populate end time (1 hour after start time)
+      if (startTime && !prev.endTime) {
+        const [hours, minutes] = startTime.split(':');
+        const startDate = new Date();
+        startDate.setHours(parseInt(hours), parseInt(minutes));
+        startDate.setHours(startDate.getHours() + 1);
+        
+        const endTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+        newState.endTime = endTime;
+      }
+      
+      return newState;
+    });
+  };
 
   const handleCreateAppointment = () => {
     if (!newAppointment.title || !newAppointment.clientId || !newAppointment.date || !newAppointment.startTime || !newAppointment.endTime) {
@@ -172,6 +192,8 @@ export default function CalendarPage() {
         matchesDate = appointmentDate >= startOfDay(today) && appointmentDate <= endOfDay(today);
       } else if (dateFilter === 'week') {
         matchesDate = isSameWeek(appointmentDate, today, { weekStartsOn: 0 });
+      } else if (dateFilter === 'upcoming') {
+        matchesDate = appointmentDate >= startOfDay(today);
       }
       
       return matchesSearch && matchesType && matchesPriority && matchesDate;
@@ -201,9 +223,8 @@ export default function CalendarPage() {
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
           <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
+              <Button size="sm" className="h-8 w-8 p-0">
                 <Plus className="h-4 w-4" />
-                New Appointment
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
@@ -255,7 +276,7 @@ export default function CalendarPage() {
                     type="date"
                     value={newAppointment.date}
                     onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
-                    className="col-span-3"
+                    className="col-span-3 [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -266,8 +287,8 @@ export default function CalendarPage() {
                     id="startTime"
                     type="time"
                     value={newAppointment.startTime}
-                    onChange={(e) => setNewAppointment({ ...newAppointment, startTime: e.target.value })}
-                    className="col-span-3"
+                    onChange={(e) => handleStartTimeChange(e.target.value)}
+                    className="col-span-3 [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -279,7 +300,7 @@ export default function CalendarPage() {
                     type="time"
                     value={newAppointment.endTime}
                     onChange={(e) => setNewAppointment({ ...newAppointment, endTime: e.target.value })}
-                    className="col-span-3"
+                    className="col-span-3 [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -409,6 +430,7 @@ export default function CalendarPage() {
             <SelectContent>
               <SelectItem value="all">All Dates</SelectItem>
               <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="upcoming">Upcoming</SelectItem>
               <SelectItem value="week">This Week</SelectItem>
             </SelectContent>
           </Select>
