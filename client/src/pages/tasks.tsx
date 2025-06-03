@@ -219,7 +219,8 @@ export default function Tasks() {
           <DialogTrigger asChild>
             <Button 
               size="icon" 
-              className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600 rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-blue-500/50"
+              className="!bg-blue-600 hover:!bg-blue-700 !text-white dark:!bg-blue-500 dark:hover:!bg-blue-600 rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-blue-500/50"
+              style={{ backgroundColor: '#2563eb', color: '#ffffff' }}
             >
               <Plus className="h-4 w-4" />
             </Button>
