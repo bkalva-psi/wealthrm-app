@@ -8,7 +8,7 @@ import {
   BarChart3, 
   CalendarDays, 
   Clock, 
-  DollarSign, 
+  IndianRupee, 
   Percent, 
   AlertTriangle,
   Shield,
@@ -778,7 +778,7 @@ export default function ClientPortfolioPage() {
         {/* Summary Section */}
         <PortfolioSection
           title="Summary"
-          icon={<DollarSign className="h-5 w-5" />}
+          icon={<IndianRupee className="h-5 w-5" />}
           defaultOpen={true}
         >
           <Card>
