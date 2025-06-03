@@ -61,22 +61,40 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-4">
-          <div className="flex items-center justify-center mb-4">
-            <div className="flex items-center space-x-3">
-              <Building2 className="h-8 w-8 text-blue-600" />
-              <div className="text-center">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  Ujjivan Small Finance Bank
-                </h1>
-                <p className="text-sm text-blue-600 font-medium">
-                  Intellect WealthForce
-                </p>
-              </div>
+          <div className="flex flex-col items-center justify-center mb-4">
+            <div className="mb-4">
+              <svg
+                width="120"
+                height="40"
+                viewBox="0 0 200 60"
+                className="text-blue-600"
+                fill="currentColor"
+              >
+                {/* Ujjivan Logo - Stylized representation */}
+                <rect x="10" y="15" width="8" height="30" rx="2" />
+                <rect x="22" y="20" width="8" height="25" rx="2" />
+                <rect x="34" y="18" width="8" height="27" rx="2" />
+                <rect x="46" y="22" width="8" height="23" rx="2" />
+                <rect x="58" y="16" width="8" height="29" rx="2" />
+                <rect x="70" y="19" width="8" height="26" rx="2" />
+                <rect x="82" y="21" width="8" height="24" rx="2" />
+                <text x="100" y="25" fontSize="12" fontWeight="bold" className="fill-current">
+                  UJJIVAN
+                </text>
+                <text x="100" y="38" fontSize="8" className="fill-current opacity-80">
+                  Small Finance Bank
+                </text>
+              </svg>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-blue-600 font-medium">
+                Intellect WealthForce
+              </p>
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
           <CardDescription className="text-center">
-            Sign in to your wealth management dashboard
+            Access your wealth management dashboard
           </CardDescription>
         </CardHeader>
         
@@ -162,13 +180,6 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
-          
-          <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>Default credentials for testing:</p>
-            <p className="font-mono text-xs mt-1">
-              sravan.suggala@intellectdesign.com / Welcome@01
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
