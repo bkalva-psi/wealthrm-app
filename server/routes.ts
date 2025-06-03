@@ -72,6 +72,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = req.body;
       
+      // Validate input
+      if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
+      }
+      
       // Validate credentials for Sravan
       if (username === 'sravan.suggala@intellectdesign.com' && password === 'Welcome@01') {
         // Set session
@@ -90,13 +95,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           phone: '+91 9876543210'
         };
         
+        console.log('Login successful for user:', username);
         res.json({ user, message: 'Login successful' });
       } else {
-        res.status(401).json({ message: 'Invalid credentials' });
+        console.log('Invalid login attempt for user:', username);
+        res.status(401).json({ 
+          message: 'Invalid email address or password. Please check your credentials and try again.' 
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ message: 'An error occurred while processing your request. Please try again.' });
     }
   });
 
