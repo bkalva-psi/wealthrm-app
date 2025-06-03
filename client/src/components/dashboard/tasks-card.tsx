@@ -72,10 +72,10 @@ export function TasksCard() {
   
   return (
     <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+      <div className="px-4 py-3 border-b border-border bg-card">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-slate-700">Tasks</h2>
-          <Button variant="ghost" size="icon" className="text-primary-600 hover:text-primary-700">
+          <h2 className="text-sm font-medium text-foreground">Tasks</h2>
+          <Button variant="ghost" size="icon" className="text-primary hover:text-primary/80">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
@@ -83,7 +83,7 @@ export function TasksCard() {
         </div>
       </div>
       
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-border">
         {isLoading ? (
           Array(4).fill(0).map((_, index) => (
             <div key={index} className="px-4 py-3">
@@ -104,16 +104,16 @@ export function TasksCard() {
                   id={`task-${task.id}`}
                   checked={task.completed}
                   onCheckedChange={(checked) => handleTaskToggle(task, !!checked)}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-300 rounded mt-1"
+                  className="h-4 w-4 rounded mt-1"
                 />
                 <label htmlFor={`task-${task.id}`} className="ml-3 block">
                   <span className={`text-sm font-medium ${
-                    task.completed ? "text-slate-500 line-through" : "text-slate-800"
+                    task.completed ? "text-muted-foreground line-through" : "text-foreground"
                   }`}>
                     {task.title}
                   </span>
                   <span className={`block text-xs mt-1 ${
-                    task.completed ? "text-slate-400" : "text-slate-500"
+                    task.completed ? "text-muted-foreground" : "text-muted-foreground"
                   }`}>
                     {task.completed ? "Completed" : formatDueDate(task.dueDate)}
                   </span>
@@ -123,13 +123,13 @@ export function TasksCard() {
           ))
         ) : (
           <div className="px-4 py-6 text-center">
-            <p className="text-sm text-slate-500">No tasks to display</p>
+            <p className="text-sm text-muted-foreground">No tasks to display</p>
           </div>
         )}
       </div>
       
-      <CardFooter className="px-4 py-3 bg-slate-50 flex justify-center">
-        <Button variant="link" size="sm" className="text-xs font-medium text-primary-600 hover:text-primary-700">
+      <CardFooter className="px-4 py-3 bg-muted/30 flex justify-center">
+        <Button variant="link" size="sm" className="text-xs font-medium text-primary hover:text-primary/80">
           View All Tasks
         </Button>
       </CardFooter>
