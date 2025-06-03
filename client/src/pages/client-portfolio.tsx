@@ -1111,7 +1111,7 @@ export default function ClientPortfolioPage() {
                     .map((holding, index) => (
                       <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-start space-x-2">
-                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-medium text-xs">
+                          <div className="h-8 w-8 rounded-full bg-green-100/50 dark:bg-green-950/30 flex items-center justify-center text-green-600 dark:text-green-400 font-medium text-xs">
                             #{index + 1}
                           </div>
                           <div>
@@ -1119,7 +1119,7 @@ export default function ClientPortfolioPage() {
                             <div className="text-xs text-muted-foreground">{holding.type}</div>
                           </div>
                         </div>
-                        <div className="text-green-600 font-medium">+{holding.gain}%</div>
+                        <div className="text-green-600 dark:text-green-400 font-medium">+{holding.gain}%</div>
                       </div>
                     ))}
                 </div>
@@ -1142,7 +1142,7 @@ export default function ClientPortfolioPage() {
                     .map((holding, index) => (
                       <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-start space-x-2">
-                          <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-medium text-xs">
+                          <div className="h-8 w-8 rounded-full bg-red-100/50 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400 font-medium text-xs">
                             #{index + 1}
                           </div>
                           <div>
@@ -1150,7 +1150,7 @@ export default function ClientPortfolioPage() {
                             <div className="text-xs text-muted-foreground">{holding.type}</div>
                           </div>
                         </div>
-                        <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className={`font-medium ${holding.gain >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                           {holding.gain > 0 ? '+' : ''}{holding.gain}%
                         </div>
                       </div>
