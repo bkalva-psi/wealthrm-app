@@ -33,7 +33,6 @@ export default function CalendarPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('upcoming');
   const [selectedView, setSelectedView] = useState<'list' | 'month' | 'day'>('list');
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -228,7 +227,6 @@ export default function CalendarPage() {
     
     let filtered = appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.startTime);
-      const today = startOfToday();
       
       const matchesSearch = searchQuery === '' || 
         appointment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -238,16 +236,8 @@ export default function CalendarPage() {
       const matchesType = filterType === 'all' || appointment.type === filterType;
       const matchesPriority = filterPriority === 'all' || appointment.priority === filterPriority;
       
-      let matchesDate = true;
-      if (dateFilter === 'today') {
-        matchesDate = appointmentDate >= startOfDay(today) && appointmentDate <= endOfDay(today);
-      } else if (dateFilter === 'week') {
-        matchesDate = isSameWeek(appointmentDate, today, { weekStartsOn: 0 });
-      } else if (dateFilter === 'upcoming') {
-        matchesDate = appointmentDate >= startOfDay(today);
-      }
-      
       // For day view, filter by selected date
+      let matchesDate = true;
       if (selectedView === 'day' && selectedDate) {
         matchesDate = isSameDay(appointmentDate, selectedDate);
       }
@@ -261,7 +251,7 @@ export default function CalendarPage() {
       const dateB = new Date(b.startTime);
       return dateA.getTime() - dateB.getTime();
     });
-  }, [appointments, searchQuery, filterType, filterPriority, dateFilter, selectedView, selectedDate]);
+  }, [appointments, searchQuery, filterType, filterPriority, selectedView, selectedDate]);
 
   if (isLoading) {
     return (
@@ -525,18 +515,6 @@ export default function CalendarPage() {
               <SelectItem value="low">Low</SelectItem>
             </SelectContent>
           </Select>
-          
-          <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Date" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Dates</SelectItem>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="upcoming">Upcoming</SelectItem>
-              <SelectItem value="week">This Week</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
@@ -626,9 +604,9 @@ export default function CalendarPage() {
                   <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-foreground mb-2">No appointments found</h3>
                   <p className="text-sm text-muted-foreground">
-                    {searchQuery || filterType !== 'all' || filterPriority !== 'all' || dateFilter !== 'upcoming'
+                    {searchQuery || filterType !== 'all' || filterPriority !== 'all'
                       ? 'Try adjusting your filters to see more appointments.'
-                      : 'You have no upcoming appointments. Create a new one to get started.'
+                      : 'You have no appointments. Create a new one to get started.'
                     }
                   </p>
                 </CardContent>
