@@ -498,10 +498,10 @@ function PortfolioSection({
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card>
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-full bg-blue-100 text-blue-600">
+                <div className="p-2 rounded-full bg-primary/10 text-primary">
                   {icon}
                 </div>
                 <CardTitle className="text-lg">{title}</CardTitle>
@@ -786,20 +786,20 @@ export default function ClientPortfolioPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
                 {/* AUM */}
                 <div className="text-center">
-                  <div className="text-sm text-gray-500 mb-1">AUM</div>
+                  <div className="text-sm text-muted-foreground mb-1">AUM</div>
                   <div className="text-lg font-semibold">₹{(aumValue / 100000).toFixed(1)}L</div>
                 </div>
                 
                 {/* Investment */}
                 <div className="text-center">
-                  <div className="text-sm text-gray-500 mb-1">Investment</div>
+                  <div className="text-sm text-muted-foreground mb-1">Investment</div>
                   <div className="text-lg font-semibold">₹{((aumValue * 0.85) / 100000).toFixed(1)}L</div>
                 </div>
                 
                 {/* Unrealized Gain */}
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-1">Unrealized Gain</div>
-                  <div className="text-lg font-semibold text-emerald-600">
+                  <div className="text-lg font-semibold text-green-600 dark:text-green-400">
                     ₹{((aumValue * 0.15) / 100000).toFixed(1)}L
                     <span className="text-xs ml-1">↗ 19.05%</span>
                   </div>
