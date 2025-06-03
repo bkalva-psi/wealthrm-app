@@ -1065,11 +1065,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = Number(req.params.id);
       
+      console.log("=== BACKEND TASK UPDATE DEBUG ===");
+      console.log("Task ID:", id);
+      console.log("Request body:", req.body);
+      console.log("Current user ID:", (req.session as any).userId);
+      
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid task ID" });
       }
       
       const task = await storage.getTask(id);
+      
+      console.log("Found task:", task);
       
       if (!task) {
         return res.status(404).json({ message: "Task not found" });
@@ -1081,11 +1088,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const parseResult = insertTaskSchema.partial().safeParse(req.body);
       
+      console.log("Parse result:", parseResult);
+      
       if (!parseResult.success) {
         return res.status(400).json({ message: "Invalid task data", errors: parseResult.error.format() });
       }
       
       const updatedTask = await storage.updateTask(id, parseResult.data);
+      
+      console.log("Updated task:", updatedTask);
+      console.log("==================================");
+      
       res.json(updatedTask);
     } catch (error) {
       console.error("Update task error:", error);

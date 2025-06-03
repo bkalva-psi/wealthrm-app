@@ -101,7 +101,7 @@ export default function Tasks() {
   // Toggle task completion
   const toggleTaskMutation = useMutation({
     mutationFn: ({ taskId, completed }: { taskId: number; completed: boolean }) =>
-      apiRequest("PATCH", `/api/tasks/${taskId}`, { completed }),
+      apiRequest("PUT", `/api/tasks/${taskId}`, { completed }),
     onMutate: async ({ taskId, completed }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["/api/tasks"] });
@@ -154,6 +154,11 @@ export default function Tasks() {
   };
 
   const handleTaskToggle = (task: Task, completed: boolean) => {
+    console.log("=== TASK TOGGLE DEBUG ===");
+    console.log("Task ID:", task.id);
+    console.log("Current task.completed:", task.completed);
+    console.log("New completed value:", completed);
+    console.log("========================");
     toggleTaskMutation.mutate({ taskId: task.id, completed });
   };
 
