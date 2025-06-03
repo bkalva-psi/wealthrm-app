@@ -67,10 +67,10 @@ const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-slate-200 rounded-lg shadow-sm">
-          <p className="font-medium">{payload[0].name}</p>
-          <p className="text-sm">
-            <span className="font-medium">{payload[0].value.toFixed(1)}%</span> of portfolio
+        <div className="bg-background dark:bg-background p-3 border border-border rounded-lg shadow-sm">
+          <p className="font-medium text-foreground">{payload[0].name}</p>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{payload[0].value.toFixed(1)}%</span> of portfolio
           </p>
         </div>
       );
