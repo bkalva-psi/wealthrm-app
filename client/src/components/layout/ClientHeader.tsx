@@ -18,7 +18,7 @@ interface ClientHeaderProps {
 
 export function ClientHeader({ client, isLoading, onBackClick, onClientNameClick }: ClientHeaderProps) {
   return (
-    <div className={`bg-card border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
+    <div className={`bg-card border rounded-lg p-4 mb-6 shadow-sm border-l-4 sticky top-0 z-10 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
       <div className="flex items-center justify-between">
         {/* Left side - Back arrow and client info */}
         <div className="flex items-center">
