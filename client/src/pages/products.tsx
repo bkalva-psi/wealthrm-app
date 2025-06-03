@@ -437,20 +437,20 @@ Ujjivan Small Finance Bank`;
               return (
                 <Card 
                   key={product.id} 
-                  className={`transition-all duration-200 hover:shadow-lg cursor-pointer ${product.featured ? 'ring-2 ring-blue-200' : ''}`}
+                  className={`transition-all duration-200 hover:shadow-lg cursor-pointer ${product.featured ? 'ring-2 ring-primary/30' : ''}`}
                   onClick={() => toggleCardExpansion(product.id)}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                        <CardDescription className="text-sm text-gray-600">
+                        <CardDescription className="text-sm text-muted-foreground">
                           {product.productCode} • {product.category}
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
                         {product.featured && (
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                          <Badge variant="secondary" className="bg-primary/10 text-primary">
                             Featured
                           </Badge>
                         )}
@@ -467,11 +467,11 @@ Ujjivan Small Finance Bank`;
                     {/* Summary View - Always Visible */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-600">Min Investment</p>
-                        <p className="font-medium">{product.minInvestment}</p>
+                        <p className="text-muted-foreground">Min Investment</p>
+                        <p className="font-medium text-foreground">{product.minInvestment}</p>
                       </div>
                       <div>
-                        <p className="text-gray-600">Risk Level</p>
+                        <p className="text-muted-foreground">Risk Level</p>
                         <Badge className={`text-xs ${getRiskColor(product.riskLevel)}`}>
                           {product.riskLevel}
                         </Badge>
@@ -480,21 +480,21 @@ Ujjivan Small Finance Bank`;
 
                     {product.expectedReturns && (
                       <div className="text-sm">
-                        <p className="text-gray-600">Expected Returns</p>
-                        <p className="font-medium text-green-700">{product.expectedReturns}</p>
+                        <p className="text-muted-foreground">Expected Returns</p>
+                        <p className="font-medium text-green-600 dark:text-green-400">{product.expectedReturns}</p>
                       </div>
                     )}
 
                     {/* Expanded View - Conditional */}
                     {isExpanded && (
-                      <div className="space-y-4 pt-4 border-t border-gray-100">
-                        <p className="text-sm text-gray-700">
+                      <div className="space-y-4 pt-4 border-t border-border">
+                        <p className="text-sm text-foreground">
                           {product.description}
                         </p>
 
                         {/* Performance Metrics */}
                         {(product.totalInvestors || product.totalSubscriptions) && (
-                          <div className="flex items-center gap-4 text-xs text-gray-600">
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             {product.totalInvestors && (
                               <div className="flex items-center gap-1">
                                 <Users className="h-3 w-3" />
@@ -529,29 +529,29 @@ Ujjivan Small Finance Bank`;
                         <div className="grid grid-cols-1 gap-3 text-sm">
                           {product.tenure && (
                             <div>
-                              <p className="text-gray-600">Tenure</p>
-                              <p className="font-medium">{product.tenure}</p>
+                              <p className="text-muted-foreground">Tenure</p>
+                              <p className="font-medium text-foreground">{product.tenure}</p>
                             </div>
                           )}
                           
                           {product.lockInPeriod && (
                             <div>
-                              <p className="text-gray-600">Lock-in Period</p>
-                              <p className="font-medium">{product.lockInPeriod} months</p>
+                              <p className="text-muted-foreground">Lock-in Period</p>
+                              <p className="font-medium text-foreground">{product.lockInPeriod} months</p>
                             </div>
                           )}
                           
                           {product.managementFee && (
                             <div>
-                              <p className="text-gray-600">Management Fee</p>
-                              <p className="font-medium">{product.managementFee}% p.a.</p>
+                              <p className="text-muted-foreground">Management Fee</p>
+                              <p className="font-medium text-foreground">{product.managementFee}% p.a.</p>
                             </div>
                           )}
                           
                           {product.exitLoad && (
                             <div>
-                              <p className="text-gray-600">Exit Load</p>
-                              <p className="font-medium">{product.exitLoad}</p>
+                              <p className="text-muted-foreground">Exit Load</p>
+                              <p className="font-medium text-foreground">{product.exitLoad}</p>
                             </div>
                           )}
                         </div>

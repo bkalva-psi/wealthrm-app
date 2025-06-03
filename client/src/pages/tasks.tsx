@@ -217,7 +217,7 @@ export default function Tasks() {
         <h1 className="text-3xl font-bold">Tasks</h1>
         <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-12 h-12 p-0">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-12 h-12 p-0">
               <Plus className="h-6 w-6" />
             </Button>
           </DialogTrigger>
