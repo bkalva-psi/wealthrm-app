@@ -701,46 +701,46 @@ export default function ClientPortfolioPage() {
         {/* Navigation Icons */}
         <div className="grid grid-cols-8 gap-3 ml-3">
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
-            <User className="h-6 w-6 text-gray-600" />
+            <User className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-primary/10 border border-primary/20 h-12 w-full"
             title="Portfolio"
           >
-            <PieChart className="h-6 w-6 text-blue-600" />
+            <PieChart className="h-6 w-6 text-primary" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
             title="Transactions"
           >
-            <Receipt className="h-6 w-6 text-gray-600" />
+            <Receipt className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/appointments`}
             title="Appointments"
           >
-            <Calendar className="h-6 w-6 text-gray-600" />
+            <Calendar className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
             title="Notes"
           >
-            <FileText className="h-6 w-6 text-gray-600" />
+            <FileText className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => {
               // Check if mobile device
               const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -755,15 +755,15 @@ export default function ClientPortfolioPage() {
             }}
             title="Portfolio Report"
           >
-            <FileBarChart className="h-6 w-6 text-gray-600" />
+            <FileBarChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/insights`}
             title="Client Insights"
           >
-            <Lightbulb className="h-6 w-6 text-gray-600" />
+            <Lightbulb className="h-6 w-6 text-muted-foreground" />
           </button>
           
 

@@ -534,19 +534,19 @@ export default function ClientTransactions() {
         {/* Navigation Icons */}
         <div className="grid grid-cols-7 gap-1 px-1">
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}
             title="Personal Profile"
           >
-            <User className="h-6 w-6 text-gray-600" />
+            <User className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
             title="Portfolio"
           >
-            <PieChart className="h-6 w-6 text-gray-600" />
+            <PieChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
