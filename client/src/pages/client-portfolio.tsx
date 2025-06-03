@@ -1272,7 +1272,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Sharpe Ratio</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">1.78</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Good</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Good</div>
                         </div>
                       </div>
                       
@@ -1280,7 +1280,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Alpha</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">2.6%</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Positive</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Positive</div>
                         </div>
                       </div>
                       
@@ -1288,7 +1288,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Beta</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">0.92</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-800">Defensive</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-blue-100/50 dark:bg-blue-950/30 text-blue-800 dark:text-blue-200">Defensive</div>
                         </div>
                       </div>
                       
@@ -1296,7 +1296,7 @@ export default function ClientPortfolioPage() {
                         <div className="text-muted-foreground text-xs">Information Ratio</div>
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">1.24</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100 text-green-800">Strong</div>
+                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Strong</div>
                         </div>
                       </div>
                     </div>
@@ -1543,7 +1543,7 @@ export default function ClientPortfolioPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
                     <h4 className="font-medium">Retirement Planning</h4>
-                    <span className="text-sm text-green-600 font-medium">75% Funded</span>
+                    <span className="text-sm text-green-600 dark:text-green-400 font-medium">75% Funded</span>
                   </div>
                   <Progress value={75} className="h-2" />
                   <div className="flex justify-between text-sm text-muted-foreground">
@@ -1555,7 +1555,7 @@ export default function ClientPortfolioPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
                     <h4 className="font-medium">Children's Education</h4>
-                    <span className="text-sm text-green-600 font-medium">60% Funded</span>
+                    <span className="text-sm text-green-600 dark:text-green-400 font-medium">60% Funded</span>
                   </div>
                   <Progress value={60} className="h-2" />
                   <div className="flex justify-between text-sm text-muted-foreground">
@@ -1567,7 +1567,7 @@ export default function ClientPortfolioPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
                     <h4 className="font-medium">Property Purchase</h4>
-                    <span className="text-sm text-amber-600 font-medium">35% Funded</span>
+                    <span className="text-sm text-amber-600 dark:text-amber-400 font-medium">35% Funded</span>
                   </div>
                   <Progress value={35} className="h-2" indicatorClassName="bg-amber-500" />
                   <div className="flex justify-between text-sm text-muted-foreground">
@@ -1587,24 +1587,24 @@ export default function ClientPortfolioPage() {
               <CardContent>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-slate-50 rounded-lg">
+                  <div className="p-3 bg-muted/50 rounded-lg">
                     <div className="text-sm text-muted-foreground">Retirement Age</div>
                     <div className="text-xl font-bold">60 years</div>
                   </div>
                   
-                  <div className="p-3 bg-slate-50 rounded-lg">
+                  <div className="p-3 bg-muted/50 rounded-lg">
                     <div className="text-sm text-muted-foreground">Monthly Income</div>
                     <div className="text-xl font-bold">₹85,000</div>
                   </div>
                   
-                  <div className="p-3 bg-slate-50 rounded-lg">
+                  <div className="p-3 bg-muted/50 rounded-lg">
                     <div className="text-sm text-muted-foreground">Projected Corpus</div>
                     <div className="text-xl font-bold">₹2.1 Cr</div>
                   </div>
                   
-                  <div className="p-3 bg-slate-50 rounded-lg">
+                  <div className="p-3 bg-muted/50 rounded-lg">
                     <div className="text-sm text-muted-foreground">Funding Status</div>
-                    <div className="text-xl font-bold text-green-600">75%</div>
+                    <div className="text-xl font-bold text-green-600 dark:text-green-400">75%</div>
                   </div>
                 </div>
               </CardContent>
@@ -1616,32 +1616,32 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <h4 className="text-sm font-medium text-green-800 flex items-center">
-                      <TrendingUp className="h-4 w-4 mr-2 text-green-600" />
+                  <div className="p-3 bg-green-50/50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <h4 className="text-sm font-medium text-green-800 dark:text-green-200 flex items-center">
+                      <TrendingUp className="h-4 w-4 mr-2 text-green-600 dark:text-green-400" />
                       Increase Monthly SIP
                     </h4>
-                    <p className="text-xs text-green-700 mt-1">
+                    <p className="text-xs text-green-700 dark:text-green-300 mt-1">
                       To reach your retirement goal, consider increasing your monthly SIP by ₹5,000.
                     </p>
                   </div>
                   
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h4 className="text-sm font-medium text-blue-800 flex items-center">
-                      <Shield className="h-4 w-4 mr-2 text-blue-600" />
+                  <div className="p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 flex items-center">
+                      <Shield className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
                       Review Insurance Coverage
                     </h4>
-                    <p className="text-xs text-blue-700 mt-1">
+                    <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
                       Your life insurance coverage appears insufficient. We recommend increasing it to ₹1 Cr.
                     </p>
                   </div>
                   
-                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <h4 className="text-sm font-medium text-amber-800 flex items-center">
-                      <Landmark className="h-4 w-4 mr-2 text-amber-600" />
+                  <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <h4 className="text-sm font-medium text-amber-800 dark:text-amber-200 flex items-center">
+                      <Landmark className="h-4 w-4 mr-2 text-amber-600 dark:text-amber-400" />
                       Tax Planning
                     </h4>
-                    <p className="text-xs text-amber-700 mt-1">
+                    <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
                       You have ₹50,000 remaining in your Section 80C limit. Consider additional ELSS investments.
                     </p>
                   </div>
