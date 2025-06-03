@@ -485,7 +485,7 @@ export default function ClientTransactions() {
                 <>
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-xl font-semibold text-card-foreground hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-xl font-semibold text-card-foreground hover:text-primary transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
@@ -495,7 +495,7 @@ export default function ClientTransactions() {
                       <Phone className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`tel:${client.phone}`}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                         title="Call client"
                       >
                         {client.phone}
@@ -509,7 +509,7 @@ export default function ClientTransactions() {
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <a 
                         href={`mailto:${client.email}`}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                         title="Send email to client"
                       >
                         {client.email}

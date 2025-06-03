@@ -162,7 +162,7 @@ export default function ClientInsights() {
                   {/* Line 1: Client Name */}
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                    className="text-lg font-medium text-foreground hover:text-blue-600 transition-colors cursor-pointer"
+                    className="text-lg font-medium text-foreground hover:text-primary transition-colors cursor-pointer"
                   >
                     {client?.fullName}
                   </button>
