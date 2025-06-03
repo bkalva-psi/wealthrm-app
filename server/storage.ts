@@ -1228,27 +1228,44 @@ export class DatabaseStorage implements IStorage {
   // Task methods
   async getTask(id: number): Promise<Task | undefined> {
     // First check regular tasks table
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
-    if (task) {
-      return task;
+    try {
+      const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+      if (task) {
+        return task;
+      }
+    } catch (error) {
+      console.log('Error checking tasks table:', error);
     }
     
-    // If not found, check if it's a communication action item
-    const [actionItem] = await db.select().from(communicationActionItems).where(eq(communicationActionItems.id, id));
-    if (actionItem) {
-      // Convert action item to task format
-      const [comm] = await db.select().from(communications).where(eq(communications.id, actionItem.communicationId));
-      return {
-        id: actionItem.id,
-        title: actionItem.title,
-        description: actionItem.description,
-        dueDate: actionItem.dueDate,
-        completed: actionItem.completedAt !== null,
-        clientId: comm?.clientId || null,
-        prospectId: null,
-        assignedTo: actionItem.assignedTo,
-        createdAt: actionItem.createdAt
-      };
+    // If not found, use raw SQL to avoid Drizzle ORM issues
+    try {
+      const result = await db.execute(sql`
+        SELECT 
+          cai.id, cai.title, cai.description, cai.due_date as "dueDate",
+          CASE WHEN cai.completed_at IS NOT NULL THEN true ELSE false END as completed,
+          comm.client_id as "clientId", NULL as "prospectId", cai.assigned_to as "assignedTo",
+          NOW() as "createdAt"
+        FROM communication_action_items cai
+        LEFT JOIN communications comm ON cai.communication_id = comm.id
+        WHERE cai.id = ${id}
+      `);
+      
+      if (result.rows.length > 0) {
+        const row = result.rows[0];
+        return {
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          dueDate: row.dueDate,
+          completed: row.completed,
+          clientId: row.clientId,
+          prospectId: row.prospectId,
+          assignedTo: row.assignedTo,
+          createdAt: row.createdAt
+        };
+      }
+    } catch (error) {
+      console.log('Error checking action items:', error);
     }
     
     return undefined;
@@ -1333,41 +1350,56 @@ export class DatabaseStorage implements IStorage {
 
   async updateTask(id: number, taskUpdate: Partial<InsertTask>): Promise<Task | undefined> {
     // First try to update in regular tasks table
-    const [task] = await db.update(tasks)
-      .set(taskUpdate)
-      .where(eq(tasks.id, id))
-      .returning();
-    
-    if (task) {
-      return task;
-    }
-    
-    // If not found, check if it's a communication action item and update accordingly
-    if (taskUpdate.completed !== undefined) {
-      const [actionItem] = await db.update(communicationActionItems)
-        .set({
-          completedAt: taskUpdate.completed ? new Date() : null,
-          status: taskUpdate.completed ? 'completed' : 'pending'
-        })
-        .where(eq(communicationActionItems.id, id))
+    try {
+      const [task] = await db.update(tasks)
+        .set(taskUpdate)
+        .where(eq(tasks.id, id))
         .returning();
       
-      if (actionItem) {
-        // Get the associated communication to find clientId
-        const [comm] = await db.select().from(communications).where(eq(communications.id, actionItem.communicationId));
+      if (task) {
+        return task;
+      }
+    } catch (error) {
+      console.log('Error updating tasks table:', error);
+    }
+    
+    // If not found, use raw SQL to update communication action item
+    if (taskUpdate.completed !== undefined) {
+      try {
+        const completedAt = taskUpdate.completed ? new Date().toISOString() : null;
+        const status = taskUpdate.completed ? 'completed' : 'pending';
         
-        // Return the action item in task format
-        return {
-          id: actionItem.id,
-          title: actionItem.title,
-          description: actionItem.description,
-          dueDate: actionItem.dueDate,
-          completed: actionItem.completedAt !== null,
-          clientId: comm?.clientId || null,
-          prospectId: null,
-          assignedTo: actionItem.assignedTo,
-          createdAt: actionItem.createdAt
-        };
+        const updateResult = await db.execute(sql`
+          UPDATE communication_action_items 
+          SET completed_at = ${completedAt}, status = ${status}
+          WHERE id = ${id}
+          RETURNING id, title, description, due_date as "dueDate", 
+                   CASE WHEN completed_at IS NOT NULL THEN true ELSE false END as completed,
+                   assigned_to as "assignedTo", communication_id
+        `);
+        
+        if (updateResult.rows.length > 0) {
+          const row = updateResult.rows[0];
+          
+          // Get client ID from communication
+          const commResult = await db.execute(sql`
+            SELECT client_id as "clientId" FROM communications WHERE id = ${row.communication_id}
+          `);
+          
+          return {
+            id: row.id,
+            title: row.title,
+            description: row.description,
+            dueDate: row.dueDate,
+            completed: row.completed,
+            clientId: commResult.rows[0]?.clientId || null,
+            prospectId: null,
+            assignedTo: row.assignedTo,
+            createdAt: new Date()
+          };
+        }
+      } catch (error) {
+        console.log('Error updating action item:', error);
       }
     }
     
