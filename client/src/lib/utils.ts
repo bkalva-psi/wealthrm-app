@@ -165,10 +165,10 @@ export function getStageColor(stage: string): { bg: string, text: string } {
     case 'qualified':
       return { bg: 'bg-primary/10', text: 'text-primary' };
     case 'proposal':
-      return { bg: 'bg-secondary/10', text: 'text-secondary' };
+      return { bg: 'bg-accent', text: 'text-accent-foreground' };
     case 'closed':
     case 'won':
-      return { bg: 'bg-green-500/10 dark:bg-green-400/10', text: 'text-green-700 dark:text-green-400' };
+      return { bg: 'bg-accent', text: 'text-accent-foreground' };
     case 'lost':
       return { bg: 'bg-destructive/10', text: 'text-destructive' };
     default:
@@ -179,11 +179,11 @@ export function getStageColor(stage: string): { bg: string, text: string } {
 export function getPriorityColor(priority: string): { bg: string, text: string } {
   switch (priority.toLowerCase()) {
     case 'high':
-      return { bg: 'bg-orange-500/10 dark:bg-orange-400/10', text: 'text-orange-700 dark:text-orange-400' };
+      return { bg: 'bg-destructive/10', text: 'text-destructive' };
     case 'medium':
-      return { bg: 'bg-blue-500/10 dark:bg-blue-400/10', text: 'text-blue-700 dark:text-blue-400' };
+      return { bg: 'bg-accent', text: 'text-accent-foreground' };
     case 'low':
-      return { bg: 'bg-green-500/10 dark:bg-green-400/10', text: 'text-green-700 dark:text-green-400' };
+      return { bg: 'bg-accent', text: 'text-accent-foreground' };
     default:
       return { bg: 'bg-muted', text: 'text-muted-foreground' };
   }

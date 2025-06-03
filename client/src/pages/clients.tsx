@@ -223,11 +223,11 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     
     // Red if ANY of these conditions are true
     if (hasOverdueContact || hasMeetingToday || hasOverdueTasks || hasComplaints) {
-      return 'bg-red-500';
+      return 'bg-destructive';
     }
     
     // Green for healthy clients
-    return 'bg-green-500';
+    return 'bg-accent';
   };
 
   const getClientHealthStatus = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
