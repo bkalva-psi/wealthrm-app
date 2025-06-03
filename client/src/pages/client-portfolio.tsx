@@ -985,7 +985,9 @@ export default function ClientPortfolioPage() {
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <CardTitle className="text-sm font-medium mb-2">AUM Trends (3 Years)</CardTitle>
+                    <div className="mb-4">
+                      <CardTitle>AUM Trends (3 Years)</CardTitle>
+                    </div>
                     <div className="flex-1 border rounded-md p-4 h-52">
                       <SimpleAumTrendChart aumValue={client?.aumValue || 5000000} />
                     </div>
@@ -1220,7 +1222,7 @@ export default function ClientPortfolioPage() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
+                <CardTitle className="flex items-center">
                   <ArrowDownRight className="h-5 w-5 mr-2 text-red-500" />
                   Underperformers
                 </CardTitle>
