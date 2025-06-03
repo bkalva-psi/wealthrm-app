@@ -73,6 +73,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 import { getTierColor } from '@/lib/utils';
+import { ClientPageLayout } from '@/components/layout/ClientPageLayout';
 
 // Transaction type definition
 interface Transaction {
@@ -460,28 +461,7 @@ export default function ClientTransactions() {
   }
   
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      {/* Consistent Header Band */}
-      <div className={`bg-card border rounded-lg p-4 mb-6 shadow-sm border-l-4 ${client ? getTierColor(client.tier).border.replace('border-', 'border-l-') : 'border-l-slate-300'}`}>
-        <div className="flex items-center justify-between">
-          {/* Left side - Back arrow and client info */}
-          <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => window.location.hash = `/clients`}
-              className="mr-4 p-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            
-            <div>
-              {isClientLoading ? (
-                <div className="space-y-1">
-                  <Skeleton className="h-6 w-40" />
-                  <Skeleton className="h-4 w-32" />
-                </div>
-              ) : (
+    <ClientPageLayout client={client} isLoading={isClientLoading} clientId={clientId}>
                 <>
                   <button 
                     onClick={() => window.location.hash = `/clients/${clientId}/personal`}
@@ -1005,6 +985,6 @@ export default function ClientTransactions() {
           </>
         )}
       </div>
-    </div>
+    </ClientPageLayout>
   );
 }
