@@ -485,17 +485,19 @@ function PortfolioSection({
   title, 
   icon, 
   children, 
-  defaultOpen = false 
+  defaultOpen = false,
+  ...props
 }: { 
   title: string; 
   icon: React.ReactNode; 
   children: React.ReactNode; 
-  defaultOpen?: boolean 
+  defaultOpen?: boolean;
+  [key: string]: any;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} {...props}>
       <Card>
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors">
@@ -994,6 +996,7 @@ export default function ClientPortfolioPage() {
           title="Action Items"
           icon={<AlertCircle className="h-5 w-5" />}
           defaultOpen={true}
+          data-section="action-items"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="overflow-hidden border border-border shadow-md">
