@@ -528,7 +528,7 @@ export default function ClientTransactions() {
       </div>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-card border-b border-gray-200 px-1 py-4">
+      <div className="bg-card border-b border-border px-1 py-4">
         <h2 className="text-2xl font-bold text-foreground px-5 mb-3">Transactions</h2>
         
         {/* Navigation Icons */}
