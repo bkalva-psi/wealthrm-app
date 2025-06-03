@@ -338,7 +338,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                     <div className="text-xs text-muted-foreground">
                       <a 
                         href={`tel:${client.phone}`}
-                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors flex items-center gap-1"
+                        className="text-foreground hover:text-primary hover:underline transition-colors flex items-center gap-1"
                         title="Call client"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -353,7 +353,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                     <div className="text-xs text-muted-foreground">
                       <a 
                         href={`mailto:${client.email}`}
-                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors flex items-center gap-1"
+                        className="text-foreground hover:text-primary hover:underline transition-colors flex items-center gap-1"
                         title="Send email to client"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -422,13 +422,13 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
               <div className="text-xs text-muted-foreground mb-1 font-medium">Last Contact</div>
               <div className={`text-sm font-medium ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'text-orange-700 dark:text-orange-300' 
+                  ? 'text-destructive' 
                   : 'text-foreground'
               }`}>
                 {formatRelativeDate(client.lastContactDate)}
               </div>
               {getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent && (
-                <div className="text-xs text-orange-600 dark:text-orange-400 mt-1 font-medium">
+                <div className="text-xs text-destructive mt-1 font-medium">
                   {getContactUrgency(client.lastContactDate, client.id, appointments).message}
                 </div>
               )}
