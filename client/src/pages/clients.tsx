@@ -398,7 +398,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
           <div className="grid grid-cols-3 gap-3">
             {/* AUM - Primary metric with performance */}
             <div 
-              className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
+              className="text-center p-3 bg-card/60 rounded-lg cursor-pointer hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
               onClick={(e) => handleSectionClick(e, 'portfolio')}
               title="View client portfolio"
             >
@@ -413,8 +413,8 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             <div 
               className={`text-center p-3 rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md border border-border/20 ${
                 getContactUrgency(client.lastContactDate, client.id, appointments).isUrgent 
-                  ? 'bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-950/50 border-orange-200/50 dark:border-orange-800/50' 
-                  : 'bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800'
+                  ? 'bg-destructive/10 hover:bg-destructive/20 border-destructive/30' 
+                  : 'bg-card/60 hover:bg-card'
               }`}
               onClick={(e) => handleSectionClick(e, 'communications')}
               title="View client communications"
@@ -435,7 +435,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             </div>
             
             {/* Risk Profile with visual indicator */}
-            <div className="text-center p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
+            <div className="text-center p-3 bg-card/60 rounded-lg hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
               <div className="text-xs text-muted-foreground mb-1 font-medium">Risk Profile</div>
               <div className={`text-sm font-medium ${getRiskProfileColor(client.riskProfile)}`}>
                 {client.riskProfile ? client.riskProfile.charAt(0).toUpperCase() + client.riskProfile.slice(1) : 'Moderate'}
@@ -450,7 +450,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
           <div className="grid grid-cols-2 gap-3">
             {/* Last Transaction */}
             <div 
-              className="p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
+              className="p-3 bg-card/60 rounded-lg cursor-pointer hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20" 
               onClick={(e) => handleSectionClick(e, 'transactions')}
               title="View client transactions"
             >
@@ -461,7 +461,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             </div>
             
             {/* Client Status/Health Indicator */}
-            <div className="p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg transition-all duration-200 shadow-sm border border-border/20">
+            <div className="p-3 bg-card/60 rounded-lg transition-all duration-200 shadow-sm border border-border/20">
               <div className="text-xs text-muted-foreground mb-1 font-medium">Status</div>
               <div className="flex items-center gap-2">
                 <div className={`h-2.5 w-2.5 rounded-full ${getClientHealthColor(client, tasks, appointments, alerts)} shadow-sm`}></div>
