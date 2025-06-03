@@ -1397,34 +1397,6 @@ export default function ClientPortfolioPage() {
           icon={<AlertTriangle className="h-5 w-5" />}
           defaultOpen={false}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <MetricCard 
-              title="Risk Score"
-              value={`${client?.riskScore || 6}/10`}
-              icon={<AlertTriangle className="h-5 w-5" />}
-              description="Moderate Risk"
-              color="amber"
-              isLoading={isLoading}
-            />
-            
-            <MetricCard 
-              title="Volatility"
-              value={`${client?.volatility || 12.4}%`}
-              icon={<LineChart className="h-5 w-5" />}
-              description="Annualized Standard Deviation"
-              color="purple"
-              isLoading={isLoading}
-            />
-            
-            <MetricCard 
-              title="Sharpe Ratio"
-              value={client?.sharpeRatio || 1.2}
-              icon={<BarChart3 className="h-5 w-5" />}
-              description="Risk-adjusted Returns"
-              color="indigo"
-              isLoading={isLoading}
-            />
-          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
@@ -1474,28 +1446,6 @@ export default function ClientPortfolioPage() {
                         <div className="flex items-center mt-1">
                           <span className="text-base font-medium">1.24</span>
                           <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Strong</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Drawdown Analysis Section */}
-                  <div className="mb-4">
-                    <h4 className="font-medium text-foreground mb-2">Drawdown Analysis</h4>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                      <div className="border rounded-lg p-2">
-                        <div className="text-muted-foreground text-xs">Max. Drawdown</div>
-                        <div className="flex items-center mt-1">
-                          <span className="text-base font-medium">-9.2%</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Low</div>
-                        </div>
-                      </div>
-                      
-                      <div className="border rounded-lg p-2">
-                        <div className="text-muted-foreground text-xs">Drawdown Recovery</div>
-                        <div className="flex items-center mt-1">
-                          <span className="text-base font-medium">68 days</span>
-                          <div className="ml-auto px-1.5 py-0.5 text-xs rounded bg-green-100/50 dark:bg-green-950/30 text-green-800 dark:text-green-200">Fast</div>
                         </div>
                       </div>
                     </div>
