@@ -559,7 +559,7 @@ Ujjivan Small Finance Bank`;
                         {/* Regulatory Information */}
                         {product.regulatoryApprovals && product.regulatoryApprovals.length > 0 && (
                           <div>
-                            <p className="text-sm font-medium text-gray-700 mb-2">Regulatory Approvals</p>
+                            <p className="text-sm font-medium text-foreground mb-2">Regulatory Approvals</p>
                             <div className="flex flex-wrap gap-1">
                               {product.regulatoryApprovals.map((approval, index) => (
                                 <Badge key={index} variant="outline" className="text-xs">
@@ -573,8 +573,8 @@ Ujjivan Small Finance Bank`;
                         {/* Tax Information */}
                         {product.taxImplications && (
                           <div>
-                            <p className="text-sm font-medium text-gray-700 mb-2">Tax Implications</p>
-                            <p className="text-xs text-gray-600">{product.taxImplications}</p>
+                            <p className="text-sm font-medium text-foreground mb-2">Tax Implications</p>
+                            <p className="text-xs text-muted-foreground">{product.taxImplications}</p>
                           </div>
                         )}
 
