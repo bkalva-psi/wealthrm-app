@@ -151,7 +151,7 @@ export function PerformanceCard() {
                 <div className="p-2 rounded-lg brand-accent-bg-subtle transition-all duration-300 hover:bg-primary/20 hover:scale-110 interactive-scale">
                   <Target size={20} className="brand-accent transition-all duration-300" />
                 </div>
-                <CardTitle className="text-lg transition-colors duration-300 brand-accent-subtle">Performance</CardTitle>
+                <CardTitle className="text-lg transition-colors duration-300 brand-accent-subtle">Other performance indicators</CardTitle>
               </div>
               {isOpen ? (
                 <ChevronDown size={20} className="transition-all duration-300 brand-accent" />

@@ -108,11 +108,6 @@ export default function Dashboard() {
           </div>
         </div>
         
-        {/* Enhanced Business Snapshot with Animation */}
-        <div className="animate-in slide-in-from-bottom-4 duration-700 delay-100">
-          <BusinessSnapshotStructured />
-        </div>
-        
         {/* Enhanced Responsive Grid Layout with Better Spacing */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 xl:gap-10">
           {/* Action Items Section - Optimized proportions with enhanced animation */}
@@ -137,8 +132,13 @@ export default function Dashboard() {
           </div>
         </div>
         
+        {/* Enhanced Business Snapshot with Animation - Moved below updates */}
+        <div className="animate-in slide-in-from-bottom-4 duration-700 delay-600">
+          <BusinessSnapshotStructured />
+        </div>
+        
         {/* Performance Section with enhanced spacing */}
-        <div className="animate-in slide-in-from-bottom-4 duration-800 delay-600">
+        <div className="animate-in slide-in-from-bottom-4 duration-800 delay-700">
           <div className="transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
             <PerformanceCard />
           </div>
