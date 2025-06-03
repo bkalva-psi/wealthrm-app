@@ -1024,49 +1024,7 @@ export default function ClientPortfolioPage() {
             </Card>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Portfolio Risk Profile</CardTitle>
-                <CardDescription>Risk assessment metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <RiskAssessment score={client?.riskScore || 6} />
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="text-sm font-medium">Volatility</h4>
-                      <div className="text-xl font-semibold mt-1">
-                        {client?.volatility || 12.4}%
-                      </div>
-                      <p className="text-xs text-muted-foreground">Annual Standard Deviation</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium">Sharpe Ratio</h4>
-                      <div className="text-xl font-semibold mt-1">
-                        {client?.sharpeRatio || 1.2}
-                      </div>
-                      <p className="text-xs text-muted-foreground">Risk-adjusted Returns</p>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium mb-1">Risk vs Category Average</h4>
-                    <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="absolute top-0 left-0 h-full bg-amber-500 w-[65%]"></div>
-                      <div className="absolute top-0 left-0 h-full border-r-2 border-foreground border-dashed" style={{ left: '45%' }}></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>Lower Risk</span>
-                      <span>Higher Risk</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Sector Exposure</CardTitle>
