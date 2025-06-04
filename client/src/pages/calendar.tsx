@@ -625,25 +625,25 @@ export default function CalendarPage() {
                         {filteredAppointments.map((appointment) => (
                           <div
                             key={appointment.id}
-                            className={`p-3 rounded-lg border-l-4 ${getAppointmentTypeColor(appointment.type)}`}
+                            className={`p-3 rounded-lg border-l-4 ${getAppointmentTypeColor(appointment.type)} bg-card dark:bg-card border-border shadow-sm hover:shadow-md transition-shadow`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 {getAppointmentTypeIcon(appointment.type)}
-                                <h4 className="font-medium">{appointment.title}</h4>
+                                <h4 className="font-medium text-card-foreground">{appointment.title}</h4>
                                 <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
                                   {appointment.priority}
                                 </Badge>
                               </div>
-                              <div className="text-sm text-muted-foreground">
+                              <div className="text-sm text-card-foreground/60">
                                 {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                               </div>
                             </div>
                             {appointment.description && (
-                              <p className="text-sm text-muted-foreground mt-1">{appointment.description}</p>
+                              <p className="text-sm text-card-foreground/70 mt-1">{appointment.description}</p>
                             )}
                             {appointment.clientName && (
-                              <p className="text-sm text-muted-foreground mt-1">Client: {appointment.clientName}</p>
+                              <p className="text-sm text-card-foreground/70 mt-1">Client: {appointment.clientName}</p>
                             )}
                           </div>
                         ))}
@@ -705,7 +705,7 @@ export default function CalendarPage() {
                             {dayAppointments.slice(0, 2).map((apt) => (
                               <div
                                 key={apt.id}
-                                className={`text-xs p-1 rounded truncate ${getAppointmentTypeColor(apt.type)}`}
+                                className={`text-xs p-1 rounded truncate ${getAppointmentTypeColor(apt.type)} bg-card dark:bg-card border-border shadow-sm text-card-foreground`}
                               >
                                 {apt.title}
                               </div>
