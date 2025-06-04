@@ -309,14 +309,14 @@ export default function Profile() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Earned This Month</span>
                     <span className="text-lg font-semibold text-green-600">
-                      ₹{incentives.earned?.toLocaleString() || '0'}
+                      ₹{incentives?.earned?.toLocaleString() || '0'}
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
                     <div 
                       className="bg-green-500 h-2 rounded-full transition-all duration-300" 
                       style={{ 
-                        width: incentives.projected ? `${Math.min((incentives.earned / incentives.projected) * 100, 100)}%` : '0%' 
+                        width: incentives?.projected && incentives?.earned ? `${Math.min((incentives.earned / incentives.projected) * 100, 100)}%` : '0%' 
                       }}
                     ></div>
                   </div>
@@ -326,11 +326,11 @@ export default function Profile() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Projected This Month</span>
                     <span className="text-lg font-semibold text-blue-600">
-                      ₹{incentives.projected?.toLocaleString() || '0'}
+                      ₹{incentives?.projected?.toLocaleString() || '0'}
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {incentives.projected && incentives.earned 
+                    {incentives?.projected && incentives?.earned 
                       ? `${((incentives.earned / incentives.projected) * 100).toFixed(1)}% of monthly target achieved`
                       : 'Target data unavailable'
                     }
