@@ -12,6 +12,7 @@ export function ActionItemsPriorities() {
   const [isOpen, setIsOpen] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [showMoreItems, setShowMoreItems] = useState<Set<string>>(new Set());
   
   // Fetch all data types for comprehensive action items
   const { data: appointments, isLoading: appointmentsLoading } = useQuery({
@@ -109,6 +110,16 @@ export function ActionItemsPriorities() {
       newExpanded.add(itemKey);
     }
     setExpandedItems(newExpanded);
+  };
+
+  const toggleShowMore = (categoryKey: string) => {
+    const newShowMore = new Set(showMoreItems);
+    if (newShowMore.has(categoryKey)) {
+      newShowMore.delete(categoryKey);
+    } else {
+      newShowMore.add(categoryKey);
+    }
+    setShowMoreItems(newShowMore);
   };
 
   return (
