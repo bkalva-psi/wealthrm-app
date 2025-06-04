@@ -58,6 +58,7 @@ import BenchmarkComparisonChart from "../components/charts/BenchmarkComparisonCh
 import FixedTooltipChart from "../components/charts/FixedTooltipChart";
 import PerformanceComparisonChart from "../components/charts/PerformanceComparisonChart";
 import { RetirementProjectionChart } from "../components/charts/RetirementProjectionChart";
+import PortfolioEfficiencyChart from "../components/charts/PortfolioEfficiencyChart";
 
 // Mock data for portfolio holdings
 const mockHoldings = [
@@ -1194,6 +1195,17 @@ export default function ClientPortfolioPage() {
                 </CardContent>
               </Card>
               
+              <Card>
+                <CardHeader>
+                  <CardTitle>Portfolio Efficiency Analysis</CardTitle>
+                  <CardDescription>Risk vs. Return positioning of portfolio holdings</CardDescription>
+                </CardHeader>
+                <CardContent className="h-72">
+                  <div className="h-full">
+                    <PortfolioEfficiencyChart holdings={mockHoldings} />
+                  </div>
+                </CardContent>
+              </Card>
 
             </div>
           </div>
