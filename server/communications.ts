@@ -426,7 +426,12 @@ router.get('/api/communications/stats/rm/:rmId', async (req: Request, res: Respo
 router.get('/api/action-items/deal-closures', async (req: Request, res: Response) => {
   try {
     const { rows } = await pool.query(`
-      SELECT cai.*, c.client_id, cl.full_name as client_name, cl.initials as client_initials
+      SELECT 
+        cai.*,
+        cai.deal_value as expected_amount,
+        c.client_id, 
+        cl.full_name as client_name, 
+        cl.initials as client_initials
       FROM communication_action_items cai
       JOIN communications c ON cai.communication_id = c.id
       JOIN clients cl ON c.client_id = cl.id
