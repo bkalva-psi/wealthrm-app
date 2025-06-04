@@ -184,9 +184,14 @@ export function TalkingPointsCard() {
                                 </div>
                               ) : (
                                 category.items.slice(0, 5).map((item: any, index: number) => (
-                                  <div key={item.id || index} className="bg-muted rounded p-2 text-sm">
-                                    <div className="font-medium text-foreground">{item.title}</div>
-                                    <div className="text-muted-foreground">
+                                  <div key={item.id || index} className="bg-background border border-border rounded p-3 text-sm hover:bg-muted/50 transition-colors">
+                                    <div className="font-medium text-foreground mb-1">{item.title}</div>
+                                    {item.summary && (
+                                      <div className="text-foreground/80 mb-2 text-xs leading-relaxed">
+                                        Summary: {item.summary}
+                                      </div>
+                                    )}
+                                    <div className="text-muted-foreground text-xs">
                                       Relevance: {item.relevance_score}/10 • {item.source}
                                     </div>
                                   </div>
