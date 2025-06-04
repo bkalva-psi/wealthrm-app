@@ -25,6 +25,7 @@ import LoginPage from "@/pages/login";
 import Analytics from "@/pages/analytics";
 import Products from "@/pages/products";
 import Settings from "@/pages/settings";
+import Profile from "@/pages/profile";
 import TalkingPoints from "@/pages/talking-points";
 import Announcements from "@/pages/announcements";
 import NotFound from "@/pages/not-found";
@@ -270,6 +271,8 @@ function AuthenticatedApp() {
         return <Products />;
       case currentRoute === '/settings':
         return <Settings />;
+      case currentRoute === '/profile':
+        return <Profile />;
       default:
         return <NotFound />;
     }
