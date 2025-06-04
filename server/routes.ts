@@ -138,6 +138,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Client search API endpoint
+  app.get('/api/clients/search', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const query = req.query.q as string;
+      
+      if (!query || query.trim().length < 2) {
+        return res.json([]);
+      }
+      
+      const searchTerm = `%${query.trim().toLowerCase()}%`;
+      
+      const searchResults = await db
+        .select({
+          id: clients.id,
+          fullName: clients.fullName,
+          tier: clients.tier,
+          email: clients.email,
+          phone: clients.phone
+        })
+        .from(clients)
+        .where(
+          or(
+            sql`LOWER(${clients.fullName}) LIKE ${searchTerm}`,
+            sql`LOWER(${clients.email}) LIKE ${searchTerm}`,
+            sql`${clients.phone} LIKE ${searchTerm}`
+          )
+        )
+        .orderBy(clients.fullName)
+        .limit(10);
+      
+      res.json(searchResults);
+    } catch (error) {
+      console.error('Error searching clients:', error);
+      res.status(500).json({ error: 'Failed to search clients' });
+    }
+  });
+
   // Test endpoint to verify routing works
   app.get('/api/test-products', (req: Request, res: Response) => {
     console.log('TEST ENDPOINT HIT!');
