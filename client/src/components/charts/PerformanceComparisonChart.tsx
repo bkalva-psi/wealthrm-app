@@ -116,7 +116,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
           <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
           <XAxis 
             type="number"
-            tickFormatter={(value) => `${value}%`}
+            tickFormatter={(value) => `${value.toFixed(1)}%`}
             domain={['dataMin - 1', 'dataMax + 1']}
             tick={{ fontSize: 11 }}
             axisLine={{ stroke: '#e2e8f0' }}
