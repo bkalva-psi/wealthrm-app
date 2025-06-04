@@ -185,9 +185,10 @@ export function ActionItemsPriorities() {
                         {category.items.length === 0 ? (
                           <p className="text-xs text-muted-foreground italic">No items at this time</p>
                         ) : (
-                          category.items.slice(0, 5).map((item, index) => {
-                            const itemKey = `${key}-${item.id || index}`;
-                            const isItemExpanded = expandedItems.has(itemKey);
+                          <>
+                            {(showMoreItems.has(key) ? category.items : category.items.slice(0, 5)).map((item, index) => {
+                              const itemKey = `${key}-${item.id || index}`;
+                              const isItemExpanded = expandedItems.has(itemKey);
                             
                             return (
                               <div key={index} className="bg-background border border-border rounded overflow-hidden">
@@ -387,7 +388,24 @@ export function ActionItemsPriorities() {
                                 )}
                               </div>
                             );
-                          })
+                          })}
+                          
+                          {category.items.length > 5 && (
+                            <div className="mt-3 pt-2 border-t border-border">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleShowMore(key)}
+                                className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                {showMoreItems.has(key) 
+                                  ? `Show Less (showing ${category.items.length})` 
+                                  : `Show More (${category.items.length - 5} more)`
+                                }
+                              </Button>
+                            </div>
+                          )}
+                          </>
                         )}
                       </div>
                     </CollapsibleContent>
