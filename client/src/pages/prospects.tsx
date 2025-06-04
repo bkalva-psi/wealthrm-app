@@ -592,7 +592,7 @@ export default function Prospects() {
                     <Label className="text-sm mb-2 block">Potential AUM Range</Label>
                     <div className="mt-6 px-2">
                       <Slider 
-                        defaultValue={[filterOptions.minPotentialAum, filterOptions.maxPotentialAum]}
+                        value={[filterOptions.minPotentialAum, filterOptions.maxPotentialAum]}
                         max={10000000}
                         step={100000}
                         onValueChange={(values) => {
@@ -615,7 +615,7 @@ export default function Prospects() {
                     <Label className="text-sm mb-2 block">Probability Score Range</Label>
                     <div className="mt-6 px-2">
                       <Slider 
-                        defaultValue={[filterOptions.minProbabilityScore, filterOptions.maxProbabilityScore]}
+                        value={[filterOptions.minProbabilityScore, filterOptions.maxProbabilityScore]}
                         max={100}
                         step={5}
                         onValueChange={(values) => {
