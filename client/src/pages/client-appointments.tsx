@@ -435,7 +435,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 return (
                   <Card 
                     key={appointment.id} 
-                    className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                    className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-card dark:bg-card border-border shadow-sm"
                     onClick={() => {
                       setSelectedAppointment(appointment);
                       setIsAppointmentDetailsOpen(true);
@@ -445,7 +445,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                       getAppointmentTypeColor(appointment.type)
                     )}>
                       <div className="flex justify-between">
-                        <CardTitle className="text-base">{appointment.title}</CardTitle>
+                        <CardTitle className="text-base text-card-foreground">{appointment.title}</CardTitle>
                         <Badge variant="outline" className={cn(
                           priorityColors.bg,
                           priorityColors.text,
@@ -460,24 +460,24 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                           Client: {appointment.clientName}
                         </div>
                       )}
-                      <CardDescription>
+                      <CardDescription className="text-card-foreground/70">
                         {appointment.description}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-3 pt-0">
                       <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm">
-                        <div className="flex items-center text-sm text-muted-foreground">
+                        <div className="flex items-center text-sm text-card-foreground/60">
                           <Clock className="h-4 w-4 mr-1" />
                           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                         </div>
                         {appointment.location && (
-                          <div className="flex items-center text-sm text-muted-foreground">
+                          <div className="flex items-center text-sm text-card-foreground/60">
                             <MapPin className="h-4 w-4 mr-1" />
                             {appointment.location}
                           </div>
                         )}
                         {appointment.assignedTo && (
-                          <div className="flex items-center text-sm text-muted-foreground">
+                          <div className="flex items-center text-sm text-card-foreground/60">
                             <User className="h-4 w-4 mr-1" />
                             RM: {appointment.assignedTo}
                           </div>

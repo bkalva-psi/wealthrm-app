@@ -548,23 +548,23 @@ export default function CalendarPage() {
           <div className="space-y-4">
             {filteredAppointments.length > 0 ? (
               filteredAppointments.map((appointment) => (
-                <Card key={appointment.id} className={`border-l-4 ${getAppointmentTypeColor(appointment.type)}`}>
+                <Card key={appointment.id} className={`border-l-4 ${getAppointmentTypeColor(appointment.type)} bg-card dark:bg-card border-border shadow-sm hover:shadow-md transition-shadow`}>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           {getAppointmentTypeIcon(appointment.type)}
-                          <h3 className="text-lg font-medium text-foreground">{appointment.title}</h3>
+                          <h3 className="text-lg font-medium text-card-foreground">{appointment.title}</h3>
                           <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
                             {appointment.priority}
                           </Badge>
                         </div>
                         
                         {appointment.description && (
-                          <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
+                          <p className="text-sm text-card-foreground/70 mb-2">{appointment.description}</p>
                         )}
                         
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-card-foreground/60">
                           <div className="flex items-center gap-1">
                             <CalendarIcon className="h-3 w-3" />
                             <span>{format(new Date(appointment.startTime), 'MMM d, yyyy')}</span>
