@@ -1194,17 +1194,7 @@ export default function ClientPortfolioPage() {
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardHeader>
-                  <CardTitle>Portfolio Efficiency Analysis</CardTitle>
-                  <CardDescription>Risk vs. Return with Efficient Frontier</CardDescription>
-                </CardHeader>
-                <CardContent className="h-72">
-                  <div className="h-full">
-                    <FixedTooltipChart holdings={mockHoldings} />
-                  </div>
-                </CardContent>
-              </Card>
+
             </div>
           </div>
           
