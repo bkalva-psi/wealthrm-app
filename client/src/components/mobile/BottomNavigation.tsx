@@ -64,7 +64,6 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
     if (path === '/tasks' && currentPath === '/tasks') return true;
     if (path === '/clients' && (currentPath === '/clients' || currentPath.startsWith('/clients/'))) return true;
     if (path === '/menu' && (
-      currentPath === '/settings' || 
       currentPath === '/prospects' ||
       currentPath === '/announcements' ||
       currentPath === '/analytics' || 
@@ -146,7 +145,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
       </button>
       
       <button 
-        onClick={onMoreClick || (() => navigateTo('/settings'))}
+        onClick={onMoreClick || (() => navigateTo('/prospects'))}
         className={`flex flex-col items-center justify-center w-full h-full ${isActive('/menu') ? 'text-ujjivan-primary' : 'text-muted-foreground'} relative`}
         aria-label="More"
       >

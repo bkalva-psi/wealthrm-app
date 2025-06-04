@@ -304,7 +304,6 @@ export function Header({
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
               </DropdownMenuContent>

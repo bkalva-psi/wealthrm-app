@@ -27,7 +27,6 @@ const navigationItems = [
   { name: "Insights", href: "/talking-points", icon: Lightbulb },
   { name: "Updates", href: "/announcements", icon: Bell },
   { name: "Products", href: "/products", icon: Package },
-  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
