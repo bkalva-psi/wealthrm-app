@@ -201,14 +201,80 @@ export function AnnouncementsCard() {
                                   No {category.title.toLowerCase()} at this time
                                 </div>
                               ) : (
-                                category.items.slice(0, 5).map((item: Announcement, index: number) => (
-                                  <div key={item.id || index} className="bg-background/70 rounded p-2 text-sm">
-                                    <div className="font-medium">{item.title}</div>
-                                    <div className="text-muted-foreground">
-                                      Priority: {item.priority} • {item.author}
+                                category.items.slice(0, 5).map((item: Announcement, index: number) => {
+                                  const isItemExpanded = expandedItems.has(item.id?.toString() || index.toString());
+                                  
+                                  return (
+                                    <div 
+                                      key={item.id || index} 
+                                      className="bg-background border border-border rounded p-3 text-sm hover:bg-muted/50 transition-colors cursor-pointer"
+                                      onClick={() => {
+                                        const itemKey = item.id?.toString() || index.toString();
+                                        const newExpanded = new Set(expandedItems);
+                                        if (newExpanded.has(itemKey)) {
+                                          newExpanded.delete(itemKey);
+                                        } else {
+                                          newExpanded.add(itemKey);
+                                        }
+                                        setExpandedItems(newExpanded);
+                                      }}
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <div className="font-medium text-foreground mb-1 flex-1">{item.title}</div>
+                                        <div className="text-muted-foreground ml-2">
+                                          {isItemExpanded ? '−' : '+'}
+                                        </div>
+                                      </div>
+                                      
+                                      {!isItemExpanded && (
+                                        <div className="text-muted-foreground text-xs">
+                                          Priority: {item.priority} • {item.author}
+                                        </div>
+                                      )}
+                                      
+                                      {isItemExpanded && (
+                                        <div className="mt-3 space-y-3">
+                                          {item.content && (
+                                            <div className="text-foreground text-xs leading-relaxed bg-muted/30 px-2 py-1 rounded">
+                                              {item.content}
+                                            </div>
+                                          )}
+                                          
+                                          <div className="flex flex-wrap gap-2 text-xs">
+                                            <span className="bg-primary/10 text-primary px-2 py-1 rounded">
+                                              {item.type}
+                                            </span>
+                                            <span className={`px-2 py-1 rounded ${
+                                              item.priority === 'high' ? 'bg-red-100 text-red-700' :
+                                              item.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                              'bg-green-100 text-green-700'
+                                            }`}>
+                                              {item.priority} priority
+                                            </span>
+                                          </div>
+                                          
+                                          {item.tags && item.tags.length > 0 && (
+                                            <div className="flex flex-wrap gap-1">
+                                              {item.tags.map((tag: string, tagIndex: number) => (
+                                                <span key={tagIndex} className="bg-muted text-foreground text-xs px-1.5 py-0.5 rounded">
+                                                  {tag}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                          
+                                          <div className="text-muted-foreground text-xs pt-2 border-t border-border">
+                                            <div>Author: {item.author}</div>
+                                            {item.action_required && (
+                                              <div className="text-orange-600 font-medium mt-1">Action Required</div>
+                                            )}
+                                            <div>Valid until: {format(new Date(item.valid_until), 'MMM dd, yyyy')}</div>
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-                                  </div>
-                                ))
+                                  );
+                                })
                               )}
                             </div>
                           </CollapsibleContent>
