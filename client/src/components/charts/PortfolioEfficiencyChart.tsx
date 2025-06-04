@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface DataPoint {
   name: string;
@@ -16,6 +16,8 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
   holdings = [] 
 }) => {
   const [hoveredPoint, setHoveredPoint] = useState<DataPoint | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
   
   // Generate realistic risk values based on asset type and returns
   const getEstimatedRisk = (type: string, returns: number): number => {
@@ -142,8 +144,15 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
     return '#8b5cf6'; // purple
   };
   
-  // Handle mouse events
-  const handleMouseEnter = (point: DataPoint) => {
+  // Handle mouse events with position tracking
+  const handleMouseEnter = (point: DataPoint, event: React.MouseEvent) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setMousePosition({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      });
+    }
     setHoveredPoint(point);
   };
   
@@ -168,7 +177,7 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
         <span className="text-green-600">{portfolioStats.return > 0 ? '+' : ''}{portfolioStats.return.toFixed(1)}%</span>
       </div>
       
-      <div className="relative" style={{ height: "280px", width: "100%" }}>
+      <div ref={containerRef} className="relative" style={{ height: "280px", width: "100%" }}>
         <svg 
           width="100%" 
           height="100%" 
@@ -256,7 +265,7 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
                 opacity="0.8"
                 stroke="#ffffff"
                 strokeWidth="1"
-                onMouseEnter={() => handleMouseEnter(point)}
+                onMouseEnter={(e) => handleMouseEnter(point, e)}
                 onMouseLeave={handleMouseLeave}
                 style={{ cursor: 'pointer' }}
               />
@@ -271,13 +280,13 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
               stroke="#ffffff"
               strokeWidth="2"
               opacity="0.9"
-              onMouseEnter={() => handleMouseEnter({
+              onMouseEnter={(e) => handleMouseEnter({
                 name: "Current Portfolio",
                 risk: portfolioStats.risk,
                 return: portfolioStats.return,
                 size: 100,
                 type: "Portfolio"
-              })}
+              }, e)}
               onMouseLeave={handleMouseLeave}
               style={{ cursor: 'pointer' }}
             />
@@ -308,14 +317,13 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
           </g>
         </svg>
         
-        {/* Fixed Tooltip - positioned at top of chart with theme support */}
+        {/* Dynamic Tooltip - follows mouse position with theme support */}
         {hoveredPoint && (
           <div 
-            className="absolute bg-background border border-border rounded-md shadow-lg px-3 py-2 text-xs z-10 backdrop-blur-sm"
+            className="absolute bg-background border border-border rounded-md shadow-lg px-3 py-2 text-xs z-20 pointer-events-none"
             style={{ 
-              left: '50%', 
-              top: '10px',
-              transform: 'translateX(-50%)',
+              left: Math.min(mousePosition.x + 10, containerRef.current?.clientWidth ? containerRef.current.clientWidth - 180 : mousePosition.x + 10),
+              top: Math.max(mousePosition.y - 80, 10),
               width: '180px',
               backgroundColor: 'hsl(var(--background))',
               borderColor: 'hsl(var(--border))'
