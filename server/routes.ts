@@ -1485,45 +1485,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         };
 
-        // Realistic peer comparison - rank 16/25 means 40th percentile (100-60), rank 3/25 means 88th percentile
+        // Correct percentile calculation: (total - rank + 1) / total * 100
         const basePeerData = {
           M: { 
-            newClientsPercentile: Math.round((25 - 16) / 25 * 100), // rank 16/25 = 36th percentile
-            netNewMoneyPercentile: Math.round((25 - 18) / 25 * 100), // rank 18/25 = 28th percentile  
-            clientMeetingsPercentile: Math.round((25 - 14) / 25 * 100), // rank 14/25 = 44th percentile
-            prospectPipelinePercentile: Math.round((25 - 3) / 25 * 100), // rank 3/25 = 88th percentile
-            revenuePercentile: Math.round((25 - 17) / 25 * 100), // rank 17/25 = 32nd percentile
-            overallPercentile: Math.round((25 - 14) / 25 * 100), // rank 14/25 = 44th percentile
+            newClientsPercentile: Math.round((25 - 16 + 1) / 25 * 100), // rank 16/25 = 40th percentile
+            netNewMoneyPercentile: Math.round((25 - 18 + 1) / 25 * 100), // rank 18/25 = 32nd percentile  
+            clientMeetingsPercentile: Math.round((25 - 14 + 1) / 25 * 100), // rank 14/25 = 48th percentile
+            prospectPipelinePercentile: Math.round((25 - 3 + 1) / 25 * 100), // rank 3/25 = 92nd percentile
+            revenuePercentile: Math.round((25 - 17 + 1) / 25 * 100), // rank 17/25 = 36th percentile
+            overallPercentile: Math.round((25 - 14 + 1) / 25 * 100), // rank 14/25 = 48th percentile
             newClientsRank: 16, netNewMoneyRank: 18, clientMeetingsRank: 14, 
             prospectPipelineRank: 3, revenueRank: 17, overallRank: 14, totalRMs: 25
           },
           Q: { 
-            newClientsPercentile: Math.round((25 - 15) / 25 * 100), // rank 15/25 = 40th percentile
-            netNewMoneyPercentile: Math.round((25 - 16) / 25 * 100), // rank 16/25 = 36th percentile
-            clientMeetingsPercentile: Math.round((25 - 14) / 25 * 100), // rank 14/25 = 44th percentile
-            prospectPipelinePercentile: Math.round((25 - 2) / 25 * 100), // rank 2/25 = 92nd percentile
-            revenuePercentile: Math.round((25 - 16) / 25 * 100), // rank 16/25 = 36th percentile
-            overallPercentile: Math.round((25 - 13) / 25 * 100), // rank 13/25 = 48th percentile
+            newClientsPercentile: Math.round((25 - 15 + 1) / 25 * 100), // rank 15/25 = 44th percentile
+            netNewMoneyPercentile: Math.round((25 - 16 + 1) / 25 * 100), // rank 16/25 = 40th percentile
+            clientMeetingsPercentile: Math.round((25 - 14 + 1) / 25 * 100), // rank 14/25 = 48th percentile
+            prospectPipelinePercentile: Math.round((25 - 2 + 1) / 25 * 100), // rank 2/25 = 96th percentile
+            revenuePercentile: Math.round((25 - 16 + 1) / 25 * 100), // rank 16/25 = 40th percentile
+            overallPercentile: Math.round((25 - 13 + 1) / 25 * 100), // rank 13/25 = 52nd percentile
             newClientsRank: 15, netNewMoneyRank: 16, clientMeetingsRank: 14, 
             prospectPipelineRank: 2, revenueRank: 16, overallRank: 13, totalRMs: 25
           },
           HY: { 
-            newClientsPercentile: Math.round((25 - 20) / 25 * 100), // rank 20/25 = 20th percentile
-            netNewMoneyPercentile: Math.round((25 - 21) / 25 * 100), // rank 21/25 = 16th percentile
-            clientMeetingsPercentile: Math.round((25 - 20) / 25 * 100), // rank 20/25 = 20th percentile
-            prospectPipelinePercentile: Math.round((25 - 2) / 25 * 100), // rank 2/25 = 92nd percentile
-            revenuePercentile: Math.round((25 - 20) / 25 * 100), // rank 20/25 = 20th percentile
-            overallPercentile: Math.round((25 - 16) / 25 * 100), // rank 16/25 = 36th percentile
+            newClientsPercentile: Math.round((25 - 20 + 1) / 25 * 100), // rank 20/25 = 24th percentile
+            netNewMoneyPercentile: Math.round((25 - 21 + 1) / 25 * 100), // rank 21/25 = 20th percentile
+            clientMeetingsPercentile: Math.round((25 - 20 + 1) / 25 * 100), // rank 20/25 = 24th percentile
+            prospectPipelinePercentile: Math.round((25 - 2 + 1) / 25 * 100), // rank 2/25 = 96th percentile
+            revenuePercentile: Math.round((25 - 20 + 1) / 25 * 100), // rank 20/25 = 24th percentile
+            overallPercentile: Math.round((25 - 16 + 1) / 25 * 100), // rank 16/25 = 40th percentile
             newClientsRank: 20, netNewMoneyRank: 21, clientMeetingsRank: 20, 
             prospectPipelineRank: 2, revenueRank: 20, overallRank: 16, totalRMs: 25
           },
           Y: { 
-            newClientsPercentile: Math.round((25 - 23) / 25 * 100), // rank 23/25 = 8th percentile
-            netNewMoneyPercentile: Math.round((25 - 23) / 25 * 100), // rank 23/25 = 8th percentile
-            clientMeetingsPercentile: Math.round((25 - 22) / 25 * 100), // rank 22/25 = 12th percentile
-            prospectPipelinePercentile: Math.round((25 - 1) / 25 * 100), // rank 1/25 = 96th percentile
-            revenuePercentile: Math.round((25 - 23) / 25 * 100), // rank 23/25 = 8th percentile
-            overallPercentile: Math.round((25 - 18) / 25 * 100), // rank 18/25 = 28th percentile
+            newClientsPercentile: Math.round((25 - 23 + 1) / 25 * 100), // rank 23/25 = 12th percentile
+            netNewMoneyPercentile: Math.round((25 - 23 + 1) / 25 * 100), // rank 23/25 = 12th percentile
+            clientMeetingsPercentile: Math.round((25 - 22 + 1) / 25 * 100), // rank 22/25 = 16th percentile
+            prospectPipelinePercentile: Math.round((25 - 1 + 1) / 25 * 100), // rank 1/25 = 100th percentile
+            revenuePercentile: Math.round((25 - 23 + 1) / 25 * 100), // rank 23/25 = 12th percentile
+            overallPercentile: Math.round((25 - 18 + 1) / 25 * 100), // rank 18/25 = 32nd percentile
             newClientsRank: 23, netNewMoneyRank: 23, clientMeetingsRank: 22, 
             prospectPipelineRank: 1, revenueRank: 23, overallRank: 18, totalRMs: 25
           }
