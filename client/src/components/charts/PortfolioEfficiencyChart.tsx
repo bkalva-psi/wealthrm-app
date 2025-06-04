@@ -144,16 +144,27 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
     return '#8b5cf6'; // purple
   };
   
-  // Handle mouse events with position tracking
-  const handleMouseEnter = (point: DataPoint, event: React.MouseEvent) => {
+  // Handle mouse events with accurate position tracking
+  const handleMouseEnter = (point: DataPoint, event: React.MouseEvent<SVGCircleElement>) => {
+    event.stopPropagation();
     if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      setMousePosition({ x, y });
+    }
+    setHoveredPoint(point);
+  };
+  
+  const handleMouseMove = (event: React.MouseEvent<SVGCircleElement>) => {
+    if (containerRef.current && hoveredPoint) {
       const rect = containerRef.current.getBoundingClientRect();
       setMousePosition({
         x: event.clientX - rect.left,
         y: event.clientY - rect.top
       });
     }
-    setHoveredPoint(point);
   };
   
   const handleMouseLeave = () => {
@@ -254,42 +265,65 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
               opacity="0.7" 
             />
             
-            {/* Data points */}
+            {/* Data points with expanded hover areas */}
             {dataPoints.map((point, i) => (
+              <g key={`point-group-${i}`}>
+                {/* Invisible larger circle for better hover detection */}
+                <circle
+                  cx={xScale(point.risk)}
+                  cy={yScale(point.return)}
+                  r={Math.max(8, Math.sqrt(point.size) * 2)}
+                  fill="transparent"
+                  onMouseEnter={(e) => handleMouseEnter(point, e)}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  style={{ cursor: 'pointer' }}
+                />
+                {/* Visible circle */}
+                <circle
+                  cx={xScale(point.risk)}
+                  cy={yScale(point.return)}
+                  r={Math.max(3, Math.sqrt(point.size) * 1.5)}
+                  fill={getColor(point.name, point.type)}
+                  opacity="0.8"
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                  style={{ pointerEvents: 'none' }}
+                />
+              </g>
+            ))}
+            
+            {/* Portfolio point with expanded hover area */}
+            <g>
+              {/* Invisible larger circle for better hover detection */}
               <circle
-                key={`point-${i}`}
-                cx={xScale(point.risk)}
-                cy={yScale(point.return)}
-                r={Math.max(3, Math.sqrt(point.size) * 1.5)}
-                fill={getColor(point.name, point.type)}
-                opacity="0.8"
-                stroke="#ffffff"
-                strokeWidth="1"
-                onMouseEnter={(e) => handleMouseEnter(point, e)}
+                cx={xScale(portfolioStats.risk)}
+                cy={yScale(portfolioStats.return)}
+                r="12"
+                fill="transparent"
+                onMouseEnter={(e) => handleMouseEnter({
+                  name: "Current Portfolio",
+                  risk: portfolioStats.risk,
+                  return: portfolioStats.return,
+                  size: 100,
+                  type: "Portfolio"
+                }, e)}
+                onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 style={{ cursor: 'pointer' }}
               />
-            ))}
-            
-            {/* Portfolio point */}
-            <circle
-              cx={xScale(portfolioStats.risk)}
-              cy={yScale(portfolioStats.return)}
-              r="6"
-              fill="#ef4444"
-              stroke="#ffffff"
-              strokeWidth="2"
-              opacity="0.9"
-              onMouseEnter={(e) => handleMouseEnter({
-                name: "Current Portfolio",
-                risk: portfolioStats.risk,
-                return: portfolioStats.return,
-                size: 100,
-                type: "Portfolio"
-              }, e)}
-              onMouseLeave={handleMouseLeave}
-              style={{ cursor: 'pointer' }}
-            />
+              {/* Visible portfolio circle */}
+              <circle
+                cx={xScale(portfolioStats.risk)}
+                cy={yScale(portfolioStats.return)}
+                r="6"
+                fill="#ef4444"
+                stroke="#ffffff"
+                strokeWidth="2"
+                opacity="0.9"
+                style={{ pointerEvents: 'none' }}
+              />
+            </g>
             
             {/* Axis labels */}
             <text 
@@ -317,26 +351,24 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
           </g>
         </svg>
         
-        {/* Dynamic Tooltip - follows mouse position with theme support */}
+        {/* Tooltip positioned top-left of cursor with theme support */}
         {hoveredPoint && (
           <div 
-            className="absolute bg-background border border-border rounded-md shadow-lg px-3 py-2 text-xs z-20 pointer-events-none"
+            className="absolute rounded-md shadow-xl px-3 py-2 text-xs z-30 pointer-events-none border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600"
             style={{ 
-              left: Math.min(mousePosition.x + 10, containerRef.current?.clientWidth ? containerRef.current.clientWidth - 180 : mousePosition.x + 10),
-              top: Math.max(mousePosition.y - 80, 10),
-              width: '180px',
-              backgroundColor: 'hsl(var(--background))',
-              borderColor: 'hsl(var(--border))'
+              left: Math.max(10, Math.min(mousePosition.x - 200, (containerRef.current?.clientWidth || 400) - 220)),
+              top: Math.max(10, mousePosition.y - 85),
+              width: '200px'
             }}
           >
-            <div className="font-medium truncate text-foreground">{hoveredPoint.name}</div>
-            <div className="text-muted-foreground text-[10px]">{hoveredPoint.type}</div>
-            <div className="grid grid-cols-2 gap-x-4 mt-1 text-foreground">
-              <div>Risk: <span className="font-medium">{hoveredPoint.risk.toFixed(1)}%</span></div>
-              <div>Return: <span className={`font-medium ${hoveredPoint.return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            <div className="font-semibold truncate text-gray-900 dark:text-gray-100">{hoveredPoint.name}</div>
+            <div className="text-gray-500 dark:text-gray-400 text-[10px] mb-1">{hoveredPoint.type}</div>
+            <div className="grid grid-cols-2 gap-x-3 text-gray-700 dark:text-gray-300">
+              <div className="text-[11px]">Risk: <span className="font-medium">{hoveredPoint.risk.toFixed(1)}%</span></div>
+              <div className="text-[11px]">Return: <span className={`font-medium ${hoveredPoint.return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {hoveredPoint.return > 0 ? '+' : ''}{hoveredPoint.return.toFixed(1)}%
               </span></div>
-              <div className="col-span-2">Allocation: <span className="font-medium">{hoveredPoint.size.toFixed(1)}%</span></div>
+              <div className="col-span-2 text-[11px] mt-1">Allocation: <span className="font-medium">{hoveredPoint.size.toFixed(1)}%</span></div>
             </div>
           </div>
         )}
