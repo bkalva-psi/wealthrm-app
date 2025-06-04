@@ -138,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Client search API endpoint
+  // Combined search API endpoint for clients and prospects
   app.get('/api/clients/search', authMiddleware, async (req: Request, res: Response) => {
     try {
       const query = req.query.q as string;
@@ -149,13 +149,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const searchTerm = `%${query.trim().toLowerCase()}%`;
       
-      const searchResults = await db
+      // Search clients
+      const clientResults = await db
         .select({
           id: clients.id,
           fullName: clients.fullName,
           tier: clients.tier,
           email: clients.email,
-          phone: clients.phone
+          phone: clients.phone,
+          type: sql`'client'`.as('type')
         })
         .from(clients)
         .where(
@@ -166,12 +168,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
           )
         )
         .orderBy(clients.fullName)
-        .limit(10);
+        .limit(5);
       
-      res.json(searchResults);
+      // Search prospects
+      const prospectResults = await db
+        .select({
+          id: prospects.id,
+          fullName: prospects.fullName,
+          tier: sql`NULL`.as('tier'),
+          email: prospects.email,
+          phone: prospects.phone,
+          type: sql`'prospect'`.as('type')
+        })
+        .from(prospects)
+        .where(
+          or(
+            sql`LOWER(${prospects.fullName}) LIKE ${searchTerm}`,
+            sql`LOWER(${prospects.email}) LIKE ${searchTerm}`,
+            sql`${prospects.phone} LIKE ${searchTerm}`
+          )
+        )
+        .orderBy(prospects.fullName)
+        .limit(5);
+      
+      // Combine and sort results
+      const combinedResults = [...clientResults, ...prospectResults]
+        .sort((a, b) => a.fullName.localeCompare(b.fullName))
+        .slice(0, 10);
+      
+      res.json(combinedResults);
     } catch (error) {
-      console.error('Error searching clients:', error);
-      res.status(500).json({ error: 'Failed to search clients' });
+      console.error('Error searching clients and prospects:', error);
+      res.status(500).json({ error: 'Failed to search clients and prospects' });
     }
   });
 

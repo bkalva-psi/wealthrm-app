@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/context/auth-context";
-import { Search, Menu, User, X } from "lucide-react";
+import { Search, Menu, User, X, Users, UserPlus } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -83,14 +83,18 @@ export function Header({
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedIndex >= 0 && searchResults && searchResults[selectedIndex]) {
-      navigateToClient(searchResults[selectedIndex]);
+      navigateToResult(searchResults[selectedIndex]);
     } else if (searchResults && searchResults.length > 0) {
-      navigateToClient(searchResults[0]);
+      navigateToResult(searchResults[0]);
     }
   };
   
-  const navigateToClient = (client: any) => {
-    window.location.hash = `/clients/${client.id}/personal`;
+  const navigateToResult = (result: any) => {
+    if (result.type === 'client') {
+      window.location.hash = `/clients/${result.id}/personal`;
+    } else if (result.type === 'prospect') {
+      window.location.hash = `/prospect-detail/${result.id}`;
+    }
     setSearchQuery("");
     setShowSearchResults(false);
     setSelectedIndex(-1);
@@ -114,9 +118,9 @@ export function Header({
       case 'Enter':
         e.preventDefault();
         if (selectedIndex >= 0) {
-          navigateToClient(searchResults[selectedIndex]);
+          navigateToResult(searchResults[selectedIndex]);
         } else if (searchResults.length > 0) {
-          navigateToClient(searchResults[0]);
+          navigateToResult(searchResults[0]);
         }
         break;
       case 'Escape':
@@ -187,7 +191,7 @@ export function Header({
               <input 
                 ref={inputRef}
                 className="block w-full pl-10 pr-10 py-2 border border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" 
-                placeholder="Search clients by name..." 
+                placeholder="Search clients and prospects..." 
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -214,38 +218,54 @@ export function Header({
                   ) : searchResults && searchResults.length > 0 ? (
                     <>
                       <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
-                        Found {searchResults.length} client{searchResults.length === 1 ? '' : 's'}
+                        Found {searchResults.length} result{searchResults.length === 1 ? '' : 's'}
                       </div>
-                      {searchResults.map((client: any, index: number) => (
+                      {searchResults.map((result: any, index: number) => (
                         <button
-                          key={client.id}
+                          key={`${result.type}-${result.id}`}
                           className={cn(
                             "w-full px-4 py-3 text-left hover:bg-muted flex items-center gap-3 border-b border-border/50 last:border-b-0",
                             selectedIndex === index && "bg-muted"
                           )}
-                          onClick={() => navigateToClient(client)}
+                          onClick={() => navigateToResult(result)}
                         >
                           <div className="flex-shrink-0">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                              <User className="h-4 w-4 text-primary" />
+                            <div className={cn(
+                              "w-8 h-8 rounded-full flex items-center justify-center",
+                              result.type === 'client' ? "bg-primary/10" : "bg-orange/10"
+                            )}>
+                              {result.type === 'client' ? (
+                                <Users className="h-4 w-4 text-primary" />
+                              ) : (
+                                <UserPlus className="h-4 w-4 text-orange-600" />
+                              )}
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-card-foreground truncate">
-                              {client.fullName}
+                              {result.fullName}
                             </div>
                             <div className="text-sm text-muted-foreground flex items-center gap-2">
-                              <span>ID: {client.id}</span>
-                              {client.tier && (
+                              <span className={cn(
+                                "px-1.5 py-0.5 text-xs rounded font-medium",
+                                result.type === 'client' 
+                                  ? "bg-primary/10 text-primary" 
+                                  : "bg-orange/10 text-orange-700"
+                              )}>
+                                {result.type === 'client' ? 'Client' : 'Prospect'}
+                              </span>
+                              <span>•</span>
+                              <span>ID: {result.id}</span>
+                              {result.tier && (
                                 <>
                                   <span>•</span>
                                   <span className={cn(
                                     "px-1.5 py-0.5 text-xs rounded",
-                                    client.tier === 'Premium' && "bg-yellow-100 text-yellow-800",
-                                    client.tier === 'Gold' && "bg-amber-100 text-amber-800",
-                                    client.tier === 'Silver' && "bg-gray-100 text-gray-800"
+                                    result.tier === 'Premium' && "bg-yellow-100 text-yellow-800",
+                                    result.tier === 'Gold' && "bg-amber-100 text-amber-800",
+                                    result.tier === 'Silver' && "bg-gray-100 text-gray-800"
                                   )}>
-                                    {client.tier}
+                                    {result.tier}
                                   </span>
                                 </>
                               )}
@@ -256,7 +276,7 @@ export function Header({
                     </>
                   ) : searchQuery.length >= 2 ? (
                     <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                      No clients found for "{searchQuery}"
+                      No clients or prospects found for "{searchQuery}"
                     </div>
                   ) : null}
                 </div>
