@@ -119,15 +119,19 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
 
   const efficientFrontier = generateEfficientFrontier();
 
-  // Custom tooltip
+  // Custom tooltip with full theme support
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg px-3 py-2 text-xs">
-          <div className="font-semibold text-gray-900 dark:text-gray-100">{data.name}</div>
-          <div className="text-gray-500 dark:text-gray-400 text-[10px] mb-1">{data.type}</div>
-          <div className="grid grid-cols-2 gap-x-3 text-gray-700 dark:text-gray-300">
+        <div className="bg-background border border-border rounded-md shadow-lg px-3 py-2 text-xs" style={{
+          backgroundColor: 'hsl(var(--background))',
+          borderColor: 'hsl(var(--border))',
+          color: 'hsl(var(--foreground))'
+        }}>
+          <div className="font-semibold text-foreground">{data.name}</div>
+          <div className="text-muted-foreground text-[10px] mb-1">{data.type}</div>
+          <div className="grid grid-cols-2 gap-x-3 text-foreground">
             <div className="text-[11px]">Risk: <span className="font-medium">{data.risk.toFixed(1)}%</span></div>
             <div className="text-[11px]">Return: <span className={`font-medium ${data.return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
               {data.return > 0 ? '+' : ''}{data.return.toFixed(1)}%
@@ -169,9 +173,9 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
         <span className="text-green-600">{portfolioStats.return > 0 ? '+' : ''}{portfolioStats.return.toFixed(1)}%</span>
       </div>
       
-      <div style={{ width: '100%', height: '280px' }}>
+      <div style={{ width: '100%', height: '240px' }}>
         <ResponsiveContainer>
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 50, left: 60 }}>
+          <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 60 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis 
               type="number" 
@@ -181,6 +185,7 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
               tick={{ fontSize: 10 }}
               axisLine={{ stroke: '#e2e8f0' }}
               tickLine={false}
+              label={{ value: 'Risk (Standard Deviation %)', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fontSize: '11px', fill: 'hsl(var(--muted-foreground))' } }}
             />
             <YAxis 
               type="number" 
@@ -190,44 +195,29 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
               tick={{ fontSize: 10 }}
               axisLine={{ stroke: '#e2e8f0' }}
               tickLine={false}
+              label={{ value: 'Return (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: '11px', fill: 'hsl(var(--muted-foreground))' } }}
             />
             <Tooltip content={<CustomTooltip />} />
             <ReferenceLine x={0} stroke="#cbd5e1" />
             <ReferenceLine y={0} stroke="#cbd5e1" />
             
-            {/* Efficient frontier line */}
-            <Scatter 
-              data={efficientFrontier} 
-              line={{ stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' }}
-              lineType="joint"
-              shape={() => null}
-            />
-            
             {/* Data points */}
             <Scatter 
               data={allDataPoints} 
-              shape={<CustomDot />}
+              shape={CustomDot}
             />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
       
-      {/* Axis labels */}
-      <div className="flex justify-center mt-2">
-        <span className="text-xs font-medium text-muted-foreground">Risk (Standard Deviation %)</span>
-      </div>
-      <div className="absolute left-0 top-1/2 transform -rotate-90 origin-center">
-        <span className="text-xs font-medium text-muted-foreground">Return (%)</span>
-      </div>
-      
-      <div className="mt-2 flex justify-center gap-6 text-xs">
+      <div className="flex justify-center gap-6 text-xs mt-2">
         <div className="flex items-center">
           <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-          <span>Portfolio</span>
+          <span className="text-muted-foreground">Portfolio</span>
         </div>
         <div className="flex items-center">
           <div className="w-4 h-0 border-t-2 border-dashed border-purple-500 mr-1"></div>
-          <span>Efficient Frontier</span>
+          <span className="text-muted-foreground">Efficient Frontier</span>
         </div>
       </div>
     </div>
