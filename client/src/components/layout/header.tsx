@@ -90,7 +90,7 @@ export function Header({
   };
   
   const navigateToClient = (client: any) => {
-    navigate(`/clients/${client.id}/personal`);
+    window.location.hash = `/clients/${client.id}/personal`;
     setSearchQuery("");
     setShowSearchResults(false);
     setSelectedIndex(-1);
