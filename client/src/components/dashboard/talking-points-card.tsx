@@ -183,19 +183,69 @@ export function TalkingPointsCard() {
                                   No {category.title.toLowerCase()} at this time
                                 </div>
                               ) : (
-                                category.items.slice(0, 5).map((item: any, index: number) => (
-                                  <div key={item.id || index} className="bg-background border border-border rounded p-3 text-sm hover:bg-muted/50 transition-colors">
-                                    <div className="font-medium text-foreground mb-1">{item.title}</div>
-                                    {item.summary && (
-                                      <div className="text-foreground mb-2 text-xs leading-relaxed font-medium bg-muted/30 px-2 py-1 rounded">
-                                        Summary: {item.summary}
+                                category.items.slice(0, 5).map((item: any, index: number) => {
+                                  const isItemExpanded = expandedItems.has(item.id?.toString() || index.toString());
+                                  
+                                  return (
+                                    <div 
+                                      key={item.id || index} 
+                                      className="bg-background border border-border rounded p-3 text-sm hover:bg-muted/50 transition-colors cursor-pointer"
+                                      onClick={() => {
+                                        const itemKey = item.id?.toString() || index.toString();
+                                        const newExpanded = new Set(expandedItems);
+                                        if (newExpanded.has(itemKey)) {
+                                          newExpanded.delete(itemKey);
+                                        } else {
+                                          newExpanded.add(itemKey);
+                                        }
+                                        setExpandedItems(newExpanded);
+                                      }}
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <div className="font-medium text-foreground mb-1 flex-1">{item.title}</div>
+                                        <div className="text-muted-foreground ml-2">
+                                          {isItemExpanded ? '−' : '+'}
+                                        </div>
                                       </div>
-                                    )}
-                                    <div className="text-muted-foreground text-xs">
-                                      Relevance: {item.relevance_score}/10 • {item.source}
+                                      
+                                      {!isItemExpanded && item.summary && (
+                                        <div className="text-foreground mb-2 text-xs leading-relaxed font-medium bg-muted/30 px-2 py-1 rounded">
+                                          Summary: {item.summary}
+                                        </div>
+                                      )}
+                                      
+                                      {isItemExpanded && (
+                                        <div className="mt-3 space-y-3">
+                                          {item.summary && (
+                                            <div className="text-foreground text-xs leading-relaxed font-medium bg-muted/30 px-2 py-1 rounded">
+                                              Summary: {item.summary}
+                                            </div>
+                                          )}
+                                          
+                                          {item.detailed_content && (
+                                            <div className="text-foreground text-xs leading-relaxed">
+                                              {item.detailed_content}
+                                            </div>
+                                          )}
+                                          
+                                          {item.tags && item.tags.length > 0 && (
+                                            <div className="flex flex-wrap gap-1">
+                                              {item.tags.map((tag: string, tagIndex: number) => (
+                                                <span key={tagIndex} className="bg-primary/10 text-primary text-xs px-1.5 py-0.5 rounded">
+                                                  {tag}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                      
+                                      <div className="text-muted-foreground text-xs mt-2">
+                                        Relevance: {item.relevance_score}/10 • {item.source}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))
+                                  );
+                                })
                               )}
                             </div>
                           </CollapsibleContent>
