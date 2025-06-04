@@ -105,10 +105,10 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
   
   const efficientFrontier = generateEfficientFrontier();
   
-  // Calculate SVG coordinates
-  const margin = { top: 10, right: 10, bottom: 40, left: 40 };
+  // Calculate SVG coordinates with proper spacing
+  const margin = { top: 20, right: 20, bottom: 50, left: 60 };
   const width = 450 - margin.left - margin.right;
-  const height = 320 - margin.top - margin.bottom;
+  const height = 280 - margin.top - margin.bottom;
   
   // Find min and max values for scaling
   const minRisk = Math.min(...dataPoints.map(p => p.risk)) * 0.8;
@@ -168,13 +168,13 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
         <span className="text-green-600">{portfolioStats.return > 0 ? '+' : ''}{portfolioStats.return.toFixed(1)}%</span>
       </div>
       
-      <div className="relative flex-1">
+      <div className="relative" style={{ height: "280px", width: "100%" }}>
         <svg 
           width="100%" 
           height="100%" 
           viewBox={`0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`}
-          className="overflow-hidden"
-          style={{ maxHeight: "250px" }} // Fixed height to prevent overlap
+          className="overflow-visible"
+          preserveAspectRatio="xMidYMid meet"
         >
           <g transform={`translate(${margin.left}, ${margin.top})`}>
             {/* X and Y axis */}
@@ -223,7 +223,7 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
                     strokeWidth="1" 
                   />
                   <text 
-                    x="-10" 
+                    x="-15" 
                     y={y + 3} 
                     textAnchor="end" 
                     fontSize="10" 
@@ -271,6 +271,15 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
               stroke="#ffffff"
               strokeWidth="2"
               opacity="0.9"
+              onMouseEnter={() => handleMouseEnter({
+                name: "Current Portfolio",
+                risk: portfolioStats.risk,
+                return: portfolioStats.return,
+                size: 100,
+                type: "Portfolio"
+              })}
+              onMouseLeave={handleMouseLeave}
+              style={{ cursor: 'pointer' }}
             />
             
             {/* Axis labels */}
@@ -286,10 +295,10 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
             </text>
             
             <text 
-              x="-25" 
+              x="-45" 
               y={height/2} 
               textAnchor="middle" 
-              transform={`rotate(-90, -25, ${height/2})`} 
+              transform={`rotate(-90, -45, ${height/2})`} 
               fontSize="11" 
               fontWeight="500" 
               fill="#4b5563"
