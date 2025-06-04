@@ -146,8 +146,8 @@ export default function TalkingPointsPage() {
 
                   {isExpanded && (
                     <div className="mt-4 space-y-4">
-                      <div className="text-sm text-muted-foreground bg-slate-50 p-3 rounded-lg">
-                        <strong>Summary:</strong> {point.summary}
+                      <div className="text-sm text-foreground bg-muted/50 border border-border p-3 rounded-lg font-medium">
+                        <strong className="text-primary">Summary:</strong> {point.summary}
                       </div>
                       
                       <div className="prose prose-sm text-foreground">
