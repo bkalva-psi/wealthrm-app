@@ -187,7 +187,7 @@ export function TalkingPointsCard() {
                                   <div key={item.id || index} className="bg-background border border-border rounded p-3 text-sm hover:bg-muted/50 transition-colors">
                                     <div className="font-medium text-foreground mb-1">{item.title}</div>
                                     {item.summary && (
-                                      <div className="text-foreground/80 mb-2 text-xs leading-relaxed">
+                                      <div className="text-foreground mb-2 text-xs leading-relaxed font-medium bg-muted/30 px-2 py-1 rounded">
                                         Summary: {item.summary}
                                       </div>
                                     )}
