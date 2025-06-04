@@ -286,7 +286,7 @@ export function PerformanceCard() {
                                         <div className="text-right">
                                           <div className="text-sm font-medium">{peer.yourValue}</div>
                                           <div className={`text-xs ${getPercentageChangeColor(peer.vsAverage)}`}>
-                                            vs avg: {peer.avgValue}
+                                            {peer.avgValue}
                                           </div>
                                         </div>
                                       </div>
