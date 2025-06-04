@@ -176,25 +176,23 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     }
   };
 
-  // Comprehensive client health status logic
-  const getClientHealthColor = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
+  // Client health status background colors for indicator bar
+  const getClientHealthBg = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Check 1: Overdue contact (>90 days)
+    // Check conditions (same logic as status)
     const lastContact = client.lastContactDate;
     const daysSinceContact = lastContact ? 
       Math.floor((new Date().getTime() - new Date(lastContact).getTime()) / (1000 * 60 * 60 * 24)) : 999;
     const hasOverdueContact = daysSinceContact > 90;
     
-    // Check 2: Meeting scheduled today
     const hasMeetingToday = appointments.some(apt => {
       const aptDate = new Date(apt.startTime);
       aptDate.setHours(0, 0, 0, 0);
       return aptDate.getTime() === today.getTime() && apt.clientId === client.id;
     });
     
-    // Check 3: Overdue tasks related to this customer
     const hasOverdueTasks = tasks.some(task => {
       if (task.clientId !== client.id) return false;
       if (task.completed) return false;
@@ -205,15 +203,19 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
       return dueDate < new Date();
     });
     
-    // Check 4: Complaints from this customer
     const hasComplaints = alerts.some(alert => 
       alert.clientId === client.id && 
       alert.severity === 'high' && 
       alert.title?.toLowerCase().includes('complaint')
     );
     
-    // Use consistent background colors
-    return 'bg-muted';
+    // Return appropriate colors
+    if (hasMeetingToday) return 'bg-blue-500';
+    if (hasComplaints) return 'bg-red-500';
+    if (hasOverdueTasks) return 'bg-orange-500';
+    if (hasOverdueContact) return 'bg-yellow-500';
+    
+    return 'bg-green-500'; // On Track
   };
 
   const getClientHealthStatus = (client: Client, tasks: any[] = [], appointments: any[] = [], alerts: any[] = []) => {
@@ -254,7 +256,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     if (hasOverdueTasks) return 'Overdue Tasks';
     if (hasOverdueContact) return 'Contact Overdue';
     
-    return 'Up to Date';
+    return 'On Track';
   };
 
 
@@ -441,12 +443,10 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
             </div>
             
             {/* Client Status/Health Indicator */}
-            <div className="p-3 bg-card/60 rounded-lg transition-all duration-200 shadow-sm border border-border/20">
+            <div className="p-3 bg-card/60 rounded-lg hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
               <div className="text-xs text-muted-foreground mb-1 font-medium">Status</div>
-              <div className="flex items-center gap-2">
-                <div className={`h-2.5 w-2.5 rounded-full ${getClientHealthColor(client, tasks, appointments, alerts)} shadow-sm`}></div>
-                <span className="text-sm font-medium text-foreground">{getClientHealthStatus(client, tasks, appointments, alerts)}</span>
-              </div>
+              <div className="text-sm font-medium text-foreground">{getClientHealthStatus(client, tasks, appointments, alerts)}</div>
+              <div className={`h-1.5 w-full rounded-full mt-2 ${getClientHealthBg(client, tasks, appointments, alerts)} shadow-sm`}></div>
             </div>
           </div>
         </div>
