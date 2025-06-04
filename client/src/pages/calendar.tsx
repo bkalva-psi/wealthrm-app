@@ -87,13 +87,13 @@ export default function CalendarPage() {
   const getAppointmentTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'meeting':
-        return 'border-blue-500 bg-blue-50 dark:bg-blue-950/30';
+        return 'border-l-blue-500 bg-blue-50/80 dark:bg-blue-950/30';
       case 'call':
-        return 'border-green-500 bg-green-50 dark:bg-green-950/30';
+        return 'border-l-green-500 bg-green-50/80 dark:bg-green-950/30';
       case 'video_call':
-        return 'border-purple-500 bg-purple-50 dark:bg-purple-950/30';
+        return 'border-l-purple-500 bg-purple-50/80 dark:bg-purple-950/30';
       default:
-        return 'border-slate-500 bg-muted';
+        return 'border-l-slate-500 bg-slate-50/80 dark:bg-slate-800/30';
     }
   };
 
@@ -194,30 +194,18 @@ export default function CalendarPage() {
     });
   };
 
-  // Helper functions
-  const getAppointmentIcon = (type: string) => {
-    switch (type) {
-      case 'call':
-        return <Phone className="h-4 w-4" />;
-      case 'video_call':
-        return <Video className="h-4 w-4" />;
-      case 'meeting':
-        return <Users className="h-4 w-4" />;
-      default:
-        return <CalendarIcon className="h-4 w-4" />;
-    }
-  };
+  // Helper functions are already defined above
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800';
       case 'low':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700';
     }
   };
 
