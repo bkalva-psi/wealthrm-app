@@ -235,7 +235,7 @@ export function PerformanceCard() {
                                       tickLine={{ stroke: 'hsl(var(--border))' }}
                                     />
                                     <Tooltip 
-                                      formatter={(value: number) => [`₹${value.toFixed(2)} Cr`, '']}
+                                      formatter={(value: number, name: string) => [`₹${value.toFixed(2)} Cr`, name]}
                                       labelFormatter={(label) => `Month: ${label}`}
                                       contentStyle={{
                                         backgroundColor: 'hsl(var(--background))',
