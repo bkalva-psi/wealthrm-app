@@ -285,18 +285,19 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
                 <polyline 
                   points={benchmarkPointsString}
                   fill="none"
-                  stroke="hsl(var(--muted-foreground))" 
+                  stroke="#64748b" 
                   strokeWidth="2"
                   strokeLinejoin="round"
                   strokeLinecap="round"
+                  strokeDasharray="4,2"
                 />
                 
                 {/* Portfolio line (on top) */}
                 <polyline 
                   points={portfolioPointsString}
                   fill="none"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth="2"
+                  stroke="#2563eb"
+                  strokeWidth="3"
                   strokeLinejoin="round"
                   strokeLinecap="round"
                 />
@@ -308,7 +309,7 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
                       cx={tooltipInfo.x} 
                       cy={chartPoints.find(p => p.x === tooltipInfo.x)?.benchmarkY || 0} 
                       r="3" 
-                      fill="hsl(var(--muted-foreground))"
+                      fill="#64748b"
                       stroke="hsl(var(--background))" 
                       strokeWidth="1.5"
                     />
@@ -316,7 +317,7 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
                       cx={tooltipInfo.x} 
                       cy={chartPoints.find(p => p.x === tooltipInfo.x)?.portfolioY || 0} 
                       r="3" 
-                      fill="hsl(var(--primary))"
+                      fill="#2563eb"
                       stroke="hsl(var(--background))" 
                       strokeWidth="1.5"
                     />
@@ -340,8 +341,8 @@ const BenchmarkComparisonChart: React.FC<BenchmarkComparisonChartProps> = ({ aum
                 >
                   <div className="font-medium">{tooltipInfo.date}</div>
                   <div className="flex justify-between gap-3">
-                    <span style={{ color: 'hsl(var(--primary))' }}>Portfolio: {tooltipInfo.portfolioValue.toFixed(1)}</span>
-                    <span style={{ color: 'hsl(var(--muted-foreground))' }}>Benchmark: {tooltipInfo.benchmarkValue.toFixed(1)}</span>
+                    <span style={{ color: '#2563eb' }}>Portfolio: {tooltipInfo.portfolioValue.toFixed(1)}</span>
+                    <span style={{ color: '#64748b' }}>Benchmark: {tooltipInfo.benchmarkValue.toFixed(1)}</span>
                   </div>
                 </div>
               )}
