@@ -209,7 +209,10 @@ export function ActionItemsPriorities() {
                                         <div>
                                           <div className="font-medium text-sm text-foreground">{item.client_name}</div>
                                           <div className="text-xs text-muted-foreground">
-                                            Expected: ₹{(item.expected_amount / 100000).toFixed(1)}L • {format(new Date(item.expected_close_date), 'MMM dd')}
+                                            Expected: {item.expected_amount && !isNaN(item.expected_amount) 
+                                              ? `₹${Math.round(item.expected_amount / 100000)} L`
+                                              : 'TBD'
+                                            } • {format(new Date(item.expected_close_date), 'MMM dd')}
                                           </div>
                                         </div>
                                       )}
@@ -300,7 +303,12 @@ export function ActionItemsPriorities() {
                                         </div>
                                         <div className="flex justify-between text-xs">
                                           <span className="text-muted-foreground">Expected Amount:</span>
-                                          <span className="font-medium text-foreground">₹{(item.expected_amount / 100000).toFixed(1)}L</span>
+                                          <span className="font-medium text-foreground">
+                                            {item.expected_amount && !isNaN(item.expected_amount) 
+                                              ? `₹${Math.round(item.expected_amount / 100000)} L`
+                                              : 'TBD'
+                                            }
+                                          </span>
                                         </div>
                                         <div className="flex justify-between text-xs">
                                           <span className="text-muted-foreground">Close Date:</span>
