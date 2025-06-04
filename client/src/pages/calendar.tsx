@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { format, startOfDay, endOfDay, isSameWeek, startOfToday, addMonths, subMonths, isSameDay, isToday, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfDay, endOfDay, isSameWeek, startOfToday, addMonths, subMonths, addDays, subDays, isSameDay, isToday, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, Phone, Video, Users, Search, Plus, ChevronLeft, ChevronRight, List, Calendar as CalendarViewIcon } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,7 @@ export default function CalendarPage() {
   // Helper functions
   const nextMonth = () => {
     if (selectedView === 'day' && selectedDate) {
-      setSelectedDate(addMonths(selectedDate, 1));
+      setSelectedDate(addDays(selectedDate, 1));
     } else {
       setCalendarDate(addMonths(calendarDate, 1));
     }
@@ -73,7 +73,7 @@ export default function CalendarPage() {
   
   const prevMonth = () => {
     if (selectedView === 'day' && selectedDate) {
-      setSelectedDate(subMonths(selectedDate, 1));
+      setSelectedDate(subDays(selectedDate, 1));
     } else {
       setCalendarDate(subMonths(calendarDate, 1));
     }
