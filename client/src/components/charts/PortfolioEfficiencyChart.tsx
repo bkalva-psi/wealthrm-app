@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, LineChart, Line } from 'recharts';
 
 interface DataPoint {
   name: string;
@@ -61,6 +61,23 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
   // Calculate portfolio position
   const portfolioRisk = dataPoints.reduce((acc, point) => acc + (point.risk * point.allocation), 0) / 100;
   const portfolioReturn = dataPoints.reduce((acc, point) => acc + (point.return * point.allocation), 0) / 100;
+
+  // Generate efficient frontier data
+  const generateEfficientFrontier = () => {
+    const minRisk = Math.min(...dataPoints.map(p => p.risk)) * 0.7;
+    const maxRisk = Math.max(...dataPoints.map(p => p.risk)) * 1.1;
+    const points = [];
+    
+    for (let risk = minRisk; risk <= maxRisk; risk += (maxRisk - minRisk) / 25) {
+      // Efficient frontier formula: optimal return for given risk level
+      const optimalReturn = Math.sqrt(risk) * 2.8 + 3;
+      points.push({ risk, return: optimalReturn, name: "Efficient Frontier", type: "frontier" });
+    }
+    
+    return points;
+  };
+
+  const efficientFrontierPoints = generateEfficientFrontier();
 
   // Add portfolio point
   const allPoints = [
@@ -173,6 +190,15 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
             <Tooltip content={<CustomTooltip />} />
             <ReferenceLine x={0} stroke="hsl(var(--muted-foreground))" opacity={0.5} />
             <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" opacity={0.5} />
+            
+            {/* Efficient Frontier Line */}
+            <Scatter 
+              data={efficientFrontierPoints} 
+              line={{ stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5,5' }}
+              lineType="joint"
+              shape={(props: any) => <circle r={0} />}
+            />
+            
             <Scatter data={allPoints} shape={renderDot} />
           </ScatterChart>
         </ResponsiveContainer>
@@ -182,6 +208,10 @@ const PortfolioEfficiencyChart: React.FC<PortfolioEfficiencyChartProps> = ({
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
           <span>Portfolio</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-4 h-0 border-t-2 border-dashed border-purple-500"></div>
+          <span>Efficient Frontier</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded-full bg-blue-500"></div>
