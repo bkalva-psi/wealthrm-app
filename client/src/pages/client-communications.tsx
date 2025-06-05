@@ -337,7 +337,7 @@ const ClientCommunications: React.FC = () => {
       });
       setIsNewNoteDialogOpen(false);
       setNewNoteData({
-        client_id: clientId ? parseInt(clientId) : undefined as number | undefined,
+        client_id: clientId ? parseInt(clientId.toString()) : undefined as number | undefined,
         communication_type: 'advisory_meeting',
         channel: 'phone',
         direction: 'outbound',
@@ -983,14 +983,43 @@ const ClientCommunications: React.FC = () => {
                 />
               </div>
 
-              {newNoteData.channel === 'in_person' && (
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={newNoteData.location || ''}
-                    onChange={(e) => setNewNoteData(prev => ({ ...prev, location: e.target.value }))}
-                    placeholder="Meeting location"
+                  <Label htmlFor="sentiment">Sentiment</Label>
+                  <Select 
+                    value={newNoteData.sentiment} 
+                    onValueChange={(value) => setNewNoteData(prev => ({ ...prev, sentiment: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sentiment" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="positive">Positive</SelectItem>
+                      <SelectItem value="neutral">Neutral</SelectItem>
+                      <SelectItem value="negative">Negative</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center space-x-2 pt-6">
+                  <Checkbox 
+                    id="follow_up_required"
+                    checked={newNoteData.follow_up_required}
+                    onCheckedChange={(checked) => setNewNoteData(prev => ({ ...prev, follow_up_required: !!checked }))}
+                  />
+                  <Label htmlFor="follow_up_required">Follow-up required</Label>
+                </div>
+              </div>
+
+              {newNoteData.follow_up_required && (
+                <div className="space-y-2">
+                  <Label htmlFor="next_steps">Next Steps</Label>
+                  <Textarea
+                    id="next_steps"
+                    value={newNoteData.next_steps}
+                    onChange={(e) => setNewNoteData(prev => ({ ...prev, next_steps: e.target.value }))}
+                    placeholder="Describe the next steps or follow-up actions"
+                    rows={2}
                   />
                 </div>
               )}
