@@ -1093,7 +1093,7 @@ export default function ClientPortfolioPage() {
         {/* Holdings Section */}
         <PortfolioSection
           title="Holdings"
-          icon={<Receipt className="h-5 w-5" />}
+          icon={<IndianRupee className="h-5 w-5" />}
           defaultOpen={false}
         >
           <Card>
