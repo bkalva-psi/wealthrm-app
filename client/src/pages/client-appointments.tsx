@@ -21,7 +21,8 @@ import {
   PieChart,
   Receipt,
   FileBarChart,
-  Lightbulb
+  Lightbulb,
+  Edit2 as Edit
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, parse, isToday, startOfDay } from 'date-fns';
 
@@ -81,6 +82,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   const [isNewAppointmentDialogOpen, setIsNewAppointmentDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
+  const [expandedAppointmentId, setExpandedAppointmentId] = useState<number | null>(null);
   
   // Fetch client data when we have a specific clientId
   const { data: client, isLoading: isClientLoading } = useQuery({
@@ -438,24 +440,25 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               {dateAppointments.map((appointment) => {
                 const priorityColors = getPriorityColor(appointment.priority);
                 
+                const isExpanded = expandedAppointmentId === appointment.id;
+                
                 return (
                   <Card 
                     key={appointment.id} 
-                    className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-card dark:bg-card border-border shadow-sm"
+                    className="overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 bg-card dark:bg-card border-border shadow-sm"
                     onClick={() => {
-                      setSelectedAppointment(appointment);
-                      setIsAppointmentDetailsOpen(true);
+                      setExpandedAppointmentId(isExpanded ? null : appointment.id);
                     }}>
                     <CardHeader className={cn(
                       "py-3 border-l-4",
                       getAppointmentTypeColor(appointment.type)
                     )}>
-                      <div className="flex justify-between">
-                        <CardTitle className="text-base text-card-foreground">{appointment.title}</CardTitle>
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-base text-foreground font-semibold">{appointment.title}</CardTitle>
                         <Badge variant="outline" className={cn(
                           priorityColors.bg,
                           priorityColors.text,
-                          "border",
+                          "border shrink-0 ml-2",
                           priorityColors.border
                         )}>
                           {appointment.priority || 'Normal'} Priority
@@ -466,30 +469,86 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                           Client: {appointment.clientName}
                         </div>
                       )}
-                      <CardDescription className="text-card-foreground/70">
-                        {appointment.description}
-                      </CardDescription>
+                      {appointment.description && (
+                        <CardDescription className="text-foreground/80 font-medium">
+                          {appointment.description}
+                        </CardDescription>
+                      )}
                     </CardHeader>
-                    <CardContent className="pb-0 pt-0">
-                      <div className="bg-muted/50 dark:bg-muted/30 px-3 py-2 -mx-6 -mb-4 mt-3 flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm border-t border-border">
-                        <div className="flex items-center text-sm text-foreground/80">
-                          <Clock className="h-4 w-4 mr-1 text-primary" />
+                    
+                    {/* Basic info - always visible */}
+                    <CardContent className="pb-3 pt-0">
+                      <div className="bg-muted/30 dark:bg-muted/20 px-4 py-3 -mx-6 flex flex-wrap gap-4 text-sm border-t border-border">
+                        <div className="flex items-center text-foreground font-medium">
+                          <Clock className="h-4 w-4 mr-2 text-primary" />
                           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                         </div>
                         {appointment.location && (
-                          <div className="flex items-center text-sm text-foreground/80">
-                            <MapPin className="h-4 w-4 mr-1 text-primary" />
+                          <div className="flex items-center text-foreground font-medium">
+                            <MapPin className="h-4 w-4 mr-2 text-primary" />
                             {appointment.location}
                           </div>
                         )}
                         {appointment.assignedTo && (
-                          <div className="flex items-center text-sm text-foreground/80">
-                            <User className="h-4 w-4 mr-1 text-primary" />
+                          <div className="flex items-center text-foreground font-medium">
+                            <User className="h-4 w-4 mr-2 text-primary" />
                             RM: {appointment.assignedTo}
                           </div>
                         )}
                       </div>
                     </CardContent>
+                    
+                    {/* Expanded details */}
+                    {isExpanded && (
+                      <CardContent className="pt-0 pb-4 border-t border-border">
+                        <div className="space-y-4 mt-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-1">Start Time</p>
+                              <p className="text-foreground font-medium">
+                                {format(new Date(appointment.startTime), 'MMMM d, yyyy h:mm a')}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-1">End Time</p>
+                              <p className="text-foreground font-medium">
+                                {format(new Date(appointment.endTime), 'MMMM d, yyyy h:mm a')}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-1">Type</p>
+                              <p className="text-foreground font-medium capitalize">{appointment.type}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-1">Priority</p>
+                              <p className="text-foreground font-medium capitalize">{appointment.priority || 'Normal'}</p>
+                            </div>
+                          </div>
+                          
+                          {appointment.description && (
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-2">Description</p>
+                              <p className="text-foreground">{appointment.description}</p>
+                            </div>
+                          )}
+                          
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            <Button variant="outline" size="sm">
+                              <Phone className="h-4 w-4 mr-2" />
+                              Call Client
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <MessageCircle className="h-4 w-4 mr-2" />
+                              Message
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    )}
                   </Card>
                 );
               })}
