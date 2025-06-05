@@ -47,6 +47,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { getTierColor } from "@/lib/utils";
 import { ClientPageLayout } from "@/components/layout/ClientPageLayout";
+import { SecurityAvatar } from "@/components/ui/security-avatar";
 
 // Import custom chart components
 import AssetAllocationChart from "../components/charts/AssetAllocationChart";
@@ -455,7 +456,16 @@ function SortableHoldingsTable({
           <tbody>
             {displayedHoldings.map((holding, index) => (
               <tr key={index} className="border-b border-border hover:bg-muted/50">
-                <td className="px-4 py-3 font-medium">{holding.name}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <SecurityAvatar 
+                      securityName={holding.name} 
+                      securityType={holding.type}
+                      size="sm"
+                    />
+                    <span className="font-medium">{holding.name}</span>
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-muted-foreground">{holding.type}</td>
                 <td className="px-4 py-3 text-right font-medium">₹{(holding.value / 100000).toFixed(1)}L</td>
                 <td className="px-4 py-3 text-right">{holding.allocation}%</td>
@@ -483,9 +493,16 @@ function SortableHoldingsTable({
         {displayedHoldings.map((holding, index) => (
           <div key={index} className="p-3 rounded-lg border border-border bg-card">
             <div className="flex justify-between items-start mb-2">
-              <div>
-                <div className="font-medium text-sm">{holding.name}</div>
-                <div className="text-xs text-muted-foreground">{holding.type}</div>
+              <div className="flex items-center gap-2">
+                <SecurityAvatar 
+                  securityName={holding.name} 
+                  securityType={holding.type}
+                  size="sm"
+                />
+                <div>
+                  <div className="font-medium text-sm">{holding.name}</div>
+                  <div className="text-xs text-muted-foreground">{holding.type}</div>
+                </div>
               </div>
               <div className="text-right">
                 <div className="font-medium text-sm">₹{(holding.value / 100000).toFixed(1)}L</div>
@@ -1129,9 +1146,11 @@ export default function ClientPortfolioPage() {
                     .map((holding, index) => (
                       <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-start space-x-2">
-                          <div className="h-8 w-8 rounded-full bg-green-100/50 dark:bg-green-950/30 flex items-center justify-center text-green-600 dark:text-green-400 font-medium text-xs">
-                            #{index + 1}
-                          </div>
+                          <SecurityAvatar 
+                            securityName={holding.name} 
+                            securityType={holding.type}
+                            size="sm"
+                          />
                           <div>
                             <div className="font-medium text-sm">{holding.name}</div>
                             <div className="text-xs text-muted-foreground">{holding.type}</div>
@@ -1160,9 +1179,11 @@ export default function ClientPortfolioPage() {
                     .map((holding, index) => (
                       <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50">
                         <div className="flex items-start space-x-2">
-                          <div className="h-8 w-8 rounded-full bg-red-100/50 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400 font-medium text-xs">
-                            #{index + 1}
-                          </div>
+                          <SecurityAvatar 
+                            securityName={holding.name} 
+                            securityType={holding.type}
+                            size="sm"
+                          />
                           <div>
                             <div className="font-medium text-sm">{holding.name}</div>
                             <div className="text-xs text-muted-foreground">{holding.type}</div>
