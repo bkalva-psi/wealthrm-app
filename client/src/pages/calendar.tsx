@@ -37,6 +37,7 @@ export default function CalendarPage() {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isNewAppointmentDialogOpen, setIsNewAppointmentDialogOpen] = useState(false);
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
   const [newAppointment, setNewAppointment] = useState({
     title: '',
     description: '',
@@ -51,6 +52,17 @@ export default function CalendarPage() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Toggle card expansion
+  const toggleCardExpansion = (appointmentId: number) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(appointmentId)) {
+      newExpanded.delete(appointmentId);
+    } else {
+      newExpanded.add(appointmentId);
+    }
+    setExpandedCards(newExpanded);
+  };
 
   // Set page title
   useEffect(() => {
@@ -547,47 +559,112 @@ export default function CalendarPage() {
         {selectedView === 'list' && (
           <div className="space-y-4">
             {filteredAppointments.length > 0 ? (
-              filteredAppointments.map((appointment) => (
-                <Card key={appointment.id} className={`border-l-4 ${getAppointmentTypeColor(appointment.type)} bg-card dark:bg-card border-border shadow-sm hover:shadow-md transition-shadow`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          {getAppointmentTypeIcon(appointment.type)}
-                          <h3 className="text-lg font-medium text-card-foreground">{appointment.title}</h3>
-                          <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
-                            {appointment.priority}
-                          </Badge>
+              filteredAppointments.map((appointment) => {
+                const isExpanded = expandedCards.has(appointment.id);
+                return (
+                  <Card 
+                    key={appointment.id} 
+                    className={`border-l-4 ${getAppointmentTypeColor(appointment.type)} bg-card dark:bg-card border-border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer`}
+                    onClick={() => toggleCardExpansion(appointment.id)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            {getAppointmentTypeIcon(appointment.type)}
+                            <h3 className="text-lg font-medium text-foreground dark:text-foreground">{appointment.title}</h3>
+                            <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
+                              {appointment.priority}
+                            </Badge>
+                          </div>
+                          
+                          {appointment.description && (
+                            <p className="text-sm text-muted-foreground mb-2">{appointment.description}</p>
+                          )}
+                          
+                          {/* Basic info always visible */}
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-2">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3 text-primary" />
+                              <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
+                            </div>
+                            {appointment.clientName && (
+                              <div className="flex items-center gap-1">
+                                <Users className="h-3 w-3 text-primary" />
+                                <span className="text-primary font-medium">{appointment.clientName}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Expandable content */}
+                          {isExpanded && (
+                            <div className="mt-4 pt-4 border-t border-border space-y-3 animate-in slide-in-from-top-2 duration-200">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="text-sm font-medium text-foreground mb-2">Appointment Details</h4>
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <CalendarIcon className="h-4 w-4 text-primary" />
+                                      <span className="text-muted-foreground">Date:</span>
+                                      <span className="text-foreground">{format(new Date(appointment.startTime), 'MMM d, yyyy')}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-4 w-4 text-primary" />
+                                      <span className="text-muted-foreground">Duration:</span>
+                                      <span className="text-foreground">
+                                        {Math.round((new Date(appointment.endTime).getTime() - new Date(appointment.startTime).getTime()) / (1000 * 60))} minutes
+                                      </span>
+                                    </div>
+                                    {appointment.location && (
+                                      <div className="flex items-center gap-2">
+                                        <span className="h-4 w-4 text-primary">📍</span>
+                                        <span className="text-muted-foreground">Location:</span>
+                                        <span className="text-foreground">{appointment.location}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <h4 className="text-sm font-medium text-foreground mb-2">Meeting Type</h4>
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex items-center gap-2">
+                                      {getAppointmentTypeIcon(appointment.type)}
+                                      <span className="text-foreground font-medium capitalize">{appointment.type.replace('_', ' ')}</span>
+                                    </div>
+                                    <Badge variant="outline" className={`${getPriorityColor(appointment.priority)} w-fit`}>
+                                      {appointment.priority} Priority
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {appointment.description && (
+                                <div>
+                                  <h4 className="text-sm font-medium text-foreground mb-2">Description</h4>
+                                  <p className="text-sm text-muted-foreground bg-muted/30 dark:bg-muted/20 p-3 rounded-lg">
+                                    {appointment.description}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                         
-                        {appointment.description && (
-                          <p className="text-sm text-card-foreground/70 mb-2">{appointment.description}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Theme-aware bottom information bar */}
-                    <div className="bg-muted/50 dark:bg-muted/30 px-4 py-3 -mx-4 -mb-4 mt-4 flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm border-t border-border">
-                      <div className="flex items-center text-sm text-foreground/80">
-                        <Clock className="h-4 w-4 mr-1 text-primary" />
-                        {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
-                      </div>
-                      {appointment.location && (
-                        <div className="flex items-center text-sm text-foreground/80">
-                          <span className="h-4 w-4 mr-1 text-primary">📍</span>
-                          {appointment.location}
+                        <div className="ml-4 flex items-center">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            {isExpanded ? (
+                              <ChevronLeft className="h-4 w-4 text-muted-foreground rotate-90" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Button>
                         </div>
-                      )}
-                      {appointment.clientName && (
-                        <div className="flex items-center text-sm text-foreground/80">
-                          <Users className="h-4 w-4 mr-1 text-primary" />
-                          {appointment.clientName}
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
