@@ -91,16 +91,6 @@ const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ dat
             strokeWidth={2}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend 
-            wrapperStyle={{ 
-              fontSize: '10px', 
-              paddingTop: '15px',
-              textAlign: 'center'
-            }}
-            iconType="line"
-            layout="horizontal"
-            align="center"
-          />
         </RadarChart>
       </ResponsiveContainer>
     </div>
