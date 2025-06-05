@@ -133,16 +133,16 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
     }, 0);
     const valueInCrores = totalValue / 10000000; // Convert to crores
     
-    // Define proper hex colors for each stage
+    // Define theme-aware colors for each stage
     const getStageHexColor = (stageId: string) => {
       switch (stageId.toLowerCase()) {
-        case 'new': return '#10b981'; // Green
-        case 'qualified': return '#3b82f6'; // Blue
-        case 'proposal': return '#f59e0b'; // Orange
-        case 'negotiation': return '#8b5cf6'; // Purple
-        case 'won': return '#22c55e'; // Success green
-        case 'lost': return '#ef4444'; // Red
-        default: return '#6b7280'; // Gray
+        case 'new': return 'hsl(var(--chart-1))'; // Emerald
+        case 'qualified': return 'hsl(var(--chart-2))'; // Blue
+        case 'proposal': return 'hsl(var(--chart-3))'; // Amber
+        case 'negotiation': return 'hsl(var(--chart-4))'; // Purple
+        case 'won': return 'hsl(var(--chart-5))'; // Green
+        case 'lost': return 'hsl(var(--destructive))'; // Red
+        default: return 'hsl(var(--muted-foreground))'; // Muted
       }
     };
     
@@ -494,34 +494,34 @@ export default function Prospects() {
     return (
       <div className="p-6 min-h-screen bg-background transition-colors duration-300">
         <div className="flex items-center justify-between mb-6">
-          <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+          <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
         </div>
         
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-          <div className="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-10 w-64 bg-muted rounded animate-pulse"></div>
+          <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
+          <div className="h-10 w-24 bg-muted rounded animate-pulse"></div>
         </div>
         
-        <div className="h-32 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-6"></div>
+        <div className="h-32 w-full bg-muted rounded animate-pulse mb-6"></div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {Array.from({ length: 5 }).map((_, stageIndex) => (
             <div key={stageIndex} className="space-y-4">
-              <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              <div className="h-6 w-24 bg-muted rounded animate-pulse"></div>
               {Array.from({ length: 3 }).map((_, cardIndex) => (
                 <Card key={cardIndex} className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
-                      <div className="h-9 w-9 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
-                      <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse ml-3"></div>
+                      <div className="h-9 w-9 bg-muted rounded-full animate-pulse"></div>
+                      <div className="h-4 w-24 bg-muted rounded animate-pulse ml-3"></div>
                     </div>
-                    <div className="h-5 w-12 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+                    <div className="h-5 w-12 bg-muted rounded-full animate-pulse"></div>
                   </div>
                   <div className="space-y-2">
-                    <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                    <div className="h-3 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-3 w-full bg-muted rounded animate-pulse"></div>
+                    <div className="h-3 w-3/4 bg-muted rounded animate-pulse"></div>
                   </div>
                 </Card>
               ))}
