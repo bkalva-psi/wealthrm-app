@@ -629,6 +629,7 @@ export default function CalendarPage() {
                                   <h4 className="text-sm font-medium text-foreground mb-2">Meeting Type</h4>
                                   <div className="space-y-2 text-sm">
                                     <div className="flex items-center gap-2">
+                                      {getAppointmentTypeIcon(appointment.type)}
                                       <span className="text-foreground font-medium capitalize">{appointment.type.replace('_', ' ')}</span>
                                     </div>
                                     <Badge variant="outline" className={`${getPriorityColor(appointment.priority)} w-fit`}>

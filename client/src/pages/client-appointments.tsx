@@ -554,12 +554,15 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                           
                           <div className="flex flex-wrap gap-2 pt-2">
                             <Button variant="outline" size="sm">
+                              <Phone className="h-4 w-4 mr-2" />
                               Call Client
                             </Button>
                             <Button variant="outline" size="sm">
+                              <MessageCircle className="h-4 w-4 mr-2" />
                               Message
                             </Button>
                             <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </Button>
                           </div>
@@ -865,6 +868,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Line 2: Phone Number */}
                     {(client as any)?.phone && (
                       <div className="mt-1 flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
                         <a 
                           href={`tel:${(client as any)?.phone}`}
                           className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
@@ -878,6 +882,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Line 3: Email */}
                     {(client as any)?.email && (
                       <div className="mt-1 flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
                         <a 
                           href={`mailto:${(client as any)?.email}`}
                           className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
