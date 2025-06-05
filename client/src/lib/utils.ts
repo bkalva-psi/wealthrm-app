@@ -158,43 +158,7 @@ export function formatPhoneNumber(phone: string): string {
 }
 
 export function getStageColor(stage: string): { bg: string, text: string } {
-  switch (stage?.toLowerCase()) {
-    case 'new':
-      return { 
-        bg: 'bg-emerald-100 dark:bg-emerald-950/50', 
-        text: 'text-emerald-800 dark:text-emerald-200' 
-      };
-    case 'qualified':
-      return { 
-        bg: 'bg-blue-100 dark:bg-blue-950/50', 
-        text: 'text-blue-800 dark:text-blue-200' 
-      };
-    case 'proposal':
-      return { 
-        bg: 'bg-amber-100 dark:bg-amber-950/50', 
-        text: 'text-amber-800 dark:text-amber-200' 
-      };
-    case 'negotiation':
-      return { 
-        bg: 'bg-purple-100 dark:bg-purple-950/50', 
-        text: 'text-purple-800 dark:text-purple-200' 
-      };
-    case 'won':
-      return { 
-        bg: 'bg-green-100 dark:bg-green-950/50', 
-        text: 'text-green-800 dark:text-green-200' 
-      };
-    case 'lost':
-      return { 
-        bg: 'bg-red-100 dark:bg-red-950/50', 
-        text: 'text-red-800 dark:text-red-200' 
-      };
-    default:
-      return { 
-        bg: 'bg-muted', 
-        text: 'text-muted-foreground' 
-      };
-  }
+  return { bg: 'bg-muted', text: 'text-muted-foreground' };
 }
 
 export function getPriorityColor(priority: string): { bg: string, text: string } {
