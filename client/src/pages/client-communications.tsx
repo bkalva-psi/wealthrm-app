@@ -203,15 +203,16 @@ const ClientCommunications: React.FC = () => {
   // New note dialog state
   const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
   const [newNoteData, setNewNoteData] = useState({
-    communication_type: 'quarterly_review',
+    client_id: clientId ? parseInt(clientId) : undefined as number | undefined,
+    communication_type: 'advisory_meeting',
     channel: 'phone',
     direction: 'outbound',
     subject: '',
     summary: '',
     notes: '',
-    outcome: 'completed',
-    duration_minutes: 15,
-    location: '',
+    sentiment: 'positive',
+    follow_up_required: false,
+    next_steps: '',
     tags: [] as string[]
   });
   
@@ -246,6 +247,12 @@ const ClientCommunications: React.FC = () => {
   const { data: communications, isLoading, refetch: refetchCommunications } = useQuery({
     queryKey: isGlobalView ? ['/api/communications'] : [`/api/communications/${clientId}`],
     enabled: isGlobalView || !!clientId,
+  });
+
+  // Query all clients for client selection in global view
+  const { data: allClients } = useQuery({
+    queryKey: ['/api/clients'],
+    enabled: isGlobalView,
   });
 
   // Filter communications
@@ -433,15 +440,13 @@ const ClientCommunications: React.FC = () => {
       <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
           <h2 className="text-2xl font-bold text-foreground">Notes</h2>
-          {!isGlobalView && (
-            <Button 
-              size="sm" 
-              onClick={() => setIsNewNoteDialogOpen(true)}
-              className="h-8 w-8 p-0 rounded-full"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          )}
+          <Button 
+            size="sm" 
+            onClick={() => setIsNewNoteDialogOpen(true)}
+            className="h-8 w-8 p-0 rounded-full"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
         
         {!isGlobalView && clientId && (
@@ -841,7 +846,7 @@ const ClientCommunications: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Add New Note</DialogTitle>
             <DialogDescription>
-              Record a new communication or note for this client.
+              Record a new communication or note {isGlobalView ? 'for a client' : 'for this client'}.
             </DialogDescription>
           </DialogHeader>
           
@@ -850,6 +855,28 @@ const ClientCommunications: React.FC = () => {
             createNoteMutation.mutate(newNoteData);
           }}>
             <div className="grid gap-4 py-4">
+              {/* Client Selection - Only show in global view */}
+              {isGlobalView && (
+                <div className="space-y-2">
+                  <Label htmlFor="client_id">Client *</Label>
+                  <Select 
+                    value={newNoteData.client_id?.toString() || ''} 
+                    onValueChange={(value) => setNewNoteData(prev => ({ ...prev, client_id: parseInt(value) }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allClients?.map((client: any) => (
+                        <SelectItem key={client.id} value={client.id.toString()}>
+                          {client.fullName} ({client.tier})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="communication_type">Type *</Label>
