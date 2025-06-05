@@ -694,7 +694,7 @@ export default function Clients() {
                       <Label className="text-sm mb-2 block">AUM Range</Label>
                       <div className="mt-6 px-2">
                         <Slider 
-                          defaultValue={[filterOptions.minAum, filterOptions.maxAum]}
+                          value={[filterOptions.minAum, filterOptions.maxAum]}
                           max={100000000}
                           step={1000000}
                           onValueChange={(values) => {
