@@ -237,10 +237,10 @@ function MetricCard({ title, value, icon, description, color = "blue", trend, is
 // Allocation chart component (simplified for now)
 function AllocationChart({ data, title, color = "blue" }: { data: Record<string, number>, title: string, color?: string }) {
   const colorMap = {
-    blue: ["#4B7BF5", "#7698F8", "#9CB5FA", "#C1D1FC", "#E5EAFE"],
-    green: ["#10B981", "#34D399", "#6EE7B7", "#A7F3D0", "#ECFDF5"],
-    amber: ["#F59E0B", "#FBBF24", "#FCD34D", "#FDE68A", "#FEF3C7"],
-    purple: ["#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE", "#EDE9FE"],
+    blue: ["#3B82F6", "#EF4444", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16"],
+    green: ["#10B981", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16"],
+    amber: ["#F59E0B", "#EF4444", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16"],
+    purple: ["#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#EC4899", "#06B6D4", "#84CC16"],
   };
   
   const colors = colorMap[color as keyof typeof colorMap] || colorMap.blue;
