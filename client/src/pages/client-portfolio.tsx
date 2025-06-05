@@ -249,18 +249,34 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
     <div className="space-y-4">
       <h3 className="text-lg font-medium">{title}</h3>
       <div className="space-y-2">
-        {Object.entries(data).map(([key, value], index) => (
-          <div key={key} className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="flex items-center">
-                <span className={`inline-block w-3 h-3 mr-2 rounded-sm`} style={{ backgroundColor: colors[index % colors.length] }}></span>
-                {key}
-              </span>
-              <span className="font-medium">{value}%</span>
+        {Object.entries(data).map(([key, value], index) => {
+          const itemColor = colors[index % colors.length];
+          
+          return (
+            <div key={key} className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center">
+                  <span 
+                    className="inline-block w-3 h-3 mr-2 rounded-full" 
+                    style={{ backgroundColor: itemColor }}
+                  ></span>
+                  {key}
+                </span>
+                <span className="font-medium">{value}%</span>
+              </div>
+              {/* Custom progress bar with matching colors */}
+              <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2">
+                <div 
+                  className="h-2 rounded-full transition-all duration-300"
+                  style={{ 
+                    backgroundColor: itemColor,
+                    width: `${value}%`
+                  }}
+                ></div>
+              </div>
             </div>
-            <Progress value={value} className={`h-1.5 bg-current`} style={{ color: colors[index % colors.length] }} />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
