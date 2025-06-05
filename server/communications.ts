@@ -51,7 +51,7 @@ router.post('/api/communications', async (req: Request, res: Response) => {
       sentiment || 'neutral', 
       follow_up_required || false, 
       next_steps || '', 
-      JSON.stringify(tags || [])
+      tags && tags.length > 0 ? `{${tags.join(',')}}` : '{}'
     ]);
 
     console.log('New communication created with ID:', rows[0]?.id);
