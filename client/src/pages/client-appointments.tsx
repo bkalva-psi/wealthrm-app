@@ -786,7 +786,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <a 
                           href={`tel:${(client as any)?.phone}`}
-                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                           title="Call client"
                         >
                           {(client as any)?.phone}
@@ -800,7 +800,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         <Mail className="h-4 w-4 text-muted-foreground" />
                         <a 
                           href={`mailto:${(client as any)?.email}`}
-                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
                           title="Send email to client"
                         >
                           {(client as any)?.email}
@@ -809,7 +809,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     )}
                   </div>
                 ) : (
-                  <div className="text-gray-500">Client not found</div>
+                  <div className="text-muted-foreground">Client not found</div>
                 )}
               </div>
             </div>
@@ -859,10 +859,10 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 h-12 w-full"
             title="Appointments"
           >
-            <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <Calendar className="h-6 w-6 text-primary" />
           </button>
           
           <button 
@@ -931,7 +931,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
               {selectedAppointment?.description && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-1">Description</p>
-                  <p className="text-foreground dark:text-slate-100">{selectedAppointment.description}</p>
+                  <p className="text-foreground">{selectedAppointment.description}</p>
                 </div>
               )}
               
