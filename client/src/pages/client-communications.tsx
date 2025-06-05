@@ -840,7 +840,7 @@ const ClientCommunications: React.FC = () => {
 
       {/* New Note Dialog */}
       <Dialog open={isNewNoteDialogOpen} onOpenChange={setIsNewNoteDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add New Note</DialogTitle>
             <DialogDescription>
@@ -852,7 +852,7 @@ const ClientCommunications: React.FC = () => {
             e.preventDefault();
             createNoteMutation.mutate(newNoteData);
           }}>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-3 py-3">
               {/* Client Selection - Only show in global view */}
               {isGlobalView && (
                 <div className="space-y-2">
@@ -968,6 +968,7 @@ const ClientCommunications: React.FC = () => {
                   onChange={(e) => setNewNoteData(prev => ({ ...prev, summary: e.target.value }))}
                   placeholder="Brief summary of the communication"
                   rows={2}
+                  className="min-h-[60px]"
                 />
               </div>
 
@@ -978,7 +979,8 @@ const ClientCommunications: React.FC = () => {
                   value={newNoteData.notes}
                   onChange={(e) => setNewNoteData(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="Detailed notes and observations"
-                  rows={4}
+                  rows={3}
+                  className="min-h-[80px]"
                   required
                 />
               </div>
@@ -1025,7 +1027,7 @@ const ClientCommunications: React.FC = () => {
               )}
             </div>
             
-            <DialogFooter>
+            <DialogFooter className="sticky bottom-0 bg-background pt-4 border-t mt-4">
               <Button 
                 variant="outline" 
                 onClick={() => setIsNewNoteDialogOpen(false)}
@@ -1035,7 +1037,7 @@ const ClientCommunications: React.FC = () => {
               </Button>
               <Button 
                 type="submit"
-                disabled={createNoteMutation.isPending || !newNoteData.notes.trim()}
+                disabled={createNoteMutation.isPending || !newNoteData.notes.trim() || (isGlobalView && !newNoteData.client_id)}
               >
                 {createNoteMutation.isPending ? "Saving..." : "Save Note"}
               </Button>
