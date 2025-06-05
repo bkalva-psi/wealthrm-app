@@ -17,6 +17,7 @@ import { Sidebar } from "./sidebar";
 import ujjivanLogo from "../../assets/ujjivan_logo.png";
 import sravanAvatar from "../../assets/sravan-avatar.svg";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme-provider";
 
 interface HeaderProps {
   isMobileMenuOpen?: boolean;
@@ -28,7 +29,23 @@ export function Header({
   setIsMobileMenuOpen = () => {} 
 }: HeaderProps = {}) {
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
   const [, navigate] = useLocation();
+  
+  // Helper function to get theme-specific text classes
+  const getBankNameClasses = () => {
+    if (theme === 'ujjivan') {
+      return "text-white text-sm font-bold leading-tight whitespace-nowrap m-0 p-0";
+    }
+    return "text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap m-0 p-0";
+  };
+  
+  const getAppNameClasses = () => {
+    if (theme === 'ujjivan') {
+      return "text-orange-300 text-xs font-medium leading-tight m-0 p-0";
+    }
+    return "text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight m-0 p-0";
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -154,8 +171,8 @@ export function Header({
               <div className="flex items-center h-16 px-4 border-b border-border">
                 <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
                 <div className="ml-2 flex flex-col justify-center">
-                  <h1 className="text-teal-700 dark:text-teal-400 ujjivan-theme:text-white text-sm font-bold leading-tight whitespace-nowrap m-0 p-0">Ujjivan Small Finance Bank</h1>
-                  <span className="text-orange-600 dark:text-orange-400 ujjivan-theme:text-orange-300 text-xs font-medium leading-tight m-0 p-0">Intellect WealthForce</span>
+                  <h1 className={getBankNameClasses()}>Ujjivan Small Finance Bank</h1>
+                  <span className={getAppNameClasses()}>Intellect WealthForce</span>
                 </div>
               </div>
               <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
@@ -166,8 +183,8 @@ export function Header({
           <div className="flex items-center md:hidden ml-2">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
             <div className="ml-2 flex flex-col justify-center">
-              <h1 className="text-teal-700 dark:text-teal-400 ujjivan-theme:text-white text-sm font-bold leading-tight whitespace-nowrap m-0 p-0">Ujjivan Small Finance Bank</h1>
-              <span className="text-orange-600 dark:text-orange-400 ujjivan-theme:text-orange-300 text-xs font-medium leading-tight m-0 p-0">Intellect WealthForce</span>
+              <h1 className={getBankNameClasses()}>Ujjivan Small Finance Bank</h1>
+              <span className={getAppNameClasses()}>Intellect WealthForce</span>
             </div>
           </div>
           
@@ -175,8 +192,8 @@ export function Header({
           <div className="hidden md:flex items-center">
             <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
             <div className="ml-2 flex flex-col justify-center">
-              <h1 className="text-teal-700 dark:text-teal-400 ujjivan-theme:text-white text-sm font-bold leading-tight whitespace-nowrap m-0 p-0">Ujjivan Small Finance Bank</h1>
-              <span className="text-orange-600 dark:text-orange-400 ujjivan-theme:text-orange-300 text-xs font-medium leading-tight m-0 p-0">Intellect WealthForce</span>
+              <h1 className={getBankNameClasses()}>Ujjivan Small Finance Bank</h1>
+              <span className={getAppNameClasses()}>Intellect WealthForce</span>
             </div>
           </div>
         </div>
