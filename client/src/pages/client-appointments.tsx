@@ -454,7 +454,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                       getAppointmentTypeColor(appointment.type)
                     )}>
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-base text-foreground font-semibold">{appointment.title}</CardTitle>
+                        <CardTitle className="text-base text-foreground font-bold">{appointment.title}</CardTitle>
                         <Badge variant="outline" className={cn(
                           priorityColors.bg,
                           priorityColors.text,
@@ -465,12 +465,12 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         </Badge>
                       </div>
                       {appointment.clientName && (
-                        <div className="text-sm text-primary font-medium mb-1">
+                        <div className="text-sm text-primary font-bold mb-1">
                           Client: {appointment.clientName}
                         </div>
                       )}
                       {appointment.description && (
-                        <CardDescription className="text-foreground/80 font-medium">
+                        <CardDescription className="text-foreground font-semibold">
                           {appointment.description}
                         </CardDescription>
                       )}
@@ -479,18 +479,18 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Basic info - always visible */}
                     <CardContent className="pb-3 pt-0">
                       <div className="bg-muted/30 dark:bg-muted/20 px-4 py-3 -mx-6 flex flex-wrap gap-4 text-sm border-t border-border">
-                        <div className="flex items-center text-foreground font-medium">
+                        <div className="flex items-center text-foreground font-bold">
                           <Clock className="h-4 w-4 mr-2 text-primary" />
                           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                         </div>
                         {appointment.location && (
-                          <div className="flex items-center text-foreground font-medium">
+                          <div className="flex items-center text-foreground font-bold">
                             <MapPin className="h-4 w-4 mr-2 text-primary" />
                             {appointment.location}
                           </div>
                         )}
                         {appointment.assignedTo && (
-                          <div className="flex items-center text-foreground font-medium">
+                          <div className="flex items-center text-foreground font-bold">
                             <User className="h-4 w-4 mr-2 text-primary" />
                             RM: {appointment.assignedTo}
                           </div>
