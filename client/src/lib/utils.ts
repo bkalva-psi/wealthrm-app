@@ -158,7 +158,22 @@ export function formatPhoneNumber(phone: string): string {
 }
 
 export function getStageColor(stage: string): { bg: string, text: string } {
-  return { bg: 'bg-muted', text: 'text-muted-foreground' };
+  switch (stage.toLowerCase()) {
+    case 'new':
+      return { bg: 'bg-emerald-500', text: 'text-emerald-700 dark:text-emerald-300' };
+    case 'qualified':
+      return { bg: 'bg-blue-500', text: 'text-blue-700 dark:text-blue-300' };
+    case 'proposal':
+      return { bg: 'bg-amber-500', text: 'text-amber-700 dark:text-amber-300' };
+    case 'negotiation':
+      return { bg: 'bg-violet-500', text: 'text-violet-700 dark:text-violet-300' };
+    case 'won':
+      return { bg: 'bg-green-500', text: 'text-green-700 dark:text-green-300' };
+    case 'lost':
+      return { bg: 'bg-red-500', text: 'text-red-700 dark:text-red-300' };
+    default:
+      return { bg: 'bg-gray-500', text: 'text-gray-700 dark:text-gray-300' };
+  }
 }
 
 export function getPriorityColor(priority: string): { bg: string, text: string } {
