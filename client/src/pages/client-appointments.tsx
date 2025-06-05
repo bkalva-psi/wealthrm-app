@@ -464,21 +464,21 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         {appointment.description}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="pb-3 pt-0">
-                      <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm">
-                        <div className="flex items-center text-sm text-card-foreground/60">
-                          <Clock className="h-4 w-4 mr-1" />
+                    <CardContent className="pb-0 pt-0">
+                      <div className="bg-muted/50 dark:bg-muted/30 px-3 py-2 -mx-6 -mb-4 mt-3 flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm border-t border-border">
+                        <div className="flex items-center text-sm text-foreground/80">
+                          <Clock className="h-4 w-4 mr-1 text-primary" />
                           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                         </div>
                         {appointment.location && (
-                          <div className="flex items-center text-sm text-card-foreground/60">
-                            <MapPin className="h-4 w-4 mr-1" />
+                          <div className="flex items-center text-sm text-foreground/80">
+                            <MapPin className="h-4 w-4 mr-1 text-primary" />
                             {appointment.location}
                           </div>
                         )}
                         {appointment.assignedTo && (
-                          <div className="flex items-center text-sm text-card-foreground/60">
-                            <User className="h-4 w-4 mr-1" />
+                          <div className="flex items-center text-sm text-foreground/80">
+                            <User className="h-4 w-4 mr-1 text-primary" />
                             RM: {appointment.assignedTo}
                           </div>
                         )}

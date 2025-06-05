@@ -985,7 +985,7 @@ export default function ClientPortfolioPage() {
                 {/* XIRR */}
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-1">XIRR</div>
-                  <div className="text-lg font-semibold">{client?.performance?.xirr || 12.5}%</div>
+                  <div className="text-lg font-semibold">{client?.yearlyPerformance || 12.5}%</div>
                 </div>
               </div>
             </CardContent>
@@ -1008,7 +1008,7 @@ export default function ClientPortfolioPage() {
                   <div className="flex flex-col">
                     <div className="flex-1 h-52">
                       <AssetAllocationChart 
-                        data={client?.assetAllocation || mockAssetAllocation} 
+                        data={client?.assetAllocation || mockAssetAllocation as Record<string, number>} 
                       />
                     </div>
                   </div>
@@ -1532,7 +1532,9 @@ export default function ClientPortfolioPage() {
                     <h4 className="font-medium">Property Purchase</h4>
                     <span className="text-sm text-amber-600 dark:text-amber-400 font-medium">35% Funded</span>
                   </div>
-                  <Progress value={35} className="h-2" indicatorClassName="bg-amber-500" />
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-amber-500 h-2 rounded-full" style={{ width: '35%' }}></div>
+                  </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Current: ₹17.5 L</span>
                     <span>Target: ₹50 L</span>
