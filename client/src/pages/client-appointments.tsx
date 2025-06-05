@@ -117,15 +117,15 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   const getAppointmentTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'meeting':
-        return 'border-blue-500 bg-blue-50 dark:bg-blue-950/30';
+        return 'border-l-primary bg-primary/5 dark:bg-primary/10';
       case 'call':
-        return 'border-green-500 bg-green-50 dark:bg-green-950/30';
+        return 'border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20';
       case 'review':
-        return 'border-purple-500 bg-purple-50 dark:bg-purple-950/30';
+        return 'border-l-violet-500 bg-violet-50/50 dark:bg-violet-950/20';
       case 'onboarding':
-        return 'border-amber-500 bg-amber-50 dark:bg-amber-950/30';
+        return 'border-l-orange-500 bg-orange-50/50 dark:bg-orange-950/20';
       default:
-        return 'border-slate-500 bg-muted';
+        return 'border-l-muted-foreground bg-muted/30';
     }
   };
   
@@ -133,20 +133,20 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     switch (priority?.toLowerCase()) {
       case 'high':
         return { 
-          bg: 'bg-red-100 dark:bg-red-950/30', 
-          text: 'text-red-800 dark:text-red-200', 
-          border: 'border-red-200 dark:border-red-800'
+          bg: 'bg-destructive/10 dark:bg-destructive/20', 
+          text: 'text-destructive dark:text-destructive', 
+          border: 'border-destructive/20 dark:border-destructive/30'
         };
       case 'medium':
         return { 
-          bg: 'bg-amber-100 dark:bg-amber-950/30', 
-          text: 'text-amber-800 dark:text-amber-200', 
-          border: 'border-amber-200 dark:border-amber-800'
+          bg: 'bg-orange-50/50 dark:bg-orange-950/20', 
+          text: 'text-orange-700 dark:text-orange-300', 
+          border: 'border-orange-200/50 dark:border-orange-800/30'
         };
       default:
         return { 
-          bg: 'bg-muted', 
-          text: 'text-foreground', 
+          bg: 'bg-muted/50', 
+          text: 'text-muted-foreground', 
           border: 'border-border'
         };
     }
@@ -241,7 +241,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 className={cn(
                   "min-h-[100px] p-1 border-b border-r border-border relative",
                   !isCurrentMonth && "bg-muted/50",
-                  isToday(day) && "bg-blue-50 dark:bg-blue-950/30",
+                  isToday(day) && "bg-primary/10 dark:bg-primary/20",
                   isSelected && "ring-2 ring-primary ring-inset"
                 )}
                 onClick={() => {
@@ -346,7 +346,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                       >
                         <div className="font-medium">{appointment.title}</div>
                         {appointment.clientName && (
-                          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">{appointment.clientName}</div>
+                          <div className="text-xs text-primary font-medium">{appointment.clientName}</div>
                         )}
                         <div className="text-xs mt-1 flex justify-between">
                           <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
@@ -383,7 +383,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         <EmptyState
           title="No appointments"
           description="There are no appointments scheduled with this client."
-          icon={<CalendarIcon className="h-12 w-12 text-slate-300" />}
+          icon={<CalendarIcon className="h-12 w-12 text-muted-foreground" />}
           action={
             <Button 
               size="icon" 
@@ -456,7 +456,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                         </Badge>
                       </div>
                       {appointment.clientName && (
-                        <div className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-1">
+                        <div className="text-sm text-primary font-medium mb-1">
                           Client: {appointment.clientName}
                         </div>
                       )}
@@ -775,7 +775,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                     {/* Line 1: Client Name */}
                     <button 
                       onClick={() => window.location.hash = `/clients/${clientId}/personal`}
-                      className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer text-left"
+                      className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer text-left"
                     >
                       {(client as any)?.fullName}
                     </button>
