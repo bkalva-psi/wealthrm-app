@@ -940,7 +940,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                   <p className="text-sm font-medium text-muted-foreground mb-1">Start Time</p>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <p className="text-foreground dark:text-slate-100">
+                    <p className="text-foreground">
                       {selectedAppointment && format(new Date(selectedAppointment.startTime), 'MMMM d, yyyy h:mm a')}
                     </p>
                   </div>
@@ -949,7 +949,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                   <p className="text-sm font-medium text-muted-foreground mb-1">End Time</p>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <p className="text-foreground dark:text-slate-100">
+                    <p className="text-foreground">
                       {selectedAppointment && format(new Date(selectedAppointment.endTime), 'MMMM d, yyyy h:mm a')}
                     </p>
                   </div>
@@ -961,7 +961,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                   <p className="text-sm font-medium text-muted-foreground mb-1">Location</p>
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <p className="text-foreground dark:text-slate-100">{selectedAppointment.location}</p>
+                    <p className="text-foreground">{selectedAppointment.location}</p>
                   </div>
                 </div>
               )}
