@@ -710,15 +710,15 @@ export default function CalendarPage() {
                                   {appointment.priority}
                                 </Badge>
                               </div>
-                              <div className="text-sm text-card-foreground/60">
+                              <div className="text-sm text-foreground font-medium">
                                 {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                               </div>
                             </div>
                             {appointment.description && (
-                              <p className="text-sm text-card-foreground/70 mt-1">{appointment.description}</p>
+                              <p className="text-sm text-muted-foreground mt-1">{appointment.description}</p>
                             )}
                             {appointment.clientName && (
-                              <p className="text-sm text-card-foreground/70 mt-1">Client: {appointment.clientName}</p>
+                              <p className="text-sm text-foreground font-medium mt-1">Client: {appointment.clientName}</p>
                             )}
                           </div>
                         ))}
@@ -772,7 +772,7 @@ export default function CalendarPage() {
                           setSelectedView('day');
                         }}
                       >
-                        <div className={`text-sm ${isSameDay(day, calendarDate) ? 'font-semibold' : ''}`}>
+                        <div className={`text-sm text-foreground font-medium ${isSameDay(day, calendarDate) ? 'font-semibold' : ''}`}>
                           {format(day, 'd')}
                         </div>
                         {dayAppointments.length > 0 && (
@@ -780,13 +780,13 @@ export default function CalendarPage() {
                             {dayAppointments.slice(0, 2).map((apt) => (
                               <div
                                 key={apt.id}
-                                className={`text-xs p-1 rounded truncate ${getAppointmentTypeColor(apt.type)} bg-card dark:bg-card border-border shadow-sm text-card-foreground`}
+                                className="text-xs p-1 rounded truncate bg-background text-foreground border border-border shadow-sm font-medium"
                               >
                                 {apt.title}
                               </div>
                             ))}
                             {dayAppointments.length > 2 && (
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-foreground font-medium">
                                 +{dayAppointments.length - 2} more
                               </div>
                             )}
