@@ -176,7 +176,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     }
     
     // Group appointments by hour
-    dayAppointments.forEach(appointment => {
+    dayAppointments.forEach((appointment: Appointment) => {
       const date = new Date(appointment.startTime);
       const hour = date.getHours();
       const hourKey = hour < 12 ? `${hour} AM` : hour === 12 ? `${hour} PM` : `${hour-12} PM`;
@@ -263,7 +263,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 </div>
                 
                 <div className="overflow-y-auto max-h-[70px]">
-                  {dayAppointments.slice(0, 3).map((appointment) => (
+                  {dayAppointments.slice(0, 3).map((appointment: Appointment) => (
                     <div
                       key={appointment.id}
                       className={`px-1 py-0.5 mb-1 text-xs rounded truncate border-l-2 ${getAppointmentTypeColor(appointment.type)}`}
@@ -740,7 +740,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     );
   };
   
-  if (isNaN(clientId)) {
+  if (clientId !== null && isNaN(clientId)) {
     return (
       <div className="p-4">
         <p>Invalid client ID</p>

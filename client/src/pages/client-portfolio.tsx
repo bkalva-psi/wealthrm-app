@@ -985,7 +985,7 @@ export default function ClientPortfolioPage() {
                 {/* XIRR */}
                 <div className="text-center">
                   <div className="text-sm text-muted-foreground mb-1">XIRR</div>
-                  <div className="text-lg font-semibold">{client?.yearlyPerformance || 12.5}%</div>
+                  <div className="text-lg font-semibold">{(client as any)?.yearlyPerformance || 12.5}%</div>
                 </div>
               </div>
             </CardContent>
@@ -1008,7 +1008,7 @@ export default function ClientPortfolioPage() {
                   <div className="flex flex-col">
                     <div className="flex-1 h-52">
                       <AssetAllocationChart 
-                        data={client?.assetAllocation || mockAssetAllocation as Record<string, number>} 
+                        data={(client as any)?.assetAllocation || mockAssetAllocation} 
                       />
                     </div>
                   </div>
@@ -1059,7 +1059,7 @@ export default function ClientPortfolioPage() {
               </CardHeader>
               <CardContent>
                 <AllocationChart 
-                  data={client?.sectorExposure || mockSectorExposure} 
+                  data={(client as any)?.sectorExposure || mockSectorExposure as Record<string, number>} 
                   title="" 
                   color="purple" 
                 />
