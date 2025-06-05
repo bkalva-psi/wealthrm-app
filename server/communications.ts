@@ -5,6 +5,66 @@ import { communications } from '@shared/schema';
 // Create a router to handle communication-related routes
 const router = Router();
 
+// Create new communication/note endpoint
+router.post('/api/communications', async (req: Request, res: Response) => {
+  try {
+    const {
+      client_id,
+      initiated_by,
+      start_time,
+      communication_type,
+      channel,
+      direction,
+      subject,
+      summary,
+      notes,
+      sentiment,
+      follow_up_required,
+      next_steps,
+      tags
+    } = req.body;
+
+    // Validate required fields
+    if (!client_id || !communication_type || !channel || !direction) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: client_id, communication_type, channel, direction' 
+      });
+    }
+
+    // Insert new communication record
+    const { rows } = await pool.query(`
+      INSERT INTO communications (
+        client_id, initiated_by, start_time, communication_type, channel, direction,
+        subject, summary, notes, sentiment, follow_up_required, next_steps, tags
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
+      RETURNING id
+    `, [
+      client_id, 
+      initiated_by || 1, 
+      start_time || new Date().toISOString(), 
+      communication_type, 
+      channel, 
+      direction, 
+      subject || '', 
+      summary || '', 
+      notes || '', 
+      sentiment || 'neutral', 
+      follow_up_required || false, 
+      next_steps || '', 
+      JSON.stringify(tags || [])
+    ]);
+
+    console.log('New communication created with ID:', rows[0]?.id);
+    res.status(201).json({ 
+      message: 'Communication created successfully',
+      id: rows[0]?.id
+    });
+  } catch (error) {
+    console.error('Error creating communication:', error);
+    res.status(500).json({ error: 'Failed to create communication' });
+  }
+});
+
 // Get all communications (for global view)
 router.get('/api/communications', async (req: Request, res: Response) => {
   try {

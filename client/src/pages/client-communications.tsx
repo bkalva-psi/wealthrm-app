@@ -203,7 +203,7 @@ const ClientCommunications: React.FC = () => {
   // New note dialog state
   const [isNewNoteDialogOpen, setIsNewNoteDialogOpen] = useState(false);
   const [newNoteData, setNewNoteData] = useState({
-    client_id: clientId ? parseInt(clientId) : undefined as number | undefined,
+    client_id: clientId ? parseInt(clientId.toString()) : undefined as number | undefined,
     communication_type: 'advisory_meeting',
     channel: 'phone',
     direction: 'outbound',
@@ -312,24 +312,21 @@ const ClientCommunications: React.FC = () => {
 
   // Mutation for creating new note
   const createNoteMutation = useMutation({
-    mutationFn: async (noteData: any) => {
+    mutationFn: async (noteData: typeof newNoteData) => {
       const payload = {
-        clientId: clientId,
-        initiatedBy: 1, // Current user ID - would be from auth context
-        communicationType: noteData.communication_type,
-        direction: noteData.direction,
-        subject: noteData.subject,
-        summary: noteData.summary,
-        details: noteData.notes,
-        startTime: new Date().toISOString(),
-        endTime: new Date(Date.now() + (noteData.duration_minutes * 60 * 1000)).toISOString(),
-        duration: noteData.duration_minutes,
+        client_id: noteData.client_id,
+        initiated_by: 1, // Current user ID
+        start_time: new Date().toISOString(),
+        communication_type: noteData.communication_type,
         channel: noteData.channel,
-        sentiment: 'neutral',
-        followupRequired: false,
-        hasAttachments: false,
-        tags: noteData.tags,
-        status: 'completed'
+        direction: noteData.direction,
+        subject: noteData.subject || 'Note',
+        summary: noteData.summary,
+        notes: noteData.notes,
+        sentiment: noteData.sentiment,
+        follow_up_required: noteData.follow_up_required,
+        next_steps: noteData.next_steps,
+        tags: noteData.tags || []
       };
       
       return apiRequest('POST', '/api/communications', payload);
@@ -340,15 +337,16 @@ const ClientCommunications: React.FC = () => {
       });
       setIsNewNoteDialogOpen(false);
       setNewNoteData({
-        communication_type: 'quarterly_review',
+        client_id: clientId ? parseInt(clientId) : undefined as number | undefined,
+        communication_type: 'advisory_meeting',
         channel: 'phone',
         direction: 'outbound',
         subject: '',
         summary: '',
         notes: '',
-        outcome: 'completed',
-        duration_minutes: 15,
-        location: '',
+        sentiment: 'positive',
+        follow_up_required: false,
+        next_steps: '',
         tags: [] as string[]
       });
       toast({
@@ -867,7 +865,7 @@ const ClientCommunications: React.FC = () => {
                       <SelectValue placeholder="Select client" />
                     </SelectTrigger>
                     <SelectContent>
-                      {allClients?.map((client: any) => (
+                      {Array.isArray(allClients) && allClients.map((client: any) => (
                         <SelectItem key={client.id} value={client.id.toString()}>
                           {client.fullName} ({client.tier})
                         </SelectItem>
