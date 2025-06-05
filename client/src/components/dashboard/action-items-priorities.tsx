@@ -248,10 +248,7 @@ export function ActionItemsPriorities() {
                                         </div>
                                       )}
                                     </div>
-                                    <ChevronRight 
-                                      size={14} 
-                                      className={`text-muted-foreground transition-transform ${isItemExpanded ? 'rotate-90' : ''}`} 
-                                    />
+
                                   </div>
                                 </Button>
                                 
