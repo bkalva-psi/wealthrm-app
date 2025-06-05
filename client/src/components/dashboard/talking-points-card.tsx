@@ -201,12 +201,7 @@ export function TalkingPointsCard() {
                                         setExpandedItems(newExpanded);
                                       }}
                                     >
-                                      <div className="flex items-center justify-between">
-                                        <div className="font-medium text-foreground mb-1 flex-1">{item.title}</div>
-                                        <div className="text-muted-foreground ml-2">
-                                          {isItemExpanded ? '−' : '+'}
-                                        </div>
-                                      </div>
+                                      <div className="font-medium text-foreground mb-1">{item.title}</div>
                                       
                                       {!isItemExpanded && item.summary && (
                                         <div className="text-foreground mb-2 text-xs leading-relaxed font-medium bg-muted/30 px-2 py-1 rounded">

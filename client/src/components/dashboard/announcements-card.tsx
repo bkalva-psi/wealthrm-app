@@ -219,12 +219,7 @@ export function AnnouncementsCard() {
                                         setExpandedItems(newExpanded);
                                       }}
                                     >
-                                      <div className="flex items-center justify-between">
-                                        <div className="font-medium text-foreground mb-1 flex-1">{item.title}</div>
-                                        <div className="text-muted-foreground ml-2">
-                                          {isItemExpanded ? '−' : '+'}
-                                        </div>
-                                      </div>
+                                      <div className="font-medium text-foreground mb-1">{item.title}</div>
                                       
                                       {!isItemExpanded && (
                                         <div className="text-muted-foreground text-xs">
