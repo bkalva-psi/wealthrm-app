@@ -151,11 +151,11 @@ export function Header({
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px]">
-              <div className="flex items-center h-16 px-4 border-b border-slate-200">
+              <div className="flex items-center h-16 px-4 border-b border-border">
                 <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
-                <div className="ml-2 flex flex-col">
-                  <h1 className="text-ujjivan-primary text-sm font-bold leading-tight whitespace-nowrap">Ujjivan Small Finance Bank</h1>
-                  <span className="text-ujjivan-secondary text-xs font-medium leading-tight">Wealth RM Pro</span>
+                <div className="ml-2 flex flex-col justify-center">
+                  <h1 className="text-teal-700 dark:text-teal-400 ujjivan-theme:text-teal-700 text-sm font-bold leading-tight whitespace-nowrap m-0 p-0">Ujjivan Small Finance Bank</h1>
+                  <span className="text-orange-600 dark:text-orange-400 ujjivan-theme:text-orange-600 text-xs font-medium leading-tight m-0 p-0">Intellect WealthForce</span>
                 </div>
               </div>
               <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
