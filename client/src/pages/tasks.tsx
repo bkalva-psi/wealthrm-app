@@ -188,15 +188,15 @@ export default function Tasks() {
     const now = new Date();
     
     if (isToday(due)) {
-      return { text: "Due today", color: "text-orange-600" };
+      return { text: "Due today", color: "text-foreground font-semibold bg-amber-100 dark:bg-amber-900/20 px-2 py-1 rounded-md" };
     } else if (isYesterday(due)) {
-      return { text: "Overdue", color: "text-red-600" };
+      return { text: "Overdue", color: "text-foreground font-semibold bg-red-100 dark:bg-red-900/20 px-2 py-1 rounded-md" };
     } else if (isBefore(due, now)) {
-      return { text: "Overdue", color: "text-red-600" };
+      return { text: "Overdue", color: "text-foreground font-semibold bg-red-100 dark:bg-red-900/20 px-2 py-1 rounded-md" };
     } else if (isAfter(due, addDays(now, 3))) {
       return { text: `Due ${format(due, "MMM d")}`, color: "text-muted-foreground" };
     } else {
-      return { text: `Due ${format(due, "MMM d")}`, color: "text-blue-600" };
+      return { text: `Due ${format(due, "MMM d")}`, color: "text-foreground font-medium" };
     }
   };
 
