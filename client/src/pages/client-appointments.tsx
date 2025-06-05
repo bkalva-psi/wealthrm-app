@@ -64,11 +64,17 @@ interface ClientAppointmentsProps {
 
 const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps = {}) => {
   // Handle different ways clientId can be passed
+  const getClientIdFromUrl = () => {
+    const hash = window.location.hash;
+    const match = hash.match(/\/clients\/(\d+)/);
+    return match ? parseInt(match[1]) : null;
+  };
+  
   const clientId = propClientId === "all" 
     ? null 
     : propClientId 
     ? (typeof propClientId === "string" ? parseInt(propClientId) : propClientId)
-    : parseInt(window.location.hash.split('/')[2]);
+    : getClientIdFromUrl();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedView, setSelectedView] = useState<'list' | 'month' | 'day' | 'week'>('list');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
