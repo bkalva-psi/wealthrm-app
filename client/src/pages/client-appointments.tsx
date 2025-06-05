@@ -740,7 +740,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
     );
   };
   
-  if (clientId !== null && isNaN(clientId)) {
+  if (clientId !== null && isNaN(clientId as number)) {
     return (
       <div className="p-4">
         <p>Invalid client ID</p>
@@ -751,7 +751,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       {/* Enhanced Customer Information Band */}
-      <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor(client.tier) : 'border-border'} animate-in slide-in-from-top-4 duration-500`}>
+      <div className={`bg-card shadow-sm border-l-4 ${client ? getTierColor((client as any)?.tier) : 'border-border'} animate-in slide-in-from-top-4 duration-500`}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -777,33 +777,33 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                       onClick={() => window.location.hash = `/clients/${clientId}/personal`}
                       className="text-xl font-semibold text-foreground hover:text-blue-600 transition-colors cursor-pointer text-left"
                     >
-                      {client.fullName}
+                      {(client as any)?.fullName}
                     </button>
                     
                     {/* Line 2: Phone Number */}
-                    {client.phone && (
+                    {(client as any)?.phone && (
                       <div className="mt-1 flex items-center gap-2">
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <a 
-                          href={`tel:${client.phone}`}
+                          href={`tel:${(client as any)?.phone}`}
                           className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                           title="Call client"
                         >
-                          {client.phone}
+                          {(client as any)?.phone}
                         </a>
                       </div>
                     )}
                     
                     {/* Line 3: Email */}
-                    {client.email && (
+                    {(client as any)?.email && (
                       <div className="mt-1 flex items-center gap-2">
                         <Mail className="h-4 w-4 text-muted-foreground" />
                         <a 
-                          href={`mailto:${client.email}`}
+                          href={`mailto:${(client as any)?.email}`}
                           className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                           title="Send email to client"
                         >
-                          {client.email}
+                          {(client as any)?.email}
                         </a>
                       </div>
                     )}
