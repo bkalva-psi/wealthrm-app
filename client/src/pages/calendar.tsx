@@ -570,10 +570,12 @@ export default function CalendarPage() {
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            {getAppointmentTypeIcon(appointment.type)}
-                            <h3 className="text-lg font-medium text-foreground dark:text-foreground">{appointment.title}</h3>
-                            <Badge variant="outline" className={getPriorityColor(appointment.priority)}>
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <div className="flex items-center gap-2 flex-1">
+                              {getAppointmentTypeIcon(appointment.type)}
+                              <h3 className="text-lg font-medium text-foreground dark:text-foreground">{appointment.title}</h3>
+                            </div>
+                            <Badge variant="outline" className={`${getPriorityColor(appointment.priority)} shrink-0`}>
                               {appointment.priority}
                             </Badge>
                           </div>
