@@ -209,10 +209,10 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
           </h2>
           <div className="flex space-x-2">
             <Button variant="outline" size="icon" onClick={prevMonth}>
-              <ChevronLeftIcon className="h-4 w-4" />
+              <ChevronLeftIcon className="h-4 w-4 text-foreground" />
             </Button>
             <Button variant="outline" size="icon" onClick={nextMonth}>
-              <ChevronRightIcon className="h-4 w-4" />
+              <ChevronRightIcon className="h-4 w-4 text-foreground" />
             </Button>
           </div>
         </div>
@@ -759,7 +759,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
                 onClick={() => window.location.hash = '/clients'}
                 className="p-2 hover:bg-muted rounded-lg transition-all duration-200 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary/50"
               >
-                <ArrowLeft className="h-5 w-5 text-foreground" />
+                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
               </button>
               
               <div className="flex items-center gap-3">
@@ -847,46 +847,46 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio`}
             title="Portfolio"
           >
-            <PieChart className="h-6 w-6 text-gray-600" />
+            <PieChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/transactions`}
             title="Transactions"
           >
-            <Receipt className="h-6 w-6 text-gray-600" />
+            <Receipt className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 border border-blue-200 h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 h-12 w-full"
             title="Appointments"
           >
-            <Calendar className="h-6 w-6 text-blue-600" />
+            <Calendar className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/communications`}
             title="Notes"
           >
-            <FileText className="h-6 w-6 text-gray-600" />
+            <FileText className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/portfolio-report`}
             title="Portfolio Report"
           >
-            <FileBarChart className="h-6 w-6 text-gray-600" />
+            <FileBarChart className="h-6 w-6 text-muted-foreground" />
           </button>
           
           <button 
-            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-gray-100 transition-colors h-12 w-full"
+            className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/insights`}
             title="Investment Ideas"
           >
-            <Lightbulb className="h-6 w-6 text-gray-600" />
+            <Lightbulb className="h-6 w-6 text-muted-foreground" />
           </button>
         </div>
       </div>

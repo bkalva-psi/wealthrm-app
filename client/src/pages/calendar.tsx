@@ -100,13 +100,13 @@ export default function CalendarPage() {
   const getAppointmentTypeIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case 'meeting':
-        return <Users className="h-4 w-4" />;
+        return <Users className="h-4 w-4 text-primary" />;
       case 'call':
-        return <Phone className="h-4 w-4" />;
+        return <Phone className="h-4 w-4 text-primary" />;
       case 'video_call':
-        return <Video className="h-4 w-4" />;
+        return <Video className="h-4 w-4 text-primary" />;
       default:
-        return <CalendarIcon className="h-4 w-4" />;
+        return <CalendarIcon className="h-4 w-4 text-primary" />;
     }
   };
 
