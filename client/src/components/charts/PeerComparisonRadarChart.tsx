@@ -16,9 +16,10 @@ interface PeerComparisonRadarChartProps {
 const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ data }) => {
   // Transform data for radar chart
   const radarData = data.map(item => ({
-    metric: item.metric.replace(' ', '\n'), // Split long names for better display
+    metric: item.metric.length > 10 ? item.metric.replace(/\s+/g, '\n') : item.metric, // Better line breaks for long names
     percentile: item.percentile,
     average: 50, // Average line at 50th percentile
+    excellence: 100, // 100th percentile line
     fullName: item.metric
   }));
 
@@ -46,22 +47,31 @@ const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ dat
 
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={300}>
-        <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
+      <ResponsiveContainer width="100%" height={320}>
+        <RadarChart data={radarData} margin={{ top: 20, right: 50, bottom: 50, left: 50 }}>
           <PolarGrid 
             stroke="hsl(var(--border))" 
             strokeOpacity={0.3} 
           />
           <PolarAngleAxis 
             dataKey="metric" 
-            tick={{ fontSize: 10, fill: 'hsl(var(--foreground))' }}
+            tick={{ fontSize: 9, fill: 'hsl(var(--foreground))', textAnchor: 'middle' }}
             className="text-xs"
           />
           <PolarRadiusAxis 
             angle={90} 
             domain={[0, 100]} 
-            tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+            tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
             tickCount={6}
+          />
+          <Radar
+            name="Excellence (100th %ile)"
+            dataKey="excellence"
+            stroke="#10b981"
+            fill="transparent"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+            strokeOpacity={0.6}
           />
           <Radar
             name="Average (50th %ile)"
@@ -82,8 +92,14 @@ const PeerComparisonRadarChart: React.FC<PeerComparisonRadarChartProps> = ({ dat
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend 
-            wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+            wrapperStyle={{ 
+              fontSize: '10px', 
+              paddingTop: '15px',
+              textAlign: 'center'
+            }}
             iconType="line"
+            layout="horizontal"
+            align="center"
           />
         </RadarChart>
       </ResponsiveContainer>
