@@ -418,6 +418,26 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
     });
     
+    // Check if there are no upcoming appointments after filtering
+    if (sortedAppointments.length === 0) {
+      return (
+        <EmptyState
+          title="No upcoming meetings"
+          description="There are no upcoming meetings scheduled with this client."
+          icon={<CalendarIcon className="h-12 w-12 text-muted-foreground" />}
+          action={
+            <Button 
+              size="icon" 
+              className="rounded-full"
+              onClick={() => setIsNewAppointmentDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          }
+        />
+      );
+    }
+    
     // Group appointments by date
     const appointmentsByDate: Record<string, Appointment[]> = {};
     
