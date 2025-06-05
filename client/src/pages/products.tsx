@@ -513,11 +513,11 @@ Ujjivan Small Finance Bank`;
                         {/* Key Features */}
                         {product.keyFeatures && product.keyFeatures.length > 0 && (
                           <div>
-                            <p className="text-sm font-medium text-gray-700 mb-2">Key Features</p>
+                            <p className="text-sm font-medium text-foreground mb-2">Key Features</p>
                             <div className="space-y-1">
                               {product.keyFeatures.map((feature, index) => (
-                                <div key={index} className="text-xs text-gray-600 flex items-start gap-2">
-                                  <span className="text-green-600 mt-0.5">•</span>
+                                <div key={index} className="text-sm text-foreground flex items-start gap-2 font-medium">
+                                  <span className="text-primary mt-0.5">•</span>
                                   <span>{feature}</span>
                                 </div>
                               ))}
