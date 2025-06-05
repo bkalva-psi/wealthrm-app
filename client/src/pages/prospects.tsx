@@ -232,19 +232,18 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
           <CollapsibleTrigger asChild>
             <div 
               className="flex items-center justify-between p-3 border-b border-border cursor-pointer"
-              style={{ backgroundColor: `${stageColor.bg}` }}
             >
               <div className="flex items-center">
                 <div 
                   className={`w-3 h-3 rounded-full mr-2 ${stageColor.bg}`}
                 ></div>
-                <h3 className={`font-semibold ${stageColor.text}`}>{title}</h3>
+                <h3 className="font-semibold text-foreground">{title}</h3>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium bg-background rounded-full px-2 py-0.5 text-foreground">
                   {prospects.length}
                 </span>
-                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {isExpanded ? <ChevronUp className="h-4 w-4 text-foreground" /> : <ChevronDown className="h-4 w-4 text-foreground" />}
               </div>
             </div>
           </CollapsibleTrigger>
@@ -271,13 +270,13 @@ function PipelineColumn({ title, prospects, stage, onProspectClick, isMobile = f
       ) : (
         <>
           <div 
-            className={`flex items-center justify-between p-3 border-b border-border ${stageColor.bg}`}
+            className="flex items-center justify-between p-3 border-b border-border"
           >
             <div className="flex items-center">
               <div 
                 className={`w-3 h-3 rounded-full mr-2 ${stageColor.bg}`}
               ></div>
-              <h3 className={`font-medium ${stageColor.text}`}>{title}</h3>
+              <h3 className="font-medium text-foreground">{title}</h3>
             </div>
             <span className="text-xs font-medium bg-background rounded-full px-2 py-0.5 text-foreground">
               {prospects.length}
