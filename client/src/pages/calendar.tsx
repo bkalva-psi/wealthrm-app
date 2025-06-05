@@ -563,29 +563,27 @@ export default function CalendarPage() {
                         {appointment.description && (
                           <p className="text-sm text-card-foreground/70 mb-2">{appointment.description}</p>
                         )}
-                        
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-card-foreground/60">
-                          <div className="flex items-center gap-1">
-                            <CalendarIcon className="h-3 w-3" />
-                            <span>{format(new Date(appointment.startTime), 'MMM d, yyyy')}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
-                          </div>
-                          {appointment.clientName && (
-                            <div className="flex items-center gap-1">
-                              <Users className="h-3 w-3" />
-                              <span>{appointment.clientName}</span>
-                            </div>
-                          )}
-                          {appointment.location && (
-                            <div className="flex items-center gap-1">
-                              <span>📍 {appointment.location}</span>
-                            </div>
-                          )}
-                        </div>
                       </div>
+                    </div>
+                    
+                    {/* Theme-aware bottom information bar */}
+                    <div className="bg-muted/50 dark:bg-muted/30 px-4 py-3 -mx-4 -mb-4 mt-4 flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm border-t border-border">
+                      <div className="flex items-center text-sm text-foreground/80">
+                        <Clock className="h-4 w-4 mr-1 text-primary" />
+                        {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+                      </div>
+                      {appointment.location && (
+                        <div className="flex items-center text-sm text-foreground/80">
+                          <span className="h-4 w-4 mr-1 text-primary">📍</span>
+                          {appointment.location}
+                        </div>
+                      )}
+                      {appointment.clientName && (
+                        <div className="flex items-center text-sm text-foreground/80">
+                          <Users className="h-4 w-4 mr-1 text-primary" />
+                          {appointment.clientName}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
