@@ -48,6 +48,20 @@ const authMiddleware = (req: Request, res: Response, next: Function) => {
   next();
 };
 
+// Database connection wrapper with retry logic
+async function withDatabaseRetry<T>(operation: () => Promise<T>, retries = 3): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      console.log(`Database operation attempt ${i + 1} failed:`, error);
+      if (i === retries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+  throw new Error('Database operation failed after retries');
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   const SessionStore = MemoryStore(session);
 
@@ -66,6 +80,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }),
     })
   );
+
+  // Database health check endpoint
+  app.get('/api/health', async (req: Request, res: Response) => {
+    try {
+      // Simple database connectivity test
+      await withDatabaseRetry(async () => {
+        const result = await db.execute(sql`SELECT 1 as health_check`);
+        return result;
+      });
+      res.json({ status: 'healthy', database: 'connected' });
+    } catch (error) {
+      console.error('Health check failed:', error);
+      res.status(503).json({ status: 'unhealthy', database: 'disconnected', error: String(error) });
+    }
+  });
   
   // Authentication routes
   app.post('/api/auth/login', async (req: Request, res: Response) => {
