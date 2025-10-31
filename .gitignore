@@ -57,5 +57,15 @@ tmp/
 .config/
 .local/
 
-# Screenshots (if not needed in repo)
-# Screenshots/
+# Screenshots and development assets
+attached_assets/
+Screenshots/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+!client/public/*.svg
+!client/src/assets/*.svg
+!documents/*.pdf
+!documents/*.svg

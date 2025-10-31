@@ -1,0 +1,245 @@
+Project WealthRM {
+  database_type: 'PostgreSQL'
+  Note: 'Wealth Management Relationship Manager Application - Supabase Database Schema'
+}
+
+// ============================================
+// CORE TABLES
+// ============================================
+
+Table users {
+  id integer [pk, increment, note: 'Primary key']
+  username text [unique, not null]
+  password text [not null, note: 'Hashed password']
+  full_name text [not null]
+  role text [not null, default: 'relationship_manager', note: 'relationship_manager, supervisor, admin']
+  avatar_url text
+  job_title text
+  email text
+  phone text
+}
+
+Table clients {
+  id integer [pk, increment]
+  full_name text [not null]
+  initials text
+  email text
+  phone text
+  date_of_birth timestamp
+  gender text
+  marital_status text
+  anniversary_date timestamp
+  home_address text
+  home_city text
+  home_state text
+  home_pincode text
+  work_address text
+  work_city text
+  work_state text
+  work_pincode text
+  profession text
+  sector_of_employment text
+  designation text
+  company_name text
+  annual_income text
+  work_experience integer
+  kyc_date timestamp
+  kyc_status text
+  identity_proof_type text
+  identity_proof_number text
+  address_proof_type text
+  pan_number text
+  tax_residency_status text
+  fatca_status text
+  risk_assessment_score integer
+  spouse_name text
+  dependents_count integer
+  children_details text
+  nominee_details text
+  family_financial_goals text
+  tier text [not null, default: 'silver']
+  aum text [not null]
+  aum_value real [not null]
+  risk_profile text [default: 'moderate']
+  investment_horizon text
+  total_invested_amount integer
+  current_value integer
+  unrealized_gains integer
+  unrealized_gains_percent double
+  one_year_return double
+  three_year_return double
+  five_year_return double
+  portfolio_start_date date
+  last_valuation_date date
+  risk_score integer
+  esg_score integer
+  volatility double
+  sharpe_ratio double
+  asset_allocation jsonb
+  sector_exposure jsonb
+  geographic_exposure jsonb
+  investment_objectives text
+  preferred_products text
+  source_of_wealth text
+  last_contact_date timestamp
+  preferred_contact_method text
+  preferred_contact_time text
+  communication_frequency text
+  client_since timestamp
+  client_acquisition_source text
+  last_transaction_date timestamp
+  total_transaction_count integer
+  average_transaction_value real
+  recurring_investments text
+  tax_planning_preferences text
+  insurance_coverage text
+  retirement_goals text
+  major_life_events text
+  financial_interests text
+  net_worth text
+  liquidity_requirements text
+  foreign_investments text
+  income_data jsonb
+  expenses_data jsonb
+  assets_data jsonb
+  liabilities_data jsonb
+  alert_count integer [default: 0]
+  created_at timestamp [default: `now()`]
+  assigned_to integer [ref: > users.id]
+  profile_status text [default: 'incomplete']
+  incomplete_sections text[]
+  last_accessed_at timestamptz
+}
+
+Table prospects {
+  id integer [pk, increment]
+  full_name text [not null]
+  initials text
+  potential_aum text
+  potential_aum_value real
+  email text
+  phone text
+  stage text [not null, default: 'new']
+  last_contact_date timestamp
+  probability_score integer [default: 50]
+  products_of_interest text[]
+  notes text
+  created_at timestamp [default: `now()`]
+  assigned_to integer [ref: > users.id]
+}
+
+// ============================================
+// TASKS & ACTIVITIES
+// ============================================
+
+Table tasks {
+  id integer [pk, increment]
+  title text [not null]
+  description text
+  due_date timestamp
+  completed boolean [default: false]
+  priority text [default: 'medium']
+  client_id integer [ref: > clients.id]
+  prospect_id integer [ref: > prospects.id]
+  assigned_to integer [ref: > users.id]
+  created_at timestamp [default: `now()`]
+}
+
+Table appointments {
+  id integer [pk, increment]
+  title text [not null]
+  description text
+  start_time timestamp [not null]
+  end_time timestamp [not null]
+  location text
+  client_id integer [ref: > clients.id]
+  prospect_id integer [ref: > prospects.id]
+  assigned_to integer [ref: > users.id]
+  priority text [default: 'medium']
+  type text [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table portfolio_alerts {
+  id integer [pk, increment]
+  title text [not null]
+  description text [not null]
+  client_id integer [ref: > clients.id]
+  severity text [not null]
+  read boolean [default: false]
+  action_required boolean [default: true]
+  created_at timestamp [default: `now()`]
+}
+
+// ============================================
+// COMMUNICATION TABLES
+// ============================================
+
+Table communications {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, not null]
+  initiated_by integer [ref: > users.id, not null]
+  communication_type text [not null]
+  direction text [not null]
+  subject text [not null]
+  summary text [not null]
+  details text
+  start_time timestamp [not null]
+  end_time timestamp
+  duration integer
+  channel text
+  sentiment text [default: 'neutral']
+  followup_required boolean [default: false]
+  followup_date timestamp
+  has_attachments boolean [default: false]
+  tags text[]
+  status text [default: 'completed']
+  location text
+  created_at timestamp [default: `now()`]
+}
+
+Table communication_action_items {
+  id integer [pk, increment]
+  communication_id integer [ref: > communications.id, not null]
+  title text [not null]
+  description text
+  assigned_to integer [ref: > users.id]
+  due_date timestamp
+  priority text [default: 'medium']
+  status text [default: 'pending']
+  completed_at timestamp
+  action_type text [default: 'task']
+  deal_value real
+  expected_close_date timestamp
+}
+
+Table communication_attachments {
+  id integer [pk, increment]
+  communication_id integer [ref: > communications.id, not null]
+  file_name text [not null]
+  file_type text [not null]
+  file_size integer [not null]
+  file_path text [not null]
+  uploaded_by integer [ref: > users.id, not null]
+  description text
+  is_client_visible boolean [default: true]
+  viewed_by_client boolean [default: false]
+  viewed_at timestamp
+  created_at timestamp [default: `now()`]
+}
+
+Table client_communication_preferences {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, unique, not null]
+  preferred_channels text[]
+  preferred_frequency text [default: 'monthly']
+  preferred_days text[]
+  preferred_time_slots text[]
+  do_not_contact_times text
+  preferred_language text [default: 'English']
+  communication_style text
+  topics_of_interest text[]
+  opt_out_categories text[]
+  special_instructions text
+  last_updated timestamp [default: `now()`]
+}

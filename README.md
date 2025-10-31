@@ -7,11 +7,13 @@ A sophisticated wealth management platform designed for Relationship Managers (R
 ### Technology Stack
 - **Frontend**: React 18 + TypeScript + Vite
 - **Backend**: Express.js + TypeScript
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: Supabase (PostgreSQL) with Drizzle ORM
+- **Backend SDK**: Supabase JS SDK (@supabase/supabase-js)
 - **UI Framework**: Tailwind CSS + shadcn/ui components
 - **State Management**: TanStack Query v5 for server state
-- **Authentication**: Session-based with Passport.js
+- **Authentication**: Session-based authentication
 - **Charts**: Recharts for data visualization
+- **Security**: Row-Level Security (RLS) policies enabled
 
 ### Project Structure
 ```
@@ -29,12 +31,34 @@ A sophisticated wealth management platform designed for Relationship Managers (R
 ├── server/                   # Backend Express application
 │   ├── index.ts            # Main server entry point
 │   ├── routes.ts           # API route definitions
+│   ├── routes/             # Route modules (clients, etc.)
 │   ├── storage.ts          # Data access layer
-│   └── db.ts               # Database configuration
+│   ├── db.ts               # Database configuration
+│   └── lib/                # Server utilities (Supabase client)
 ├── shared/                   # Shared types and schemas
 │   └── schema.ts           # Drizzle database schemas
-└── scripts/                 # Database utilities and seeding
+├── scripts/                 # Database utilities and seeding
+├── docs/                    # Project documentation
+│   ├── database-schema.dbml # Database schema visualization
+│   ├── RLS-POLICIES.md     # Row-Level Security documentation
+│   └── TEAM-WORKFLOW.md    # Team collaboration guide
+└── documents/               # Business requirement documents
 ```
+
+## ✨ Key Features
+
+### Client Management
+- **Complete Client Profiles**: Personal information, financial profiling, risk assessment
+- **Draft System**: Save incomplete client profiles and resume later
+- **Profile Completion Tracking**: Identify incomplete profiles with section-by-section status
+- **Financial Profiling**: Comprehensive income, expenses, assets, and liabilities tracking
+- **Financial Summary**: Visual charts for asset allocation, cashflow, and net worth projection
+
+### Security & Access Control
+- **Row-Level Security (RLS)**: Database-level access control for all tables
+- **Role-Based Access**: Relationship Managers, Supervisors, and Admin roles
+- **Data Isolation**: RMs can only access their assigned clients and data
+- **Audit Trail**: Complete tracking of all data modifications
 
 ## 🎯 Core Functionality
 
@@ -206,19 +230,55 @@ portfolios (id, clientId, assetAllocation, performance, ...)
 ## 🚀 Deployment & Operations
 
 ### Environment Setup
-```bash
-# Install dependencies
-npm install
 
-# Database setup
-npm run db:push
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/bkalva-psi/wealthrm-app.git
+   cd wealthrm-app
+   ```
 
-# Seed initial data
-npm run seed
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Start development server
-npm run dev
-```
+3. **Configure environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   # Supabase Configuration
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   
+   # Frontend Supabase (Public)
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   
+   # Server Configuration
+   NODE_ENV=development
+   PORT=5000
+   
+   # Session Secret (generate a random string)
+   SESSION_SECRET=your-session-secret
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Access the application**
+   - Frontend: http://localhost:5000
+   - Backend API: http://localhost:5000/api
+
+### Database Setup
+
+The project uses Supabase (PostgreSQL) with:
+- **Row-Level Security (RLS)** policies enabled for all tables
+- **Drizzle ORM** for type-safe database operations
+- **Supabase JS SDK** for backend and frontend interactions
+
+See `docs/database-schema.dbml` for complete database schema and `docs/RLS-POLICIES.md` for security policies.
 
 ### Production Considerations
 - **Scalability**: Horizontal scaling capability
