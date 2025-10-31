@@ -1,0 +1,700 @@
+// ==============================================================================
+// WEALTH MANAGEMENT SYSTEM - DATABASE SCHEMA (DBML)
+// Generated from actual Neon PostgreSQL database
+// Total Tables: 29
+// ==============================================================================
+
+// ==============================================================================
+// CORE ENTITIES
+// ==============================================================================
+
+Table users {
+  id integer [pk, increment]
+  username text [unique]
+  password text
+  full_name text
+  role text // not null, default: 'relationship_manager'
+  avatar_url text
+  job_title text
+  email text
+  phone text
+  office_address text
+  home_address text
+  
+  Note: 'Core user/relationship manager table'
+}
+
+Table clients {
+  id integer [pk, increment]
+  full_name text
+  initials text
+  tier text 
+  aum text
+  aum_value real
+  email text
+  phone text
+  whatsapp_number text
+  last_contact_date timestamp
+  risk_profile text 
+  created_at timestamp 
+  assigned_to integer [ref: > users.id]
+  last_transaction_date timestamp
+  yearly_performance real
+  alert_count integer 
+  
+  // Personal Information
+  date_of_birth timestamp
+  marital_status text
+  anniversary_date timestamp
+  
+  // Address Information
+  home_address text
+  home_city text
+  home_state text
+  home_pincode text
+  work_address text
+  work_city text
+  work_state text
+  work_pincode text
+  
+  // Professional Information
+  profession text
+  sector_of_employment text
+  designation text
+  company_name text
+  annual_income text
+  work_experience integer
+  
+  // KYC & Compliance
+  kyc_date timestamp
+  kyc_status text
+  identity_proof_type text
+  identity_proof_number text
+  address_proof_type text
+  pan_number text
+  tax_residency_status text
+  fatca_status text
+  risk_assessment_score integer
+  
+  // Family Information
+  spouse_name text
+  dependents_count integer
+  children_details text
+  nominee_details text
+  family_financial_goals text
+  
+  // Investment Profile
+  investment_horizon text
+  investment_objectives text
+  preferred_products text
+  source_of_wealth text
+  
+  // Communication Preferences
+  preferred_contact_method text
+  preferred_contact_time text
+  communication_frequency text
+  client_since timestamp
+  client_acquisition_source text
+  
+  // Transaction Information
+  total_transaction_count integer
+  average_transaction_value real
+  recurring_investments text
+  
+  // Additional Fields
+  tax_planning_preferences text
+  insurance_coverage text
+  retirement_goals text
+  major_life_events text
+  financial_interests text
+  net_worth text
+  liquidity_requirements text
+  foreign_investments text
+  
+  // Portfolio Information
+  total_invested_amount integer
+  current_value integer
+  unrealized_gains integer
+  unrealized_gains_percent double precision
+  one_year_return double precision
+  three_year_return double precision
+  five_year_return double precision
+  portfolio_start_date date
+  last_valuation_date date
+  risk_score integer
+  esg_score integer
+  volatility double precision
+  sharpe_ratio double precision
+  asset_allocation jsonb
+  sector_exposure jsonb
+  geographic_exposure jsonb
+  is_favorite boolean 
+  
+  Note: 'Main client table with comprehensive personal, financial, and portfolio information'
+}
+
+Table prospects {
+  id integer [pk, increment]
+  full_name text
+  initials text
+  potential_aum text
+  potential_aum_value real
+  email text
+  phone text
+  whatsapp_number text
+  address text
+  stage text 
+  last_contact_date timestamp
+  probability_score integer 
+  products_of_interest text
+  notes text
+  created_at timestamp 
+  assigned_to integer [ref: > users.id]
+  
+  Note: 'Prospects/leads in the sales pipeline'
+}
+
+// ==============================================================================
+// TASKS & APPOINTMENTS
+// ==============================================================================
+
+Table tasks {
+  id integer [pk, increment]
+  title text
+  description text
+  due_date timestamp
+  completed boolean 
+  priority text 
+  client_id integer [ref: > clients.id]
+  prospect_id integer [ref: > prospects.id]
+  assigned_to integer [ref: > users.id]
+  created_at timestamp 
+  
+  Note: 'Tasks for RMs and clients'
+}
+
+Table appointments {
+  id integer [pk, increment]
+  title text
+  description text
+  start_time timestamp
+  end_time timestamp
+  location text
+  client_id integer [ref: > clients.id]
+  prospect_id integer [ref: > prospects.id]
+  assigned_to integer [ref: > users.id]
+  priority text 
+  type text
+  created_at timestamp 
+  
+  Note: 'Meetings and appointments'
+}
+
+// ==============================================================================
+// PORTFOLIO & ALERTS
+// ==============================================================================
+
+Table portfolio_alerts {
+  id integer [pk, increment]
+  title text
+  description text
+  client_id integer [ref: > clients.id]
+  severity text
+  read boolean 
+  action_required boolean 
+  priority text 
+  created_at timestamp 
+  
+  Note: 'Portfolio alerts and notifications'
+}
+
+// ==============================================================================
+// TRANSACTIONS
+// ==============================================================================
+
+Table transactions {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id] // not null
+  transaction_date timestamp
+  settlement_date timestamp
+  transaction_type text
+  product_type text
+  product_name text
+  product_category text
+  quantity real
+  price real
+  amount real
+  fees real 
+  taxes real 
+  total_amount real
+  currency_code text 
+  status text 
+  reference text
+  description text
+  portfolio_impact real
+  created_at timestamp 
+  
+  Note: 'Client transaction history'
+}
+
+// ==============================================================================
+// COMMUNICATIONS
+// ==============================================================================
+
+Table communications {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id] // not null
+  initiated_by integer [ref: > users.id] // not null
+  start_time timestamp 
+  end_time timestamp
+  duration integer
+  communication_type text
+  channel text
+  direction text
+  subject text
+  summary text
+  notes text
+  sentiment text
+  tags text[]
+  follow_up_required boolean 
+  next_steps text
+  has_attachments boolean 
+  
+  Note: 'All client communication records'
+}
+
+Table communication_action_items {
+  id integer [pk, increment]
+  communication_id integer [ref: > communications.id] // not null
+  title text
+  description text
+  assigned_to integer [ref: > users.id]
+  due_date timestamp
+  priority text
+  status text 
+  completed_at timestamp
+  action_type text 
+  deal_value real
+  expected_close_date timestamp
+  
+  Note: 'Action items generated from communications'
+}
+
+Table communication_attachments {
+  id integer [pk, increment]
+  communication_id integer [ref: > communications.id] // not null
+  file_name text
+  file_type text
+  file_size integer
+  file_url text
+  description text
+  uploaded_by integer [ref: > users.id]
+  created_at timestamp 
+  is_audio_file boolean 
+  transcription_text text
+  transcription_sentiment text
+  transcription_confidence real
+  transcription_duration integer
+  transcription_processed_at timestamp
+  ai_summary text
+  ai_action_items text
+  
+  Note: 'Files and attachments in communications'
+}
+
+Table client_communication_preferences {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id] [unique] // not null
+  preferred_channels text[]
+  preferred_frequency text
+  preferred_days text[]
+  preferred_time_slots text[]
+  preferred_language text
+  opt_in_marketing boolean 
+  do_not_contact boolean 
+  last_updated timestamp 
+  
+  Note: 'Client communication preferences'
+}
+
+Table communication_templates {
+  id integer [pk, increment]
+  name text
+  category text
+  subject text
+  content text
+  variables text[]
+  is_global boolean 
+  created_by integer [ref: > users.id] // not null
+  is_active boolean 
+  created_at timestamp 
+  
+  Note: 'Reusable communication templates'
+}
+
+Table communication_analytics {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id]
+  client_id integer [ref: > clients.id]
+  period text
+  start_date timestamp
+  end_date timestamp
+  total_communications integer
+  communications_by_type jsonb
+  communications_by_direction jsonb
+  communications_by_channel jsonb
+  sentiment_analysis jsonb
+  most_discussed_topics jsonb
+  average_duration integer
+  average_response_time integer
+  communication_effectiveness jsonb
+  followup_completion jsonb
+  created_at timestamp 
+  
+  Note: 'Analytics and metrics for communications'
+}
+
+// ==============================================================================
+// PRODUCTS
+// ==============================================================================
+
+Table products {
+  id integer [pk, increment]
+  name text
+  product_code text [unique, not null]
+  category text
+  sub_category text
+  description text
+  key_features text[]
+  target_audience text
+  min_investment integer
+  max_investment integer
+  investment_multiples integer 
+  risk_level text
+  expected_returns text
+  lock_in_period integer
+  tenure text
+  exit_load text
+  management_fee real
+  regulatory_approvals text[]
+  tax_implications text
+  factsheet_url text
+  kims_url text
+  application_form_url text
+  is_active boolean 
+  is_open_for_subscription boolean 
+  launch_date timestamp
+  maturity_date timestamp
+  total_subscriptions double precision 
+  total_investors integer 
+  created_by integer [ref: > users.id]
+  created_at timestamp 
+  updated_at timestamp
+  
+  Note: 'Wealth management products catalog'
+}
+
+// ==============================================================================
+// PERFORMANCE & METRICS
+// ==============================================================================
+
+Table performance_metrics {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  metric_type text
+  current_value real
+  target_value real
+  percentage_change real
+  month integer
+  year integer
+  created_at timestamp 
+  
+  Note: 'RM performance metrics'
+}
+
+Table aum_trends {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  month integer
+  year integer
+  current_value real
+  previous_value real
+  created_at timestamp 
+  
+  Note: 'AUM trends over time'
+}
+
+Table sales_pipeline {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  stage text
+  count integer 
+  value real 
+  created_at timestamp 
+  
+  Note: 'Sales pipeline by stage'
+}
+
+Table performance_targets {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id] // not null
+  period text
+  year integer
+  quarter integer
+  month integer
+  new_clients_target integer 
+  net_new_money_target double precision 
+  client_meetings_target integer 
+  prospect_pipeline_target double precision 
+  revenue_target double precision 
+  created_at timestamp 
+  updated_at timestamp
+  
+  Note: 'Performance targets for RMs'
+}
+
+Table performance_actuals {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id] // not null
+  period text
+  year integer
+  quarter integer
+  month integer
+  new_clients_actual integer 
+  net_new_money_actual double precision 
+  client_meetings_actual integer 
+  prospect_pipeline_actual double precision 
+  revenue_actual double precision 
+  created_at timestamp 
+  updated_at timestamp
+  
+  Note: 'Actual performance achieved'
+}
+
+Table performance_peer_rankings {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id] // not null
+  period text
+  year integer
+  quarter integer
+  month integer
+  new_clients_rank integer
+  net_new_money_rank integer
+  client_meetings_rank integer
+  prospect_pipeline_rank integer
+  revenue_rank integer
+  overall_rank integer
+  new_clients_percentile integer
+  net_new_money_percentile integer
+  client_meetings_percentile integer
+  prospect_pipeline_percentile integer
+  revenue_percentile integer
+  overall_percentile integer
+  total_rms integer
+  created_at timestamp 
+  updated_at timestamp
+  
+  Note: 'Peer comparison and rankings'
+}
+
+Table performance_incentives {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id] // not null
+  period text
+  year integer
+  quarter integer
+  month integer
+  earned_amount double precision 
+  projected_amount double precision 
+  possible_amount double precision 
+  target_achievement_percent double precision 
+  base_incentive double precision 
+  performance_bonus double precision 
+  team_bonus double precision 
+  special_incentives double precision 
+  created_at timestamp 
+  updated_at timestamp
+  
+  Note: 'Incentive calculations'
+}
+
+// ==============================================================================
+// ANALYTICS & BUSINESS METRICS
+// ==============================================================================
+
+Table rm_business_metrics {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  total_aum real
+  total_clients integer
+  revenue_month_to_date real
+  pipeline_value real
+  platinum_clients integer 
+  gold_clients integer 
+  silver_clients integer 
+  equity_aum real 
+  debt_aum real 
+  mutual_fund_aum real 
+  others_aum real 
+  conservative_clients integer 
+  moderate_clients integer 
+  aggressive_clients integer 
+  month integer
+  year integer
+  as_of_date date
+  created_at timestamp 
+  
+  Note: 'Aggregated business metrics per RM'
+}
+
+Table client_portfolio_breakdowns {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id] // not null
+  user_id integer [ref: > users.id] // not null
+  dimension text
+  category text
+  aum_amount real
+  invested_amount real
+  current_value real
+  unrealized_gains real
+  as_of_date date
+  created_at timestamp 
+  
+  Note: 'Portfolio breakdowns by various dimensions'
+}
+
+Table product_revenue {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  product_type text
+  product_category text
+  product_name text
+  gross_revenue real
+  net_revenue real
+  commission_rate real
+  trail_commission real 
+  upfront_commission real 
+  transaction_count integer 
+  client_count integer 
+  total_volume real 
+  month integer
+  year integer
+  created_at timestamp 
+  
+  Note: 'Revenue breakdown by product'
+}
+
+Table customer_segment_analysis {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  segment_type text
+  segment_value text
+  client_count integer
+  total_aum real
+  average_aum real
+  revenue_contribution real
+  average_transaction_size real
+  transaction_frequency real
+  retention_rate real
+  new_clients_this_month integer 
+  aum_growth_rate real
+  month integer
+  year integer
+  as_of_date date
+  created_at timestamp 
+  
+  Note: 'Client segmentation analysis'
+}
+
+Table pipeline_analysis {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id] // not null
+  stage text
+  prospect_count integer
+  total_value real
+  average_value real
+  average_probability real
+  average_stage_time integer
+  conversion_rate real
+  lead_source text
+  source_prospect_count integer
+  source_conversion_rate real
+  month integer
+  year integer
+  as_of_date date
+  created_at timestamp 
+  
+  Note: 'Pipeline analysis and conversion metrics'
+}
+
+// ==============================================================================
+// COMPLAINTS & SERVICE
+// ==============================================================================
+
+Table client_complaints {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id] // not null
+  assigned_to integer [ref: > users.id] // not null
+  title text
+  description text
+  category text
+  subcategory text
+  severity text
+  status text 
+  priority text
+  resolution_details text
+  resolution_date timestamp
+  resolution_by integer [ref: > users.id]
+  is_regulatory boolean 
+  regulatory_ref_number text
+  reported_date timestamp 
+  acknowledgment_date timestamp
+  target_resolution_date timestamp
+  reported_via text
+  escalation_level integer 
+  resolution_rating integer
+  customer_feedback text
+  created_at timestamp 
+  updated_at timestamp
+  
+  Note: 'Client complaint tracking'
+}
+
+// ==============================================================================
+// CONTENT & ANNOUNCEMENTS
+// ==============================================================================
+
+Table talking_points {
+  id integer [pk, increment]
+  title text
+  category text
+  summary text
+  detailed_content text
+  source text
+  relevance_score integer 
+  valid_until timestamp
+  tags text[]
+  created_at timestamp 
+  is_active boolean 
+  
+  Note: 'Insights and talking points for RMs'
+}
+
+Table announcements {
+  id integer [pk, increment]
+  title text
+  content text
+  type text
+  priority text 
+  target_audience text 
+  valid_from timestamp 
+  valid_until timestamp
+  author text
+  action_required boolean 
+  action_deadline timestamp
+  tags text[]
+  created_at timestamp 
+  is_active boolean 
+  
+  Note: 'Announcements from product team/CIO'
+}

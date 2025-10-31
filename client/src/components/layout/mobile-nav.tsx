@@ -6,7 +6,7 @@ import {
   BarChart2,
   Menu,
 } from "lucide-react";
-import ujjivanLogo from "../../assets/ujjivan-logo.png";
+import primesoftLogo from "../../assets/primesoft-logo.svg";
 import { useEffect, useState } from "react";
 
 const navigationItems = [

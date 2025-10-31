@@ -97,7 +97,7 @@ export default function AnnouncementsPage() {
     <div className="relative">
       <div className="sticky top-0 z-10 bg-card border-b border-border p-6">
         <div className="flex items-center space-x-3">
-          <Bell className="h-6 w-6 text-ujjivan-primary" />
+          <Bell className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">Updates</h1>
           <span className="ml-auto text-sm text-muted-foreground">
             {activeAnnouncements.length} Active

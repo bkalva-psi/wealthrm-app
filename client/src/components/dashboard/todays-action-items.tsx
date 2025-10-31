@@ -138,8 +138,8 @@ export function ActionItemsPriorities() {
       count: appointments.length,
       items: appointments,
       icon: Calendar,
-      color: 'text-teal-700',
-      bgColor: 'bg-teal-50 border-teal-200',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10 border-primary/30',
       description: 'Scheduled client meetings and consultations requiring preparation'
     },
     tasks: {
@@ -174,8 +174,8 @@ export function ActionItemsPriorities() {
       count: priorityAlerts.length,
       items: priorityAlerts,
       icon: AlertCircle,
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-50 border-orange-200',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10 border-primary/30',
       description: 'Portfolio alerts and client issues requiring immediate review'
     }
   };

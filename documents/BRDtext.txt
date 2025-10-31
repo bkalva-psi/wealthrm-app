@@ -1,0 +1,1479 @@
+Business Requirements Document: Financial Planning & 
+Need Analysis Platform 
+1. Field-Level Specifications 
+This section details all data fields to be captured at each stage of the financial plan 
+journey. The platform will collect comprehensive information from personal details and 
+KYC data through to plan specifics, financial details, and product selections. Field 
+definitions and formats should be clearly specified in tables for each sub-process. 
+Personal and KYC Information 
+Capture all essential personal details and regulatory KYC information for each client 
+(whether a new prospect or existing customer). Key fields include: 
+• Personal Identifiers: Full Name, Date of Birth, Gender, Nationality, and unique ID 
+numbers (e.g. Passport/ID No., PAN for India). 
+• Contact Details: Phone numbers, Email, Residential Address, Mailing Address. 
+• KYC and Regulatory Data: Tax residency country, FATCA/CRS status (U.S. Person 
+Y/N), and related declarations; Politically Exposed Person (PEP) status; and 
+residency status (e.g. NRIC for Singapore, Aadhaar for India). 
+• Employment & Financial Profile: Occupation, Employer, Annual Income, Liquid 
+Net Worth, and general risk appetite indicator (if any available from onboarding). 
+• Client Category Flags: High Net Worth/Accredited Investor flag (Y/N) for 
+jurisdictions like Singapore or GCC, which may affect product eligibility. 
+All personal/KYC fields must be validated per format (e.g. date fields, ID regex) and 
+mandatory fields enforced. This information will be revisited and editable during plan 
+creation, allowing advisors or clients to update any changes before proceeding. 
+Risk Profiling 
+The platform administers a risk tolerance questionnaire to determine the client’s risk 
+profile. Key data captured here includes: 
+• Risk Questionnaire Responses: A set of predefined questions (e.g. 5–10 
+questions) covering investment experience, tolerance for loss, investment horizon, 
+etc. Each question has multiple-choice answers with an associated score weight. 
+Responses (selected options) and their scores are recorded. 
+• Risk Score and Category: The system calculates a total risk score by summing 
+answer weights. This score is mapped to a risk category or profile (e.g. 
+Conservative, Moderate, Aggressive) based on defined score ranges. The resulting 
+risk profile name and description are stored. 
+• Risk Profile Details: Additional attributes like the risk profile description (text 
+explanation of what the profile means), date of assessment, and profile expiry 
+date (e.g. risk profile valid for 12 months) are captured. The questionnaire version or 
+type (for multi-jurisdiction support, e.g. Malaysia’s ISAF Part A, Singapore’s CKA) 
+should be tracked. 
+• Override Indicators: If any override or ceiling logic applies (for instance, certain 
+answers limiting the maximum risk category), the system flags the adjusted risk 
+profile accordingly. The interface also allows the advisor to re-take or update the 
+risk profile if needed, which triggers storing a new profile assessment. 
+All questions and scoring logic should be configurable, and the system must enforce 
+completion of mandatory risk profiling for every new plan (suitability check) unless an up
+to-date profile already exists. If a client’s existing risk profile is still valid, it is retrieved and 
+displayed, with the option to redo the questionnaire. 
+Plan Selection (Type, Objective, Purpose) 
+Once KYC and risk profiling are done, the user selects the planning context. The platform 
+needs to capture the Plan Type, Plan Objective, and Plan Purpose to determine the 
+appropriate planning journey: 
+• Plan Purpose: The broad category of plan – for example, Investment Plan, 
+Insurance Plan, or Execution-Only (Single Product). This dictates which workflow 
+will be followed (holistic investment planning, insurance needs analysis, or a 
+streamlined product purchase journey). 
+• Plan Type: The specific planning scenario under the chosen purpose. For 
+investment plans, examples include Retirement Plan, Education Plan, Wealth 
+Accumulation, etc. For insurance plans, types might be Protection Plan, Legacy 
+Planning, etc. Each plan type corresponds to certain goal calculators or product 
+sets. 
+• Plan Objective: A brief description or goal definition for the plan. This could be a 
+user-defined goal name or selection of a predefined objective. For instance, under a 
+Retirement Plan type, the objective might be “Retirement at age 60 with ₹5 Cr 
+corpus,” or under Wealth Plan, an objective might be “Grow wealth for 10 years.” In 
+insurance context, an objective might be “Life protection of ₹1 Cr” etc. The 
+objective helps parameterize the planning calculators. 
+These fields guide the system to branch into the correct journey and load relevant tools 
+(e.g. which goal calculator to use, whether to include insurance needs analysis, etc.). All 
+three fields (Purpose, Type, Objective) are captured and stored with the plan record, and 
+will appear in the final proposal document. Selection inputs may be via drop-down lists (for 
+standard plan types) and text inputs (for custom objective descriptions), with validations to 
+ensure a valid combination is chosen. 
+Financial Position (Net Worth & Cash Flows) 
+In this step, the advisor/client inputs the client’s current financial position, including net 
+worth components and cash flow details: 
+• Assets: A detailed list of the client’s assets with fields for Asset Type (e.g. Cash, 
+Deposits, Stocks, Mutual Funds, Property, etc.), Description (name or account), 
+Ownership (if joint or individual), and Current Value. Assets may be further 
+categorized (e.g. “held with our bank” vs “held outside”) for integration purposes. 
+Each asset entry is captured as a record contributing to total assets. 
+• Liabilities: A list of liabilities with fields for Liability Type (e.g. Home Loan, Credit 
+Card, Personal Loan), Description, Outstanding Amount, Monthly Payment (for cash 
+flow impact), and Interest Rate/Term if needed. These entries contribute to total 
+liabilities. 
+• Net Worth Calculation: The system calculates Net Worth as Assets minus 
+Liabilities in real time and stores the result. Net worth may be broken down in the UI 
+for transparency (e.g. showing total assets and total liabilities). 
+• Income Details: Capture all sources of income, with fields such as Income Type 
+(Salary, Business, Rental, etc.), Amount (annual or monthly), and possibly 
+frequency if needed. Total Monthly/Annual Income is computed. 
+• Expense Details: Capture key expenses, either as aggregated totals or categorized 
+breakdown. Fields can include Fixed Expenses (total monthly committed expenses) 
+and Discretionary Expenses, or more granular categories (housing, utilities, 
+education, etc.), each with an amount. Total Monthly Expenses is computed. 
+• Cash Flow Surplus/Deficit: Based on income and expenses, the system computes 
+the monthly or annual surplus available for investments. This surplus is a critical 
+input to goal funding and budgeting steps. 
+All financial fields should allow currency input in local currency (with support for multi
+currency if clients hold assets abroad, though primarily in local currency). Validation 
+ensures values are numeric and reasonable (e.g. expenses should not exceed income 
+without flagging a deficit). These details not only inform the plan (e.g. how much can be 
+invested regularly) but also appear in the proposal’s financial summary section if utilized. 
+The system should allow skipping detailed cash flow input if not required by the advisor, 
+but at minimum net worth and high-level income/expense info should be recorded for a 
+holistic plan. 
+Dependent Details 
+The platform collects information about the client’s dependents, which is vital for goal 
+planning (education, legacy) and insurance needs: 
+• Dependent Name and Relationship: Name of the dependent and relation to the 
+client (e.g. spouse, son, daughter, parent, etc.). 
+• Dependent Date of Birth/Age: Used to calculate current age and future milestones 
+(e.g. college at 18 years). This is important for education or marriage goal timing, as 
+well as determining dependency period (for insurance coverage calculations). 
+• Financial Dependency Details: Optionally capture how long each dependent will 
+be financially dependent on the client (e.g. “dependent until age 22” or “lifelong 
+dependency” for special needs). For child dependents, the system could derive this 
+from current age and expected college or adulthood age. 
+• Insurance Specifics: Mark if the dependent would be a beneficiary on insurance or 
+if there are specific financial needs (like a target education cost for a child). This 
+could link to goal planning input. 
+Multiple dependents can be added. These details feed into goal calculators (for example, 
+an education goal can be tied to a specific child) and insurance analysis (estimating life 
+cover needed to support dependents). The UI should allow adding/editing dependents 
+easily, and this info will be included in the proposal’s personal profile or plan details as 
+needed. Privacy rules should be considered (no excessive PII beyond planning needs). 
+Investment Profiling & Model Portfolio Selection 
+After determining the client’s risk profile, the platform will recommend a model 
+investment portfolio (asset allocation model) aligned with that risk level. Fields and 
+inputs in this stage include: 
+• Client Risk Profile (Result): Brought forward from the risk profiling step (risk 
+category name and score). This is displayed as a reference (“Your Risk Profile is: 
+Aggressive”). 
+• Recommended Model Portfolio: The system identifies the model portfolio 
+corresponding to the client’s risk profile. For example, a Balanced risk profile maps 
+to a Balanced model portfolio with predefined asset class allocations. The model 
+portfolio name is shown along with its allocation breakdown. 
+• Model Portfolio Asset Allocation: The target percentage allocation for each asset 
+class in the recommended model. For instance, the model might be defined as 60% 
+Equity, 30% Fixed Income, 10% Cash (or more granular sub-classes like Local 
+Equity, Global Equity, etc.). These percentages are displayed, often in a table or 
+chart form for clarity. Performance metrics for the model (e.g. expected annual 
+return and portfolio volatility) are also shown. 
+• Model Selection Input: The user (advisor or client) may confirm the recommended 
+model or choose a different one. The interface can list alternative model portfolios 
+(Conservative, Moderate, Aggressive, etc. with their allocations) along with a 
+selection control (e.g. radio button or checkbox) to pick one. The field capturing the 
+chosen model portfolio ID or name is saved with the plan. Business rule: the 
+system only allows selecting a model with risk level equal or lower than the client’s 
+risk profile (i.e. cannot choose a higher-risk model without additional steps). If the 
+client prefers a higher-risk allocation than their profile allows, the system must 
+enforce an acknowledgment and possibly require updating the risk profile 
+questionnaire before proceeding. 
+• Override Acknowledgment: If a higher-risk model is chosen (or any deviation from 
+recommended risk), capture a flag that an override was accepted – including who 
+authorized it (advisor and/or client consent) and timestamp. This is crucial for 
+compliance audit trails. 
+By capturing the above, the platform defines the target investment strategy for the client. 
+These allocations will later be used in product selection (to pick specific investments to fill 
+each asset class) and will be visualized in the plan summary (e.g. as a donut chart of asset 
+allocation). The selected model portfolio and its details will also be documented in the 
+proposal, including expected return and risk metrics for transparency. 
+Goal Planning Calculators 
+For plans with specific financial goals (retirement, education, etc.), the platform provides 
+goal-based calculators. The user enters goal parameters, and the system computes the 
+required savings or investments to achieve the goal. Key fields per goal include: 
+• Goal Type: The category of goal (Retirement, Education, Marriage, Purchase, etc.). 
+This may be inferred from Plan Type/Objective or chosen by the user. It determines 
+which calculator formula to use (e.g. retirement corpus vs. education funding). 
+• Target Amount: The desired amount of money for the goal. For education, this 
+could be the future cost of college; for retirement, the target retirement corpus or 
+yearly income in retirement. The user may input either the future amount needed or 
+current cost which the system will inflate. 
+• Time Horizon: The number of years until the goal or the target date. For retirement it 
+might be “Years until retirement” or a target retirement age; for education, the 
+child’s college start year, etc. This is used in calculations to determine how long 
+investments can grow. 
+• Inflation Rate: Assumed annual inflation for that goal’s costs. The system may 
+prepopulate a default (e.g. 5% or country-specific inflation rate) but allow the user 
+to adjust. 
+• Investment Return Rate: The assumed annual rate of return on investments for 
+this goal’s portfolio. This might default based on the chosen model portfolio’s 
+expected return or be manually input if the user wants to be conservative. 
+• Existing Savings for Goal: (If applicable) Any current assets already earmarked for 
+this goal. For example, “current education fund” or existing retirement savings. This 
+reduces the additional amount needed. 
+• Calculated Required Savings: Output fields – after inputting the above, the 
+system calculates how much needs to be invested to meet the goal. Typically, the 
+output is given in two forms: (a) the lump sum amount needed today (one-time 
+investment) and (b) the periodic contribution needed (e.g. monthly or annual 
+savings going forward). These are derived using time value of money formulas (e.g. 
+future value and annuity calculations). The calculation logic varies by goal type (for 
+retirement, it may consider post-retirement withdrawal period; for education, a 
+single payout at goal date) – the system uses the appropriate formula per goal type. 
+Both the formula and results should be transparent to the advisor (e.g. via a 
+“calculator details” view). 
+The platform should support multiple goals in one plan. For each goal added, the above 
+fields are captured and results computed. Advisors can then discuss trade-offs (e.g. which 
+goals are underfunded). All goal assumptions and results are saved and will appear in the 
+proposal for client reference. The calculators must handle different scenarios – for 
+example, if the user chooses an insurance plan (protection goal), the “calculator” might 
+simply compute an insurance coverage gap rather than an investment amount (e.g. life 
+insurance needed = expense needs * years, etc., which could reuse net worth info). The 
+system will select the relevant calculator based on the plan type and objective 
+combination. Validation should ensure inputs are positive and reasonable (e.g. future goal 
+date > current date). 
+Budgeting and Asset Tagging 
+Budgeting in this context refers to determining how the client will allocate resources to 
+fund the plan. It often involves tagging specific accounts or funds that will be used. Fields 
+and data captured: 
+• Available Surplus for Investment: The system brings forward the monthly/annual 
+surplus from the earlier cash flow analysis (income minus expenses). This gives a 
+baseline of how much the client can invest periodically towards goals. 
+• Assets Available to Tag: A list of the client’s accounts or assets that are available 
+to dedicate to this plan. The system should display “Assets held with the bank” 
+(automatically fetched via integration, see Integrations section) and allow entry of 
+“External Assets” held elsewhere. For each account, relevant fields include 
+Account/Asset Name, Current Value, and Liquid amount available. The UI may 
+show checkboxes or drag-and-drop to tag an asset to the plan. 
+• Amount to Invest from Each Asset: If partial use of an asset is possible, allow the 
+user to specify how much of a particular account’s balance to allocate to this plan. 
+For example, from a savings account of $10,000, the client decides to invest $5,000 
+toward this goal. This field is captured per asset tagged. 
+• External Funding Entry: If the client will add new funds (not currently in an asset), 
+provide a field for New Investment Amount (outside of existing accounts). This is 
+essentially the amount the client commits to invest for the plan (if not covered by 
+tagging existing assets). 
+• Tagged Asset Summary: As assets are tagged, the system updates the total funds 
+allocated to the plan. It should compare this with the required investment 
+calculated in the goal planning step, highlighting any shortfall or surplus. For 
+instance, if goal requires ₹10 lakh and the client tags assets worth ₹8 lakh, a 
+shortfall of ₹2 lakh is indicated. 
+Business rules ensure that an asset cannot be double-counted in two plans 
+simultaneously. If an account is already fully tagged to another plan, it may be shown but 
+not selectable until freed (with guidance to un-tag from the other plan if needed). This 
+prevents overlapping commitments. The budgeting step essentially confirms how the 
+client will meet the investment need – either via existing savings or future cash flows. The 
+data captured here (which accounts/funds will be used) feeds into the product selection 
+(e.g. determining liquidity and what products can be purchased) and will be included in the 
+proposal plan details. 
+Product Selection (Investments, Insurance, Single-Product) 
+In the product selection stage, the advisor or client chooses specific financial products to 
+implement the plan. The platform should handle three scenarios: investment products for 
+investment plans, insurance products for insurance plans, and a simplified flow for 
+execution-only single product sales. 
+For Investment Plans (Portfolio Products): After determining the model portfolio and 
+investment amount, the user selects actual investment products (e.g. mutual funds, 
+bonds, equities) to allocate the portfolio. Data fields for each product selection include: 
+• Product Category: The asset class or product type (Equity Fund, Fixed Income 
+Fund, Bond, Stock, etc.). The platform may guide this by listing recommended 
+products per asset class to fulfill the model allocation. 
+• Product Name/ID: The specific product chosen from the catalog (e.g. a specific 
+mutual fund scheme name or bond issue). A search or pick-list integration allows 
+filtering by category, risk, etc. 
+• Investment Amount or Percentage: How much of the plan’s investment amount is 
+allocated to this product. This could be entered as a currency amount or as a 
+percentage of the total investment. The sum of allocations should match the 
+planned investment budget; the system can assist by defaulting suggested 
+amounts (e.g. 60% of total into equity funds, etc., based on model portfolio). 
+• Product Risk Rating: Each product may have a risk rating or complexity indicator. 
+The platform should display this and internally check it against the client’s risk 
+profile. If a selected product’s risk level exceeds the client’s risk category, flag it for 
+acknowledgment (and possibly require supervisor approval). 
+• Projected Returns: (Optional) For illustration, the system might show the product’s 
+expected yield or historical return to help in decision-making, but this is not a stored 
+input, more reference data. 
+• Rationale/Notes: A text field for advisor to input rationale for choosing that 
+product, if needed (for compliance notes or client understanding). For instance, 
+“Chosen ABC Equity Fund for large-cap exposure due to consistent performance.” 
+The platform should allow multiple products to be added until the investment amount is 
+fully allocated. It should validate that allocations roughly follow the model portfolio (or 
+document deviations). For example, if the model said 60% equity and the advisor allocates 
+80% to equity funds, an alert or override could be triggered. All selected product details are 
+stored and will be compiled into the investment proposal content (typically listing each 
+product and allocation). 
+For Insurance Plans (Insurance Products): In an insurance needs analysis journey, after 
+identifying the needed coverage (e.g. life cover amount, health or disability needs), the 
+user will select insurance products to fulfill those needs. Fields captured for insurance 
+product selection include: 
+• Coverage Need Type: The category of need (Life Insurance, Critical Illness, 
+Disability, etc.) that the product will address. The system can list products 
+accordingly (term life policies for life cover, etc.). 
+• Product Name/Policy: The specific insurance product (e.g. "ABC Life - 20 Year 
+Term Plan"). The platform should integrate with an insurance product catalog to 
+fetch available policy options. 
+• Sum Assured/Coverage Amount: The coverage amount that the policy will provide 
+(e.g. ₹1 Crore life cover). This should ideally match or exceed the calculated need 
+for that category. 
+• Premium: The system either calculates the premium via integration (given sum 
+assured, term, age) or allows input if integration not available. Premium can be 
+annual, monthly, etc., and the premium payment term (years or whole life) might be 
+a field as well. 
+• Policy Term: The duration of coverage (e.g. 20-year term, or up to age 60, etc.), 
+which may be defaulted based on goal (like cover until retirement). 
+• Insurance Allocation Notes: If multiple policies are used, perhaps allow noting 
+which need each covers (e.g. one policy for income replacement, another for loan 
+protection). 
+The system may allow adding multiple insurance products if needed (for example, a term 
+life + a critical illness rider, or separate policies). Validation ensures the sum assured 
+meets the need (with maybe a small buffer). Insurance products selection will form the 
+insurance proposal content, typically summarizing policy details, premiums, and benefits. 
+For Execution-Only (Single-Product) Journeys: In this streamlined path, the user (likely 
+an advisor in a transactional role or a self-directed customer) selects one specific product 
+without a full financial plan. Fields captured are focused on transaction details: 
+• Product Type/Category: The type of product the client wants (could be a specific 
+mutual fund purchase, a bond, a structured note, or an insurance policy if 
+execution-only insurance sale). This might be chosen from a menu or via search. 
+• Product Name/ID: The exact product to be purchased. The system should retrieve 
+product details (e.g. price, minimum investment) from the catalog. 
+• Investment Amount or Units: The amount to invest or number of units to purchase. 
+The system should enforce minimums and lots (for bonds or notes) as applicable. 
+• Execution Disclaimer: Because this is execution-only, a flag or checkbox should 
+record that the client is foregoing a full advice process. Typically a disclaimer like 
+“Client acknowledges this is an execution-only transaction without financial 
+advice” needs to be accepted and stored. 
+• Suitability Acknowledgment: Even in execution-only, if regulatory rules require 
+(especially for complex products), capture an acknowledgment that the product 
+may not be assessed for suitability due to execution-only nature (this ties into 
+compliance). 
+Single-product journey data is simpler. The platform essentially captures a transaction 
+order. However, it still associates with a “plan” (albeit one with just one product) for 
+record-keeping and proposal generation (which in this case will be a very brief proposal or 
+term sheet with the product info). 
+Across all product selection scenarios, the platform should integrate with product master 
+data to pull product names, codes, risk ratings, and possibly live data (NAV, price) for 
+display. Selection screens should be user-friendly with filters (by product type, risk, etc.). 
+All selections are saved as part of the plan record and will be included in the final proposal 
+output (investment products list or insurance policy summary). The system must also 
+ensure any ineligible products (due to client’s geography or status) are filtered out. 
+Proposal Generation Fields (Draft/Final) 
+When the plan data entry and selections are completed, the platform will generate a 
+proposal document. Several fields and flags relate to proposal generation and versioning: 
+• Proposal ID: A unique identifier for each proposal document generated, for audit 
+and retrieval. This could be a combination of plan ID and version number or a UUID. 
+• Proposal Version: An integer or label indicating the version of the proposal. For 
+example, “Draft” vs “Final”, or version numbers 0, 1, 2 for subsequent revisions. 
+The system should automatically increment version for each new final proposal 
+generated for the same plan. 
+• Proposal Status: Draft or Final. A Draft proposal can be generated for internal 
+discussion or client preview before plan confirmation. Drafts are watermarked or 
+labeled “Draft” and not considered signed off. Final proposals are only generated 
+upon plan confirmation and are the ones used for client sign-off and record. 
+• Generation Timestamp: Date and time when the proposal was generated (for 
+record-keeping). The final proposal date will often appear on the document. 
+• Prepared By: The user who generated it (e.g. Advisor name) and possibly their 
+designation/ID. This can be auto-filled from user context. 
+• Client Acknowledgment Fields: Before generating a final proposal, certain 
+declarations must be acknowledged by the client (captured via the UI). For 
+instance, confirming that the information provided is accurate and accepting 
+disclaimers. In some jurisdictions (e.g. Malaysia), this includes acknowledging 
+specific form sections (e.g. ISAF Part C declarations). The system should record a 
+boolean flag or digital signature confirmation that these were accepted prior to final 
+proposal generation. 
+• Proposal Document Storage Reference: A link or reference to where the 
+generated PDF/Document is stored (e.g. a file path or document ID in a content 
+management system). This allows retrieval of the exact document later. 
+• Plan Inception Flag: Upon final proposal generation, the plan can be marked as 
+“Incepted” or active. This could be a status field in the plan record indicating that 
+the plan has been confirmed and the advice is finalized. 
+The above fields ensure each proposal is traceable and versioned. The platform should 
+prevent editing a plan after final proposal without either creating a new plan version or 
+explicitly logging a modification that triggers a new proposal document (so that the 
+proposal always matches the plan data). Historical proposal retrieval will use the Proposal 
+ID/Version to fetch prior documents. 
+All field-level data from previous stages maps into sections of the proposal. The next 
+sections describe the business rules and content for proposal generation in more detail. 
+2. Business Logic 
+This section describes the key business rules and computational logic that the platform 
+must implement. The logic covers risk profile scoring and validation, model portfolio 
+assignment, goal calculations, portfolio monitoring triggers, and proposal finalization 
+rules. 
+Risk Profile Computation 
+The platform must compute the client's risk tolerance level based on the questionnaire 
+responses. The logic involves: 
+• Questionnaire Scoring: Each risk question has predefined answer choices with 
+associated numeric weights (score). When the client/advisor completes the 
+questionnaire, the system sums up the scores of all selected answers. If there are 
+any multi-select questions, multiple answers’ scores are added as well. Certain 
+questions may be marked as non-scoring (weight=0) to collect information only; 
+these do not contribute to the sum. 
+• Risk Category Determination: The total score is then compared against configured 
+score ranges to assign a risk category. For example, 0-10 = Conservative, 11-20 = 
+Moderate, etc. These ranges and categories are configurable by administrators. 
+Each category is defined by a name and typically a short description (e.g. 
+“Conservative – prefers minimal risk, willing to accept lower returns”). 
+• Override/Ceiling Logic: The logic must account for any “ceiling” questions – i.e., if 
+the client gives a certain answer indicating very low risk capacity (or regulatory 
+classification), the resulting risk category is capped regardless of score. For 
+instance, if a question detects the client has very limited investment knowledge, the 
+profile might not exceed a certain level even if the score is high. 
+• Validity and Renewal: Once a risk profile is computed, mark it with the current date 
+and set an expiry (e.g. 12 months). Business logic should prompt for re-profiling if 
+the profile is expired (or about to expire) when initiating a new plan or product sale. 
+• Multiple Profile Types: In some jurisdictions, additional risk assessments are 
+required (e.g. Singapore requires a Customer Knowledge Assessment (CKA) for 
+complex products). The system should handle multiple questionnaire types. Logic 
+example: if client wants to invest in complex products, ensure the relevant 
+questionnaire (like CKA) is also passed. Failure may restrict product choices. These 
+assessments can be stored alongside the risk profile. 
+Validation: The system ensures the questionnaire is fully answered before computing 
+score. If not, it prompts completion. It also ensures only the active, approved 
+questionnaire template for the client’s category is used (e.g. individual vs corporate client 
+might have different sets). If no active questionnaire is found (which would be a 
+configuration error), an error should be thrown to the user. The risk profiling process is 
+mandatory for new plans as part of suitability checks – the logic will not allow proceeding 
+to product selection without a valid risk profile on record. 
+Model Portfolio Mapping & Validation 
+Once the risk category is identified, the platform automatically maps the client to a 
+recommended model portfolio: 
+• Risk-Profile-to-Model Mapping: A business rule table defines which model 
+portfolio corresponds to each risk profile. For example, Risk Profile "Moderate" → 
+Model Portfolio "Balanced 60/40". This mapping is maintained by product teams 
+and can differ by country or segment. The system looks up the model definition 
+upon risk profiling result and attaches it to the plan. The model includes target asset 
+class allocations and expected performance metrics. 
+• Default vs. Choice: By default, the recommended model is selected for the plan. 
+The user is allowed to choose a less risky model if they desire (e.g. a Conservative 
+portfolio even if they are classified Moderate, perhaps due to personal preference). 
+However, choosing a higher risk model than recommended is disallowed or requires 
+an extra step. The logic enforces that the chosen model’s risk level ≤ client’s risk 
+profile level. If the user attempts a higher one, the system either blocks it or pops an 
+override warning requiring explicit client consent and possibly manager approval. 
+• Reassessment for Higher Risk: In strict compliance setups, to choose a higher risk 
+profile, the client might need to redo the risk questionnaire with different answers 
+(essentially, the system is suggesting the risk profile on record is insufficient for that 
+choice). Alternatively, a waiver form may be recorded. The system should log any 
+such deviation event (who authorized, reason). 
+• Portfolio Composition Checks: When the user proceeds to allocate investments, 
+the system validates the allocation against the model. It may allow deviation but 
+warn if, say, equity allocation exceeds model by more than a certain tolerance. This 
+ensures the final portfolio stays aligned with the risk profile unless justified. 
+Additionally, the model portfolio logic may include rebalancing bands (e.g. +/-5% 
+tolerance for each asset class). These will be used later for monitoring. The initial plan 
+creation should store the model’s target percentages as a baseline. All these rules help 
+maintain suitability: the client’s portfolio should not drastically deviate from what’s 
+appropriate for their risk level without documentation. 
+Goal-Based Calculations 
+For each financial goal input, the platform performs calculations to determine required 
+savings or insurance coverage. The business logic for these calculations includes: 
+• Future Value and Present Value Calculations: Using the goal target amount, time 
+horizon, and inflation, the system calculates the future cost of the goal (if the input 
+target was in today’s value). For example, if current college cost is $50,000, needed 
+in 10 years at 5% inflation, future cost = $50k * (1.05^10). Conversely, if user enters 
+desired future amount, that is the target directly. 
+• Required Investment (Lump Sum): The lump sum required today is calculated by 
+discounting the future goal amount by the assumed growth rate of investments. 
+Formula: Lump Sum = Future Goal Amount / ((1 + return)^years). This tells 
+how much invested now as a single amount could grow to the goal amount. 
+• Required Savings (Periodic): For periodic contributions, the platform uses annuity 
+formulas. It calculates the annual (or monthly) payment needed such that when 
+contributed each period and grown at the return rate, the future value equals the 
+goal amount. Formula (annual): Payment = [Future Goal * (r / ((1+r)^n - 
+1))] for an ordinary saving annuity, where r = annual return, n = years. The output 
+may be given per month by dividing the annual figure by 12. The system provides 
+both one-time and periodic investment requirements, so clients can choose a 
+strategy (invest a lump sum now or invest smaller amounts regularly). 
+• Adjust for Existing Assets: If the client already has some savings allocated to this 
+goal, the logic subtracts that from the goal target before computing new 
+requirements. For example, goal ₹20 lakh, already saved ₹5 lakh, so compute 
+requirement on remaining ₹15 lakh. Similarly, if an asset is tagged to goal funding, it 
+reduces the needed additional saving. 
+• Insurance Needs Calculation: For protection goals (like life insurance), the logic 
+differs: it might compute life cover as present value of future income needs for 
+dependents. For instance, “Life Cover Needed = (annual income needed for family) 
+* (number of years until youngest child is independent)”. The system can also factor 
+existing insurance: Required additional cover = calculated need – existing cover. 
+These formulas are simpler linear calculations and should be configurable. 
+The calculators must be country-sensitive (different defaults or methods). For retirement, 
+there may be more complex logic (like considering post-retirement withdrawals for a 
+certain number of years, Social Security or EPF benefits in India, etc.). The platform should 
+allow for such complexities in future enhancements, but for this BRD we specify the basic 
+approach: inflation for goal costing, investment return for growth, and standard financial 
+formulas. All calculation results are rounded appropriately and clearly shown to the user, 
+including an explanation of assumptions (inflation %, return %, years). Business logic also 
+ensures that if a goal’s required saving is unrealistic (e.g. more than available income), the 
+system flags it or recommends adjusting goal parameters. This forms the basis of plan 
+recommendations. 
+Portfolio Deviation & Rebalancing Triggers 
+After the plan is implemented, the platform should continuously or periodically monitor 
+the portfolio and alert if there are deviations or events that trigger a portfolio review 
+(rebalancing). Key business logic here: 
+• Target vs Actual Allocation Deviation: The system compares the current portfolio 
+allocation (by asset class or risk level) to the model portfolio target. If any asset 
+class weight deviates beyond a defined threshold (e.g. ±5% or a set tolerance), an 
+alert is generated. For example, if equities were supposed to be 60% but due to 
+market growth they became 70%, that 10% overweight crosses the threshold and 
+prompts a rebalance recommendation. The threshold levels should be 
+maintainable parameters. 
+• Periodic Review Triggers: Independently of market moves, a scheduled review 
+trigger can be set. For instance, a periodic review every 6 months is common. The 
+system knows the date of last plan or last rebalance, and when the interval elapses, 
+it flags the portfolio for review. This ensures the advisor revisits the plan regularly. 
+The interval can be configurable (e.g. Singapore might use 6 months by default as in 
+the example, other countries maybe annually). 
+• Risk Profile Change: If the client’s risk tolerance is re-assessed and changes (for 
+example, the client retakes the risk questionnaire after a year and moves from 
+Moderate to Conservative), this is a trigger to review the portfolio. The platform 
+should have logic that upon a risk profile update event, it marks any existing plans 
+for that client as needing alignment. In practice, it could prompt the advisor to 
+either rebalance to a more conservative allocation or obtain acknowledgment to 
+remain with a higher-risk allocation despite the new profile. 
+• Product Maturity or Events: Many investment products have maturity dates (e.g. 
+bonds, structured notes, fixed deposits, insurance policies). The system should 
+track if a product in the portfolio is nearing maturity. A maturity approaching (say 
+within 1-3 months) triggers an alert that a reinvestment decision is needed. 
+Similarly, if any product hits a stop-loss or high gain threshold (if such rules are set), 
+that could also prompt reallocation (though not explicitly listed, some advanced 
+platforms include performance triggers). 
+• Portfolio Performance Triggers: Optionally, if the portfolio return deviates 
+significantly from expected (for instance, a sharp drop in value beyond a set 
+percentage), the system could alert the advisor to review. While not explicitly 
+required, this could be part of “ROI-based triggers” where certain conditions (like 
+portfolio loss > X% in a quarter) lead to a recommended action (e.g. check risk 
+profile or rebalance). 
+When a trigger condition is met, the business logic should create a task or notification for 
+the advisor (and possibly an email to the client depending on settings). On the platform UI, 
+an alert might show on the client dashboard indicating “Portfolio review recommended”. If 
+the advisor initiates a rebalancing, the system essentially guides them through a modified 
+plan journey: reviewing updated personal info, risk profile, then directly to product 
+reallocation while treating it as a continuation of the plan. Importantly, any changes made 
+during rebalancing will result in generation of an updated proposal (with a new version 
+number) reflecting the modifications. The logic ensures that execution-only (single 
+product) cases are handled appropriately — typically, execution-only transactions are not 
+“rebalanced” but simply one-off, so the rule could be that only full investment plans and 
+insurance plans have rebalancing flows. 
+All these rules make sure the client’s plan stays on track and in line with their profile over 
+time. The BRD should specify the parameters (percent thresholds, time intervals) as 
+configurable to adapt to each region’s regulatory expectations and bank policy. 
+Proposal Confirmation & Versioning Logic 
+The final steps of the plan journey involve confirming the proposal and handling document 
+versions. The business rules for proposal generation and version control include: 
+• Draft Proposal Generation: After the advisor inputs all plan details and before final 
+confirmation, they can generate a Draft Proposal. The system compiles all the 
+current plan data into a proposal PDF marked “Draft”. This allows the advisor and 
+client to review the plan recommendations in a formal report format and discuss 
+changes. Draft proposals are for discussion only and not signed by the client; the 
+system records that a draft was generated (with date/version but as a draft status). 
+Multiple drafts can be generated if the plan is adjusted repeatedly, but typically only 
+the latest draft matters as it reflects current inputs. 
+• Plan Confirmation: When the client is satisfied with the plan and ready to proceed, 
+the advisor clicks “Confirm Plan”. Business logic here may require the client’s 
+consent to certain declarations at this point (e.g. confirming accuracy of 
+information and understanding of recommendations). For example, declaration 
+checkboxes must be ticked such as "I acknowledge the risk disclosures and terms" 
+(covering things like ISAF Part C for Malaysia or similar forms). Only once these 
+acknowledgments are recorded does the system allow final proposal generation. 
+• Final Proposal Generation: Upon confirmation, the system generates the Final 
+Proposal document. This is a PDF with no “Draft” watermark, a finalized date, and it 
+becomes an official record of advice. The plan’s status is set to “Finalized” or 
+“Proposed” (depending on terminology) and an entry is saved that version X of the 
+proposal is final. The final proposal is intended to be signed by the client (physically 
+or digitally). The business rule is that no further edits can be made to the plan data 
+once finalized, unless a new plan revision process is initiated. 
+• Version Numbering: The first final proposal might be version 1. If the client later 
+comes back for changes (say a plan review after some time or a change in goal), the 
+advisor would go through the plan journey again (possibly via a “Review/Modify 
+Plan” action). The system should then generate a new proposal (version 2) rather 
+than overwriting version 1. Each final proposal version is preserved. Drafts typically 
+are not numbered in sequence with finals (or could be labeled version 0 or “Draft 
+v1”, etc., but the key is final versions increment). 
+• Historical Retrieval: The platform must store all final proposals and allow users 
+(advisors, and possibly clients via portal) to retrieve past proposals on demand. For 
+instance, an advisor viewing a client’s plan can see prior versions and open the PDF 
+of version 1, 2, etc. This is important for compliance (audit trail of what was 
+presented to the client) and for reference if the client wants to see how the plan has 
+evolved. The UI might show an icon or menu on the plan summary to access 
+historical proposals. Only final proposals are typically stored long-term, while 
+drafts might be discarded once final is issued (or kept temporarily). 
+• Proposal Regeneration on Modifications: If a plan is modified after finalization 
+(through the formal review process or client-requested changes), the system treats 
+it as a new version of the plan’s proposal. The business rule is that any change in 
+recommended products, asset allocation, or goals post-signoff necessitates a new 
+proposal document for the client’s acceptance. This ensures the documentation 
+always matches the advice given at that time. The previous proposal remains in the 
+archive for record but is superseded by the new version once the client signs off the 
+new one. 
+In summary, the logic enforces a clear separation between draft (for internal/client 
+preview) and final proposal (for agreement), prevents tampering with an agreed plan, and 
+keeps a history of all advice provided. This adheres to regulatory expectations and good 
+practice in advisory. The system’s role is to automate the document compilation and keep 
+track of versions and acknowledgments so that advisors can focus on advising rather than 
+paperwork management. 
+3. UI Requirements 
+The platform’s user interface should be intuitive for both financial advisors and end
+customers (in any self-service components). Key user flows require well-designed screens 
+with clear navigation. Below are mock UI descriptions for critical flows: search & client 
+selection, plan initiation, risk profiling, product selection, and the plan summary/proposal 
+confirmation. 
+Client Search & Selection 
+Upon login, an advisor is presented with a client search interface. This screen allows the 
+advisor to find an existing client or create a new prospect. Key UI elements and behaviors: 
+• Search Bar: A prominent search field to query clients by name, client ID/number, or 
+other identifiers (e.g. national ID, account number). Typing triggers an auto-suggest 
+or a search results list. 
+• Search Results List: Shows matching clients with basic info (Name, ID, Date of 
+Birth/age, client segment, etc.). The advisor can click on the correct client to select. 
+If the client record is not found, an option “Add New Client/Prospect” is available. 
+• Client Details Snapshot: Selecting a client opens a “Client Dashboard” or 
+summary card. This can show key info like risk profile, net worth summary, and 
+existing plans if any (for context). It also lists any alerts (e.g. profile expiring, 
+portfolio review needed). 
+• Add New Client Workflow: If adding a new client, the system navigates to a data 
+capture form for personal and KYC information. This form corresponds to the fields 
+outlined in Personal and KYC Information. It might be a multi-step form or single 
+page with sections (Personal Details, Contact, Identification, etc.), with “Save” and 
+“Continue to Plan” options. For compliance, fields like ID number may trigger a 
+real-time duplicate check to avoid duplicates. 
+Once a client is selected or created, the advisor proceeds to either view existing plans or 
+start a new plan. The UI should clearly show a “Start New Plan” button (or similar call to 
+action) on the client’s profile/dashboard page. This brings us to the plan initiation flow. 
+Plan Initiation 
+The Plan Initiation interface guides the user in defining what kind of plan to create. It 
+typically consists of one or two steps of selection: 
+• Plan Purpose Selection: The UI first asks the user to choose the broad purpose: 
+Investment, Insurance, or Execution-Only. This could be presented as three large 
+buttons or tiles with icons (e.g. a chart icon for Investment Planning, a shield for 
+Insurance, a lightning bolt for Quick/Execution). The choice here drives subsequent 
+options. For instance, if “Investment” is chosen, the next fields will relate to 
+investment plan types. 
+• Plan Type & Objective: Next, the user selects the plan type and specific objective. 
+This could be on the same screen or a subsequent one, depending on design. For 
+investment, a dropdown or list might show options like “Retirement Plan”, 
+“Education Plan”, “General Wealth Plan”. Once a type is picked, another field for 
+plan objective may appear — possibly auto-filled if objective is tied to type (e.g. 
+selecting Education Plan sets objective = “Education Funding”), or allow input if 
+custom. In some designs, these could be three cascading dropdowns (Purpose -> 
+Plan Type -> Objective). The UI should prevent invalid combinations. 
+• Description/Name (optional): Optionally allow advisor to enter a custom plan 
+name or short description for easy identification (e.g. “John’s Retirement Plan”). If 
+not entered, the system can default the name based on type (like “Retirement 
+Plan”). 
+• Start Plan Button: After making selections, a “Start Plan” or “Next” button begins 
+the journey. The system now knows which flow (investment, insurance, or 
+execution) to follow and will load the relevant next screen. 
+Throughout this, the UI should display progress steps (e.g. a breadcrumb or progress bar) 
+so the user sees where they are: for example, Client Info -> Risk Profile -> Plan Selection -> 
+Financials -> Product Selection -> Summary. At Plan Initiation, the relevant steps could 
+adjust (execution-only might skip some steps). This helps set expectations for how many 
+steps are remaining. 
+The design should be mobile-responsive (if advisors use tablets) and in simple language for 
+end-customer if they directly use it. For instance, instead of technical terms, the UI might 
+say “What is your goal?” or “Choose a plan type” with brief explanations under each 
+option. 
+Risk Profiling Interface 
+The risk profiling UI is critical, as it gathers sensitive client preferences. It should be user
+friendly and not overwhelming: 
+• Questionnaire Form: The screen presents one question at a time or a well-laid list 
+of all questions, depending on UI choice. A one-by-one wizard style can be engaging 
+for clients, whereas an advisor might prefer a single page list to quickly input 
+answers. We can allow both modes (e.g. a wizard for client-facing portals, a list 
+form in advisor view). Each question is typically shown with the question text and 
+multiple-choice answers (radio buttons for single-select, checkboxes for multi
+select). 
+• Progress Indicator: If one question per page, show progress (e.g. “Question 3 of 
+5”). If all on one page, that’s not needed. 
+• Answer Selection: As the user selects an answer, if it’s a single-select, others 
+become unselected. For multi-select, allow checking multiple. If certain answers 
+trigger dependent questions (e.g. an extra question appears if they choose “I have 
+dependents”), the UI should dynamically show/hide those sub-questions. 
+• Scoring (Hidden): The user does not see scores, but once all questions are 
+answered, a “Calculate Profile” or “Continue” button is enabled. 
+• Risk Profile Result: After submitting, the interface displays the result on a Risk 
+Profile Result screen. This screen should be clear and reassuring – e.g. “Your Risk 
+Profile: Moderately Aggressive”. It can include a short description of what that 
+means (pulled from the database) and the key metrics such as expected return and 
+volatility for the suggested portfolio. It also shows the date and an expiry (e.g. “Valid 
+for 1 year”). 
+• Actions on Result: Provide an option to “Accept and Continue” if the client agrees 
+with this profile. Also, an option “Retake Questionnaire” or “Update Risk Profile” if 
+the result doesn’t seem to match the client’s expectations. The advisor might use 
+this if the client disputes the outcome – maybe re-ask with clarified understanding. 
+• Compliance Note: If the client’s profile was already on file and still valid, the 
+system might skip directly to showing the existing risk profile result (with date of last 
+profiling) on this screen, with an option “Update Profile” to redo it. This should be 
+indicated (e.g. “Existing risk profile from Jan 2025: Moderate”). 
+The UI should be visually appealing, possibly using simple icons or sliders for certain 
+questions (some tools use slider for risk vs reward preference). However, given multi
+region use, keeping a standard Q&A format is safest. Accessibility is key: questions text 
+should be clearly readable, and for any jargon (like “volatility”), provide tooltips or info 
+icons that explain the term in layman’s terms. 
+Product Selection Interface 
+After goals and budgeting, the product selection screens allow picking specific 
+investments or insurance products. This portion can be complex, so the UI should guide 
+the user logically: 
+Investment Product Selection UI: 
+• Model Portfolio Overview: At the top of the screen, show a summary of the target 
+allocation (e.g. a bar or pie showing how much should go into each asset class: X% 
+Equity, Y% Fixed Income, etc.) and the total amount to invest. This gives context for 
+the selections. 
+• Product List by Asset Class: The interface can be organized by asset class. For 
+example, a section for “Equity Investments” could be displayed with recommended 
+equity products. Each product listing might show Name, risk level, recent 
+performance, and a dropdown or field to input the amount to invest in it. Similarly, a 
+section for “Fixed Income” with bond or fund options. The platform might highlight a 
+default recommendation (e.g. a particular fund) which the advisor can accept or 
+change. 
+• Search/Filter: A search bar to find any product in the catalog by name or ISIN if the 
+advisor wants a specific one not in the initial list. Filters can let the advisor narrow 
+by product type, currency, etc. 
+• Selection Controls: For each product, an input for amount or percentage. If 
+percentage, the system can auto-calc the amount from total (and vice versa). As the 
+user allocates, a realtime tally shows remaining amount to allocate. There might be 
+a helpful indicator like “₹100,000 of ₹500,000 allocated to Equity – 20% remaining” 
+etc. Once the total required investment is fully allocated (within a small tolerance), 
+the system can enable the “Next/Continue” button. 
+• Validation Messages: If the user tries to over-allocate (exceed total budget) or 
+leaves a gap, prompt them. If they select a product that is higher risk than allowed, 
+show a warning “This product is higher risk than client’s profile; client 
+acknowledgment required.” Possibly require ticking a checkbox “Client agrees to 
+proceed with higher risk product” to continue, or require a supervisor override code 
+if policy says so. 
+• Product Details Pop-up: The UI should allow viewing more info about each product 
+(key facts, fees, etc.) perhaps via an info icon or clickable product name that opens 
+a details popup. This helps advisors answer client questions on why a product is 
+recommended. 
+For multiple product selection, the interface may span multiple pages or a single scrolling 
+page. A clean layout with collapsible sections by asset class can manage the complexity. 
+The design should strive to minimize manual calculations – e.g. auto-summing, ensuring 
+the allocations align to model, etc., to reduce user error. 
+Insurance Product Selection UI: 
+• Coverage Needs Recap: At the top, show the identified needed coverages (e.g. 
+“Life Cover needed: ₹1 Cr, Critical Illness: ₹20 lakh”). This guides the product picks. 
+• Product Suggestions: For each need, list one or more products. For example, 
+under “Life Insurance,” show a few term life policy options the bank offers. Each 
+will show key parameters like max cover, premium for needed cover (via 
+integration), insurer name, etc. 
+• Product Selection Input: The advisor can select one of the suggested policies or 
+search the insurance catalog. Once a product is chosen, fields appear to configure 
+it: Sum Assured (pre-filled with needed cover but editable), Policy Term (dropdown), 
+and resulting Premium (calculated automatically). If the platform has integration, 
+hitting “Calculate premium” can fetch the premium. Otherwise, premium could be 
+manually input if needed. 
+• Additional Riders: If applicable, UI to add riders (like disability rider, etc.) which 
+would adjust premium. 
+• Multiple Policies: The UI should allow adding more than one policy if the advisor 
+plans to use a combination (e.g. two smaller policies to achieve the total cover). A 
+simple “Add another insurance” button could duplicate the input fields for another 
+selection. 
+• Validation: Ensure total life cover across selected policies >= needed life cover 
+(unless client chooses otherwise, in which case maybe an acknowledgment they 
+are under-insuring). Similarly for other insurance types. If any policy is not available 
+to this client (due to age or nationality restrictions), filter it out or show as disabled. 
+Execution-Only Product UI: 
+• This is basically the normal transaction screen. If the advisor chose Execution-only 
+earlier, the UI likely jumped directly here after client selection and maybe a brief risk 
+disclaimer. 
+• Show a Product Catalog or search field immediately. The advisor picks the product 
+type and name (could be done through cascading dropdowns: e.g. Choose “Mutual 
+Fund” then select scheme from list). 
+• Once product is selected, show fields like Amount to Invest (or units if applicable), 
+Account to debit (choose from client’s bank accounts on file, since this is likely a 
+transaction). 
+• Provide necessary disclaimers: e.g. a checkbox “No advice was sought or given for 
+this transaction” that must be checked. 
+• Then a Confirm Order button to finalize the selection. 
+The UI for execution-only might mimic an online shopping cart: pick product, add to cart, 
+checkout. But since typically it’s one product at a time in this context, a single-page form is 
+enough. 
+Across all these, consistency in design is important. The UI should use the same design 
+language – forms, buttons, confirmation dialogues, error highlighting (e.g. red outline for 
+missing required fields), etc. After product selection, the next stage is usually the plan 
+summary or a proposal preview. 
+Plan Summary & Proposal Confirmation Screen 
+Once all inputs are done (and products selected), the platform presents a Plan Summary 
+screen. This is a review page consolidating the entire plan for final confirmation: 
+Example: The plan summary may include a donut chart illustrating the asset allocation in 
+the recommended portfolio. The figure above shows a sample asset allocation chart 
+(Equity 50%, Fixed Income 30%, Cash 20%) which might be displayed on the summary for 
+an investment plan. 
+• Plan Overview Section: At the top, state the plan name and type (e.g. “Retirement 
+Plan – Aggressive Growth”). Show the client’s name and perhaps the date. This is 
+like a cover summary. 
+• Personal & KYC Summary: A brief recap of key personal details might be shown or 
+accessible (e.g. age, risk profile category, and KYC flags like “US Person: No, HNW: 
+Yes” for quick reference). Not all details, just highlights relevant to plan (like risk 
+profile is relevant here). 
+• Goals and Needs Summary: If goals were input, list each goal with its target 
+amount, horizon, and the calculated required savings. For example: “Retirement 
+Goal – Target ₹5 Cr at 2045, requires ~₹50k/month saving.” Similarly for any other 
+goals. If insurance needs, show “Life cover needed: X, chosen cover: Y via Z policy”. 
+This section basically reiterates why the recommended actions are needed. 
+• Asset Allocation & Investment Plan: For investment plans, present the chosen 
+model portfolio allocation vs. the actual product allocation. A visual chart 
+(pie/donut) is great here, alongside a table: Asset Class, Target %, Allocated 
+Amount. If any deviation from target, highlight it. This gives the client a clear picture 
+of where their money will go. 
+• Selected Products List: Enumerate each chosen product with its details. For 
+investments: e.g. “ABC Equity Fund – ₹3,00,000” or “Government Bond 2030 – 
+₹2,00,000”. For insurance: “XYZ Life Term Plan – Sum ₹1 Cr, Annual Premium 
+₹10,000 for 20 years”. Include key attributes like tenure for bonds or premium term 
+for insurance. This list assures the client of exactly what will be implemented. 
+• Disclaimers/Declarations: At the bottom (or in a popup flow), list the required 
+declarations. For example: “I confirm that the above plan was created based on 
+information provided by me and I understand the associated risks.” The client (or 
+advisor on client’s behalf) must check these boxes or digitally sign. Regulatory ones 
+like FATCA declaration, if needed, should also be included or already handled in 
+KYC – but if any additional product-specific disclosures are needed (like “you are 
+buying without advice” in execution-only), those appear here. 
+• Buttons – Modify or Confirm: Provide a clear option to go back and modify if 
+something is wrong (maybe “Edit Plan” which takes them back into the input flow at 
+appropriate section). And prominently, a “Confirm Plan” button to finalize. 
+Once “Confirm Plan” is clicked and any final confirmations accepted, the UI should 
+display a success message and either automatically download the final Proposal PDF or 
+present a button to do so. It can say “Plan Confirmed! Download Proposal” and/or 
+“Proposal ID 12345 has been generated.” The user can then proceed to execution of 
+transactions (outside this planning module’s scope, possibly). 
+For an advisor user, after confirmation, they might get options like “Initiate Order Entry” to 
+actually place orders for those products through integrated trading systems. For an end
+customer using a self-service version, confirmation might lead them to an online checkout 
+to fund the investments (if fully automated). 
+The Plan Summary screen is effectively the last chance for review, so it should be 
+formatted almost like a preview of the proposal. In fact, it could be an on-screen preview of 
+the proposal content in a simplified way. Good design practice might also allow generating 
+a Draft Proposal PDF from here (prior to confirming) so the client can see a nicely 
+formatted document for review. 
+Overall, the UI flow should minimize navigational confusion, use clear titles for each step, 
+and provide help tips (like tooltips or a help sidebar) for complex inputs. Given the multi
+country use, all labels and help texts should be easy to localize (translation, currency 
+symbols, date formats). The UI should also be compliant with accessibility standards 
+(color contrasts, alt text for charts, keyboard navigable fields) to ensure usability by all 
+users. 
+4. Proposal Generation 
+At the end of the planning process, the platform produces a formal Proposal document. 
+This document serves as the financial plan or product proposal that the client reviews and 
+signs off. The BRD outlines the required content layout for different types of proposals 
+(investment vs insurance vs execution-only), the formatting and branding standards, and 
+rules around versioning and storage. 
+Content Layout by Proposal Type 
+While there will be a standardized look and feel, the content of the proposal will vary 
+slightly depending on the journey: 
+• Investment Plan Proposal: This is the most comprehensive. It should include: 
+• Cover Page: with the title (e.g. "Financial Plan Proposal" or "[Bank Name] Wealth 
+Management Proposal"), client name, proposal date, advisor name, and company 
+logo. 
+• Personal Profile Section: summarizing the client's personal details and profile. 
+Include age, life stage, and any status flags (e.g. Residency, FATCA status). 
+• Risk Profile Summary: detail the client’s risk tolerance result – the risk level, 
+description, and the model portfolio chosen. Also mention risk profile expiry date 
+here. Possibly include the questionnaire outcome in appendix if required by 
+regulators. 
+• Financial Summary: a high-level summary of financial position – net worth and 
+cash flow (especially if these were used in planning). For example, show total 
+assets, total liabilities, net worth, and disposable income available for investment. 
+• Goals and Needs Analysis: for each goal, state the goal details and the required 
+saving computed. E.g. "Retirement Goal: need \$X in Y years, requires saving \$Z per 
+month." Graphs may be used here (e.g. a timeline graph of goal accumulation). If 
+multiple goals, potentially a summary table or chart. 
+• Recommended Portfolio & Allocation: present the target asset allocation and the 
+rationale. A donut or pie chart is often used to illustrate the portfolio mix. Include 
+expected return and volatility for the overall portfolio to set expectations. 
+• Investment Product Recommendations: list each recommended investment 
+product with details: name, type, amount, expected returns (if applicable), fees (if 
+needed), and a short description. This can be tabulated for clarity. If many products, 
+group by asset class. Ensure any product-specific risk warnings are included (like 
+“This fund is subject to market risks...”). 
+• Projected Outcomes: optionally, an illustration of how the plan might perform. For 
+instance, a projection of portfolio value over years given certain return 
+assumptions, or goal achievement probability. (This depends on tool capabilities, 
+but is a nice-to-have section). 
+• Disclaimers: All relevant disclaimers about investments (market risk, past 
+performance not indicative, etc.), regulatory disclosures, and assumptions go 
+towards the end. If the plan involves mutual funds, include mutual fund disclaimers 
+required by SEBI or MAS, etc. 
+• Appendices: possibly include detailed cash flow tables, or the full risk 
+questionnaire and answers, if required by local regulations for record. Appendices 
+could also have a glossary of terms. 
+• Insurance Plan Proposal: This focuses on insurance recommendations: 
+• Cover Page: similar format but might label it as “Insurance Plan Proposal”. 
+• Personal Profile: again, basic details of client (with focus on details relevant to 
+insurance, e.g. smoker/non-smoker status if used in premium calc, health 
+information if any collected). 
+• Needs Analysis Summary: recap what was determined as the insurance need. E.g. 
+“Life cover needed: ₹1 Crore based on income replacement for 20 years and 
+liabilities.” Possibly include a short explanation of how that need was calculated 
+(some proposals include a table of existing cover vs needed, etc.). 
+• Recommended Insurance Products: list the insurance policy proposals: for each, 
+name of insurer and plan, sum assured, term, premium, and key benefits/features. 
+If there are multiple types (life, health, etc.), separate into subsections. The 
+proposal might also include a comparison if multiple options were considered, but 
+typically it shows the chosen solution. 
+• Premium Schedule: if applicable, show the premium payment schedule and total 
+cost over the term (because clients often need to know the long-term commitment). 
+• Illustrations: Some jurisdictions require a benefit illustration for insurance – e.g. 
+projected cash values for life insurance, etc. If so, that could be embedded or 
+attached as an appendix. 
+• Disclaimers: Insurance-specific disclaimers, such as “Insurance is underwritten 
+by [Insurer], please refer to product brochure for details, subject to underwriting, 
+etc.” Also mention free-look period if applicable. Compliance statements like “No 
+third-party payments are accepted” (common in insurance docs), and any country
+specific ones (MAS requires a disclosure if product is unlicensed, etc.). 
+• Execution-Only (Single Product) Proposal: This is the simplest, essentially a term 
+sheet or transaction confirmation: 
+• Cover info: client, date, and maybe a heading like “Investment Confirmation - 
+Execution Only”. 
+• Product Details: outline the product being purchased: name, amount, price, trade 
+date (if applicable), fees, etc. If it’s a fund or bond, mention settlement details. If 
+insurance, it’s basically an insurance proposal as above but likely just one policy. 
+• Rationale: Since no advice is given, the proposal might explicitly state: “This 
+transaction was executed at the client’s request without advisory 
+recommendations. Suitability was not assessed.” This is a crucial disclosure. 
+• Risk Disclosure: Provide the standard risk factors of the product (e.g. if it’s a 
+market product, the market risk; if structured note, the credit risk of issuer; if 
+insurance, that it’s subject to terms and conditions). 
+• Disclaimers: All legal boilerplate covering execution-only scenario – that the bank 
+isn’t responsible for performance, etc. 
+• Typically an execution-only proposal is short (1-2 pages). It’s more of a confirmation 
+note but should still follow the same template framework for consistency and 
+archival. 
+The BRD should include templates or examples for each section type, possibly as tables 
+mapping input fields to proposal sections (e.g. which fields populate the cover page, which 
+populate the risk summary, etc.) for developers to implement easily. The content elements 
+mentioned above correspond to data captured in the journey; for example, personal profile 
+section pulls from KYC fields, risk summary from risk profiling results, etc. 
+Additionally, note that within a single journey type, content might slightly adjust if plan 
+objective differs. The system may include or exclude certain subsections dynamically. For 
+instance, if no goals were used (say a generic wealth plan without a specific goal), the 
+proposal might omit a goals section. The document generation logic should be flexible to 
+handle optional sections. 
+Charting and Branding Requirements 
+The proposal will include graphical elements and must adhere to branding guidelines: 
+• Charts: The primary chart anticipated is the asset allocation donut chart for 
+investment plans. This should be generated in the PDF showing the breakdown of 
+portfolio by asset class (or by goal if illustrating multiple goals). Another chart could 
+be a goal funding chart (like a bar showing goal target vs current funding). All charts 
+should use the approved color palette of the institution and have legible labels. 
+Ensure that charts have accompanying labels or legends, since if printed in black & 
+white they should still be understandable. In insurance proposals, charts are less 
+common, but maybe a pie of current vs required cover could be used. 
+• Corporate Branding: The proposal must follow the bank’s branding rules. This 
+includes using the official logo, colors, fonts, and document layout standards. For 
+example, the cover page might have the bank’s logo at top right, a colored band in 
+corporate color, etc. The system should allow configuration of two logos if needed 
+(some banks have different brands for segments – e.g. mass retail vs private 
+banking). The BRD should specify placeholders for logos and that these should be 
+configurable by country or business line (perhaps loaded from a settings file rather 
+than hardcoded). 
+• Headers/Footers: Each page should have a consistent header or footer. The 
+header could contain the report title and client name, while the footer might have 
+page numbers and confidentiality disclaimer. If needed, include regulatory license 
+numbers or addresses in the footer as required by local laws. 
+• Fonts and Styling: Use professional fonts (as per corporate standard, e.g. Arial or a 
+specific font). Maintain hierarchy of headings (section titles, subsection titles, 
+normal text) in a way that the generated document is clean. Font sizes should be 
+readable (at least 10pt for main text). 
+• Disclaimers and Notes: There will be sections of text that are standard for 
+compliance. The system should not hardcode these but rather fetch the 
+appropriate disclaimer text from a maintainable source because they may change. 
+For instance, “Mutual funds are subject to market risk…” or “This plan is not a 
+legally binding contract, but a proposal for discussion…”. It should be possible to 
+configure these per country or product. The BRD should list the key disclaimers 
+needed: product-specific risk disclosures (for each recommended product 
+category), general investment disclaimers, plan-level disclaimers, and any 
+regulatory statements. All these typically go towards the end of the document in a 
+slightly smaller font. 
+• Glossary: To improve client understanding, the proposal may include a brief 
+glossary of technical terms. For example, explain terms like “standard deviation”, 
+“equity”, “annuity” etc. This is especially useful in markets where clients might not 
+be familiar with financial jargon. This section should be optional and maintained by 
+business users (so content can be updated easily). 
+Every element must respect the branding – e.g. colors used in charts should match the 
+corporate color palette (or at least not clash). The platform might incorporate a template 
+system for PDF generation (like a Word template or an HTML template) to ensure branding 
+is on-point. As part of development, sample outputs should be reviewed by 
+marketing/branding teams. 
+Draft and Final Versions; Historical Access 
+The proposal generation module must handle different versions and retrieval as previously 
+noted: 
+• Draft vs Final Distinction: When generating a draft, the system should clearly mark 
+it. This could be a watermark “DRAFT” diagonally on each page, or simply text on 
+cover “Draft Proposal”. In the content, any placeholders (like missing product info if 
+not finalized) should be highlighted or noted. Drafts are generally not meant for 
+client signature. The BRD should define that the draft will include all planned 
+content except maybe certain sign-off blocks. 
+• Final Version: The final proposal should have no draft watermark, and include a 
+signature block for the client and advisor if required (like a line at the end for each to 
+sign/date). In digital form, signature might not be in the PDF, but if printing, a space 
+for physical signing is common. The final document should have a version or 
+document ID on the cover or in a footer for reference. 
+• Storage and Retrieval: Once a final proposal is generated, it must be stored in a 
+document repository. The system will tag it with client ID, plan ID, version, date, 
+etc., to facilitate lookup. On the client’s profile or plan dashboard, there should be 
+an option like “View Proposal” (for the latest) and a list or drop-down for historical 
+proposals. For example, under a plan record, list “Proposal v1 – Jan 2025 (Final)”, 
+“Proposal Draft – Dec 2024”, “Proposal v2 – Jun 2026 (Final)” etc. The advisor can 
+click to open or download these. Permissions should ensure only those with access 
+to the client can view them (e.g. the client themselves via their login, the advisor, 
+and relevant supervisors). 
+• Audit Trail: The system should log when a proposal is generated and by whom. 
+Also, if a proposal was regenerated because of plan changes, log a reference to the 
+previous version. Ideally, inside the document or as metadata, link it to the previous 
+version if it’s a revision (e.g. “This proposal supersedes the proposal dated X”). 
+• No Uniqueness Conflicts: Ensure that the proposal versioning logic is tied to the 
+specific plan. Different plans for the same client will each have their own sequence 
+of proposals. For example, if a client has a Retirement Plan and an Education Plan, 
+each has independent version counts. The retrieval UI should clearly categorize by 
+plan. 
+The platform should be tested for generating proposals in quick succession, ensuring 
+version numbers increment properly and no data from one bleeds into another. Also, the 
+document generation tool should handle concurrency (if many advisors generate at same 
+time) without mix-ups. 
+In summary, the Proposal Generation system should reliably produce a polished 
+document that can be presented to the client as the outcome of the financial planning 
+process. It must be flexible to accommodate different content for investments vs 
+insurance, enforce the correct legal content, and maintain records of all issued proposals 
+in line with compliance. 
+5. User Roles and Entitlements 
+Different user roles will interact with the platform: primarily financial advisors (relationship 
+managers, wealth advisors), their supervisors or managers, and the end customers (via a 
+client portal or during joint sessions). The system must enforce role-based entitlements to 
+control what each role can see and do. Additionally, certain customer attributes (like 
+FATCA status or HNW classification) influence what can be done for that client. Below are 
+the requirements for roles and special handling. 
+Advisor Users (Relationship Managers) 
+Advisors are the primary users who will create and manage plans for clients. Entitlements 
+for advisors include: 
+• Client Access: An advisor can search and view details for clients that are under 
+their custody (or those they have permission for). The system may restrict client 
+data such that advisors cannot access clients of other teams unless given access 
+(for example, a substitute advisor can be granted temporary access). This typically 
+ties into the CRM integration (mapping advisor to client accounts). 
+• Plan Creation/Edit: Advisors can create new plans for a client, edit in-progress 
+plans (draft stage), and generate proposals. They have full input rights on all fields 
+discussed (personal info, financials, etc.), except perhaps certain locked fields 
+from core systems (like if KYC data is fed from CRM, it might be non-editable in the 
+planning tool to maintain single source of truth). 
+• Product Selection Authority: By default, advisors can propose any product 
+available on the platform. However, some advisors might not be licensed for certain 
+product categories (for example, an advisor might be licensed for investments but 
+not for insurance, or vice versa). The system should enforce license-based 
+entitlements: e.g. if an advisor without insurance license tries to create an 
+insurance plan, either block or require a licensed colleague. These details might be 
+managed in a user profile indicating which modules they have access to. 
+• Override Approvals: If the workflow requires approval for certain actions (like risk 
+profile override or high-risk product recommendation), the advisor initiates that and 
+perhaps cannot complete without supervisor intervention. For instance, if an 
+advisor tries to recommend a product above risk profile, the system might require a 
+supervisor’s electronic approval before allowing proposal finalization. The advisor 
+would get a notification when approval is granted. 
+• Proposal Generation & Submission: Advisors can generate drafts and finals, but 
+perhaps only final proposals can be generated if certain conditions are met (like all 
+mandatory fields done, and if required, a supervisor check done). Advisors also 
+typically handle printing or saving the proposal for client signature. After client sign
+off, advisor would mark the plan as agreed (which could be part of the execution 
+flow). 
+• View Historical Plans/Proposals: Advisors should be able to see all past plans and 
+proposals for their clients (even those done by a predecessor, if the client got 
+reassigned). This is important for continuity. However, they shouldn’t be able to edit 
+old plans, only create a new revision if needed. 
+• Delete/Cancel Plan: Generally advisors shouldn’t permanently delete a plan (for 
+audit reasons), but they might have an option to “discard” an unconfirmed plan 
+draft if created in error, which would mark it as canceled in the system (with record 
+retained). Finalized plans likely cannot be deleted, only superseded. 
+Overall, advisors have broad create/edit rights but within the scope of their clients and 
+licensed activities. 
+Supervisor/Manager Users 
+Supervisors oversee advisors and ensure quality and compliance of plans. Entitlements for 
+a supervisory role include: 
+• Access to Team’s Plans: A supervisor can view all clients and plans handled by the 
+advisors under their supervision. They can search for any client in their team and 
+view plan details and proposals. This is needed for review and approval processes. 
+• Approval Authority: If the business process requires supervisor approval for 
+certain steps (Maker-Checker concept), the supervisor would have an “Approve 
+Plans” queue. For example, if an advisor marks a proposal as final, perhaps a 
+supervisor must approve it before it’s considered officially finalized (depending on 
+internal policy). Or if an override of risk profile was done, the supervisor must sign 
+off. The UI for supervisors should present pending approvals with details and allow 
+Approve/Reject with comments. 
+• Edit/Return for Revision: A supervisor might be allowed to send a plan back to the 
+advisor for changes instead of directly editing it. However, some supervisors 
+(especially if also licensed advisors) might be able to tweak details. Usually, the 
+workflow is that they add comments and ask the advisor to revise. 
+• Monitoring & Reporting: Supervisors should have access to summary reports or 
+dashboards showing statuses of plans (e.g. how many proposals each advisor has 
+done, turnaround times, etc.), and alerts like expiring risk profiles or soon-to
+mature products for their region/team’s clients, so they can prompt advisors to act. 
+• Product Permissions: In case of restricted products, sometimes only senior 
+advisors or supervisors can propose certain complex products. If so, the system 
+might only unlock those if a user is of supervisor role or has a specific certification. 
+This ties into the licensing mentioned for advisors but at a higher threshold for 
+certain products. 
+• User Management (limited): Supervisors may not administer the system, but they 
+might be able to reassign clients when an advisor is absent, or mark an advisor as 
+out of office, etc. This is more operational, but mention if applicable: for instance, a 
+supervisor could transfer a plan from one advisor to another in the system if a client 
+is reassigned. 
+Essentially, supervisors ensure compliance: they can review all data entered and must 
+have the ability to catch if something is off (like unsuitable advice). The platform should 
+make their review easy – perhaps highlighting any rule breaches or overrides that occurred. 
+End-Customer (Client) Access 
+In some cases, the end clients might interact with the platform, either in a collaborative 
+meeting with the advisor (e.g. on a tablet the advisor might let the client see or input 
+answers), or through a dedicated client portal if offered. Key points for client access: 
+• Self-Service Planning (if provided): The platform could allow a client to login (via 
+internet banking or a financial planning portal) and create their own financial plan in 
+a DIY fashion. If so, their entitlements would be limited to their own data. They can 
+input their profile, answer risk questions, set goals, and the system could generate 
+a proposal which they then discuss with an advisor or execute. When clients use it, 
+certain features (like product selection) might be restricted to suggestion mode 
+unless an advisor approves (because direct execution might be a separate flow). 
+• View Proposals/Plans: Clients should be able to view their finalized plans and 
+proposals through a portal. For example, after an advisor creates a plan, the client 
+could log in to their account and see a summary or download the PDF proposal. 
+This improves transparency and engagement (as opposed to just receiving a 
+email/PDF). 
+• Edit Personal Info: Clients might be allowed to update some of their information 
+directly (like updating their contact info or financial details for planning 
+assumptions). If integrated with core banking/CRM, such changes might feed back 
+or require verification. Possibly limit to planning use (they could simulate scenarios 
+by adjusting data, but official records remain unchanged unless done through 
+formal channels). 
+• Investment Execution: If the platform is integrated into an online banking portal, 
+an end client could potentially carry out the recommended transactions digitally 
+(e.g. click “Buy recommended funds” from the plan). In that scenario, their role in 
+the system overlaps with trading permissions, which are outside this planning 
+BRD’s main scope, but worth noting that entitlements for actual order execution are 
+separate (likely handled by core banking or trading systems, with appropriate 
+checks). 
+For security, clients should obviously not see any other client data, and advisors should 
+not see each others’ client data unless permitted, etc. Role-based views and API filters will 
+enforce that. 
+FATCA/US Person and HNW Status Handling 
+Two client status flags require special handling throughout the platform: 
+• FATCA / U.S. Person: If a client is identified as a U.S. Person (citizen or taxpayer), 
+certain investments might be restricted due to FATCA compliance. The system 
+should carry this flag from KYC. Business logic and UI should enforce: for instance, 
+do not show products that are not open to U.S. Persons (some jurisdictions disallow 
+selling certain funds to U.S. citizens). If a U.S. Person tries to proceed, perhaps a 
+warning “Client is a U.S. Person – ensure FATCA documentation is completed and 
+product is eligible.” Also, the proposal should clearly indicate the client’s FATCA 
+status in the personal profile section, and include required FATCA disclaimers. 
+There might be an integration to the bank’s tax compliance system to report this 
+proposal if needed. The platform should ensure any data required for FATCA (like 
+W-9 form information) is captured in KYC and that the advisor is alerted if 
+something is missing when dealing with a U.S. Person client. 
+• High Net Worth (HNW) / Accredited Investor: Clients classified as HNW (or 
+similar terms like “Accredited Investor” in Singapore) often can be treated 
+differently. The system should capture this flag based on either net worth/income 
+data or a separate declaration form. Implications: If a client is HNW/Accredited, 
+certain otherwise restricted products become available. For example, complex 
+structured products or private equity might only be offered to HNW clients. The 
+product catalog integration should filter or label products as “Eligible for Accredited 
+Investors only” and the selection screen should only allow those if the flag is true. 
+Conversely, if a client is not HNW, the advisor is limited to retail products. 
+Additionally, for HNW clients, some regulatory requirements might be reduced (like 
+in some regions, they can waive the suitability assessment). The platform could 
+allow skipping some steps if allowed by law – e.g. in Singapore an Accredited 
+Investor can opt-out of certain protections, so if they have done so, the system 
+might not require a CKA. But that opt-out itself must be documented and stored. 
+The proposal should note the client’s status (perhaps in the personal profile 
+summary it could say “Client Status: High Net Worth Individual – classification 
+based on [criteria]”), as this can be useful context in the document and for 
+compliance review. 
+Both these flags involve compliance logic that should be globally configurable because 
+regulations differ by country. For instance, FATCA is universal for U.S. persons, while 
+definitions of HNW/Accredited vary (Singapore’s AI criteria vs. Malaysia’s HNW definition 
+vs. India’s qualified investor, etc.). The system should allow country-specific threshold 
+settings for auto-classifying someone as HNW (or else rely on manual ticking of a 
+checkbox by the advisor with evidence collected). 
+Entitlements tie in here: if a client is U.S. Person, maybe only certain advisors who are 
+trained in handling U.S. clients can work with them (some banks have specialized teams). 
+The system might route such clients to specific workflows or require extra steps (like filling 
+additional FATCA forms digitally). 
+In summary, the platform must be aware of these statuses at all times during plan creation 
+and execution, surfacing the information to the user and restricting or modifying behavior 
+accordingly to remain compliant and provide appropriate service. 
+6. Regulatory Compliance 
+The platform must adhere to financial regulations and guidelines across multiple 
+jurisdictions: India, Malaysia, Singapore, Thailand, and GCC countries. This affects data 
+capture, suitability checks, disclosures, and document contents. Below we highlight key 
+regulatory compliance considerations for each region and how the system addresses 
+them: 
+India 
+In India, regulators like SEBI (for investment advisors) and IRDAI (for insurance) have set 
+requirements: 
+• SEBI Investment Adviser Regulations: Require that a risk profile of the client is 
+undertaken, and investment advice provided is suitable to the client’s risk appetite 
+and needs. The platform’s mandatory risk profiling and mapping of products to risk 
+profile ensures compliance with this suitability obligation. The plan proposal should 
+include a section justifying how the advice is suitable (our Risk Profile and Plan 
+Details sections cover this). If the client refuses to disclose certain info (which can 
+happen), the system should flag that advice could be inappropriate without that info 
+(as per regulations). 
+• KYC & AML: RBI and SEBI mandate full KYC for investment accounts. Our 
+Personal/KYC data fields capture all necessary KYC details. Integration with CRM 
+ensures that only KYC-verified clients proceed to certain product purchases. Also, 
+the fact-find should capture financial details to evidence that recommendations 
+consider the client’s circumstances (which our financial position capture does). 
+• Insurance Regulations (IRDAI): If the platform proposes insurance, it must follow 
+the needs analysis requirement. IRDAI expects that life insurance 
+recommendations be based on a gap analysis (which our insurance journey does by 
+capturing existing cover and needed cover). Also, IRDAI mandates a Benefit 
+Illustration for life insurance proposals – the system should attach a standardized 
+benefit illustration (could be generated via the insurer’s engine) to the proposal. The 
+proposal will also include an insurance-specific disclaimer as required by IRDAI 
+(like informing about free-look cancellation rights, etc.). 
+• Disclosure of Commissions: In India, advisors (if SEBI-Registered Investment 
+Advisers) must disclose if they get commissions from products. If this platform is 
+used by RIAs, it might need a field in the proposal stating the fee or commission 
+structure. The BRD can mention a section in the proposal for “Advisor 
+Compensation Disclosure” for transparency, if applicable. 
+• Record Keeping: SEBI and exchanges require that all advice and related 
+documents be stored for a number of years. Our system’s historical proposal 
+archive meets this—ensuring retrievability and audit trail of any advice given. 
+Overall, by enforcing thorough data collection and matching recommendations to profiles, 
+the platform upholds the principle of suitability which is central to Indian regulations. It 
+should also be flexible to accommodate any specific forms (e.g. risk profile form format 
+that some institutions use) within the digital workflow. 
+Malaysia 
+Malaysia’s regulatory environment (BNM/FSA for banks, Securities Commission for 
+investments, etc.) has stringent suitability and disclosure norms: 
+• Investment Suitability Assessment (ISAF): Malaysian banks use an Investment 
+Suitability Assessment Form (ISAF) for each client. Our platform essentially digitizes 
+ISAF Part A (Risk Profiling questions) and Part B/C (product recommendation and 
+client declarations). For example, after risk profiling, the proposal generation 
+requires the client to acknowledge Part C declarations. The system should be 
+aligned with ISAF content and store a copy of the completed ISAF responses 
+electronically. We have already included that risk questions correspond to ISAF Part 
+A. The final proposal can serve as a replacement for Part B/C as long as it contains 
+all required info, or it may attach a filled ISAF form as an appendix for compliance. 
+• FPAA and PID: For insurance, BNM requires a Financial Needs Analysis (FNA) 
+similar to ISAF, and Product Disclosure Sheets (PDS) for each insurance product. 
+The platform’s insurance plan journey collects needs data and the proposal 
+document will include the rationale for insurance recommended. However, likely 
+the advisor still must provide the client with the insurer’s Product Disclosure Sheet 
+and Fact Find declaration. Our system can integrate or attach these PDFs for the 
+chosen product. 
+• Qualified Investors: Malaysia has the concept of “High Net Worth Individuals” or 
+“Accredited Investors” who can get more complex products. The system should 
+mark such clients (e.g. based on investing > MYR 3 million or so) and allow products 
+like alternative investments only for them. The compliance logic ensures non-HNW 
+clients are not shown private placement products. 
+• FATCA/CRS: Malaysian financial institutions follow CRS and FATCA. As discussed, 
+the system captures tax residency and will ensure FATCA declarations are signed. 
+Specifically in proposals or account opening, a section might need to say 
+“Customer has/has not been identified as a U.S. Person” and if yes, ensure form W
+9 is on file. Possibly the planning tool just needs to remind if FATCA status = Yes, 
+then advisor must have them fill additional forms offline or via CRM. 
+• Privacy/Data Localization: Malaysia has PDPA (data privacy law). The platform 
+should host or route data in compliance with any localization requirements. While 
+not a functional requirement visible to users, it is a compliance consideration for 
+deployment (e.g. client personal data not leaving country). The BRD can note this if 
+relevant to architecture. 
+By mirroring the ISAF process and including required declarations and disclosures in the 
+workflow, the platform ensures Malaysian regulatory compliance for investment suitability. 
+The insurance journey covers BNM’s expectations for an insurance needs analysis and 
+proper disclosure to clients. 
+Singapore 
+Singapore’s regulations via MAS (Monetary Authority of Singapore) are very robust on fair 
+dealing and documentation: 
+• FAA Guidelines on Suitability: Financial Advisers Act guidelines require 
+documentation of a client’s financial needs, risk profile, investment experience, 
+and reasons for recommendation. Our platform collects all those data points (risk 
+profile, financial goals, etc.) and the Plan Details section of the proposal effectively 
+documents how the recommendation meets the client’s needs. Each 
+recommended product in the proposal should ideally have a short “Reason for 
+recommendation” note (advisors can input rationale). The system should enforce 
+that if a product is recommended outside the model (say higher risk), the rationale 
+must be recorded (to demonstrate to MAS auditor that the deviation was intentional 
+and explained). 
+• Customer Knowledge Assessment (CKA) / Customer Account Review (CAR): 
+These are specific to Singapore for selling certain products. CKA is for unlisted 
+Specified Investment Products (SIPs) like unit trusts, structured notes – basically to 
+ensure the client has knowledge or is advised. CAR is for listed SIPs (like trading 
+leveraged products). The platform should incorporate CKA/CAR questions if a client 
+without prior experience wants those products. It could be integrated as part of risk 
+profiling or as a separate pop-up when selecting a complex product. If the client 
+fails CKA (i.e. no prior knowledge and not willing to proceed), the system should 
+either disallow adding that product or require a special acknowledgment that 
+advisor has advised them of risks. The plan should indicate if a CKA was done and 
+outcome (pass/fail). 
+• Accredited Investor (AI) status: If a client opts in to be treated as Accredited 
+Investor, documentation is needed. The system should capture that election (likely 
+via CRM). If AI, certain procedural requirements can be waived (like detailed CKA 
+can be bypassed if they have signed AI opt-out of protections). But the system 
+should then mark on the proposal that client is AI and certain warnings given or 
+waived. If not AI, then all the usual suitability steps must be followed. 
+• Life Insurance (MAS Guidelines / IDA): If insurance is sold, MAS requires a needs 
+analysis (which we do) and a Product Highlights Sheet for each insurance product. 
+The platform should facilitate attaching PHS documents for the selected insurance. 
+Also, a Mandatory Advice Template might be needed if it’s certain types of 
+insurance (for example, for complex life policies MAS has forms). We should ensure 
+the workflow allows capturing if the customer refused any recommended action 
+(MAS wants documentation if a client refuses your advice to buy a certain needed 
+insurance, for instance). Possibly beyond scope, but the advisor could note “Client 
+declined recommended Critical Illness cover” and that gets in the record. 
+• Execution-Only Declaration: Under MAS, selling an investment product without 
+advice to a retail client usually requires them to acknowledge they’re doing it on 
+their own (especially if they failed CKA). The platform’s execution-only flow has that 
+acknowledgment step. It should also then mark on proposal “Execution-Only trade: 
+No advice given.” Possibly an additional form or warning is given. 
+Ensuring the above, the platform will produce a compliant Record of Advice for Singapore. 
+The system design should be vetted with MAS’s form checklists to ensure all required 
+items (like risk acknowledgment, client’s investment knowledge assessment) are captured 
+either in the system or documented offline. But centralizing as much as possible in one 
+system is ideal for audit trail. 
+Thailand 
+Thailand’s SEC and other regulators have guidelines for suitability and disclosure similar to 
+others: 
+• Know Your Client and Suitability: Thai regulations also mandate risk profiling and 
+obtaining information on client’s knowledge and experience. The platform’s risk 
+questionnaire can be configured to Thai language and content per local guidelines. 
+After profiling, the system should ensure that if a client is categorized (like “Very 
+Low Risk”), they are not recommended high-risk products (unless a specific 
+consent is given). This alignment is built-in via our risk-to-product mapping logic. 
+• Investor Categories: Thailand defines investor types (general retail, high net worth, 
+ultra HNW, institutional). Our HNW flag could be extended for Thailand specific 
+thresholds. HNW individuals in Thailand might get access to structures or offshore 
+funds otherwise not allowed for retail. The system should allow marking those and 
+unlocking the product catalog accordingly. 
+• Regulatory Forms: If any specific form is needed (for example, in some cases a 
+"Customer Investment Profile" form might be mandated), the platform can generate 
+it or incorporate its content. Possibly the standard proposal suffices if it covers 
+everything. 
+• Insurance: If insurance products are included, follow OIC (Thai insurance 
+regulator) guidelines. That usually includes needs analysis and presenting a Benefit 
+Illustration for life insurance. So similar to other countries, ensure these are 
+provided. 
+• Language: In Thailand, materials provided to clients likely need to be in Thai 
+language. The platform should support generating the proposal in Thai (and other 
+local languages). That means all field labels and static text in the document need to 
+be translatable. The content we generate (like risk descriptions, disclaimers) must 
+be available in Thai. This is a technical requirement but important for compliance, 
+as regulators might require evidence clients got documentation in local language. 
+Overall, by adhering to a robust suitability process and capturing rationale for 
+recommendations, the platform will meet Thai regulatory expectations. 
+GCC (Gulf Cooperation Council) 
+The GCC region includes countries like UAE, Saudi Arabia, Qatar, etc., each with their own 
+regulators, but some common themes: 
+• Suitability and Documentation: UAE’s Securities & Commodities Authority (SCA) 
+and the central banks have guidelines for investment advice which mirror 
+international standards: know the customer, risk profiling, and ensure suitability. 
+The platform’s core process covers this thoroughly. It should be configured to any 
+specific local nuances (for instance, some Gulf regulators might want a specific 
+form or risk scoring methodology). 
+• Shariah Compliance (if Islamic products offered): In the Middle East, if Islamic 
+(Shariah-compliant) investments are part of the offering, the system should mark 
+which products are Shariah-compliant and possibly note the Shariah compliance of 
+the proposed plan if relevant. If a client specifically wants Islamic finance options, 
+that preference might be a field to capture and then only those products are shown. 
+Not explicitly asked in the BRD, but a consideration in GCC contexts. 
+• FATCA & CRS: GCC banks comply with FATCA and the Common Reporting 
+Standard. Our system capturing FATCA status and tax residency covers this. It 
+should prompt advisors to get the self-certification forms as needed. Possibly 
+integrate with bank’s compliance system to flag if missing. 
+• Risk Classification: Some GCC regulators (e.g. DFSA in Dubai) have categories of 
+clients (Retail, Professional). Professional Clients (similar to accredited) can waive 
+some protections. The platform should allow classification of a client as 
+Professional and then perhaps not require as much hand-holding in the plan 
+(similar to HNW handling). But if Retail, ensure full suitability workflow. 
+• Insurance Disclosure: In GCC, when selling insurance (often called “Takaful” if 
+Islamic or just insurance), advisors must provide a Key Information Document and 
+other disclosures. Our platform would incorporate those by attaching product 
+brochures or including a summary of coverage in the proposal and standard 
+wording about “This is not a contract, terms are in policy document” etc. 
+The regulatory environment in GCC is evolving, but by designing a flexible data capture and 
+proposal content system, we can adapt to any new rules. For example, if Saudi CMA says 
+advisors must include a specific risk warning in proposals, that can be added to the 
+disclaimer set for Saudi in the system configurations. 
+In all regions, data protection and client confidentiality must be maintained – only 
+authorized users see the data, and any generated PDF should be handled securely 
+(perhaps encrypted storage). Also, audit logging of user actions (like changes to risk 
+profile or product selection) is important if a dispute arises; the system should record such 
+events. 
+By meeting these multi-jurisdictional requirements, the platform will enable advisors to 
+use a single tool across India, SEA, and the Middle East, with confidence that local 
+compliance needs are built-in. It’s crucial that the BRD be reviewed by local compliance 
+officers to add any very specific forms or text that must be included, but the above 
+captures the core common elements. 
+7. Integrations Required 
+To function effectively, the financial planning platform must integrate with various other 
+systems in the bank’s technology landscape. Key integrations include: 
+• Customer Relationship Management (CRM) System: Integration with CRM is vital 
+to fetch client data and update it. When an advisor searches for a client, the 
+platform should query the CRM to get client profile information (name, DOB, KYC 
+status, existing accounts, etc.). This saves time by pre-populating personal and 
+financial fields. For new prospects, the platform can create a record in the CRM (or 
+mark the plan as pending until KYC is done). The CRM integration also ensures that 
+any updates made during planning (e.g. updated income, address) can be sent back 
+to CRM (with proper approval if needed) to keep a single source of truth. 
+Additionally, CRM may store risk profiles and investment preferences historically; 
+the platform can consume those (e.g. show last risk profile result from CRM if 
+available). Entitlements to clients are likely driven by CRM (i.e. which advisor is 
+owner). The integration should respect those in pulling data. 
+• Core Banking System: To retrieve the client’s asset and liability data, an interface 
+with core banking is required. This allows, for example, fetching all deposit 
+accounts, loan accounts, investment holdings the client already has with the bank. 
+In the Financial Position step, the “Assets with Bank” and “Liabilities with Bank” 
+can be auto-listed. Balance information (preferably real-time or as of last day) can 
+populate those fields, which the advisor can then verify or adjust. Similarly, loan 
+outstanding amounts can fill into liabilities. This integration avoids manual data 
+entry and makes the plan more accurate. Core banking integration may be via web 
+services or batch feeds. Also, when the plan is executed and, say, a new investment 
+account is opened or a term deposit booked, the platform might send instructions 
+to core banking or related systems – but that might be handled by an order 
+management system rather than direct. At minimum, reading data is necessary; 
+writing back perhaps limited to tagging accounts to plans (which might just be 
+internal to the planning tool). 
+• Investment Products Engine / Market Data Feeds: The platform should integrate 
+with systems providing investment product information. This includes: 
+• Mutual Funds/Unit Trusts: Access to a fund database for prices, fund descriptions, 
+risk ratings, and maybe recommended model portfolios of funds. Some banks have 
+a fund selection tool or a Morningstar integration. Our product selection screen 
+should call an API to get available funds by category, their latest NAV, risk level, etc. 
+If a model portfolio suggests asset classes, the system might query a model 
+portfolio service that returns a list of suggested funds or weights for those classes. 
+• Bond/Fixed Income Engine: Integration to get a list of available bonds or fixed 
+income products (with details like coupon, maturity, price). Possibly an internal 
+treasury system or Bloomberg feed can be accessed for this. 
+• Structured Products Platform: For complex products, integration to the structuring 
+desk’s system might be needed to retrieve product terms or indicate if a product is 
+open for subscription. In practice, to keep BRD scope manageable, we assume a 
+static feed of available products and their attributes that the planning tool can 
+consume. 
+• These integrations ensure that whenever an advisor goes to pick a product, they are 
+seeing up-to-date offerings with correct details, rather than a static list that could 
+be outdated. 
+• Insurance Product Catalog/Quotation Systems: For insurance, integration with 
+insurers’ systems or an internal insurance repository is required: 
+• The platform should retrieve a list of available insurance plans (life, health, etc.) 
+with key features (coverage types, maximum/minimum sum assured, etc.). This 
+could be an internal catalog if the bank is a broker for certain insurance companies. 
+• More importantly, a quote engine integration: to calculate premiums, ideally the 
+platform calls the insurer’s quotation API with data (client age, sum assured, term) 
+to get an accurate premium quote instantly. If such APIs exist (many insurers 
+provide web services for quotes), integrating them will allow the advisor to show the 
+client the premium on the spot and include it in the proposal. If API integration is not 
+possible for all, the system might rely on rate tables or manual input of premium 
+after checking insurer’s separate software. But integration is preferred for accuracy 
+and efficiency. 
+• Some banks have an integrated insurance module; if so, the planning tool could 
+hand off to that for detailed comparisons then get back the selected product and 
+premium. But for a smooth flow, directly embedding quotes is nice. 
+• Document/PDF Generation Tools: To produce the proposal document, the 
+platform will use a document generation component. Integration with a PDF 
+generation library or service is needed. This could be something like: 
+• Reporting Service (e.g. JasperReports, Crystal Reports): Pre-designed templates 
+where the planning data is fed to create a PDF. 
+• Docx Template + Filler: Use Word templates with merge fields that the system fills 
+and then converts to PDF. 
+• Custom PDF library: programmatically generate the document with a library (iText, 
+PDFBox, etc.) based on designed layout. 
+The BRD requires that formatting is precise (logos, charts, etc.), so whatever tool is chosen 
+must support embedding images (the logo, any charts generated as images) and styling. 
+Integration wise, the planning app will pass client/plan data to this tool and get back a PDF 
+file. That PDF then is stored (and offered for download to user). The system should also 
+handle multi-language text in the document (UTF-8 support, etc. for Asian scripts). 
+If a third-party service is used (like an API that generates documents), ensure data security 
+(maybe it’s all in-house though). Possibly the platform will simply incorporate a library and 
+generate internally. 
+• Authentication/Entitlements Systems: (Not explicitly listed, but needed) 
+Integration with the bank’s single sign-on or user directory for authenticating 
+advisors and assigning roles. This ensures the platform knows if a user is an advisor 
+or supervisor, and what clients they can see. Likely this uses existing AD/LDAP or an 
+SSO token if launched from CRM. The BRD should note that user roles come from 
+an external system or user management module, not hardcoded. 
+• Notification/Email Service: When certain events happen (like a proposal is ready, 
+or supervisor approval needed), integrating with an email or notification system will 
+be useful to alert the relevant users. For instance, trigger an email to supervisor: 
+“Proposal for Client X requires approval.” Or an email to client: “Your financial plan 
+is ready, please login to view.” While not asked explicitly, this is a common 
+integration to consider for task management. 
+Each integration should have clear interface specifications (to be detailed in technical 
+design). The platform needs to operate in real-time with these systems where possible 
+(client info, product info, quotes) to give instantaneous feedback to the user. If real-time is 
+not available, then regular batch data sync might be used for product lists etc., but risk 
+showing stale data. 
+Finally, logging and error handling for integrations is important – e.g. if CRM is down and 
+client data can’t load, the system should handle gracefully (maybe allow manual input if 
+critical). Similarly, if quote API fails, allow advisor to input a premium manually and flag it. 
+By connecting to these systems, the platform becomes a central hub that pulls in all 
+necessary data to create a robust financial plan and pushes out the results (proposal 
+documents, perhaps even opening accounts once plan confirmed via separate processes). 
+This integration capability is what turns the planning tool from a static form filler into a 
+dynamic, time-saving solution within the bank’s ecosystem. 
+Sources: The requirements and processes described are based on standard wealth 
+management practices and specific regional regulatory guidelines, as well as integration 
+needs typical for financial advisory platforms. The proposal content and workflow details 
+align with documented methodologies for financial planning proposals in multi-jurisdiction 
+environments. These ensure the BRD covers a comprehensive, compliant solution for the 
+target regions. 

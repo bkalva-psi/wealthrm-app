@@ -131,7 +131,7 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
       case 'review':
         return 'border-l-violet-500 bg-violet-50/50 dark:bg-violet-950/20';
       case 'onboarding':
-        return 'border-l-orange-500 bg-orange-50/50 dark:bg-orange-950/20';
+        return 'border-l-primary bg-primary/10 dark:bg-primary/20';
       default:
         return 'border-l-muted-foreground bg-muted/30';
     }
@@ -147,9 +147,9 @@ const ClientAppointments = ({ clientId: propClientId }: ClientAppointmentsProps 
         };
       case 'medium':
         return { 
-          bg: 'bg-orange-50/50 dark:bg-orange-950/20', 
-          text: 'text-orange-700 dark:text-orange-300', 
-          border: 'border-orange-200/50 dark:border-orange-800/30'
+          bg: 'bg-primary/10 dark:bg-primary/20', 
+          text: 'text-primary dark:text-primary', 
+          border: 'border-primary/30 dark:border-primary/50'
         };
       default:
         return { 

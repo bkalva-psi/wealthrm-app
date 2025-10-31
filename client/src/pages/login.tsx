@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import ujjivanLogo from "../assets/ujjivan_logo.png";
+import primesoftLogo from "../assets/primesoft-logo.svg";
 
 export default function LoginPage() {
   const { login, isAuthenticating, authError, user } = useAuth();
@@ -69,13 +69,13 @@ export default function LoginPage() {
         <CardHeader className="space-y-4">
           <div className="flex flex-col items-center justify-center mb-4">
             <div className="flex flex-col items-center text-center mb-4">
-              <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-12 w-auto mb-3" />
+              <img src={primesoftLogo} alt="ABC Bank" className="h-12 w-auto mb-3" />
               <div className="flex flex-col items-center">
-                <h1 className="text-teal-700 dark:text-teal-400 text-base font-bold leading-tight">
-                  Ujjivan Small Finance Bank
+                <h1 className="text-primary text-base font-bold leading-tight">
+                  ABC Bank
                 </h1>
-                <span className="text-orange-600 dark:text-orange-400 text-sm font-medium leading-tight">
-                  Intellect WealthForce
+                <span className="text-primary/70 dark:text-primary/60 text-sm font-medium leading-tight">
+                  Wealth Management System
                 </span>
               </div>
             </div>

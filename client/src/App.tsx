@@ -38,6 +38,8 @@ import ClientCommunications from "@/pages/client-communications";
 import ClientAppointments from "@/pages/client-appointments";
 import ClientTasks from "@/pages/client-tasks";
 import ClientInsights from "@/pages/client-insights";
+import AddClientPage from "@/pages/add-client";
+import AddFinancialProfilePage from "@/pages/add-financial-profile";
 import Tasks from "@/pages/tasks";
 import Calendar from "@/pages/calendar";
 import { Loader2 } from "lucide-react";
@@ -205,6 +207,10 @@ function AuthenticatedApp() {
         return <Dashboard />;
       case currentRoute === '/clients':
         return <Clients />;
+      case currentRoute === '/clients/add':
+        return <AddClientPage />;
+      case /^\/clients\/\d+\/financial-profile$/.test(currentRoute):
+        return <AddFinancialProfilePage />;
       case currentRoute === '/prospects':
         return <Prospects />;
       case currentRoute === '/prospects/new':

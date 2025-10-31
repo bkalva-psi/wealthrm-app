@@ -478,7 +478,7 @@ export default function Tasks() {
           <CardHeader className="cursor-pointer !bg-card" onClick={() => setAlertsCollapsed(!alertsCollapsed)} style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-orange-600" />
+                <AlertTriangle className="h-5 w-5 text-primary" />
                 Portfolio Alerts ({(portfolioAlerts as any[] || []).length})
               </CardTitle>
               <Button variant="ghost" size="sm">

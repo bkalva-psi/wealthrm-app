@@ -95,7 +95,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
     <div className={`fixed bottom-0 left-0 right-0 bg-background border-t border-border flex justify-around items-center h-16 z-50 ${className}`}>
       <button 
         onClick={() => navigateTo('/')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/') ? 'text-ujjivan-primary' : 'text-muted-foreground'}`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/') ? 'text-primary' : 'text-muted-foreground'}`}
         aria-label="Home"
       >
         <Home size={24} />
@@ -104,7 +104,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
       
       <button 
         onClick={() => navigateTo('/calendar')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/calendar') ? 'text-ujjivan-primary' : 'text-muted-foreground'}`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/calendar') ? 'text-primary' : 'text-muted-foreground'}`}
         aria-label="Calendar"
       >
         <div className="relative">
@@ -118,7 +118,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
       
       <button 
         onClick={() => navigateTo('/tasks')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/tasks') ? 'text-ujjivan-primary' : 'text-muted-foreground'}`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/tasks') ? 'text-primary' : 'text-muted-foreground'}`}
         aria-label="Tasks"
       >
         <div className="relative">
@@ -132,7 +132,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
       
       <button 
         onClick={() => navigateTo('/clients')}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/clients') ? 'text-ujjivan-primary' : 'text-muted-foreground'}`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/clients') ? 'text-primary' : 'text-muted-foreground'}`}
         aria-label="Clients"
       >
         <div className="relative">
@@ -146,7 +146,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ className = '', onM
       
       <button 
         onClick={onMoreClick || (() => navigateTo('/prospects'))}
-        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/menu') ? 'text-ujjivan-primary' : 'text-muted-foreground'} relative`}
+        className={`flex flex-col items-center justify-center w-full h-full ${isActive('/menu') ? 'text-primary' : 'text-muted-foreground'} relative`}
         aria-label="More"
       >
         <Menu size={24} />

@@ -261,7 +261,7 @@ export function AnnouncementsCard() {
                                           <div className="text-muted-foreground text-xs pt-2 border-t border-border">
                                             <div>Author: {item.author}</div>
                                             {item.action_required && (
-                                              <div className="text-orange-600 font-medium mt-1">Action Required</div>
+                                              <div className="text-primary font-medium mt-1">Action Required</div>
                                             )}
                                             <div>Valid until: {format(new Date(item.valid_until), 'MMM dd, yyyy')}</div>
                                           </div>

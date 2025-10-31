@@ -13,7 +13,7 @@ import {
   Lightbulb,
   Bell,
 } from "lucide-react";
-import ujjivanLogo from "../../assets/ujjivan_logo.png";
+import primesoftLogo from "../../assets/primesoft-logo.svg";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 

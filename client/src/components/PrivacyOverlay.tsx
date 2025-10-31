@@ -65,7 +65,7 @@ export function PrivacyOverlay() {
             </svg>
           </div>
         </div>
-        <h2 className="text-xl font-semibold mb-2">Intellect WealthForce</h2>
+        <h2 className="text-xl font-semibold mb-2">Wealth Management System</h2>
         <p className="text-white/70 text-sm">Content secured for privacy</p>
       </div>
     </div>

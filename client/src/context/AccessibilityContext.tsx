@@ -22,8 +22,8 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   
   // Initialize state from localStorage on mount
   useEffect(() => {
-    const savedHighContrast = localStorage.getItem('ujjival_high_contrast');
-    const savedScreenReader = localStorage.getItem('ujjival_screen_reader');
+    const savedHighContrast = localStorage.getItem('wealthrm_high_contrast');
+    const savedScreenReader = localStorage.getItem('wealthrm_screen_reader');
     
     if (savedHighContrast) {
       setHighContrastMode(savedHighContrast === 'true');
@@ -43,7 +43,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     
     // Save preference to localStorage
-    localStorage.setItem('ujjival_high_contrast', String(highContrastMode));
+    localStorage.setItem('wealthrm_high_contrast', String(highContrastMode));
   }, [highContrastMode]);
   
   // Apply screen reader optimizations
@@ -55,7 +55,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     
     // Save preference to localStorage
-    localStorage.setItem('ujjival_screen_reader', String(screenReaderOptimized));
+    localStorage.setItem('wealthrm_screen_reader', String(screenReaderOptimized));
   }, [screenReaderOptimized]);
   
   const toggleHighContrastMode = () => {

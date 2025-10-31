@@ -206,7 +206,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Portfolio Report - ${client.fullName} | Ujjivan Small Finance Bank</title>
+  <title>Portfolio Report - ${client.fullName} | ABC Bank</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -533,9 +533,9 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
       <!-- Bank Header -->
       <div class="header-top">
         <div class="bank-logo">
-          <img src="/ujjival_logo.png" alt="Ujjivan Logo" class="logo-image">
+          <img src="/primesoft-logo.svg" alt="ABC Bank Logo" class="logo-image">
           <div class="bank-info">
-            <h1>Ujjivan Small Finance Bank</h1>
+            <h1>ABC Bank</h1>
             <div class="tagline">Banking for Everyone, Everywhere</div>
           </div>
         </div>

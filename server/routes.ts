@@ -7,6 +7,8 @@ import { eq, sql, and, gt, desc, or, inArray } from "drizzle-orm";
 import { clients, prospects, transactions, performanceIncentives, clientComplaints, products } from "@shared/schema";
 import communicationsRouter from "./communications";
 import portfolioReportRouter from "./portfolio-report";
+import { supabaseServer } from "./lib/supabase";
+import { addClient, updateFinancialProfile, saveClientDraft, getClientDraft } from "./routes/clients";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { z } from "zod";
@@ -280,10 +282,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Authentic database aggregation:', productDetails);
       
       // Calculate total for percentage calculation
-      const total = productDetails.reduce((sum, product) => sum + product.totalValue, 0);
+      const total = productDetails.reduce((sum: number, product: any) => sum + product.totalValue, 0);
       
       // Format response with authentic data and percentages
-      const formattedDetails = productDetails.map(product => ({
+      const formattedDetails = productDetails.map((product: any) => ({
         productName: product.productName,
         value: Math.round(product.totalValue),
         uniqueClients: product.uniqueClients,
@@ -305,38 +307,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Asset Class Breakdown API - Working endpoint
   app.get('/api/aum-breakdown', async (req: Request, res: Response) => {
     try {
-      const result = await pool.query(`
-        SELECT 
-            CASE 
-                WHEN product_type = 'equity' THEN 'Equity'
-                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
-                WHEN product_type = 'bond' THEN 'Bonds'
-                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
-                WHEN product_type = 'insurance' THEN 'Insurance'
-                WHEN product_type = 'structured_product' THEN 'Structured Products'
-                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
+      // Migrated to Supabase SDK
+      const { data, error } = await supabaseServer.rpc('get_aum_breakdown', {});
+      
+      if (error) {
+        // Fallback to direct query if RPC doesn't exist
+        const result = await db
+          .select({
+            category: sql<string>`
+              CASE 
+                WHEN ${transactions.productType} = 'equity' THEN 'Equity'
+                WHEN ${transactions.productType} = 'mutual_fund' THEN 'Mutual Funds'
+                WHEN ${transactions.productType} = 'bond' THEN 'Bonds'
+                WHEN ${transactions.productType} = 'fixed_deposit' THEN 'Fixed Deposits'
+                WHEN ${transactions.productType} = 'insurance' THEN 'Insurance'
+                WHEN ${transactions.productType} = 'structured_product' THEN 'Structured Products'
+                WHEN ${transactions.productType} = 'alternative_investment' THEN 'Alternative Investments'
                 ELSE 'Others'
-            END as category,
-            SUM(amount) as value,
-            (SUM(amount) * 100.0 / (SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'))::integer as percentage
-        FROM transactions 
-        INNER JOIN clients ON transactions.client_id = clients.id 
-        WHERE clients.assigned_to = 1 AND transactions.transaction_type = 'buy'
-        GROUP BY 
-            CASE 
-                WHEN product_type = 'equity' THEN 'Equity'
-                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
-                WHEN product_type = 'bond' THEN 'Bonds'
-                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
-                WHEN product_type = 'insurance' THEN 'Insurance'
-                WHEN product_type = 'structured_product' THEN 'Structured Products'
-                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
-                ELSE 'Others'
-            END
-        ORDER BY SUM(amount) DESC
-      `);
-
-      res.json(result.rows);
+              END
+            `,
+            value: sql<number>`SUM(${transactions.amount})`,
+            percentage: sql<number>`CAST(SUM(${transactions.amount}) * 100.0 / NULLIF((SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'), 0) AS INTEGER)`
+          })
+          .from(transactions)
+          .innerJoin(clients, eq(transactions.clientId, clients.id))
+          .where(and(
+            eq(clients.assignedTo, 1),
+            eq(transactions.transactionType, 'buy')
+          ))
+          .groupBy(transactions.productType)
+          .orderBy(sql`SUM(${transactions.amount}) DESC`);
+        
+        const formatted = result.map((r: any) => ({
+          category: r.category,
+          value: Number(r.value),
+          percentage: Number(r.percentage)
+        }));
+        
+        return res.json(formatted);
+      }
+      
+      res.json(data || []);
     } catch (error) {
       console.error("Error fetching asset class breakdown:", error);
       res.status(500).json({ error: "Failed to fetch asset class breakdown" });
@@ -346,64 +357,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register communications router
   app.use(communicationsRouter);
 
-  // Auth routes
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      // During testing phase - bypass authentication validation
-      // Create a default test user if no username is provided
-      const username = req.body.username || "test";
-      
-      // Try to get existing user or create a default test user
-      let user = await storage.getUserByUsername(username);
-      
-      // If user doesn't exist, create a default one
-      if (!user) {
-        // Create a default test user with admin role
-        user = await storage.createUser({
-          username: username,
-          password: "password",
-          fullName: "Sravan",
-          role: "admin",
-          email: "test@example.com",
-          phone: "+1234567890"
-        });
-      }
-
-      // Set session data
-      (req.session as any).userId = user.id;
-      (req.session as any).userRole = user.role || "admin";
-      
-      // Don't send password back to client
-      const { password: _, ...userWithoutPassword } = user;
-      
-      res.json({ user: userWithoutPassword });
-    } catch (error) {
-      console.error("Login error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.post("/api/auth/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Failed to logout" });
-      }
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-
   // Talking Points routes
   app.get('/api/talking-points', async (req: Request, res: Response) => {
     console.log('=== TALKING POINTS API CALLED ===');
     try {
-      const result = await pool.query(`
-        SELECT * FROM talking_points 
-        WHERE is_active = true 
-        ORDER BY relevance_score DESC, created_at DESC
-      `);
-      console.log('Talking points API response:', result.rows.length, 'items');
-      console.log('First item:', result.rows[0]);
-      res.json(result.rows);
+      const { data, error } = await supabaseServer
+        .from('talking_points')
+        .select('*')
+        .eq('is_active', true)
+        .order('relevance_score', { ascending: false })
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      console.log('Talking points API response:', data?.length || 0, 'items');
+      console.log('First item:', data?.[0]);
+      res.json(data || []);
     } catch (error) {
       console.error('Get talking points error:', error);
       res.status(500).json({ error: 'Failed to fetch talking points' });
@@ -414,46 +383,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/announcements', async (req: Request, res: Response) => {
     console.log('=== ANNOUNCEMENTS API CALLED ===');
     try {
-      const result = await pool.query(`
-        SELECT * FROM announcements 
-        WHERE is_active = true 
-        ORDER BY 
-          CASE priority 
-            WHEN 'high' THEN 1 
-            WHEN 'medium' THEN 2 
-            WHEN 'low' THEN 3 
-          END, 
-          created_at DESC
-      `);
-      console.log('Announcements API response:', result.rows.length, 'items');
-      console.log('First item:', result.rows[0]);
-      res.json(result.rows);
+      const { data, error } = await supabaseServer
+        .from('announcements')
+        .select('*')
+        .eq('is_active', true)
+        .order('priority', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Sort by priority (high=1, medium=2, low=3) after fetching
+      const sortedData = (data || []).sort((a, b) => {
+        const priorityOrder: Record<string, number> = { high: 1, medium: 2, low: 3 };
+        const aPriority = priorityOrder[a.priority] || 4;
+        const bPriority = priorityOrder[b.priority] || 4;
+        if (aPriority !== bPriority) return aPriority - bPriority;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+      
+      console.log('Announcements API response:', sortedData.length, 'items');
+      console.log('First item:', sortedData[0]);
+      res.json(sortedData);
     } catch (error) {
       console.error('Get announcements error:', error);
       res.status(500).json({ error: 'Failed to fetch announcements' });
-    }
-  });
-  
-  app.get("/api/auth/me", async (req, res) => {
-    try {
-      // For testing purposes - bypass database authentication
-      (req.session as any).userId = 1;
-      (req.session as any).userRole = "admin";
-      
-      // Return mock user data for testing
-      const userWithoutPassword = {
-        id: 1,
-        username: "test",
-        fullName: "Sravan",
-        role: "admin",
-        email: "test@example.com",
-        phone: "+1234567890"
-      };
-        
-      return res.json({ user: userWithoutPassword });
-    } catch (error) {
-      console.error("Get current user error:", error);
-      res.status(500).json({ message: "Internal server error" });
     }
   });
 
@@ -486,19 +439,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const assignedTo = (req.session as any).userId;
       
-      // Fetch all client data directly from the database to ensure all fields are returned
-      const result = await pool.query(`
-        SELECT 
-          id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
-          email, phone, last_contact_date as "lastContactDate", 
-          last_transaction_date as "lastTransactionDate", 
-          risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
-          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo"
-        FROM clients
-        WHERE assigned_to = $1
-      `, [assignedTo]);
-      
-      res.json(result.rows);
+      const { data, error } = await supabaseServer
+        .from('clients')
+        .select('id, full_name, initials, tier, aum, aum_value, email, phone, last_contact_date, last_transaction_date, risk_profile, alert_count, created_at, assigned_to')
+        .eq('assigned_to', assignedTo);
+      if (error) return res.status(500).json({ message: error.message });
+      const mapped = (data || []).map((r: any) => ({
+        id: r.id,
+        fullName: r.full_name,
+        initials: r.initials,
+        tier: r.tier,
+        aum: r.aum,
+        aumValue: r.aum_value,
+        email: r.email,
+        phone: r.phone,
+        lastContactDate: r.last_contact_date,
+        lastTransactionDate: r.last_transaction_date,
+        riskProfile: r.risk_profile,
+        yearlyPerformance: r.yearly_performance,
+        alertCount: r.alert_count,
+        createdAt: r.created_at,
+        assignedTo: r.assigned_to
+      }));
+      res.json(mapped);
     } catch (error) {
       console.error("Get clients error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -514,29 +477,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (req.session as any).userRole = "admin";
       }
 
-      const complaints = await db
-        .select({
-          id: clientComplaints.id,
-          clientId: clientComplaints.clientId,
-          clientName: clients.fullName,
-          title: clientComplaints.title,
-          description: clientComplaints.description,
-          category: clientComplaints.category,
-          subcategory: clientComplaints.subcategory,
-          severity: clientComplaints.severity,
-          status: clientComplaints.status,
-          priority: clientComplaints.priority,
-          reportedDate: clientComplaints.reportedDate,
-          targetResolutionDate: clientComplaints.targetResolutionDate,
-          reportedVia: clientComplaints.reportedVia,
-          escalationLevel: clientComplaints.escalationLevel,
-          isRegulatory: clientComplaints.isRegulatory,
-          resolutionRating: clientComplaints.resolutionRating
-        })
-        .from(clientComplaints)
-        .leftJoin(clients, eq(clientComplaints.clientId, clients.id))
-        .where(eq(clientComplaints.assignedTo, (req.session as any).userId as number))
-        .orderBy(desc(clientComplaints.reportedDate));
+      const userId = (req.session as any).userId as number;
+      
+      const { data, error } = await supabaseServer
+        .from('client_complaints')
+        .select(`
+          *,
+          clients(full_name)
+        `)
+        .eq('assigned_to', userId)
+        .order('reported_date', { ascending: false });
+
+      if (error) throw error;
+
+      const complaints = (data || []).map((item: any) => ({
+        id: item.id,
+        clientId: item.client_id,
+        clientName: item.clients?.full_name || null,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        subcategory: item.subcategory,
+        severity: item.severity,
+        status: item.status,
+        priority: item.priority,
+        reportedDate: item.reported_date,
+        targetResolutionDate: item.target_resolution_date,
+        reportedVia: item.reported_via,
+        escalationLevel: item.escalation_level,
+        isRegulatory: item.is_regulatory,
+        resolutionRating: item.resolution_rating
+      }));
 
       res.json(complaints);
     } catch (error) {
@@ -556,21 +527,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const assignedTo = (req.session as any).userId;
       const limit = Number(req.query.limit) || 4;
       
-      // Fetch clients data directly from the database to include all fields
-      const result = await pool.query(`
-        SELECT 
-          id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
-          email, phone, last_contact_date as "lastContactDate", 
-          last_transaction_date as "lastTransactionDate", 
-          risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
-          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo"
-        FROM clients
-        WHERE assigned_to = $1
-        ORDER BY created_at DESC
-        LIMIT $2
-      `, [assignedTo, limit]);
-      
-      res.json(result.rows);
+      const { data, error } = await supabaseServer
+        .from('clients')
+        .select('id, full_name, initials, tier, aum, aum_value, email, phone, last_contact_date, last_transaction_date, risk_profile, alert_count, created_at, assigned_to')
+        .eq('assigned_to', assignedTo)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      if (error) return res.status(500).json({ message: error.message });
+      const mapped = (data || []).map((r: any) => ({
+        id: r.id,
+        fullName: r.full_name,
+        initials: r.initials,
+        tier: r.tier,
+        aum: r.aum,
+        aumValue: r.aum_value,
+        email: r.email,
+        phone: r.phone,
+        lastContactDate: r.last_contact_date,
+        lastTransactionDate: r.last_transaction_date,
+        riskProfile: r.risk_profile,
+        yearlyPerformance: r.yearly_performance,
+        alertCount: r.alert_count,
+        createdAt: r.created_at,
+        assignedTo: r.assigned_to
+      }));
+      res.json(mapped);
     } catch (error) {
       console.error("Get recent clients error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -592,91 +573,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (req.session as any).userRole = "admin";
       }
       
-      // Fetch all client data from the database (including all new fields)
-      const result = await pool.query(`
-        SELECT 
-          id, full_name as "fullName", initials, tier, aum, aum_value as "aumValue", 
-          email, phone, last_contact_date as "lastContactDate", 
-          last_transaction_date as "lastTransactionDate", 
-          risk_profile as "riskProfile", yearly_performance as "yearlyPerformance", 
-          alert_count as "alertCount", created_at as "createdAt", assigned_to as "assignedTo",
-          -- Personal Information
-          date_of_birth as "dateOfBirth", marital_status as "maritalStatus", anniversary_date as "anniversaryDate",
-          
-          -- Address Information
-          home_address as "homeAddress", home_city as "homeCity", home_state as "homeState", 
-          home_pincode as "homePincode", work_address as "workAddress", work_city as "workCity", 
-          work_state as "workState", work_pincode as "workPincode",
-          
-          -- Professional Information
-          profession, sector_of_employment as "sectorOfEmployment", designation, company_name as "companyName",
-          annual_income as "annualIncome", work_experience as "workExperience",
-          
-          -- KYC & Compliance Information
-          kyc_date as "kycDate", kyc_status as "kycStatus", identity_proof_type as "identityProofType",
-          identity_proof_number as "identityProofNumber", address_proof_type as "addressProofType",
-          pan_number as "panNumber", tax_residency_status as "taxResidencyStatus", 
-          fatca_status as "fatcaStatus", risk_assessment_score as "riskAssessmentScore",
-          
-          -- Family Information
-          spouse_name as "spouseName", dependents_count as "dependentsCount", 
-          children_details as "childrenDetails", nominee_details as "nomineeDetails",
-          family_financial_goals as "familyFinancialGoals",
-          
-          -- Investment Profile
-          investment_horizon as "investmentHorizon", investment_objectives as "investmentObjectives",
-          preferred_products as "preferredProducts", source_of_wealth as "sourceOfWealth",
-          
-          -- Communication & Relationship
-          preferred_contact_method as "preferredContactMethod", preferred_contact_time as "preferredContactTime",
-          communication_frequency as "communicationFrequency", client_since as "clientSince",
-          client_acquisition_source as "clientAcquisitionSource",
-          
-          -- Transaction Information
-          total_transaction_count as "totalTransactionCount", 
-          average_transaction_value as "averageTransactionValue",
-          recurring_investments as "recurringInvestments",
-          
-          -- Additional Wealth Management Fields
-          tax_planning_preferences as "taxPlanningPreferences", insurance_coverage as "insuranceCoverage",
-          retirement_goals as "retirementGoals", major_life_events as "majorLifeEvents",
-          financial_interests as "financialInterests", net_worth as "netWorth",
-          liquidity_requirements as "liquidityRequirements", foreign_investments as "foreignInvestments"
-        FROM clients
-        WHERE id = $1
-      `, [id]);
-      
-      if (result.rows.length === 0) {
-        return res.status(404).json({ message: "Client not found" });
-      }
-      
-      res.json(result.rows[0]);
+      const { data, error } = await supabaseServer
+        .from('clients')
+        .select(`
+          id, full_name, initials, tier, aum, aum_value,
+          email, phone, last_contact_date, last_transaction_date,
+          risk_profile, alert_count, created_at, assigned_to,
+          date_of_birth, marital_status, anniversary_date,
+          home_address, home_city, home_state, home_pincode,
+          work_address, work_city, work_state, work_pincode,
+          profession, sector_of_employment, designation, company_name,
+          annual_income, work_experience,
+          kyc_date, kyc_status, identity_proof_type, identity_proof_number, address_proof_type, pan_number, tax_residency_status, fatca_status, risk_assessment_score,
+          spouse_name, dependents_count, children_details, nominee_details, family_financial_goals,
+          investment_horizon, investment_objectives, preferred_products, source_of_wealth,
+          preferred_contact_method, preferred_contact_time, communication_frequency, client_since, client_acquisition_source,
+          total_transaction_count, average_transaction_value, recurring_investments,
+          tax_planning_preferences, insurance_coverage, retirement_goals, major_life_events,
+          financial_interests, net_worth, liquidity_requirements, foreign_investments,
+          income_data, expenses_data, assets_data, liabilities_data, profile_status
+        `)
+        .eq('id', id)
+        .single();
+      if (error) return res.status(500).json({ message: error.message });
+      if (!data) return res.status(404).json({ message: 'Client not found' });
+      const mapped = {
+        id: data.id,
+        fullName: data.full_name,
+        initials: data.initials,
+        tier: data.tier,
+        aum: data.aum,
+        aumValue: data.aum_value,
+        email: data.email,
+        phone: data.phone,
+        lastContactDate: data.last_contact_date,
+        lastTransactionDate: data.last_transaction_date,
+        riskProfile: data.risk_profile,
+        yearlyPerformance: (data as any).yearly_performance,
+        alertCount: data.alert_count,
+        createdAt: data.created_at,
+        assignedTo: data.assigned_to,
+        dateOfBirth: data.date_of_birth,
+        maritalStatus: data.marital_status,
+        anniversaryDate: data.anniversary_date,
+        homeAddress: data.home_address,
+        homeCity: data.home_city,
+        homeState: data.home_state,
+        homePincode: data.home_pincode,
+        workAddress: data.work_address,
+        workCity: data.work_city,
+        workState: data.work_state,
+        workPincode: data.work_pincode,
+        profession: data.profession,
+        sectorOfEmployment: data.sector_of_employment,
+        designation: data.designation,
+        companyName: data.company_name,
+        annualIncome: data.annual_income,
+        workExperience: data.work_experience,
+        kycDate: data.kyc_date,
+        kycStatus: data.kyc_status,
+        identityProofType: data.identity_proof_type,
+        identityProofNumber: data.identity_proof_number,
+        addressProofType: data.address_proof_type,
+        panNumber: data.pan_number,
+        taxResidencyStatus: data.tax_residency_status,
+        fatcaStatus: data.fatca_status,
+        riskAssessmentScore: data.risk_assessment_score,
+        spouseName: data.spouse_name,
+        dependentsCount: data.dependents_count,
+        childrenDetails: data.children_details,
+        nomineeDetails: data.nominee_details,
+        familyFinancialGoals: data.family_financial_goals,
+        investmentHorizon: data.investment_horizon,
+        investmentObjectives: data.investment_objectives,
+        preferredProducts: data.preferred_products,
+        sourceOfWealth: data.source_of_wealth,
+        preferredContactMethod: data.preferred_contact_method,
+        preferredContactTime: data.preferred_contact_time,
+        communicationFrequency: data.communication_frequency,
+        clientSince: data.client_since,
+        clientAcquisitionSource: data.client_acquisition_source,
+        totalTransactionCount: data.total_transaction_count,
+        averageTransactionValue: data.average_transaction_value,
+        recurringInvestments: data.recurring_investments,
+        taxPlanningPreferences: data.tax_planning_preferences,
+        insuranceCoverage: data.insurance_coverage,
+        retirementGoals: data.retirement_goals,
+        majorLifeEvents: data.major_life_events,
+        financialInterests: data.financial_interests,
+        netWorth: data.net_worth,
+        liquidityRequirements: data.liquidity_requirements,
+        foreignInvestments: data.foreign_investments,
+        incomeData: data.income_data,
+        expensesData: data.expenses_data,
+        assetsData: data.assets_data,
+        liabilitiesData: data.liabilities_data,
+        profileStatus: data.profile_status
+      };
+      res.json(mapped);
     } catch (error) {
       console.error("Get client error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
   
-  app.post("/api/clients", authMiddleware, async (req, res) => {
-    try {
-      const parseResult = insertClientSchema.safeParse(req.body);
-      
-      if (!parseResult.success) {
-        return res.status(400).json({ message: "Invalid client data", errors: parseResult.error.format() });
-      }
-      
-      const clientData = parseResult.data;
-      const client = await storage.createClient({
-        ...clientData,
-        assignedTo: (req.session as any).userId
-      });
-      
-      res.status(201).json(client);
-    } catch (error) {
-      console.error("Create client error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  app.post("/api/clients", authMiddleware, addClient);
+  
+  // Drafts: save and load personal information drafts
+  app.post("/api/client-drafts", authMiddleware, saveClientDraft);
+  app.get("/api/client-drafts/:id", authMiddleware, getClientDraft);
+  
+  // Financial Profile endpoint (placeholder - will connect when DB is ready)
+  app.put("/api/clients/:clientId/financial-profile", authMiddleware, updateFinancialProfile);
   
   app.put("/api/clients/:id", authMiddleware, async (req, res) => {
     try {
@@ -1048,11 +1056,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy(products.totalSubscriptions);
 
       // Format products for frontend
-      const formattedProducts = allProducts.map(product => ({
+      const formattedProducts = allProducts.map((product: any) => ({
         id: product.id,
         name: product.name,
         productCode: product.productCode,
-        category: product.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        category: product.category.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
         subCategory: product.subCategory,
         description: product.description,
         keyFeatures: product.keyFeatures || [],
@@ -1077,7 +1085,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalInvestors: product.totalInvestors,
         featured: (product.totalSubscriptions || 0) > 100000000, // Featured if > 10 crores
         tags: [
-          product.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          product.category.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
           product.riskLevel + ' Risk',
           ...(product.keyFeatures?.slice(0, 2) || [])
         ]
@@ -1259,20 +1267,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         params.push(clientId);
       }
       
-      const query = `
-        SELECT 
-          a.id, a.title, a.description, a.start_time as "startTime", a.end_time as "endTime", 
-          a.location, a.client_id as "clientId", a.prospect_id as "prospectId", 
-          a.assigned_to as "assignedTo", a.priority, a.type, a.created_at as "createdAt",
-          c.full_name as "clientName"
-        FROM appointments a
-        LEFT JOIN clients c ON a.client_id = c.id
-        WHERE a.assigned_to = $1${dateFilter}${clientFilter}
-        ORDER BY a.start_time ASC
-      `;
+      // Migrate to Supabase SDK
+      let query = supabaseServer
+        .from('appointments')
+        .select(`
+          id, title, description, start_time, end_time, 
+          location, client_id, prospect_id, 
+          assigned_to, priority, type, created_at,
+          clients!appointments_client_id_fkey(full_name)
+        `)
+        .eq('assigned_to', assignedTo);
       
-      const result = await pool.query(query, params);
-      res.json(result.rows);
+      if (req.query.date) {
+        const date = new Date(req.query.date as string);
+        if (isNaN(date.getTime())) {
+          return res.status(400).json({ message: "Invalid date format" });
+        }
+        const dateStr = date.toISOString().split('T')[0];
+        query = query.gte('start_time', dateStr).lt('start_time', new Date(date.getTime() + 86400000).toISOString().split('T')[0]);
+      }
+      
+      if (req.query.clientId) {
+        const clientId = Number(req.query.clientId);
+        if (isNaN(clientId)) {
+          return res.status(400).json({ message: "Invalid client ID format" });
+        }
+        query = query.eq('client_id', clientId);
+      }
+      
+      query = query.order('start_time', { ascending: true });
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error("Get appointments error:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      
+      const formatted = (data || []).map((a: any) => ({
+        id: a.id,
+        title: a.title,
+        description: a.description,
+        startTime: a.start_time,
+        endTime: a.end_time,
+        location: a.location,
+        clientId: a.client_id,
+        prospectId: a.prospect_id,
+        assignedTo: a.assigned_to,
+        priority: a.priority,
+        type: a.type,
+        createdAt: a.created_at,
+        clientName: a.clients?.full_name || null
+      }));
+      
+      res.json(formatted);
     } catch (error) {
       console.error("Get appointments error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -1530,15 +1578,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
 
         // Get authentic prospect pipeline value from database (only active pipeline stages: new, qualified, proposal)
-        const prospectPipelineQuery = await db
-          .select({
-            totalValue: sql<number>`sum(${prospects.potentialAumValue})`
-          })
-          .from(prospects)
-          .where(sql`${prospects.assignedTo} = 1 AND ${prospects.stage} IN ('new', 'qualified', 'proposal')`);
+        const { data: prospectData, error: prospectError } = await supabaseServer
+          .from('prospects')
+          .select('potential_aum_value')
+          .eq('assigned_to', 1)
+          .in('stage', ['new', 'qualified', 'proposal']);
         
-        const pipelineValueCrores = (prospectPipelineQuery[0]?.totalValue || 0) / 10000000; // Convert to crores
-        const pipelineValueLakhs = (prospectPipelineQuery[0]?.totalValue || 0) / 100000; // Convert to lakhs
+        if (prospectError) {
+          console.error('Error fetching prospects:', prospectError);
+        }
+        
+        const totalValue = (prospectData || []).reduce((sum, p) => sum + (Number(p.potential_aum_value) || 0), 0);
+        const pipelineValueCrores = totalValue / 10000000; // Convert to crores
+        const pipelineValueLakhs = totalValue / 100000; // Convert to lakhs
         
         console.log(`=== AUTHENTIC PERFORMANCE DATA ===`);
         console.log(`Prospect pipeline from database: ₹${pipelineValueCrores.toFixed(2)} Cr (${pipelineValueLakhs.toFixed(0)} L)`);
@@ -2212,64 +2264,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentYear = currentDate.getFullYear();
 
       // Calculate metrics from authentic client AUM data (same source as trends)
-      const [aumData] = await db
-        .select({
-          totalAum: sql<number>`coalesce(sum(${clients.aumValue}), 0)`
-        })
-        .from(clients)
-        .where(eq(clients.assignedTo, userId));
+      const { data: clientData, error: clientError } = await supabaseServer
+        .from('clients')
+        .select('id, aum_value, tier, risk_profile')
+        .eq('assigned_to', userId);
 
-      const [clientStats] = await db
-        .select({
-          totalClients: sql<number>`count(*)`,
-          platinumClients: sql<number>`count(case when ${clients.tier} = 'platinum' then 1 end)`,
-          goldClients: sql<number>`count(case when ${clients.tier} = 'gold' then 1 end)`,
-          silverClients: sql<number>`count(case when ${clients.tier} = 'silver' then 1 end)`,
-          conservativeClients: sql<number>`count(case when ${clients.riskProfile} = 'conservative' then 1 end)`,
-          moderateClients: sql<number>`count(case when ${clients.riskProfile} = 'moderate' then 1 end)`,
-          aggressiveClients: sql<number>`count(case when ${clients.riskProfile} = 'aggressive' then 1 end)`
-        })
-        .from(clients)
-        .where(eq(clients.assignedTo, userId));
+      if (clientError) {
+        console.error('Error fetching clients:', clientError);
+      }
+
+      const totalAum = (clientData || []).reduce((sum, c) => sum + (Number(c.aum_value) || 0), 0);
+      const totalClients = (clientData || []).length;
+      const platinumClients = (clientData || []).filter(c => c.tier === 'platinum').length;
+      const goldClients = (clientData || []).filter(c => c.tier === 'gold').length;
+      const silverClients = (clientData || []).filter(c => c.tier === 'silver').length;
+      const conservativeClients = (clientData || []).filter(c => c.risk_profile === 'conservative').length;
+      const moderateClients = (clientData || []).filter(c => c.risk_profile === 'moderate').length;
+      const aggressiveClients = (clientData || []).filter(c => c.risk_profile === 'aggressive').length;
 
       // Get pipeline value from prospects (only active pipeline stages: new, qualified, proposal)
-      const [pipelineStats] = await db
-        .select({
-          pipelineValue: sql<number>`coalesce(sum(${prospects.potentialAumValue}), 0)`
-        })
-        .from(prospects)
-        .where(sql`${prospects.assignedTo} = ${userId} AND ${prospects.stage} IN ('new', 'qualified', 'proposal')`);
+      const { data: prospectData, error: prospectError } = await supabaseServer
+        .from('prospects')
+        .select('potential_aum_value')
+        .eq('assigned_to', userId)
+        .in('stage', ['new', 'qualified', 'proposal']);
+
+      if (prospectError) {
+        console.error('Error fetching prospects:', prospectError);
+      }
+
+      const pipelineValue = (prospectData || []).reduce((sum, p) => sum + (Number(p.potential_aum_value) || 0), 0);
 
       // Calculate revenue from transactions (this month)
-      const monthStart = new Date(currentYear, currentMonth - 1, 1);
-      const monthEnd = new Date(currentYear, currentMonth, 0);
+      // First get all client IDs for this user
+      const clientIds = (clientData || []).map(c => c.id).filter(id => id !== null);
       
-      const [revenueStats] = await db
-        .select({
-          revenue: sql<number>`coalesce(sum(${transactions.fees}), 0)`
-        })
-        .from(transactions)
-        .innerJoin(clients, eq(transactions.clientId, clients.id))
-        .where(
-          sql`${clients.assignedTo} = ${userId} AND ${transactions.transactionDate} >= ${monthStart} AND ${transactions.transactionDate} <= ${monthEnd}`
-        );
+      const monthStart = new Date(currentYear, currentMonth - 1, 1).toISOString();
+      const monthEnd = new Date(currentYear, currentMonth, 0).toISOString();
+      
+      let revenueMonthToDate = 0;
+      
+      if (clientIds.length > 0) {
+        const { data: transactionData, error: transactionError } = await supabaseServer
+          .from('transactions')
+          .select('fees')
+          .in('client_id', clientIds)
+          .gte('transaction_date', monthStart)
+          .lte('transaction_date', monthEnd);
+
+        if (transactionError) {
+          console.error('Error fetching transactions:', transactionError);
+        } else {
+          revenueMonthToDate = (transactionData || []).reduce((sum: number, t: any) => sum + (Number(t.fees) || 0), 0);
+        }
+      }
 
       const result = {
-        totalAum: aumData?.totalAum || 0, // Use authentic customer transaction data
-        totalClients: clientStats?.totalClients || 0,
-        revenueMonthToDate: revenueStats?.revenue || 0,
-        pipelineValue: pipelineStats?.pipelineValue || 0,
-        platinumClients: clientStats?.platinumClients || 0,
-        goldClients: clientStats?.goldClients || 0,
-        silverClients: clientStats?.silverClients || 0,
-        conservativeClients: clientStats?.conservativeClients || 0,
-        moderateClients: clientStats?.moderateClients || 0,
-        aggressiveClients: clientStats?.aggressiveClients || 0,
+        totalAum, // Use authentic customer transaction data
+        totalClients,
+        revenueMonthToDate,
+        pipelineValue,
+        platinumClients,
+        goldClients,
+        silverClients,
+        conservativeClients,
+        moderateClients,
+        aggressiveClients,
       };
       
       console.log('=== AUTHENTIC BUSINESS METRICS RESPONSE ===');
-      console.log('AUM from customer transactions: ₹', (aumData?.totalAum / 10000000).toFixed(2), 'Crores');
-      console.log('Total clients:', clientStats?.totalClients);
+      console.log('AUM from customer transactions: ₹', (totalAum / 10000000).toFixed(2), 'Crores');
+      console.log('Total clients:', totalClients);
 
       res.json(result);
     } catch (error) {
@@ -2315,10 +2380,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy(sql`sum(${transactions.amount}) desc`);
 
       // Calculate total for percentage calculation
-      const total = productTypeBreakdown.reduce((sum, item) => sum + item.value, 0);
+      const total = productTypeBreakdown.reduce((sum: number, item: any) => sum + item.value, 0);
       
       // Add percentage calculations and second-level drill capability
-      const formattedBreakdown = productTypeBreakdown.map(item => ({
+      const formattedBreakdown = productTypeBreakdown.map((item: any) => ({
         category: item.category,
         value: Math.round(item.value),
         count: item.count,
@@ -2338,43 +2403,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Legacy endpoint for compatibility  
+  // Legacy endpoint for compatibility - migrated to Drizzle
   app.get('/api/business-metrics/:userId/aum/asset-class', async (req: Request, res: Response) => {
     try {
-      const userId = 1; // Use authenticated user ID
+      // For testing purposes - create automatic authentication if not authenticated
+      if (!(req.session as any).userId) {
+        (req.session as any).userId = 1;
+        (req.session as any).userRole = "admin";
+      }
+      
+      const userId = (req.session as any).userId;
 
-      const result = await pool.query(`
-        SELECT 
+      const result = await db
+        .select({
+          category: sql<string>`
             CASE 
-                WHEN product_type = 'equity' THEN 'Equity'
-                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
-                WHEN product_type = 'bond' THEN 'Bonds'
-                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
-                WHEN product_type = 'insurance' THEN 'Insurance'
-                WHEN product_type = 'structured_product' THEN 'Structured Products'
-                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
-                ELSE 'Others'
-            END as category,
-            SUM(amount) as value,
-            (SUM(amount) * 100.0 / (SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'))::integer as percentage
-        FROM transactions 
-        INNER JOIN clients ON transactions.client_id = clients.id 
-        WHERE clients.assigned_to = $1 AND transactions.transaction_type = 'buy'
-        GROUP BY 
-            CASE 
-                WHEN product_type = 'equity' THEN 'Equity'
-                WHEN product_type = 'mutual_fund' THEN 'Mutual Funds'
-                WHEN product_type = 'bond' THEN 'Bonds'
-                WHEN product_type = 'fixed_deposit' THEN 'Fixed Deposits'
-                WHEN product_type = 'insurance' THEN 'Insurance'
-                WHEN product_type = 'structured_product' THEN 'Structured Products'
-                WHEN product_type = 'alternative_investment' THEN 'Alternative Investments'
-                ELSE 'Others'
+              WHEN ${transactions.productType} = 'equity' THEN 'Equity'
+              WHEN ${transactions.productType} = 'mutual_fund' THEN 'Mutual Funds'
+              WHEN ${transactions.productType} = 'bond' THEN 'Bonds'
+              WHEN ${transactions.productType} = 'fixed_deposit' THEN 'Fixed Deposits'
+              WHEN ${transactions.productType} = 'insurance' THEN 'Insurance'
+              WHEN ${transactions.productType} = 'structured_product' THEN 'Structured Products'
+              WHEN ${transactions.productType} = 'alternative_investment' THEN 'Alternative Investments'
+              ELSE 'Others'
             END
-        ORDER BY SUM(amount) DESC
-      `, [userId]);
+          `,
+          value: sql<number>`SUM(${transactions.amount})`,
+          percentage: sql<number>`CAST(SUM(${transactions.amount}) * 100.0 / NULLIF((SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'), 0) AS INTEGER)`
+        })
+        .from(transactions)
+        .innerJoin(clients, eq(transactions.clientId, clients.id))
+        .where(and(
+          eq(clients.assignedTo, userId),
+          eq(transactions.transactionType, 'buy')
+        ))
+        .groupBy(transactions.productType)
+        .orderBy(sql`SUM(${transactions.amount}) DESC`);
 
-      res.json(result.rows);
+      const formatted = result.map((r: any) => ({
+        category: r.category,
+        value: Number(r.value),
+        percentage: Number(r.percentage)
+      }));
+
+      res.json(formatted);
     } catch (error) {
       console.error("Error fetching asset class breakdown:", error);
       res.status(500).json({ error: "Failed to fetch asset class breakdown" });
@@ -2579,26 +2651,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentMonth = new Date().getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
 
-      let whereConditions = [
-        eq(performanceIncentives.rmId, parseInt(userId)),
-        eq(performanceIncentives.period, period as string),
-        eq(performanceIncentives.year, currentYear)
-      ];
+      // Build Supabase query
+      let query = supabaseServer
+        .from('performance_incentives')
+        .select('*')
+        .eq('rm_id', parseInt(userId))
+        .eq('period', period as string)
+        .eq('year', currentYear)
+        .limit(1);
 
       // Add period-specific filters
       if (period === 'M') {
-        whereConditions.push(eq(performanceIncentives.month, currentMonth));
+        query = query.eq('month', currentMonth);
       } else if (period === 'Q') {
-        whereConditions.push(eq(performanceIncentives.quarter, currentQuarter));
+        query = query.eq('quarter', currentQuarter);
       }
 
-      const [incentiveRecord] = await db
-        .select()
-        .from(performanceIncentives)
-        .where(and(...whereConditions))
-        .limit(1);
+      const { data: incentiveData, error: incentiveError } = await query;
 
-      if (!incentiveRecord) {
+      if (incentiveError || !incentiveData || incentiveData.length === 0) {
         // Return default structure if no data found
         return res.json({
           earned: 0,
@@ -2613,15 +2684,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      const incentiveRecord = incentiveData[0];
+
       const response = {
-        earned: incentiveRecord.earnedAmount || 0,
-        projected: incentiveRecord.projectedAmount || 0,
-        possible: incentiveRecord.possibleAmount || 0,
+        earned: incentiveRecord.earned_amount || 0,
+        projected: incentiveRecord.projected_amount || 0,
+        possible: incentiveRecord.possible_amount || 0,
         breakdown: {
-          base: incentiveRecord.baseIncentive || 0,
-          performance: incentiveRecord.performanceBonus || 0,
-          team: incentiveRecord.teamBonus || 0,
-          special: incentiveRecord.specialIncentives || 0
+          base: incentiveRecord.base_incentive || 0,
+          performance: incentiveRecord.performance_bonus || 0,
+          team: incentiveRecord.team_bonus || 0,
+          special: incentiveRecord.special_incentives || 0
         }
       };
 
@@ -2762,7 +2835,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     </head>
     <body>
         <div class="header">
-            <div class="logo">UJJIVAN SMALL FINANCE BANK</div>
+            <div class="logo">ABC BANK</div>
             <div class="product-title">${productName} - Product Factsheet</div>
             <div>Date: ${new Date().toLocaleDateString()}</div>
         </div>
@@ -2827,7 +2900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     </head>
     <body>
         <div class="header">
-            <div class="logo">UJJIVAN SMALL FINANCE BANK</div>
+            <div class="logo">ABC BANK</div>
             <h2>${productName} - Key Information Memorandum</h2>
         </div>
 
@@ -2867,7 +2940,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     </head>
     <body>
         <div class="header">
-            <h1>UJJIVAN SMALL FINANCE BANK</h1>
+            <h1>ABC BANK</h1>
             <h2>Investment Application Form</h2>
         </div>
 
@@ -2943,7 +3016,7 @@ stream
 BT
 /F1 12 Tf
 50 750 Td
-(UJJIVAN SMALL FINANCE BANK) Tj
+(ABC BANK) Tj
 0 -20 Td
 (${filename.replace('.pdf', '').replace(/-/g, ' ').toUpperCase()}) Tj
 0 -40 Td

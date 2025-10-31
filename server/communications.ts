@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { pool, db } from './db';
 import { communications } from '@shared/schema';
+import { supabaseServer } from './lib/supabase';
 
 // Create a router to handle communication-related routes
 const router = Router();
@@ -485,23 +486,30 @@ router.get('/api/communications/stats/rm/:rmId', async (req: Request, res: Respo
 // Get deal closure action items (for Expected Closures dashboard)
 router.get('/api/action-items/deal-closures', async (req: Request, res: Response) => {
   try {
-    const { rows } = await pool.query(`
-      SELECT 
-        cai.*,
-        cai.deal_value as expected_amount,
-        c.client_id, 
-        cl.full_name as client_name, 
-        cl.initials as client_initials
-      FROM communication_action_items cai
-      JOIN communications c ON cai.communication_id = c.id
-      JOIN clients cl ON c.client_id = cl.id
-      WHERE cai.action_type = 'deal_closure' 
-        AND cai.status = 'pending'
-        AND cai.deal_value > 0
-      ORDER BY cai.expected_close_date ASC, cai.deal_value DESC
-    `);
+    const { data, error } = await supabaseServer
+      .from('communication_action_items')
+      .select(`
+        *,
+        communications!inner(client_id, clients(full_name, initials))
+      `)
+      .eq('action_type', 'deal_closure')
+      .eq('status', 'pending')
+      .gt('deal_value', 0)
+      .order('expected_close_date', { ascending: true })
+      .order('deal_value', { ascending: false });
     
-    res.json(rows);
+    if (error) throw error;
+    
+    // Transform data to match expected format
+    const transformed = (data || []).map((item: any) => ({
+      ...item,
+      expected_amount: item.deal_value,
+      client_id: item.communications?.client_id,
+      client_name: item.communications?.clients?.full_name,
+      client_initials: item.communications?.clients?.initials
+    }));
+    
+    res.json(transformed);
   } catch (error) {
     console.error('Error fetching deal closure action items:', error);
     res.status(500).json({ error: 'Failed to fetch deal closure action items' });

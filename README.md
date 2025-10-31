@@ -1,6 +1,6 @@
-# Intellect WealthForce
+# Wealth Management System
 
-A sophisticated wealth management platform designed for Relationship Managers (RMs) at Ujjivan Small Finance Bank, providing intelligent workflow tools and advanced client engagement capabilities.
+A sophisticated wealth management platform designed for Relationship Managers (RMs) at ABC Bank, providing intelligent workflow tools and advanced client engagement capabilities.
 
 ## 🏗️ Architecture Overview
 
@@ -149,7 +149,7 @@ graph LR
 ## 🏢 Business Context
 
 ### Target Users
-- **Primary**: Relationship Managers at Ujjivan Small Finance Bank
+- **Primary**: Relationship Managers at ABC Bank
 - **Secondary**: Team Leads and Branch Managers
 - **Tertiary**: Compliance and Risk Management Teams
 
@@ -271,6 +271,6 @@ npm run dev
 
 ---
 
-**Built with ❤️ for Ujjivan Small Finance Bank Relationship Managers**
+**Built with ❤️ for ABC Bank Relationship Managers**
 
 *Empowering wealth management through intelligent technology and data-driven insights.*

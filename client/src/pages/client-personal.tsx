@@ -26,7 +26,7 @@ export default function ClientPersonalPage() {
   
   // Set page title
   useEffect(() => {
-    document.title = "Client Information | Intellect WealthForce";
+    document.title = "Client Information | Wealth Management System";
   }, []);
 
   // Extract client ID from URL path
@@ -175,6 +175,21 @@ export default function ClientPersonalPage() {
 
       {/* Main Content */}
       <div className="p-4 space-y-4">
+        {/* Incomplete profile banner */}
+        {((client as any).profile_status === 'incomplete' || (client as any).aumValue === 0 || !(client as any).investmentHorizon || !(client as any).netWorth) && (
+          <Card className="border-primary/30">
+            <CardContent className="p-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="font-medium text-foreground">This client profile is incomplete.</p>
+                <p className="text-sm text-muted-foreground">Complete the remaining sections to finish onboarding.</p>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => window.location.hash = `/clients/${clientId}/financial-profile`}>Complete Financial Profile</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Summary Card */}
         <Card>
           <CardContent className="px-4 py-4">
@@ -367,8 +382,38 @@ export default function ClientPersonalPage() {
                   <CardTitle className="text-lg font-medium flex items-center gap-2">
                     <PieChart className="h-5 w-5" />
                     Financial Profile
+                    {(((client as any).profile_status === 'incomplete') || !(client as any).investmentHorizon || (client as any).aumValue === 0) && (
+                      <>
+                        <span className="ml-2 text-xs text-primary bg-primary/10 border border-primary/30 rounded px-2 py-0.5">Incomplete</span>
+                        <Button
+                          size="sm"
+                          className="ml-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.hash = `/clients/${clientId}/financial-profile`;
+                          }}
+                        >
+                          Complete Now
+                        </Button>
+                      </>
+                    )}
                   </CardTitle>
-                  {isFinancialOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex items-center gap-2">
+                    {!client.riskProfile && !client.investmentHorizon && (
+                      <Button
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.hash = `/clients/${clientId}/financial-profile`;
+                        }}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        <PieChart className="h-4 w-4 mr-2" />
+                        Create Financial Profile
+                      </Button>
+                    )}
+                    {isFinancialOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </div>
                 </div>
               </CardHeader>
             </CollapsibleTrigger>

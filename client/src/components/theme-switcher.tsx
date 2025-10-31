@@ -21,7 +21,7 @@ export function ThemeSwitcher() {
         >
           {theme === 'light' && <Sun className="h-4 w-4" />}
           {theme === 'dark' && <Moon className="h-4 w-4" />}
-          {theme === 'ujjivan' && <Palette className="h-4 w-4" />}
+          {theme === 'primesoft' && <Palette className="h-4 w-4" />}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -50,12 +50,12 @@ export function ThemeSwitcher() {
           )}
         </DropdownMenuItem>
         <DropdownMenuItem 
-          onClick={() => setTheme('ujjivan')}
+          onClick={() => setTheme('primesoft')}
           className="cursor-pointer hover:bg-accent/50 transition-colors duration-200"
         >
           <Palette className="mr-2 h-4 w-4" />
-          <span className="font-medium">Ujjivan Brand</span>
-          {theme === 'ujjivan' && (
+          <span className="font-medium">PrimeSoft Brand</span>
+          {theme === 'primesoft' && (
             <div className="ml-auto h-2 w-2 rounded-full bg-primary" />
           )}
         </DropdownMenuItem>

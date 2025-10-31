@@ -535,12 +535,12 @@ const ClientCommunications: React.FC = () => {
                 {(searchQuery !== '' || selectedCustomer !== 'all' || filters.noteType !== 'all' || filters.channel !== 'all' || filters.dateRange !== 'all') && (
                   <div className="flex items-center space-x-2 ml-2">
                     {searchQuery !== '' && (
-                      <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">
+                      <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">
                         SEARCH: {searchQuery.length > 15 ? searchQuery.substring(0, 15) + '...' : searchQuery}
                       </span>
                     )}
                     {selectedCustomer !== 'all' && (
-                      <span className="px-2 py-1 text-xs bg-teal-100 text-teal-800 rounded">
+                      <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">
                         CUSTOMER: {selectedCustomer}
                       </span>
                     )}

@@ -42,7 +42,7 @@ export default function Profile() {
   
   // Set page title
   useEffect(() => {
-    document.title = "My Profile | Intellect WealthForce";
+    document.title = "My Profile | Wealth Management System";
   }, []);
 
   // Fetch user performance metrics
@@ -142,7 +142,7 @@ export default function Profile() {
               </div>
               <div className="flex items-center gap-3">
                 <Building className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Ujjivan Small Finance Bank</span>
+                <span className="text-sm">ABC Bank</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -229,7 +229,7 @@ export default function Profile() {
                 
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
-                    <TrendingUp className="h-8 w-8 text-orange-500" />
+                    <TrendingUp className="h-8 w-8 text-primary" />
                   </div>
                   <div className="text-2xl font-bold text-foreground">
                     ₹{businessMetrics?.pipelineValue ? (businessMetrics.pipelineValue / 10000000).toFixed(1) : '0.0'} Cr
@@ -277,15 +277,15 @@ export default function Profile() {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+                <div className="bg-gradient-to-r from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 p-4 rounded-lg border border-primary/30 dark:border-primary/50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">
+                      <div className="text-2xl font-bold text-primary dark:text-primary">
                         {businessMetrics?.silverClients || '0'}
                       </div>
-                      <div className="text-sm text-orange-700 dark:text-orange-300">Silver Clients</div>
+                      <div className="text-sm text-primary/80 dark:text-primary/70">Silver Clients</div>
                     </div>
-                    <Award className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                    <Award className="h-8 w-8 text-primary dark:text-primary" />
                   </div>
                 </div>
               </div>

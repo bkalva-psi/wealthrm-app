@@ -288,8 +288,8 @@ export default function ClientPersonalPage() {
                         <span className="text-sm text-muted-foreground">KYC {client.kycStatus || "Unknown"}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Wallet className="h-3 w-3 text-orange-500" />
-                        <span className="text-sm font-medium text-orange-600">{client.aum}</span>
+                        <Wallet className="h-3 w-3 text-primary" />
+                        <span className="text-sm font-medium text-primary">{client.aum}</span>
                       </div>
                     </div>
                   </div>

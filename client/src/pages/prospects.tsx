@@ -138,7 +138,7 @@ function FunnelChart({ prospects, stages }: FunnelChartProps) {
       switch (stageId.toLowerCase()) {
         case 'new': return '#10b981'; // Green
         case 'qualified': return '#3b82f6'; // Blue
-        case 'proposal': return '#f59e0b'; // Orange
+        case 'proposal': return '#2E98D3'; // PrimeSoft Blue
         case 'negotiation': return '#8b5cf6'; // Purple
         case 'won': return '#22c55e'; // Success green
         case 'lost': return '#ef4444'; // Red

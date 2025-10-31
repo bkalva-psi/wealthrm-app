@@ -112,7 +112,7 @@ export default function Products() {
       case 'moderate':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
       case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400';
+        return 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary';
       case 'very high':
         return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
       default:
@@ -175,7 +175,7 @@ ${product.expectedReturns ? `- Expected Returns: ${product.expectedReturns}` : '
 The product factsheet document is attached to this email for your reference.
 
 Best regards,
-Ujjivan Small Finance Bank`;
+ABC Bank`;
 
       // For modern browsers, try to use Web Share API with file attachment
       if (navigator.share && navigator.canShare) {
@@ -226,7 +226,7 @@ ${product.expectedReturns ? `- Expected Returns: ${product.expectedReturns}` : '
 You can download the product factsheet from: ${window.location.origin}/documents/${product.name.toLowerCase().replace(/\s+/g, '-')}-factsheet.pdf
 
 Best regards,
-Ujjivan Small Finance Bank`;
+ABC Bank`;
 
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.location.href = mailtoLink;
@@ -260,7 +260,7 @@ ${product.expectedReturns ? `• Expected Returns: ${product.expectedReturns}` :
 I have attached the product factsheet document for your reference.
 
 Best regards,
-Ujjivan Small Finance Bank`;
+ABC Bank`;
 
       // For modern browsers with Web Share API support
       if (navigator.share && navigator.canShare) {
@@ -310,7 +310,7 @@ ${product.expectedReturns ? `• Expected Returns: ${product.expectedReturns}` :
 You can download the product factsheet from: ${window.location.origin}/documents/${product.name.toLowerCase().replace(/\s+/g, '-')}-factsheet.pdf
 
 Best regards,
-Ujjivan Small Finance Bank`;
+ABC Bank`;
 
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');

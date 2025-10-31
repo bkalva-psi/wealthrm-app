@@ -673,7 +673,7 @@ export default function ClientTransactions() {
                     </span>
                   )}
                   {securityFilter !== 'all' && (
-                    <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">
+                    <span className="px-2 py-1 text-xs bg-primary/10 text-primary rounded">
                       {securityFilter}
                     </span>
                   )}

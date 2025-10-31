@@ -142,7 +142,7 @@ export function PortfolioAlertsFixed() {
                           {alert.severity ? alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1) : 'Unknown'}
                         </Badge>
                         {alert.actionRequired && (
-                          <Badge variant="outline" className="text-xs px-2 py-0.5 text-orange-600 border-orange-200">
+                          <Badge variant="outline" className="text-xs px-2 py-0.5 text-primary border-primary/30">
                             Action Required
                           </Badge>
                         )}

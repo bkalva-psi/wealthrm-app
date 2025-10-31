@@ -18,6 +18,7 @@ import {
 } from "@shared/schema";
 import { eq, and, gte, lt, lte, desc, sql, or } from "drizzle-orm";
 import { db } from "./db";
+import { supabaseServer } from "./lib/supabase";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -1272,63 +1273,88 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTasks(assignedTo?: number, completed?: boolean, clientId?: number): Promise<any[]> {
-    // Build the SQL query with proper filtering
-    let regularTasksSQL = `
-      SELECT 
-        t.id, t.title, t.description, t.due_date as "dueDate", t.completed,
-        t.client_id as "clientId", t.prospect_id as "prospectId", t.assigned_to as "assignedTo",
-        'medium' as priority, 'task' as source, NULL as "communicationId", 'task' as "actionType",
-        COALESCE(c.full_name, p.full_name) as "clientName"
-      FROM tasks t
-      LEFT JOIN clients c ON t.client_id = c.id
-      LEFT JOIN prospects p ON t.prospect_id = p.id
-      WHERE 1=1
-    `;
-    
-    let actionItemsSQL = `
-      SELECT 
-        cai.id, cai.title, cai.description, cai.due_date as "dueDate",
-        CASE WHEN cai.completed_at IS NOT NULL THEN true ELSE false END as completed,
-        comm.client_id as "clientId", NULL as "prospectId", cai.assigned_to as "assignedTo",
-        cai.priority, 'action_item' as source, cai.communication_id as "communicationId", 
-        cai.action_type as "actionType", cl.full_name as "clientName"
-      FROM communication_action_items cai
-      JOIN communications comm ON cai.communication_id = comm.id
-      LEFT JOIN clients cl ON comm.client_id = cl.id
-      WHERE cai.action_type = 'task' AND cai.status = 'pending'
-    `;
-    
-    const params: any[] = [];
-    let paramIndex = 1;
+    // Execute both queries using Supabase
+    // Regular tasks
+    let regularTasksQuery = supabaseServer
+      .from('tasks')
+      .select('id, title, description, due_date, completed, client_id, prospect_id, assigned_to, priority, clients(full_name), prospects(full_name)');
     
     if (assignedTo !== undefined) {
-      regularTasksSQL += ` AND t.assigned_to = $${paramIndex}`;
-      actionItemsSQL += ` AND cai.assigned_to = $${paramIndex}`;
-      params.push(assignedTo);
-      paramIndex++;
+      regularTasksQuery = regularTasksQuery.eq('assigned_to', assignedTo);
     }
-    
     if (completed !== undefined) {
-      regularTasksSQL += ` AND t.completed = $${paramIndex}`;
-      if (completed) {
-        actionItemsSQL += ` AND cai.completed_at IS NOT NULL`;
-      } else {
-        actionItemsSQL += ` AND cai.completed_at IS NULL`;
-      }
-      params.push(completed);
-      paramIndex++;
+      regularTasksQuery = regularTasksQuery.eq('completed', completed);
     }
-    
     if (clientId !== undefined) {
-      regularTasksSQL += ` AND t.client_id = $${paramIndex}`;
-      actionItemsSQL += ` AND comm.client_id = $${paramIndex}`;
-      params.push(clientId);
-      paramIndex++;
+      regularTasksQuery = regularTasksQuery.eq('client_id', clientId);
     }
     
-    // Execute both queries
-    const { rows: regularTasks } = await db.$client.query(regularTasksSQL, params);
-    const { rows: actionItems } = await db.$client.query(actionItemsSQL, params);
+    const { data: regularTasksData, error: regularTasksError } = await regularTasksQuery;
+    if (regularTasksError) {
+      console.error('Error fetching regular tasks:', regularTasksError);
+    }
+    
+    const regularTasks = (regularTasksData || []).map((t: any) => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      dueDate: t.due_date,
+      completed: t.completed,
+      clientId: t.client_id,
+      prospectId: t.prospect_id,
+      assignedTo: t.assigned_to,
+      priority: t.priority || 'medium',
+      source: 'task',
+      communicationId: null,
+      actionType: 'task',
+      clientName: t.clients?.full_name || t.prospects?.full_name || null
+    }));
+    
+    // Action items from communications
+    let actionItemsQuery = supabaseServer
+      .from('communication_action_items')
+      .select(`
+        id, title, description, due_date, completed_at, assigned_to, priority, action_type, communication_id,
+        communications!inner(client_id, clients(full_name))
+      `)
+      .eq('action_type', 'task')
+      .eq('status', 'pending')
+      .is('completed_at', null);
+    
+    if (assignedTo !== undefined) {
+      actionItemsQuery = actionItemsQuery.eq('assigned_to', assignedTo);
+    }
+    if (completed !== undefined) {
+      if (completed) {
+        actionItemsQuery = actionItemsQuery.not('completed_at', 'is', null);
+      } else {
+        actionItemsQuery = actionItemsQuery.is('completed_at', null);
+      }
+    }
+    if (clientId !== undefined) {
+      actionItemsQuery = actionItemsQuery.eq('communications.client_id', clientId);
+    }
+    
+    const { data: actionItemsData, error: actionItemsError } = await actionItemsQuery;
+    if (actionItemsError) {
+      console.error('Error fetching action items:', actionItemsError);
+    }
+    
+    const actionItems = (actionItemsData || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      dueDate: item.due_date,
+      completed: item.completed_at !== null,
+      clientId: item.communications?.client_id || null,
+      prospectId: null,
+      assignedTo: item.assigned_to,
+      priority: item.priority,
+      source: 'action_item',
+      communicationId: item.communication_id,
+      actionType: item.action_type,
+      clientName: item.communications?.clients?.full_name || null
+    }));
     
     // Combine and sort by due date
     const allTasks = [...regularTasks, ...actionItems].sort((a, b) => {
@@ -1558,7 +1584,17 @@ export class DatabaseStorage implements IStorage {
 
   // Performance Metric methods
   async getPerformanceMetrics(userId: number): Promise<PerformanceMetric[]> {
-    return db.select().from(performanceMetrics).where(eq(performanceMetrics.userId, userId));
+    const { data, error } = await supabaseServer
+      .from('performance_metrics')
+      .select('*')
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error('Error fetching performance metrics:', error);
+      return [];
+    }
+    
+    return (data || []) as PerformanceMetric[];
   }
 
   async createPerformanceMetric(insertMetric: InsertPerformanceMetric): Promise<PerformanceMetric> {

@@ -363,7 +363,7 @@
   fill: hsl(var(--foreground));
 }
 
-/* Light Theme - Default */
+/* Light Theme - Default - PrimeSoft Branded */
 :root {
       --background: 0 0% 100%;
       --foreground: 20 14.3% 4.1%;
@@ -375,53 +375,53 @@
       --card-foreground: 20 14.3% 4.1%;
       --border: 220 13% 91%;
       --input: 220 13% 91%;
-      --primary: 221.2 83.2% 53.3%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 210 40% 96%;
-      --secondary-foreground: 222.2 84% 4.9%;
-      --accent: 210 40% 96%;
-      --accent-foreground: 222.2 84% 4.9%;
+      --primary: 202 64% 50%; /* PrimeSoft Blue */
+      --primary-foreground: 0 0% 100%;
+      --secondary: 202 30% 70%; /* Light blue */
+      --secondary-foreground: 202 64% 20%;
+      --accent: 202 30% 70%;
+      --accent-foreground: 202 64% 20%;
       --destructive: 0 84.2% 60.2%;
       --destructive-foreground: 210 40% 98%;
-      --ring: 221.2 83.2% 53.3%;
+      --ring: 202 64% 50%; /* PrimeSoft Blue */
       --radius: 0.75rem;
 }
 
 
 
-/* Ujjivan Brand Theme */
-.ujjivan-theme {
-      /* Green background shades - from darkest to lightest */
-      --background: 140 60% 15%; /* Dark forest green background */
+/* PrimeSoft Brand Theme */
+.primesoft-theme {
+      /* Blue background shades - from darkest to lightest */
+      --background: 202 64% 15%; /* Dark blue background */
       --foreground: 0 0% 98%; /* Pure white text */
-      --muted: 140 50% 20%; /* Medium dark green for muted areas */
+      --muted: 202 50% 20%; /* Medium dark blue for muted areas */
       --muted-foreground: 0 0% 90%; /* Light gray-white for muted text */
-      --popover: 140 55% 18%; /* Slightly lighter green for popovers */
+      --popover: 202 55% 18%; /* Slightly lighter blue for popovers */
       --popover-foreground: 0 0% 95%; /* Off-white for popover text */
-      --card: 140 45% 22%; /* Medium green for cards */
+      --card: 202 45% 22%; /* Medium blue for cards */
       --card-foreground: 0 0% 95%; /* Off-white for card text */
-      --border: 140 40% 30%; /* Lighter green borders */
-      --input: 140 50% 25%; /* Dark green for inputs */
+      --border: 202 40% 30%; /* Lighter blue borders */
+      --input: 202 50% 25%; /* Dark blue for inputs */
       
-      /* White for primary actions - better readability */
-      --primary: 0 0% 100%; /* White for primary actions */
-      --primary-foreground: 140 60% 15%; /* Dark green text on white */
+      /* PrimeSoft Blue for primary actions */
+      --primary: 202 64% 50%; /* PrimeSoft Blue */
+      --primary-foreground: 0 0% 100%; /* White text on blue */
       
-      /* Light green as secondary */
-      --secondary: 140 30% 35%; /* Light green secondary */
+      /* Accent blue as secondary */
+      --secondary: 202 40% 40%; /* Medium blue secondary */
       --secondary-foreground: 0 0% 100%; /* White text on secondary */
       
-      /* Accent in lighter green */
-      --accent: 140 35% 28%; /* Accent green */
+      /* Accent in lighter blue */
+      --accent: 202 45% 32%; /* Accent blue */
       --accent-foreground: 0 0% 95%; /* Off-white accent text */
       
-      --destructive: 0 80% 75%; /* Light red for better contrast on dark green */
-      --destructive-foreground: 140 60% 15%; /* Dark green text on light red background */
-      --ring: 25 100% 65%; /* Orange ring color */
+      --destructive: 0 80% 75%; /* Light red for better contrast on dark blue */
+      --destructive-foreground: 202 64% 15%; /* Dark blue text on light red background */
+      --ring: 202 64% 50%; /* PrimeSoft Blue ring color */
 }
   
   .dark {
-      /* True Dark Mode */
+      /* True Dark Mode - PrimeSoft Branded */
       --background: 222 84% 5%; /* Very dark background */
       --foreground: 210 40% 98%; /* Light text */
       --muted: 217 33% 17%; /* Dark muted areas */
@@ -433,18 +433,18 @@
       --border: 217 33% 17%; /* Dark borders */
       --input: 217 33% 17%;
       
-      /* Dark mode colors */
-      --primary: 174 100% 29%; /* Teal for primary */
+      /* Dark mode colors - PrimeSoft Blue */
+      --primary: 202 64% 50%; /* PrimeSoft Blue for primary */
       --primary-foreground: 0 0% 100%;
       
-      --secondary: 25 100% 55%; /* Orange for secondary */
+      --secondary: 202 40% 40%; /* Medium blue for secondary */
       --secondary-foreground: 0 0% 100%;
       
       --accent: 217 33% 17%;
       --accent-foreground: 210 40% 98%;
       --destructive: 0 62.8% 30.6%;
       --destructive-foreground: 0 0% 98%;
-      --ring: 174 100% 29%;
+      --ring: 202 64% 50%; /* PrimeSoft Blue */
       --radius: 0.5rem;
   }
 
@@ -481,77 +481,77 @@
     @apply bg-muted-foreground/50;
   }
   
-  /* Ujjivan-specific styling utility classes */
-  .bg-ujjivan-primary {
+  /* PrimeSoft-specific styling utility classes */
+  .bg-primesoft-primary {
     background-color: hsl(var(--primary));
   }
   
-  .bg-ujjivan-primary-light {
+  .bg-primesoft-primary-light {
     background-color: hsl(var(--primary-light));
   }
   
-  .bg-ujjivan-primary-dark {
+  .bg-primesoft-primary-dark {
     background-color: hsl(var(--primary-dark));
   }
   
-  .text-ujjivan-primary {
+  .text-primesoft-primary {
     color: hsl(var(--primary));
   }
   
-  .text-ujjivan-primary-light {
+  .text-primesoft-primary-light {
     color: hsl(var(--primary-light));
   }
   
-  .text-ujjivan-primary-dark {
+  .text-primesoft-primary-dark {
     color: hsl(var(--primary-dark));
   }
   
-  .bg-ujjivan-secondary {
+  .bg-primesoft-secondary {
     background-color: hsl(var(--secondary));
   }
   
-  .bg-ujjivan-secondary-light {
+  .bg-primesoft-secondary-light {
     background-color: hsl(var(--secondary-light));
   }
   
-  .bg-ujjivan-secondary-dark {
+  .bg-primesoft-secondary-dark {
     background-color: hsl(var(--secondary-dark));
   }
   
-  .text-ujjivan-secondary {
+  .text-primesoft-secondary {
     color: hsl(var(--secondary));
   }
   
-  .text-ujjivan-secondary-light {
+  .text-primesoft-secondary-light {
     color: hsl(var(--secondary-light));
   }
   
-  .text-ujjivan-secondary-dark {
+  .text-primesoft-secondary-dark {
     color: hsl(var(--secondary-dark));
   }
   
   /* Status colors */
-  .bg-ujjivan-success {
+  .bg-primesoft-success {
     background-color: hsl(var(--success));
   }
   
-  .bg-ujjivan-warning {
+  .bg-primesoft-warning {
     background-color: hsl(var(--warning));
   }
   
-  .bg-ujjivan-danger {
+  .bg-primesoft-danger {
     background-color: hsl(var(--danger));
   }
   
-  .text-ujjivan-success {
+  .text-primesoft-success {
     color: hsl(var(--success));
   }
   
-  .text-ujjivan-warning {
+  .text-primesoft-warning {
     color: hsl(var(--warning));
   }
   
-  .text-ujjivan-danger {
+  .text-primesoft-danger {
     color: hsl(var(--danger));
   }
   

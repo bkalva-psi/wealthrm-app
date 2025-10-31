@@ -60,7 +60,7 @@ export default function TasksUpdated() {
   
   // Set page title and force reload indicator
   useEffect(() => {
-    document.title = "Tasks | Intellect WealthForce";
+    document.title = "Tasks | Wealth Management System";
     console.log("NEW UPDATED TASKS PAGE LOADED SUCCESSFULLY");
   }, []);
   
@@ -223,7 +223,7 @@ export default function TasksUpdated() {
     const today = new Date();
     
     if (isToday(date)) {
-      return { text: "Due today", color: "text-orange-600 font-medium" };
+      return { text: "Due today", color: "text-primary font-medium" };
     } else if (isYesterday(date)) {
       return { text: "Overdue", color: "text-red-600 font-medium" };
     } else if (isBefore(date, today)) {
@@ -481,7 +481,7 @@ export default function TasksUpdated() {
           <CardHeader className="cursor-pointer sticky top-16 bg-card z-10 border-b" onClick={() => setAlertsCollapsed(!alertsCollapsed)}>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-orange-600" />
+                <AlertTriangle className="h-5 w-5 text-primary" />
                 Portfolio Alerts ({(portfolioAlerts as any[] || []).length})
               </CardTitle>
               <Button variant="ghost" size="sm">
@@ -522,7 +522,7 @@ export default function TasksUpdated() {
                               >
                                 <div className={`h-4 w-4 mt-1 rounded-full ${
                                   alert.severity === 'high' ? 'bg-red-500' : 
-                                  alert.severity === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
+                                  alert.severity === 'medium' ? 'bg-primary' : 'bg-yellow-500'
                                 }`} />
                                 <div className="flex-1">
                                   <h4 className="text-sm font-medium text-foreground">{alert.title}</h4>
@@ -538,7 +538,7 @@ export default function TasksUpdated() {
                                   <div className="flex items-center justify-between mt-2">
                                     <span className={`text-xs px-2 py-1 rounded-full ${
                                       alert.severity === 'high' ? 'bg-red-100 text-red-700' : 
-                                      alert.severity === 'medium' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'
+                                      alert.severity === 'medium' ? 'bg-primary/10 text-primary' : 'bg-yellow-100 text-yellow-700'
                                     }`}>
                                       Severity: {alert.severity}
                                     </span>

@@ -16,11 +16,11 @@ interface CacheItem<T> {
 }
 
 export const CACHE_KEYS = {
-  CLIENTS: 'ujjival_cached_clients',
-  PROSPECTS: 'ujjival_cached_prospects',
-  CLIENT_DETAILS: 'ujjival_cached_client_details_',
-  USER_PROFILE: 'ujjival_cached_user_profile',
-  APPOINTMENTS: 'ujjival_cached_appointments'
+  CLIENTS: 'wealthrm_cached_clients',
+  PROSPECTS: 'wealthrm_cached_prospects',
+  CLIENT_DETAILS: 'wealthrm_cached_client_details_',
+  USER_PROFILE: 'wealthrm_cached_user_profile',
+  APPOINTMENTS: 'wealthrm_cached_appointments'
 };
 
 const DEFAULT_CONFIG: CacheConfig = {

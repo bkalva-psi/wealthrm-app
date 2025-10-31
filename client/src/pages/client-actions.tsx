@@ -11,7 +11,7 @@ export default function ClientActionsPage() {
   
   // Set page title
   useEffect(() => {
-    document.title = "Client Actions | Intellect WealthForce";
+    document.title = "Client Actions | Wealth Management System";
     
     // Get client ID from URL
     const hash = window.location.hash;

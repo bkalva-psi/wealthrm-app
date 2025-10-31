@@ -92,7 +92,7 @@ export function BusinessSnapshotStructured() {
       value: businessMetrics?.pipelineValue || 0,
       formatter: formatCurrency,
       icon: Target,
-      color: 'text-orange-600 dark:text-orange-400',
+      color: 'text-primary',
       bgColor: 'bg-muted border-border',
       dimensions: []
     }

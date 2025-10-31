@@ -27,12 +27,14 @@ import {
   Bell,
   Crown,
   Award,
-  Medal
+  Medal,
+  AlertTriangle
 } from "lucide-react";
 import { clientApi } from "@/lib/api";
 import { Client } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
+import { generateAvatar } from "@/lib/avatarGenerator";
+import { FloatingAddButton } from "@/components/ui/floating-add-button";
 
 // Filter options type definition
 interface FilterOptions {
@@ -40,6 +42,7 @@ interface FilterOptions {
   maxAum: number;
   includedTiers: string[];
   riskProfiles: string[];
+  pendingOnly: boolean;
 }
 
 // Helper functions for tier visualization
@@ -87,17 +90,41 @@ const getTierBadgeColors = (tier: string) => {
 
 // Client Card component
 interface ClientCardProps {
-  client: Client;
+  client: Client & { profile_status?: string; incomplete_sections?: string[]; aumValue?: number; investmentHorizon?: string | null };
   onClick: (id: number, section?: string) => void;
+}
+
+function isClientIncomplete(client: any): boolean {
+  // Treat as incomplete when server marks it or when core fields are missing/empty
+  if (client?.profile_status === 'incomplete') return true;
+  const noFinancials = (client?.aumValue ?? 0) === 0;
+  const noHorizon = !client?.investmentHorizon;
+  const noNetWorth = !client?.netWorth;
+  return noFinancials || noHorizon || noNetWorth;
 }
 
 function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [] }: ClientCardProps & { tasks?: any[], appointments?: any[], alerts?: any[] }) {
   const tierColors = getTierColor(client.tier);
   const TierIcon = getTierIcon(client.tier);
   const tierBadge = getTierBadgeColors(client.tier);
+  const incomplete = isClientIncomplete(client);
 
+  // Helper: contact urgency (re-added)
+  const getContactUrgency = (lastContactDate: Date | string | null | undefined, clientId: number, appointmentsList: any[] = []) => {
+    const today = new Date();
+    const hasMeetingNextWeek = appointmentsList.some(apt => {
+      if (apt.clientId !== clientId) return false;
+      const aptDate = new Date(apt.startTime);
+      const diffDays = Math.ceil((aptDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 7;
+    });
+    if (!lastContactDate) return { isUrgent: true, message: 'No contact record' };
+    const contactDate = new Date(lastContactDate);
+    const daysSinceContact = Math.floor((new Date().getTime() - contactDate.getTime()) / (1000 * 60 * 60 * 24));
+    if (hasMeetingNextWeek || daysSinceContact > 75) return { isUrgent: true, message: 'Contact soon' };
+    return { isUrgent: false, message: '' };
+  };
 
-  
   // Handle section clicks
   const handleSectionClick = (e: React.MouseEvent, section: string) => {
     e.stopPropagation();
@@ -118,44 +145,14 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
       'bg-blue-500',
       'bg-green-500', 
       'bg-purple-500',
-      'bg-orange-500',
+      'bg-primary',
       'bg-pink-500',
       'bg-indigo-500',
-      'bg-teal-500',
+      'bg-primary',
       'bg-red-500'
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
-  };
-
-  // Contact urgency indicator - show "Contact Soon" only if meeting scheduled in next week or last meeting >75 days ago
-  const getContactUrgency = (lastContactDate: Date | null | undefined, clientId: number, appointments: any[] = []) => {
-    const today = new Date();
-    
-    // Check if there's a meeting scheduled in the next 7 days for this client
-    const hasMeetingNextWeek = appointments.some(apt => {
-      if (apt.clientId !== clientId) return false;
-      
-      const aptDate = new Date(apt.startTime);
-      const diffTime = aptDate.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      return diffDays >= 0 && diffDays <= 7;
-    });
-    
-    if (!lastContactDate) {
-      return { isUrgent: true, message: 'No contact record' };
-    }
-    
-    const contactDate = new Date(lastContactDate);
-    const daysSinceContact = Math.floor((today.getTime() - contactDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Show "Contact soon" only if meeting scheduled in next week OR last meeting >75 days ago
-    if (hasMeetingNextWeek || daysSinceContact > 75) {
-      return { isUrgent: true, message: 'Contact soon' };
-    }
-    
-    return { isUrgent: false, message: '' };
   };
 
   // Risk profile color coding
@@ -212,7 +209,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
     // Return appropriate colors
     if (hasMeetingToday) return 'bg-blue-500';
     if (hasComplaints) return 'bg-red-500';
-    if (hasOverdueTasks) return 'bg-orange-500';
+    if (hasOverdueTasks) return 'bg-primary';
     if (hasOverdueContact) return 'bg-yellow-500';
     
     return 'bg-green-500'; // On Track
@@ -327,6 +324,13 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                 >
                   <h3 className="text-sm font-semibold text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
                 </div>
+                
+                {/* Pending badge */}
+                {client.profile_status === 'incomplete' || incomplete ? (
+                  <div className="inline-flex items-center gap-1 text-xs text-primary bg-primary/10 border border-primary/30 rounded px-2 py-0.5 mt-1">
+                    <AlertTriangle className="h-3 w-3" /> Pending profile
+                  </div>
+                ) : null}
                 
                 {/* Contact Information Group */}
                 <div className="space-y-0.5">
@@ -455,6 +459,20 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
   );
 }
 
+const RECENT_KEY = 'recent_clients_v1';
+function markRecent(clientId: number) {
+  const raw = localStorage.getItem(RECENT_KEY);
+  const now = Date.now();
+  let data: Record<string, number> = raw ? JSON.parse(raw) : {};
+  data[String(clientId)] = now;
+  // keep only latest 50
+  const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,50);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(Object.fromEntries(entries)));
+}
+function getRecentOrder(): Record<string, number> {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '{}'); } catch { return {}; }
+}
+
 export default function Clients() {
   // State
   const [searchQuery, setSearchQuery] = useState("");
@@ -464,8 +482,10 @@ export default function Clients() {
     minAum: 0,
     maxAum: 100000000, // 10 Cr to include all high-value clients
     includedTiers: ['platinum', 'gold', 'silver'],
-    riskProfiles: ['conservative', 'moderate', 'aggressive']
+    riskProfiles: ['conservative', 'moderate', 'aggressive'],
+    pendingOnly: false
   });
+  const [recentOnly, setRecentOnly] = useState(false);
   
   const isMobile = useIsMobile();
   
@@ -510,6 +530,7 @@ export default function Clients() {
     if (filterOptions.maxAum < 100000000) count++;
     if (filterOptions.includedTiers.length < 3) count++;
     if (filterOptions.riskProfiles.length < 3) count++;
+    if (filterOptions.pendingOnly) count++;
     
     setActiveFilters(count);
   };
@@ -517,7 +538,7 @@ export default function Clients() {
   // Add debugging for clients
   console.log('Clients data received:', clients);
   
-  // Filter clients based on search and filter options, then sort by alert count
+  const recentMap = getRecentOrder();
   const filteredClients = clients
     ? clients
         .filter((client: Client) => {
@@ -540,17 +561,28 @@ export default function Clients() {
           const matchesAum = aumValue >= filterOptions.minAum && 
                             (aumValue <= filterOptions.maxAum || filterOptions.maxAum >= MAX_AUM);
           
+          // Check pending profiles filter
+          const matchesPending = !filterOptions.pendingOnly || isClientIncomplete(client);
+
+          // Check recent access filter
+          const matchesRecent = !recentOnly || recentMap[String(client.id)];
+
           // Check filter results
-          const result = matchesSearch && matchesTier && matchesRiskProfile && matchesAum;
+          const result = matchesSearch && matchesTier && matchesRiskProfile && matchesAum && matchesPending && matchesRecent;
           if (!result) {
             console.log('Filtered out client:', client.id, client.fullName);
-            console.log('  - Tier match:', matchesTier, 'Risk match:', matchesRiskProfile, 'AUM match:', matchesAum);
+            console.log('  - Tier match:', matchesTier, 'Risk match:', matchesRiskProfile, 'AUM match:', matchesAum, 'Pending match:', matchesPending, 'Recent match:', matchesRecent);
           }
           
           return result;
         })
         // Smart sorting: Attention needed first, then by AUM within each group
         .sort((a, b) => {
+          if (recentOnly) {
+            const ra = recentMap[String(a.id)] || 0;
+            const rb = recentMap[String(b.id)] || 0;
+            if (rb !== ra) return rb - ra;
+          }
           // Check if clients need attention based on various factors
           const today = new Date();
           const daysSinceLastContact = a.lastContactDate 
@@ -579,7 +611,8 @@ export default function Clients() {
       minAum: 0,
       maxAum: 100000000,
       includedTiers: ['platinum', 'gold', 'silver'],
-      riskProfiles: ['conservative', 'moderate', 'aggressive']
+      riskProfiles: ['conservative', 'moderate', 'aggressive'],
+      pendingOnly: false
     });
   };
   
@@ -619,6 +652,7 @@ export default function Clients() {
   
   // Handle client click
   const handleClientClick = (clientId: number, section?: string) => {
+    markRecent(clientId);
     if (section === 'actions') {
       window.location.hash = `/clients/${clientId}/portfolio#action-items`;
     } else if (section === 'portfolio') {
@@ -678,17 +712,26 @@ export default function Clients() {
                 <PopoverContent className="w-80 p-4 !bg-card !border-border" align="end">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold">Filter Clients</h3>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={resetFilters}
-                      className="text-xs h-8 px-2"
-                    >
-                      Reset
-                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => { resetFilters(); setRecentOnly(false); }} className="text-xs h-8 px-2">Reset</Button>
                   </div>
-                  
                   <div className="space-y-4">
+                    {/* Pending Profiles */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Pending profiles only</Label>
+                      <Button variant="outline" size="sm" onClick={() => setFilterOptions(prev => ({ ...prev, pendingOnly: !prev.pendingOnly }))}>
+                        {filterOptions.pendingOnly ? 'On' : 'Off'}
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Recently accessed only</Label>
+                      <Button variant="outline" size="sm" onClick={() => setRecentOnly(v => !v)}>
+                        {recentOnly ? 'On' : 'Off'}
+                      </Button>
+                    </div>
+
+                    <Separator />
+
                     {/* AUM Range */}
                     <div>
                       <Label className="text-sm mb-2 block">AUM Range</Label>
@@ -697,13 +740,7 @@ export default function Clients() {
                           value={[filterOptions.minAum, filterOptions.maxAum]}
                           max={100000000}
                           step={1000000}
-                          onValueChange={(values) => {
-                            setFilterOptions(prev => ({
-                              ...prev,
-                              minAum: values[0],
-                              maxAum: values[1]
-                            }));
-                          }}
+                          onValueChange={(values) => setFilterOptions(prev => ({ ...prev, minAum: values[0], maxAum: values[1] }))}
                         />
                       </div>
                       <div className="flex justify-between mt-2">
@@ -711,9 +748,9 @@ export default function Clients() {
                         <span className="text-xs text-muted-foreground">₹{(filterOptions.maxAum / 100000).toFixed(0)}L</span>
                       </div>
                     </div>
-                    
+
                     <Separator />
-                    
+
                     {/* Tier Filter */}
                     <div>
                       <Label className="text-sm mb-2 block">Client Tier</Label>
@@ -724,22 +761,15 @@ export default function Clients() {
                               variant="ghost"
                               size="sm"
                               className="p-0 h-8 w-8 mr-2"
-                              onClick={() => {
-                                setFilterOptions(prev => {
-                                  const isIncluded = prev.includedTiers.includes(tier);
-                                  return {
-                                    ...prev,
-                                    includedTiers: isIncluded
-                                      ? prev.includedTiers.filter(t => t !== tier)
-                                      : [...prev.includedTiers, tier]
-                                  };
-                                });
-                              }}
+                              onClick={() => setFilterOptions(prev => ({
+                                ...prev,
+                                includedTiers: prev.includedTiers.includes(tier)
+                                  ? prev.includedTiers.filter(t => t !== tier)
+                                  : [...prev.includedTiers, tier]
+                              }))}
                             >
                               <div className="h-5 w-5 rounded-sm border border-border flex items-center justify-center">
-                                {filterOptions.includedTiers.includes(tier) && (
-                                  <Check className="h-3.5 w-3.5 text-primary-600" />
-                                )}
+                                {filterOptions.includedTiers.includes(tier) && (<Check className="h-3.5 w-3.5 text-primary-600" />)}
                               </div>
                             </Button>
                             <span className="text-sm capitalize">{tier}</span>
@@ -747,9 +777,9 @@ export default function Clients() {
                         ))}
                       </div>
                     </div>
-                    
+
                     <Separator />
-                    
+
                     {/* Risk Profile Filter */}
                     <div>
                       <Label className="text-sm mb-2 block">Risk Profile</Label>
@@ -760,22 +790,15 @@ export default function Clients() {
                               variant="ghost"
                               size="sm"
                               className="p-0 h-8 w-8 mr-2"
-                              onClick={() => {
-                                setFilterOptions(prev => {
-                                  const isIncluded = prev.riskProfiles.includes(profile);
-                                  return {
-                                    ...prev,
-                                    riskProfiles: isIncluded
-                                      ? prev.riskProfiles.filter(p => p !== profile)
-                                      : [...prev.riskProfiles, profile]
-                                  };
-                                });
-                              }}
+                              onClick={() => setFilterOptions(prev => ({
+                                ...prev,
+                                riskProfiles: prev.riskProfiles.includes(profile)
+                                  ? prev.riskProfiles.filter(p => p !== profile)
+                                  : [...prev.riskProfiles, profile]
+                              }))}
                             >
                               <div className="h-5 w-5 rounded-sm border border-border flex items-center justify-center">
-                                {filterOptions.riskProfiles.includes(profile) && (
-                                  <Check className="h-3.5 w-3.5 text-primary-600" />
-                                )}
+                                {filterOptions.riskProfiles.includes(profile) && (<Check className="h-3.5 w-3.5 text-primary-600" />)}
                               </div>
                             </Button>
                             <span className="text-sm capitalize">{profile}</span>
@@ -845,9 +868,9 @@ export default function Clients() {
               key={client.id} 
               client={client} 
               onClick={handleClientClick}
-              tasks={tasks}
-              appointments={appointments}
-              alerts={alerts}
+              tasks={Array.isArray(tasks) ? tasks : []}
+              appointments={Array.isArray(appointments) ? appointments : []}
+              alerts={Array.isArray(alerts) ? alerts : []}
             />
           ))}
         </div>
@@ -869,6 +892,12 @@ export default function Clients() {
         </Card>
       )}
       </div>
+      
+      {/* Floating Add Client Button */}
+      <FloatingAddButton 
+        onClick={() => window.location.hash = '/clients/add'}
+        label="Add New Client"
+      />
     </div>
   );
 }

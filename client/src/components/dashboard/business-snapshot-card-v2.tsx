@@ -216,7 +216,7 @@ export function BusinessSnapshotCard() {
       value: businessMetrics?.pipelineValue || 0,
       formatter: formatCurrency,
       icon: Target,
-      color: 'text-orange-600',
+      color: 'text-primary',
       dimensions: [
         { id: '/api/pipeline-stage', name: 'Pipeline Stage', chartType: 'bar' as const },
       ]

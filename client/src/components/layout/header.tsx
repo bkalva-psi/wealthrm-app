@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
-import ujjivanLogo from "../../assets/ujjivan_logo.png";
+import primesoftLogo from "../../assets/primesoft-logo.svg";
 import sravanAvatar from "../../assets/sravan-avatar.svg";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/theme-provider";
@@ -34,17 +34,17 @@ export function Header({
   
   // Helper function to get theme-specific text classes
   const getBankNameClasses = () => {
-    if (theme === 'ujjivan') {
+    if (theme === 'primesoft') {
       return "text-white text-sm font-bold leading-tight whitespace-nowrap m-0 p-0";
     }
-    return "text-teal-700 dark:text-teal-400 text-sm font-bold leading-tight whitespace-nowrap m-0 p-0";
+    return "text-primary text-sm font-bold leading-tight whitespace-nowrap m-0 p-0";
   };
   
   const getAppNameClasses = () => {
-    if (theme === 'ujjivan') {
-      return "text-orange-300 text-xs font-medium leading-tight m-0 p-0";
+    if (theme === 'primesoft') {
+      return "text-blue-300 text-xs font-medium leading-tight m-0 p-0";
     }
-    return "text-orange-600 dark:text-orange-400 text-xs font-medium leading-tight m-0 p-0";
+    return "text-primary/70 dark:text-primary/60 text-xs font-medium leading-tight m-0 p-0";
   };
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -169,31 +169,31 @@ export function Header({
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px]">
               <div className="flex items-center h-16 px-4 border-b border-border">
-                <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+                <img src={primesoftLogo} alt="ABC Bank" className="h-10 w-auto" />
                 <div className="ml-2 flex flex-col justify-center">
-                  <h1 className={getBankNameClasses()}>Ujjivan Small Finance Bank</h1>
-                  <span className={getAppNameClasses()}>Intellect WealthForce</span>
+                  <h1 className={getBankNameClasses()}>ABC Bank</h1>
+                  <span className={getAppNameClasses()}>Wealth Management System</span>
                 </div>
               </div>
               <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
             </SheetContent>
           </Sheet>
           
-          {/* Ujjivan Logo (visible on mobile) */}
+          {/* ABC Bank Logo (visible on mobile) */}
           <div className="flex items-center md:hidden ml-2">
-            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+            <img src={primesoftLogo} alt="ABC Bank" className="h-10 w-auto" />
             <div className="ml-2 flex flex-col justify-center">
-              <h1 className={getBankNameClasses()}>Ujjivan Small Finance Bank</h1>
-              <span className={getAppNameClasses()}>Intellect WealthForce</span>
+              <h1 className={getBankNameClasses()}>ABC Bank</h1>
+              <span className={getAppNameClasses()}>Wealth Management System</span>
             </div>
           </div>
           
-          {/* Ujjivan Logo (visible on desktop) */}
+          {/* ABC Bank Logo (visible on desktop) */}
           <div className="hidden md:flex items-center">
-            <img src={ujjivanLogo} alt="Ujjivan Small Finance Bank" className="h-10 w-auto" />
+            <img src={primesoftLogo} alt="ABC Bank" className="h-10 w-auto" />
             <div className="ml-2 flex flex-col justify-center">
-              <h1 className={getBankNameClasses()}>Ujjivan Small Finance Bank</h1>
-              <span className={getAppNameClasses()}>Intellect WealthForce</span>
+              <h1 className={getBankNameClasses()}>ABC Bank</h1>
+              <span className={getAppNameClasses()}>Wealth Management System</span>
             </div>
           </div>
         </div>
@@ -249,12 +249,12 @@ export function Header({
                           <div className="flex-shrink-0">
                             <div className={cn(
                               "w-8 h-8 rounded-full flex items-center justify-center",
-                              result.type === 'client' ? "bg-primary/10" : "bg-orange/10"
+                              result.type === 'client' ? "bg-primary/10" : "bg-primary/10"
                             )}>
                               {result.type === 'client' ? (
                                 <Users className="h-4 w-4 text-primary" />
                               ) : (
-                                <UserPlus className="h-4 w-4 text-orange-600" />
+                                <UserPlus className="h-4 w-4 text-primary" />
                               )}
                             </div>
                           </div>
@@ -267,7 +267,7 @@ export function Header({
                                 "px-1.5 py-0.5 text-xs rounded font-medium",
                                 result.type === 'client' 
                                   ? "bg-primary/10 text-primary" 
-                                  : "bg-orange/10 text-orange-700"
+                                  : "bg-primary/10 text-primary"
                               )}>
                                 {result.type === 'client' ? 'Client' : 'Prospect'}
                               </span>
@@ -311,7 +311,7 @@ export function Header({
                 <Button variant="ghost" className="flex items-center focus:outline-none">
                   <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
                   <img 
-                    className="h-10 w-10 rounded-full border-2 border-ujjivan-primary shadow-sm" 
+                    className="h-10 w-10 rounded-full border-2 border-primary shadow-sm" 
                     src={sravanAvatar} 
                     alt={`${user?.fullName} profile`} 
                   />

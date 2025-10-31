@@ -28,6 +28,7 @@ export const clients = pgTable("clients", {
   email: text("email"),
   phone: text("phone"),
   dateOfBirth: timestamp("date_of_birth"),
+  gender: text("gender"),
   maritalStatus: text("marital_status"), // Single, Married, Divorced, Widowed
   anniversaryDate: timestamp("anniversary_date"),
   
@@ -123,6 +124,9 @@ export const clients = pgTable("clients", {
   alertCount: integer("alert_count").default(0), // Number of active alerts
   createdAt: timestamp("created_at").defaultNow(),
   assignedTo: integer("assigned_to").references(() => users.id),
+  profileStatus: text("profile_status").default("incomplete"),
+  incompleteSections: text("incomplete_sections").array(),
+  lastAccessedAt: timestamp("last_accessed_at"),
   
   // Document references could be added here or in a separate table
   // For now, we'll assume documents are stored in a separate table
@@ -629,7 +633,6 @@ export const communicationActionItems = pgTable("communication_action_items", {
 
 export const insertCommunicationActionItemSchema = createInsertSchema(communicationActionItems).omit({
   id: true,
-  createdAt: true,
 });
 
 // Communication Attachments - documents exchanged in communications

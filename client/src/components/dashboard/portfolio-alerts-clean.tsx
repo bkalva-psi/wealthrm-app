@@ -27,7 +27,7 @@ export function PortfolioAlertsClean() {
       case 'critical':
         return 'bg-red-500';
       case 'high':
-        return 'bg-orange-500';
+        return 'bg-primary';
       case 'medium':
         return 'bg-yellow-500';
       case 'low':
@@ -41,7 +41,7 @@ export function PortfolioAlertsClean() {
     <Card className="overflow-hidden">
       <CardHeader className="px-4 py-3 border-b border-border bg-background">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-orange-500" />
+          <AlertTriangle className="h-4 w-4 text-primary" />
           <h2 className="text-sm font-medium text-foreground">Priority Alerts</h2>
           {!alertsLoading && alerts && alerts.length > 0 && (
             <Badge variant="secondary" className="text-xs">
