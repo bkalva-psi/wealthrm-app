@@ -1,32 +1,11 @@
 import { useState, useEffect } from "react";
 import { FinancialProfileForm } from "@/components/forms/financial-profile-form";
 import { RiskProfilingForm } from "@/components/forms/risk-profiling-form";
-import { ArrowLeft, PieChart, Shield, GraduationCap } from "lucide-react";
 import { ArrowLeft, PieChart, Shield, GraduationCap, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-
-interface FinancialProfileFormData {
-  income: any;
-  expenses: any;
-  assets: any[];
-  liabilities: any[];
-  riskProfile: string;
-  riskAssessmentScore: number;
-  investmentHorizon: string;
-  investmentExperience: string;
-  preferredInvestmentTypes: string[];
-  assetAllocationEquity: string;
-  assetAllocationDebt: string;
-  assetAllocationCash: string;
-  assetAllocationAlternative: string;
-  investmentObjectives: string[];
-  liquidityRequirements: string;
-  taxPlanningPreferences: string;
-  retirementGoals: string;
-}
 
 export default function AddFinancialProfilePage() {
   const { toast } = useToast();
@@ -46,7 +25,7 @@ export default function AddFinancialProfilePage() {
     }
   }, []);
 
-  const handleSubmit = async (formData: FinancialProfileFormData) => {
+  const handleSubmit = async (formData: any) => {
     if (!clientId) {
       toast({
         title: "Error",
@@ -69,11 +48,11 @@ export default function AddFinancialProfilePage() {
 
       // Calculate totals
       const totalAssets = formData.assets.reduce(
-        (sum, asset) => sum + parseNumericValue(asset.currentValue || "0"),
+        (sum: number, asset: any) => sum + parseNumericValue(asset.currentValue || "0"),
         0
       );
       const totalLiabilities = formData.liabilities.reduce(
-        (sum, liability) => sum + parseNumericValue(liability.outstandingAmount || "0"),
+        (sum: number, liability: any) => sum + parseNumericValue(liability.outstandingAmount || "0"),
         0
       );
       const netWorth = totalAssets - totalLiabilities;
