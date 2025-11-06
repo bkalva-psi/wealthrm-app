@@ -22,11 +22,15 @@ import { useTheme } from "@/components/theme-provider";
 interface HeaderProps {
   isMobileMenuOpen?: boolean;
   setIsMobileMenuOpen?: (open: boolean) => void;
+  hideProfilePicture?: boolean;
+  hideSidebar?: boolean;
 }
 
 export function Header({ 
   isMobileMenuOpen = false, 
-  setIsMobileMenuOpen = () => {} 
+  setIsMobileMenuOpen = () => {},
+  hideProfilePicture = false,
+  hideSidebar = false
 }: HeaderProps = {}) {
   const { user, logout } = useAuth();
   const { theme } = useTheme();
@@ -160,24 +164,26 @@ export function Header({
       <div className="flex items-center justify-between px-4 py-3">
         {/* Mobile Menu Button */}
         <div className="flex items-center">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px]">
-              <div className="flex items-center h-16 px-4 border-b border-border">
-                <img src={primesoftLogo} alt="ABC Bank" className="h-10 w-auto" />
-                <div className="ml-2 flex flex-col justify-center">
-                  <h1 className={getBankNameClasses()}>ABC Bank</h1>
-                  <span className={getAppNameClasses()}>Wealth Management System</span>
+          {!hideSidebar && (
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-[280px] sm:w-[320px]">
+                <div className="flex items-center h-16 px-4 border-b border-border">
+                  <img src={primesoftLogo} alt="ABC Bank" className="h-10 w-auto" />
+                  <div className="ml-2 flex flex-col justify-center">
+                    <h1 className={getBankNameClasses()}>ABC Bank</h1>
+                    <span className={getAppNameClasses()}>Wealth Management System</span>
+                  </div>
                 </div>
-              </div>
-              <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
-            </SheetContent>
-          </Sheet>
+                <Sidebar mobile={true} onNavigate={() => setIsMobileMenuOpen(false)} />
+              </SheetContent>
+            </Sheet>
+          )}
           
           {/* ABC Bank Logo (visible on mobile) */}
           <div className="flex items-center md:hidden ml-2">
@@ -303,30 +309,37 @@ export function Header({
         </div>
         
         {/* Right Navigation Items */}
-        <div className="flex items-center pr-4 ml-8">
-          {/* Profile Dropdown */}
-          <div className="relative">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center focus:outline-none">
-                  <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
-                  <img 
-                    className="h-10 w-10 rounded-full border-2 border-primary shadow-sm" 
-                    src={sravanAvatar} 
-                    alt={`${user?.fullName} profile`} 
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.hash = "/profile"}>Profile</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+        {!hideProfilePicture && (
+          <div className="flex items-center pr-4 ml-8">
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center focus:outline-none">
+                    <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
+                    <img 
+                      className="h-10 w-10 rounded-full border-2 border-primary shadow-sm" 
+                      src={sravanAvatar} 
+                      alt={`${user?.fullName} profile`} 
+                    />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => window.location.hash = "/profile"}>Profile</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-        </div>
+        )}
+        {hideProfilePicture && (
+          <div className="flex items-center pr-4 ml-8">
+            <span className="text-sm font-medium text-slate-700">{user?.role || 'Question Manager'}</span>
+          </div>
+        )}
       </div>
     </header>
   );

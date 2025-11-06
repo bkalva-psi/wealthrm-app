@@ -58,6 +58,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const res = await apiRequest("POST", "/api/auth/login", { username, password });
       const data = await res.json();
       setUser(data.user);
+      
+      // Redirect based on user role after successful login
+      if (data.user && (data.user.role === 'Question Manager' || data.user.role === 'question_manager')) {
+        window.location.hash = '/qm-portal';
+      } else {
+        window.location.hash = '/';
+      }
     } catch (error) {
       console.error("Login error:", error);
       setAuthError("Invalid username or password");

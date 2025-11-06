@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FinancialProfileForm } from "@/components/forms/financial-profile-form";
 import { RiskProfilingForm } from "@/components/forms/risk-profiling-form";
 import { ArrowLeft, PieChart, Shield, GraduationCap } from "lucide-react";
+import { ArrowLeft, PieChart, Shield, GraduationCap, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -201,7 +202,7 @@ export default function AddFinancialProfilePage() {
               Client Profiling
             </h1>
             <p className="text-muted-foreground mt-2">
-              Complete the client's profiling. Start with Financial Profiling; Risk and Knowledge Profiling are coming soon.
+              Complete the client's profiling. Start with Financial Profiling, then proceed to Risk and Knowledge Profiling.
             </p>
           </div>
         </div>
@@ -301,10 +302,31 @@ export default function AddFinancialProfilePage() {
       {activeTab === 'knowledge' && (
         <div className="min-h-[300px] flex items-center justify-center p-6">
           <Card className="max-w-xl w-full">
-            <CardContent className="p-6 text-center">
-              <GraduationCap className="h-10 w-10 text-primary mx-auto mb-3" />
-              <h2 className="text-xl font-semibold mb-1">Knowledge Profiling</h2>
-              <p className="text-sm text-muted-foreground">This section is under progress.</p>
+            <CardContent className="p-6 text-center space-y-4">
+              <GraduationCap className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold mb-2">Knowledge Profiling Assessment</h2>
+              <p className="text-sm text-muted-foreground mb-6">
+                Assess the client's financial knowledge through a comprehensive questionnaire. 
+                This will help determine their understanding of investment concepts, risk management, 
+                and financial planning.
+              </p>
+              {clientId ? (
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto"
+                  onClick={() => {
+                    window.location.hash = `/knowledge-profiling?clientId=${clientId}`;
+                  }}
+                >
+                  <PlayCircle className="h-5 w-5 mr-2" />
+                  Start Questionnaire
+                </Button>
+              ) : (
+                <Button size="lg" disabled>
+                  <PlayCircle className="h-5 w-5 mr-2" />
+                  Start Questionnaire
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>

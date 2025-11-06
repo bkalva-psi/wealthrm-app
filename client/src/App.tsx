@@ -42,6 +42,8 @@ import AddClientPage from "@/pages/add-client";
 import AddFinancialProfilePage from "@/pages/add-financial-profile";
 import Tasks from "@/pages/tasks";
 import Calendar from "@/pages/calendar";
+import QMPortal from "@/pages/qm-portal";
+import KnowledgeProfiling from "@/pages/knowledge-profiling";
 import { Loader2 } from "lucide-react";
 
 // Custom router implementation using hash-based routing
@@ -275,6 +277,10 @@ function AuthenticatedApp() {
         return <Analytics />;
       case currentRoute === '/products':
         return <Products />;
+      case currentRoute === '/qm-portal':
+        return <QMPortal />;
+      case /^\/knowledge-profiling(\?.*)?$/.test(currentRoute):
+        return <KnowledgeProfiling />;
       case currentRoute === '/settings':
         return <Settings />;
       case currentRoute === '/profile':
@@ -284,13 +290,18 @@ function AuthenticatedApp() {
     }
   };
   
+  // Check if we're on QM portal route - hide sidebar and profile picture
+  const isQMPortal = currentRoute === '/qm-portal';
+  
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
+      {!isQMPortal && <Sidebar />}
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header 
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
+          hideProfilePicture={isQMPortal}
+          hideSidebar={isQMPortal}
         />
         
         {/* Offline indicator */}
@@ -304,9 +315,11 @@ function AuthenticatedApp() {
           {renderComponent()}
         </main>
         
-        <BottomNavigation 
-          onMoreClick={() => setIsMobileMenuOpen(true)}
-        />
+        {!isQMPortal && (
+          <BottomNavigation 
+            onMoreClick={() => setIsMobileMenuOpen(true)}
+          />
+        )}
       </div>
     </div>
   );
@@ -333,9 +346,14 @@ function App() {
     return null;
   }
 
-  // If authenticated and on login page, redirect to dashboard
+  // If authenticated and on login page, redirect based on role
   if (user && currentRoute === '/login') {
-    window.location.hash = '/';
+    // Redirect QM users to QM portal, others to dashboard
+    if (user.role === 'Question Manager' || user.role === 'question_manager') {
+      window.location.hash = '/qm-portal';
+    } else {
+      window.location.hash = '/';
+    }
     return null;
   }
 
