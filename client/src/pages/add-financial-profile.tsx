@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FinancialProfileForm } from "@/components/forms/financial-profile-form";
 import { RiskProfilingForm } from "@/components/forms/risk-profiling-form";
+import { ArrowLeft, PieChart, Shield, GraduationCap } from "lucide-react";
 import { ArrowLeft, PieChart, Shield, GraduationCap, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
