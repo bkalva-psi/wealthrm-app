@@ -989,3 +989,119 @@ export type InsertPerformanceIncentive = z.infer<typeof insertPerformanceIncenti
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
+
+// Knowledge Profiling (KP) System Tables
+// KP Questions - Stores questions for knowledge profiling
+export const kpQuestions = pgTable("kp_questions", {
+  id: serial("id").primaryKey(),
+  questionText: text("question_text").notNull(),
+  questionCategory: text("question_category").notNull(), // e.g., 'investment_basics', 'risk_management', 'tax_planning', 'portfolio_management'
+  questionType: text("question_type").notNull().default("multiple_choice"), // 'multiple_choice', 'single_select', 'rating'
+  questionLevel: text("question_level").default("basic"), // 'basic' (Q1-Q5), 'intermediate' or 'advanced' (Q6-Q15)
+  displayOrder: integer("display_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  isRequired: boolean("is_required").notNull().default(true),
+  helpText: text("help_text"),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpQuestionSchema = createInsertSchema(kpQuestions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// KP Question Options - Stores answer options for each question
+export const kpQuestionOptions = pgTable("kp_question_options", {
+  id: serial("id").primaryKey(),
+  questionId: integer("question_id").notNull().references(() => kpQuestions.id, { onDelete: "cascade" }),
+  optionText: text("option_text").notNull(),
+  optionValue: text("option_value").notNull(),
+  weightage: integer("weightage").notNull().default(0), // 0-100
+  displayOrder: integer("display_order").notNull().default(0),
+  isCorrect: boolean("is_correct").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpQuestionOptionSchema = createInsertSchema(kpQuestionOptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// KP User Responses - Stores user responses to KP questions
+export const kpUserResponses = pgTable("kp_user_responses", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").notNull().references(() => clients.id, { onDelete: "cascade" }),
+  questionId: integer("question_id").notNull().references(() => kpQuestions.id, { onDelete: "cascade" }),
+  selectedOptionId: integer("selected_option_id").references(() => kpQuestionOptions.id, { onDelete: "set null" }),
+  responseText: text("response_text"),
+  score: integer("score").default(0),
+  submittedBy: integer("submitted_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpUserResponseSchema = createInsertSchema(kpUserResponses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// KP Assessment Results - Stores overall assessment results per client
+export const kpAssessmentResults = pgTable("kp_assessment_results", {
+  id: serial("id").primaryKey(),
+  clientId: integer("client_id").notNull().unique().references(() => clients.id, { onDelete: "cascade" }),
+  totalScore: integer("total_score").notNull().default(0),
+  maxPossibleScore: integer("max_possible_score").notNull().default(0),
+  percentageScore: real("percentage_score").notNull().default(0),
+  knowledgeLevel: text("knowledge_level"), // 'beginner', 'intermediate', 'advanced', 'expert'
+  assessmentDate: timestamp("assessment_date").notNull().defaultNow(),
+  completedAt: timestamp("completed_at"),
+  isComplete: boolean("is_complete").notNull().default(false),
+  submittedBy: integer("submitted_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpAssessmentResultSchema = createInsertSchema(kpAssessmentResults).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// KP Scoring Configuration - Stores scoring algorithm configuration
+export const kpScoringConfig = pgTable("kp_scoring_config", {
+  id: serial("id").primaryKey(),
+  configKey: text("config_key").notNull().unique(),
+  configValue: jsonb("config_value").notNull(),
+  description: text("description"),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertKpScoringConfigSchema = createInsertSchema(kpScoringConfig).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Export types
+export type KpQuestion = typeof kpQuestions.$inferSelect;
+export type InsertKpQuestion = z.infer<typeof insertKpQuestionSchema>;
+
+export type KpQuestionOption = typeof kpQuestionOptions.$inferSelect;
+export type InsertKpQuestionOption = z.infer<typeof insertKpQuestionOptionSchema>;
+
+export type KpUserResponse = typeof kpUserResponses.$inferSelect;
+export type InsertKpUserResponse = z.infer<typeof insertKpUserResponseSchema>;
+
+export type KpAssessmentResult = typeof kpAssessmentResults.$inferSelect;
+export type InsertKpAssessmentResult = z.infer<typeof insertKpAssessmentResultSchema>;
+
+export type KpScoringConfig = typeof kpScoringConfig.$inferSelect;
+export type InsertKpScoringConfig = z.infer<typeof insertKpScoringConfigSchema>;

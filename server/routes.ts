@@ -108,32 +108,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Username and password are required' });
       }
       
-      // Validate credentials for Sravan
-      if (username === 'sravan.suggala@intellectdesign.com' && password === 'Welcome@01') {
-        // Set session
-        (req.session as any).userId = 1;
-        (req.session as any).userRole = 'relationship_manager';
-        
-        // Return user data
-        const user = {
-          id: 1,
-          username: 'sravan.suggala@intellectdesign.com',
-          fullName: 'Sravan Suggala',
-          role: 'Relationship Manager',
-          email: 'sravan.suggala@intellectdesign.com',
-          jobTitle: 'Senior Relationship Manager',
-          avatarUrl: null,
-          phone: '+91 9876543210'
-        };
-        
-        console.log('Login successful for user:', username);
-        res.json({ user, message: 'Login successful' });
-      } else {
-        console.log('Invalid login attempt for user:', username);
-        res.status(401).json({ 
+      console.log('Login attempt for username:', username);
+      
+      // Query user from database
+      const { data: users, error } = await supabaseServer
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .limit(1);
+      
+      if (error) {
+        console.error('Database query error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        return res.status(500).json({ message: 'An error occurred while processing your request. Please try again.' });
+      }
+      
+      console.log('Query result:', { userCount: users?.length, foundUsers: users });
+      
+      if (!users || users.length === 0) {
+        console.log('Invalid login attempt - user not found:', username);
+        return res.status(401).json({ 
           message: 'Invalid email address or password. Please check your credentials and try again.' 
         });
       }
+      
+      const dbUser = users[0];
+      console.log('User found:', { id: dbUser.id, username: dbUser.username, role: dbUser.role });
+      console.log('Password comparison:', { 
+        dbPassword: dbUser.password, 
+        providedPassword: password, 
+        match: dbUser.password === password 
+      });
+      
+      // Verify password (plain text comparison for now - in production, use bcrypt)
+      if (dbUser.password !== password) {
+        console.log('Invalid password for user:', username);
+        return res.status(401).json({ 
+          message: 'Invalid email address or password. Please check your credentials and try again.' 
+        });
+      }
+      
+      // Set session
+      (req.session as any).userId = dbUser.id;
+      (req.session as any).userRole = dbUser.role;
+      
+      // Map role to display format
+      const roleDisplayMap: Record<string, string> = {
+        'relationship_manager': 'Relationship Manager',
+        'question_manager': 'Question Manager',
+        'admin': 'Administrator',
+        'supervisor': 'Supervisor'
+      };
+      
+      // Return user data
+      const user = {
+        id: dbUser.id,
+        username: dbUser.username,
+        fullName: dbUser.full_name,
+        role: roleDisplayMap[dbUser.role] || dbUser.role,
+        email: dbUser.email || dbUser.username,
+        jobTitle: dbUser.job_title || null,
+        avatarUrl: dbUser.avatar_url || null,
+        phone: dbUser.phone || null
+      };
+      
+      console.log('Login successful for user:', username, 'Role:', dbUser.role);
+      res.json({ user, message: 'Login successful' });
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ message: 'An error occurred while processing your request. Please try again.' });
@@ -151,21 +191,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get('/api/auth/me', (req: Request, res: Response) => {
-    if ((req.session as any).userId) {
-      const user = {
-        id: 1,
-        username: 'sravan.suggala@intellectdesign.com',
-        fullName: 'Sravan Suggala',
-        role: 'Relationship Manager',
-        email: 'sravan.suggala@intellectdesign.com',
-        jobTitle: 'Senior Relationship Manager',
-        avatarUrl: null,
-        phone: '+91 9876543210'
+  app.get('/api/auth/me', async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      if (!userId) {
+        return res.status(401).json({ message: 'Not authenticated' });
+      }
+      
+      // Fetch user from database
+      const { data: users, error } = await supabaseServer
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .limit(1);
+      
+      if (error || !users || users.length === 0) {
+        return res.status(401).json({ message: 'User not found' });
+      }
+      
+      const dbUser = users[0];
+      
+      // Map role to display format
+      const roleDisplayMap: Record<string, string> = {
+        'relationship_manager': 'Relationship Manager',
+        'question_manager': 'Question Manager',
+        'admin': 'Administrator',
+        'supervisor': 'Supervisor'
       };
+      
+      const user = {
+        id: dbUser.id,
+        username: dbUser.username,
+        fullName: dbUser.full_name,
+        role: roleDisplayMap[dbUser.role] || dbUser.role,
+        email: dbUser.email || dbUser.username,
+        jobTitle: dbUser.job_title || null,
+        avatarUrl: dbUser.avatar_url || null,
+        phone: dbUser.phone || null
+      };
+      
       res.json({ user });
-    } else {
-      res.status(401).json({ message: 'Not authenticated' });
+    } catch (error) {
+      console.error('Auth check error:', error);
+      res.status(500).json({ message: 'An error occurred while checking authentication' });
     }
   });
 
@@ -861,8 +929,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const assignedTo = (req.session as any).userId;
-      const prospects = await storage.getProspects(assignedTo);
-      res.json(prospects);
+      
+      // Use Supabase to fetch prospects
+      let query = supabaseServer
+        .from('prospects')
+        .select('*');
+      
+      if (assignedTo) {
+        query = query.eq('assigned_to', assignedTo);
+      }
+      
+      const { data: prospects, error } = await query.order('potential_aum_value', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Transform to match expected format
+      const formattedProspects = (prospects || []).map((p: any) => ({
+        id: p.id,
+        fullName: p.full_name || `${p.first_name || ''} ${p.last_name || ''}`.trim(),
+        initials: p.initials || (p.first_name?.[0] || '') + (p.last_name?.[0] || ''),
+        potentialAum: p.potential_aum || `₹${((p.potential_aum_value || 0) / 10000000).toFixed(2)} Cr`,
+        potentialAumValue: p.potential_aum_value || 0,
+        email: p.email || '',
+        phone: p.phone || '',
+        stage: p.stage || 'new',
+        lastContactDate: p.last_contact_date || '',
+        probabilityScore: p.probability_score || 0,
+        productsOfInterest: p.products_of_interest || '',
+        notes: p.notes || '',
+        assignedTo: p.assigned_to
+      }));
+      
+      res.json(formattedProspects);
     } catch (error) {
       console.error("Get prospects error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -1049,47 +1147,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all products from products table
   app.get('/api/products', async (req: Request, res: Response) => {
     try {
-      const allProducts = await db
-        .select()
-        .from(products)
-        .where(eq(products.isActive, true))
-        .orderBy(products.totalSubscriptions);
+      // Use Supabase to fetch products
+      const { data: allProducts, error } = await supabaseServer
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('total_subscriptions', { ascending: true });
 
-      // Format products for frontend
-      const formattedProducts = allProducts.map((product: any) => ({
-        id: product.id,
-        name: product.name,
-        productCode: product.productCode,
-        category: product.category.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
-        subCategory: product.subCategory,
-        description: product.description,
-        keyFeatures: product.keyFeatures || [],
-        targetAudience: product.targetAudience,
-        minInvestment: `₹${(product.minInvestment / 100000).toFixed(1)}L`,
-        maxInvestment: product.maxInvestment ? `₹${(product.maxInvestment / 100000).toFixed(1)}L` : 'No limit',
-        riskLevel: product.riskLevel,
-        expectedReturns: product.expectedReturns,
-        lockInPeriod: product.lockInPeriod,
-        tenure: product.tenure,
-        exitLoad: product.exitLoad,
-        managementFee: product.managementFee,
-        regulatoryApprovals: product.regulatoryApprovals || [],
-        taxImplications: product.taxImplications,
-        factsheetUrl: product.factsheetUrl,
-        kimsUrl: product.kimsUrl,
-        applicationFormUrl: product.applicationFormUrl,
-        isOpenForSubscription: product.isOpenForSubscription,
-        launchDate: product.launchDate,
-        maturityDate: product.maturityDate,
-        totalSubscriptions: product.totalSubscriptions,
-        totalInvestors: product.totalInvestors,
-        featured: (product.totalSubscriptions || 0) > 100000000, // Featured if > 10 crores
-        tags: [
-          product.category.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
-          product.riskLevel + ' Risk',
-          ...(product.keyFeatures?.slice(0, 2) || [])
-        ]
-      }));
+      if (error) throw error;
+
+      // Format products for frontend (map snake_case to camelCase)
+      const formattedProducts = (allProducts || []).map((product: any) => {
+        // Handle both camelCase (from Drizzle) and snake_case (from Supabase)
+        const p = product.product_code !== undefined ? product : product; // Supabase returns snake_case
+        const category = (p.category || product.category || '').replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+        const minInvestment = p.min_investment || product.minInvestment || 0;
+        const maxInvestment = p.max_investment || product.maxInvestment;
+        const totalSubscriptions = p.total_subscriptions || product.totalSubscriptions || 0;
+        const riskLevel = p.risk_level || product.riskLevel || '';
+        const keyFeatures = p.key_features || product.keyFeatures || [];
+        
+        return {
+          id: p.id || product.id,
+          name: p.name || product.name,
+          productCode: p.product_code || product.productCode,
+          category,
+          subCategory: p.sub_category || product.subCategory,
+          description: p.description || product.description,
+          keyFeatures,
+          targetAudience: p.target_audience || product.targetAudience,
+          minInvestment: `₹${(minInvestment / 100000).toFixed(1)}L`,
+          maxInvestment: maxInvestment ? `₹${(maxInvestment / 100000).toFixed(1)}L` : 'No limit',
+          riskLevel,
+          expectedReturns: p.expected_returns || product.expectedReturns,
+          lockInPeriod: p.lock_in_period || product.lockInPeriod,
+          tenure: p.tenure || product.tenure,
+          exitLoad: p.exit_load || product.exitLoad,
+          managementFee: p.management_fee || product.managementFee,
+          regulatoryApprovals: p.regulatory_approvals || product.regulatoryApprovals || [],
+          taxImplications: p.tax_implications || product.taxImplications,
+          factsheetUrl: p.factsheet_url || product.factsheetUrl,
+          kimsUrl: p.kims_url || product.kimsUrl,
+          applicationFormUrl: p.application_form_url || product.applicationFormUrl,
+          isOpenForSubscription: p.is_open_for_subscription ?? product.isOpenForSubscription ?? true,
+          launchDate: p.launch_date || product.launchDate,
+          maturityDate: p.maturity_date || product.maturityDate,
+          totalSubscriptions,
+          totalInvestors: p.total_investors || product.totalInvestors || 0,
+          featured: totalSubscriptions > 100000000, // Featured if > 10 crores
+          tags: [
+            category,
+            riskLevel + ' Risk',
+            ...(keyFeatures.slice(0, 2) || [])
+          ]
+        };
+      });
 
       res.json(formattedProducts);
     } catch (error) {
@@ -3104,6 +3216,660 @@ startxref
     } catch (error) {
       console.error('Error generating PDF:', error);
       res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  });
+
+  // ============================================
+  // Knowledge Profiling (KP) / QM Portal Routes
+  // ============================================
+  
+  // QM Portal - Get all KP questions
+  app.get("/api/kp/questions", async (req, res) => {
+    try {
+      const { data: questions, error } = await supabaseServer
+        .from("kp_questions")
+        .select("*")
+        .order("display_order", { ascending: true });
+      
+      if (error) throw error;
+      res.json(questions || []);
+    } catch (error) {
+      console.error("Get KP questions error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Get active KP questions (for client-facing questionnaire)
+  // Note: This MUST come before /api/kp/questions/:id to avoid route conflicts
+  app.get("/api/kp/questions/active", async (req, res) => {
+    try {
+      const { data: questions, error } = await supabaseServer
+        .from("kp_questions")
+        .select("*")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+      
+      if (error) throw error;
+      res.json(questions || []);
+    } catch (error) {
+      console.error("Get active KP questions error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Get question with options
+  // Note: This endpoint is public (no auth required) for QM portal to fetch question details
+  app.get("/api/kp/questions/:id", async (req, res) => {
+    try {
+      const questionId = parseInt(req.params.id);
+      console.log(`[GET /api/kp/questions/${questionId}] Request received from ${req.ip}`);
+      
+      if (isNaN(questionId)) {
+        console.log(`[GET /api/kp/questions/${questionId}] Invalid question ID`);
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      // Fetch question using service role (bypasses RLS)
+      const questionResult = await supabaseServer
+        .from("kp_questions")
+        .select("*")
+        .eq("id", questionId)
+        .single();
+
+      if (questionResult.error) {
+        console.error(`[GET /api/kp/questions/${questionId}] Question fetch error:`, questionResult.error);
+        // PGRST116 = no rows returned
+        if (questionResult.error.code === 'PGRST116' || questionResult.error.message?.includes('No rows')) {
+          return res.status(404).json({ message: "Question not found" });
+        }
+        // Handle other Supabase errors
+        if (questionResult.error.code === '42501') {
+          console.error(`[GET /api/kp/questions/${questionId}] Permission denied - this should not happen with service role`);
+          return res.status(500).json({ message: "Database permission error. Please check RLS policies." });
+        }
+        throw questionResult.error;
+      }
+
+      if (!questionResult.data) {
+        console.log(`[GET /api/kp/questions/${questionId}] Question not found`);
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      // Fetch options
+      const optionsResult = await supabaseServer
+        .from("kp_question_options")
+        .select("*")
+        .eq("question_id", questionId)
+        .order("display_order", { ascending: true });
+
+      if (optionsResult.error) {
+        console.error(`[GET /api/kp/questions/${questionId}] Options fetch error:`, optionsResult.error);
+        throw optionsResult.error;
+      }
+
+      console.log(`[GET /api/kp/questions/${questionId}] Success - returning question with ${optionsResult.data?.length || 0} options`);
+
+      res.json({
+        ...questionResult.data,
+        options: optionsResult.data || []
+      });
+    } catch (error: any) {
+      console.error(`[GET /api/kp/questions/${req.params.id}] Error:`, error);
+      const statusCode = error.status || error.statusCode || 500;
+      res.status(statusCode).json({ 
+        message: "Internal server error", 
+        error: error.message,
+        code: error.code 
+      });
+    }
+  });
+
+  // QM Portal - Create new question
+  app.post("/api/kp/questions", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+
+      // Check if user is QM or admin
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { question_text, question_category, question_type, question_level, display_order, is_active, is_required, help_text, options } = req.body;
+
+      // Insert question
+      const { data: question, error: questionError } = await supabaseServer
+        .from("kp_questions")
+        .insert({
+          question_text,
+          question_category,
+          question_type: question_type || "multiple_choice",
+          question_level: question_level || "basic",
+          display_order: display_order || 0,
+          is_active: is_active !== undefined ? is_active : true,
+          is_required: is_required !== undefined ? is_required : true,
+          help_text,
+          created_by: userId
+        })
+        .select()
+        .single();
+
+      if (questionError) throw questionError;
+
+      // Insert options if provided
+      if (options && Array.isArray(options) && options.length > 0) {
+        // Filter out empty options
+        const validOptions = options.filter((opt: any) => opt.option_text && opt.option_text.trim() !== "");
+        
+        if (validOptions.length > 0) {
+          const optionsToInsert = validOptions.map((opt: any, index: number) => ({
+            question_id: question.id,
+            option_text: opt.option_text.trim(),
+            option_value: opt.option_value && opt.option_value.trim() !== "" ? opt.option_value.trim() : opt.option_text.trim(),
+            weightage: opt.weightage !== undefined ? opt.weightage : 0,
+            display_order: opt.display_order !== undefined ? opt.display_order : index,
+            is_correct: opt.is_correct === true
+          }));
+
+          console.log('Inserting options for question:', question.id, 'Options count:', optionsToInsert.length);
+
+          const { data: insertedOptions, error: optionsError } = await supabaseServer
+            .from("kp_question_options")
+            .insert(optionsToInsert)
+            .select();
+
+          if (optionsError) {
+            console.error('Error inserting options:', optionsError);
+            throw optionsError;
+          }
+
+          console.log('Successfully inserted options:', insertedOptions?.length);
+        } else {
+          console.log('No valid options to insert (all options were empty)');
+        }
+      }
+
+      res.status(201).json(question);
+    } catch (error) {
+      console.error("Create KP question error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Update question
+  app.put("/api/kp/questions/:id", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+      const questionId = parseInt(req.params.id);
+
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { question_text, question_category, question_type, question_level, display_order, is_active, is_required, help_text } = req.body;
+
+      const { data: question, error } = await supabaseServer
+        .from("kp_questions")
+        .update({
+          question_text,
+          question_category,
+          question_type,
+          question_level,
+          display_order,
+          is_active,
+          is_required,
+          help_text
+        })
+        .eq("id", questionId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      res.json(question);
+    } catch (error) {
+      console.error("Update KP question error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Delete question
+  app.delete("/api/kp/questions/:id", authMiddleware, async (req, res) => {
+    try {
+      const questionId = parseInt(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+
+      // Check if user is QM or admin
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      // Check if question exists and verify ownership (unless admin)
+      const { data: question, error: questionError } = await supabaseServer
+        .from("kp_questions")
+        .select("id, created_by")
+        .eq("id", questionId)
+        .single();
+
+      if (questionError || !question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      // QM users can only delete their own questions, admins can delete any
+      if (userRole !== "admin" && question.created_by !== userId) {
+        return res.status(403).json({ message: "Unauthorized: You can only delete questions you created" });
+      }
+
+      // Delete question (options will be cascade deleted due to foreign key constraint)
+      const { error: deleteError } = await supabaseServer
+        .from("kp_questions")
+        .delete()
+        .eq("id", questionId);
+
+      if (deleteError) throw deleteError;
+
+      console.log(`Question ${questionId} deleted by user ${userId}`);
+      res.json({ message: "Question deleted successfully" });
+    } catch (error) {
+      console.error("Delete KP question error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Get options for a question
+  app.get("/api/kp/questions/:id/options", async (req, res) => {
+    try {
+      const questionId = parseInt(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      const { data: options, error } = await supabaseServer
+        .from("kp_question_options")
+        .select("*")
+        .eq("question_id", questionId)
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      res.json(options || []);
+    } catch (error) {
+      console.error("Get KP question options error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Add option to question
+  app.post("/api/kp/questions/:id/options", authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req.session as any).userRole;
+      const questionId = parseInt(req.params.id);
+
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { option_text, option_value, weightage, display_order, is_correct } = req.body;
+
+      const { data: option, error } = await supabaseServer
+        .from("kp_question_options")
+        .insert({
+          question_id: questionId,
+          option_text,
+          option_value: option_value || option_text,
+          weightage: weightage || 0,
+          display_order: display_order || 0,
+          is_correct: is_correct || false
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      res.status(201).json(option);
+    } catch (error) {
+      console.error("Create KP question option error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Update option
+  app.put("/api/kp/options/:id", authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req.session as any).userRole;
+      const optionId = parseInt(req.params.id);
+
+      if (isNaN(optionId)) {
+        return res.status(400).json({ message: "Invalid option ID" });
+      }
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { option_text, option_value, weightage, display_order, is_correct } = req.body;
+
+      const { data: option, error } = await supabaseServer
+        .from("kp_question_options")
+        .update({
+          option_text,
+          option_value,
+          weightage,
+          display_order,
+          is_correct
+        })
+        .eq("id", optionId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      res.json(option);
+    } catch (error) {
+      console.error("Update KP question option error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Delete option
+  app.delete("/api/kp/options/:id", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+      const optionId = parseInt(req.params.id);
+
+      if (isNaN(optionId)) {
+        return res.status(400).json({ message: "Invalid option ID" });
+      }
+
+      // Check if user is QM or admin
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      // Get the option and its parent question to verify ownership
+      const { data: option, error: optionError } = await supabaseServer
+        .from("kp_question_options")
+        .select("id, question_id, kp_questions!inner(created_by)")
+        .eq("id", optionId)
+        .single();
+
+      if (optionError || !option) {
+        return res.status(404).json({ message: "Option not found" });
+      }
+
+      // QM users can only delete options from questions they created, admins can delete any
+      const question = (option as any).kp_questions;
+      if (userRole !== "admin" && question.created_by !== userId) {
+        return res.status(403).json({ message: "Unauthorized: You can only delete options from questions you created" });
+      }
+
+      const { error: deleteError } = await supabaseServer
+        .from("kp_question_options")
+        .delete()
+        .eq("id", optionId);
+
+      if (deleteError) throw deleteError;
+
+      console.log(`Option ${optionId} deleted by user ${userId}`);
+      res.json({ message: "Option deleted successfully" });
+    } catch (error) {
+      console.error("Delete KP question option error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Client-facing - Get active questions with options for questionnaire
+  app.get("/api/kp/questionnaire", async (req, res) => {
+    try {
+      const { data: questions, error: questionsError } = await supabaseServer
+        .from("kp_questions")
+        .select("*")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+
+      if (questionsError) throw questionsError;
+
+      // Get options for each question
+      const questionsWithOptions = await Promise.all(
+        (questions || []).map(async (question: any) => {
+          const { data: options, error: optionsError } = await supabaseServer
+            .from("kp_question_options")
+            .select("*")
+            .eq("question_id", question.id)
+            .order("display_order", { ascending: true });
+
+          if (optionsError) throw optionsError;
+
+          return {
+            ...question,
+            options: options || []
+          };
+        })
+      );
+
+      // Filter out questions that don't have any options (can't be answered)
+      const validQuestions = questionsWithOptions.filter((q: any) => q.options && q.options.length > 0);
+
+      console.log(`Returning ${validQuestions.length} questions with options out of ${questionsWithOptions.length} total questions`);
+      res.json(validQuestions);
+    } catch (error) {
+      console.error("Get KP questionnaire error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Client-facing - Submit KP responses
+  app.post("/api/kp/responses", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const { client_id, responses } = req.body;
+
+      if (!client_id || !Array.isArray(responses)) {
+        return res.status(400).json({ message: "Invalid request: client_id and responses array required" });
+      }
+
+      // Verify client belongs to user
+      const { data: client, error: clientError } = await supabaseServer
+        .from("clients")
+        .select("id, assigned_to")
+        .eq("id", client_id)
+        .single();
+
+      if (clientError || !client) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      if (client.assigned_to !== userId && (req.session as any).userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: Client not assigned to you" });
+      }
+
+      // Insert/update responses
+      const responsePromises = responses.map(async (response: any) => {
+        const { question_id, selected_option_id, response_text } = response;
+
+        // Get option score (0, 1, or 3 points) for scoring
+        // The weightage field now stores the option_score (0, 1, or 3)
+        let score = 0;
+        if (selected_option_id) {
+          const { data: option } = await supabaseServer
+            .from("kp_question_options")
+            .select("weightage")
+            .eq("id", selected_option_id)
+            .single();
+          
+          // Weightage field stores option_score (0, 1, or 3)
+          score = option?.weightage || 0;
+        }
+        // If no option selected, score remains 0 (handles "Not Sure" or unanswered)
+
+        // Upsert response
+        const { data: existingResponse } = await supabaseServer
+          .from("kp_user_responses")
+          .select("id")
+          .eq("client_id", client_id)
+          .eq("question_id", question_id)
+          .single();
+
+        if (existingResponse) {
+          // Update existing response
+          const { error } = await supabaseServer
+            .from("kp_user_responses")
+            .update({
+              selected_option_id,
+              response_text,
+              score,
+              submitted_by: userId
+            })
+            .eq("id", existingResponse.id);
+          
+          if (error) throw error;
+        } else {
+          // Insert new response
+          const { error } = await supabaseServer
+            .from("kp_user_responses")
+            .insert({
+              client_id,
+              question_id,
+              selected_option_id,
+              response_text,
+              score,
+              submitted_by: userId
+            });
+          
+          if (error) throw error;
+        }
+      });
+
+      await Promise.all(responsePromises);
+
+      // Calculate and update assessment results using new scoring algorithm
+      const { data: allResponses } = await supabaseServer
+        .from("kp_user_responses")
+        .select("score")
+        .eq("client_id", client_id);
+
+      // Sum all option scores (each question contributes 0, 1, or 3 points)
+      const totalScore = allResponses?.reduce((sum, r) => sum + (r.score || 0), 0) || 0;
+
+      // Maximum possible score: 15 questions × 3 points = 45
+      // Count active questions to determine max score
+      const { data: allQuestions } = await supabaseServer
+        .from("kp_questions")
+        .select("id")
+        .eq("is_active", true);
+
+      const activeQuestionCount = allQuestions?.length || 0;
+      const maxPossibleScore = activeQuestionCount * 3; // Each question max = 3 points
+
+      const percentageScore = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0;
+
+      // Determine knowledge level based on new algorithm:
+      // 0-15 → Basic
+      // 16-30 → Intermediate  
+      // 31-45 → Advanced
+      let knowledgeLevel = "Basic";
+      if (totalScore >= 31) {
+        knowledgeLevel = "Advanced";
+      } else if (totalScore >= 16) {
+        knowledgeLevel = "Intermediate";
+      } else {
+        knowledgeLevel = "Basic";
+      }
+
+      // Upsert assessment result
+      const { data: existingResult } = await supabaseServer
+        .from("kp_assessment_results")
+        .select("id")
+        .eq("client_id", client_id)
+        .single();
+
+      const assessmentData = {
+        client_id,
+        total_score: totalScore,
+        max_possible_score: maxPossibleScore,
+        percentage_score: percentageScore,
+        knowledge_level: knowledgeLevel,
+        is_complete: true,
+        completed_at: new Date().toISOString(),
+        submitted_by: userId
+      };
+
+      if (existingResult) {
+        const { error } = await supabaseServer
+          .from("kp_assessment_results")
+          .update(assessmentData)
+          .eq("id", existingResult.id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabaseServer
+          .from("kp_assessment_results")
+          .insert(assessmentData);
+        
+        if (error) throw error;
+      }
+
+      res.json({ 
+        message: "Responses saved successfully",
+        totalScore,
+        maxPossibleScore,
+        percentageScore,
+        knowledgeLevel
+      });
+    } catch (error) {
+      console.error("Submit KP responses error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get KP assessment result for a client
+  app.get("/api/kp/results/:clientId", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const clientId = parseInt(req.params.clientId);
+
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+
+      // Verify client belongs to user
+      const { data: client, error: clientError } = await supabaseServer
+        .from("clients")
+        .select("id, assigned_to")
+        .eq("id", clientId)
+        .single();
+
+      if (clientError || !client) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      if (client.assigned_to !== userId && (req.session as any).userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: Client not assigned to you" });
+      }
+
+      const { data: result, error } = await supabaseServer
+        .from("kp_assessment_results")
+        .select("*")
+        .eq("client_id", clientId)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error; // PGRST116 = no rows returned
+
+      res.json(result || null);
+    } catch (error) {
+      console.error("Get KP assessment result error:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
