@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Save, X, HelpCircle, GraduationCap, Shield } from "lucide-react";
+import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Save, X, HelpCircle, GraduationCap, Shield, LogOut } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { RiskProfilingQuestions } from "@/components/qm/RiskProfilingQuestions";
 
@@ -60,13 +61,17 @@ const QUESTION_TYPES = [
 ];
 
 export default function QMPortal() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
   const [isOptionDialogOpen, setIsOptionDialogOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionWithOptions | null>(null);
   const [expandedQuestions, setExpandedQuestions] = useState<Set<number>>(new Set());
+  const [deleteQuestionDialogOpen, setDeleteQuestionDialogOpen] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<number | null>(null);
+  const [deleteOptionDialogOpen, setDeleteOptionDialogOpen] = useState(false);
+  const [optionToDelete, setOptionToDelete] = useState<number | null>(null);
 
   // Form state for question
   const [questionForm, setQuestionForm] = useState({
@@ -413,11 +418,24 @@ export default function QMPortal() {
   }
 
   return (
-    <div className="p-6 bg-background">
+      <div className="p-6 bg-background">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Question Manager Portal</h1>
-          <p className="text-muted-foreground mt-1">Manage Knowledge Profiling and Risk Profiling questions and scoring</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Question Manager Portal</h1>
+            <p className="text-muted-foreground mt-1">Manage Knowledge Profiling and Risk Profiling questions and scoring</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await logout();
+              window.location.hash = "/login";
+            }}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
         </div>
 
         <Tabs defaultValue="knowledge" className="w-full">
@@ -731,9 +749,8 @@ export default function QMPortal() {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              if (confirm("Are you sure you want to delete this question? This will also delete all associated options and cannot be undone.")) {
-                                deleteQuestionMutation.mutate(question.id);
-                              }
+                              setQuestionToDelete(question.id);
+                              setDeleteQuestionDialogOpen(true);
                             }}
                             disabled={deleteQuestionMutation.isPending}
                           >
@@ -849,9 +866,8 @@ export default function QMPortal() {
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => {
-                                        if (confirm("Are you sure you want to delete this option? This action cannot be undone.")) {
-                                          deleteOptionMutation.mutate(option.id);
-                                        }
+                                        setOptionToDelete(option.id);
+                                        setDeleteOptionDialogOpen(true);
                                       }}
                                       disabled={deleteOptionMutation.isPending}
                                     >
@@ -880,6 +896,58 @@ export default function QMPortal() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Delete Question Confirmation Dialog */}
+      <AlertDialog open={deleteQuestionDialogOpen} onOpenChange={setDeleteQuestionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Question</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this question? This will also delete all associated options and cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (questionToDelete !== null) {
+                  deleteQuestionMutation.mutate(questionToDelete);
+                  setQuestionToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Option Confirmation Dialog */}
+      <AlertDialog open={deleteOptionDialogOpen} onOpenChange={setDeleteOptionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Option</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this option? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (optionToDelete !== null) {
+                  deleteOptionMutation.mutate(optionToDelete);
+                  setOptionToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

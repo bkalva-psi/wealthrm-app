@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Briefcase, Home, Building, 
   CreditCard, Shield, Users, Wallet, PieChart, MessageCircle, Clock, Heart,
-  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown, ChevronDown, ChevronUp, FileText
+  FileBarChart, CheckCircle, XCircle, AlertCircle, Lightbulb, Receipt, TrendingUp, TrendingDown, ChevronDown, ChevronUp, FileText, Edit
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { clientApi } from "@/lib/api";
 import { generateAvatar, svgToDataURL } from "@/lib/avatarGenerator";
 import { getTierColor } from "@/lib/utils";
 import { ClientPageLayout } from "@/components/layout/ClientPageLayout";
+import { PersonalInfoForm } from "@/components/forms/personal-info-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ClientPersonalPage() {
   const [clientId, setClientId] = useState<number | null>(null);
@@ -23,6 +26,12 @@ export default function ClientPersonalPage() {
   const [isFinancialOpen, setIsFinancialOpen] = useState(false);
   const [isFamilyOpen, setIsFamilyOpen] = useState(false);
   const [isKycOpen, setIsKycOpen] = useState(false);
+  const [isEditPersonalDialogOpen, setIsEditPersonalDialogOpen] = useState(false);
+  const [isEditFinancialDialogOpen, setIsEditFinancialDialogOpen] = useState(false);
+  const [isEditFamilyDialogOpen, setIsEditFamilyDialogOpen] = useState(false);
+  const [isEditKycDialogOpen, setIsEditKycDialogOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   // Set page title
   useEffect(() => {
@@ -41,6 +50,30 @@ export default function ClientPersonalPage() {
   const { data: client, isLoading, error } = useQuery({
     queryKey: [`/api/clients/${clientId}`],
     enabled: !!clientId,
+  });
+
+  // Update client mutation
+  const updateClientMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/clients/${clientId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Failed to update client" }));
+        throw new Error(errorData.message || "Failed to update client");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/clients/${clientId}`] });
+      toast({ title: "Success", description: "Client information updated successfully" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
   });
 
   // Utility functions
@@ -245,7 +278,21 @@ export default function ClientPersonalPage() {
                     <User className="h-5 w-5" />
                     Personal Information
                   </CardTitle>
-                  {isPersonalOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditPersonalDialogOpen(true);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    {isPersonalOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </div>
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
@@ -412,6 +459,20 @@ export default function ClientPersonalPage() {
                         Create Financial Profile
                       </Button>
                     )}
+                    {(client.riskProfile || client.investmentHorizon) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsEditFinancialDialogOpen(true);
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit
+                      </Button>
+                    )}
                     {isFinancialOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                   </div>
                 </div>
@@ -542,7 +603,21 @@ export default function ClientPersonalPage() {
                     <Users className="h-5 w-5" />
                     Family Information
                   </CardTitle>
-                  {isFamilyOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditFamilyDialogOpen(true);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    {isFamilyOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </div>
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
@@ -670,7 +745,21 @@ export default function ClientPersonalPage() {
                     <Shield className="h-5 w-5" />
                     KYC & Compliance
                   </CardTitle>
-                  {isKycOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditKycDialogOpen(true);
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    {isKycOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </div>
                 </div>
               </CardHeader>
             </CollapsibleTrigger>
@@ -749,6 +838,256 @@ export default function ClientPersonalPage() {
           </Card>
         </Collapsible>
       </div>
+
+      {/* Edit Personal Information Dialog */}
+      <Dialog open={isEditPersonalDialogOpen} onOpenChange={setIsEditPersonalDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Personal Information</DialogTitle>
+            <DialogDescription>
+              Update the client's personal information. All fields are optional.
+            </DialogDescription>
+          </DialogHeader>
+          <PersonalInfoForm
+            initialValues={{
+              fullName: client?.fullName || "",
+              initials: client?.initials || "",
+              email: client?.email || "",
+              phone: client?.phone || "",
+              dateOfBirth: client?.dateOfBirth ? new Date(client.dateOfBirth).toISOString().split('T')[0] : "",
+              gender: client?.gender || "",
+              maritalStatus: client?.maritalStatus || "",
+              anniversaryDate: client?.anniversaryDate ? new Date(client.anniversaryDate).toISOString().split('T')[0] : "",
+              preferredContactMethod: client?.preferredContactMethod || "",
+              preferredContactTime: client?.preferredContactTime || "",
+              communicationFrequency: client?.communicationFrequency || "",
+              homeAddress: client?.homeAddress || "",
+              homeCity: client?.homeCity || "",
+              homeState: client?.homeState || "",
+              homePincode: client?.homePincode || "",
+              workAddress: client?.workAddress || "",
+              workCity: client?.workCity || "",
+              workState: client?.workState || "",
+              workPincode: client?.workPincode || "",
+              profession: client?.profession || "",
+              sectorOfEmployment: client?.sectorOfEmployment || "",
+              designation: client?.designation || "",
+              companyName: client?.companyName || "",
+              annualIncome: client?.annualIncome || "",
+              workExperience: client?.workExperience?.toString() || "",
+            }}
+            onSubmit={(data) => {
+              // Format the data for the API
+              const updateData: any = {
+                fullName: data.fullName,
+                initials: data.initials,
+                email: data.email,
+                phone: data.phone,
+                dateOfBirth: data.dateOfBirth || null,
+                gender: data.gender || null,
+                maritalStatus: data.maritalStatus || null,
+                anniversaryDate: data.anniversaryDate || null,
+                preferredContactMethod: data.preferredContactMethod || null,
+                preferredContactTime: data.preferredContactTime || null,
+                communicationFrequency: data.communicationFrequency || null,
+                homeAddress: data.homeAddress || null,
+                homeCity: data.homeCity || null,
+                homeState: data.homeState || null,
+                homePincode: data.homePincode || null,
+                workAddress: data.workAddress || null,
+                workCity: data.workCity || null,
+                workState: data.workState || null,
+                workPincode: data.workPincode || null,
+                profession: data.profession || null,
+                sectorOfEmployment: data.sectorOfEmployment || null,
+                designation: data.designation || null,
+                companyName: data.companyName || null,
+                annualIncome: data.annualIncome || null,
+                workExperience: data.workExperience ? parseInt(data.workExperience) : null,
+              };
+              updateClientMutation.mutate(updateData);
+              setIsEditPersonalDialogOpen(false);
+            }}
+            onCancel={() => setIsEditPersonalDialogOpen(false)}
+            isLoading={updateClientMutation.isPending}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Financial Profile Dialog - Placeholder */}
+      <Dialog open={isEditFinancialDialogOpen} onOpenChange={setIsEditFinancialDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Financial Profile</DialogTitle>
+            <DialogDescription>
+              Update the client's financial profile information.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              To edit the financial profile, please use the dedicated financial profile page.
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditFinancialDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                setIsEditFinancialDialogOpen(false);
+                window.location.hash = `/clients/${clientId}/financial-profile`;
+              }}>
+                Go to Financial Profile
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Family Information Dialog */}
+      <Dialog open={isEditFamilyDialogOpen} onOpenChange={setIsEditFamilyDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Family Information</DialogTitle>
+            <DialogDescription>
+              Update the client's family information.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const updateData = {
+                spouseName: formData.get("spouseName") || null,
+                dependentsCount: formData.get("dependentsCount") ? parseInt(formData.get("dependentsCount") as string) : null,
+                familyFinancialGoals: formData.get("familyFinancialGoals") || null,
+              };
+              updateClientMutation.mutate(updateData);
+              setIsEditFamilyDialogOpen(false);
+            }}
+          >
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Spouse Name</label>
+                <input
+                  type="text"
+                  name="spouseName"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.spouseName || ""}
+                  placeholder="Enter spouse name"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Dependents Count</label>
+                <input
+                  type="number"
+                  name="dependentsCount"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.dependentsCount || 0}
+                  placeholder="Number of dependents"
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Family Financial Goals</label>
+                <textarea
+                  name="familyFinancialGoals"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.familyFinancialGoals || ""}
+                  placeholder="Enter family financial goals"
+                  rows={4}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEditFamilyDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={updateClientMutation.isPending}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit KYC & Compliance Dialog */}
+      <Dialog open={isEditKycDialogOpen} onOpenChange={setIsEditKycDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit KYC & Compliance</DialogTitle>
+            <DialogDescription>
+              Update the client's KYC and compliance information.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const updateData = {
+                kycStatus: formData.get("kycStatus") || null,
+                panNumber: formData.get("panNumber") || null,
+                taxResidencyStatus: formData.get("taxResidencyStatus") || null,
+                fatcaStatus: formData.get("fatcaStatus") || null,
+              };
+              updateClientMutation.mutate(updateData);
+              setIsEditKycDialogOpen(false);
+            }}
+          >
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">KYC Status</label>
+                <select
+                  name="kycStatus"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.kycStatus || ""}
+                >
+                  <option value="">Select status</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                  <option value="expired">Expired</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">PAN Number</label>
+                <input
+                  type="text"
+                  name="panNumber"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.panNumber || ""}
+                  placeholder="Enter PAN number"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Tax Residency Status</label>
+                <input
+                  type="text"
+                  name="taxResidencyStatus"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.taxResidencyStatus || ""}
+                  placeholder="Enter tax residency status"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">FATCA Status</label>
+                <input
+                  type="text"
+                  name="fatcaStatus"
+                  className="w-full px-3 py-2 border rounded-md"
+                  defaultValue={client?.fatcaStatus || ""}
+                  placeholder="Enter FATCA status"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEditKycDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={updateClientMutation.isPending}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </ClientPageLayout>
   );
 }

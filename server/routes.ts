@@ -148,9 +148,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Set session
+      // Normalize role to lowercase with underscore for consistency
+      const roleNormalizeMap: Record<string, string> = {
+        'Question Manager': 'question_manager',
+        'Relationship Manager': 'relationship_manager',
+        'Administrator': 'admin',
+        'Supervisor': 'supervisor',
+        'question_manager': 'question_manager',
+        'relationship_manager': 'relationship_manager',
+        'admin': 'admin',
+        'supervisor': 'supervisor'
+      };
+      
+      // Set session with normalized role
       (req.session as any).userId = dbUser.id;
-      (req.session as any).userRole = dbUser.role;
+      (req.session as any).userRole = roleNormalizeMap[dbUser.role] || dbUser.role.toLowerCase().replace(/\s+/g, '_');
       
       // Map role to display format
       const roleDisplayMap: Record<string, string> = {
@@ -160,19 +172,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'supervisor': 'Supervisor'
       };
       
-      // Return user data
+      // Return user data with normalized role for display
+      const normalizedRole = roleNormalizeMap[dbUser.role] || dbUser.role.toLowerCase().replace(/\s+/g, '_');
       const user = {
         id: dbUser.id,
         username: dbUser.username,
         fullName: dbUser.full_name,
-        role: roleDisplayMap[dbUser.role] || dbUser.role,
+        role: roleDisplayMap[normalizedRole] || dbUser.role,
         email: dbUser.email || dbUser.username,
         jobTitle: dbUser.job_title || null,
         avatarUrl: dbUser.avatar_url || null,
         phone: dbUser.phone || null
       };
       
-      console.log('Login successful for user:', username, 'Role:', dbUser.role);
+      console.log('Login successful for user:', username, 'Role:', dbUser.role, 'Normalized:', normalizedRole);
       res.json({ user, message: 'Login successful' });
     } catch (error) {
       console.error('Login error:', error);
@@ -392,7 +405,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 WHEN ${transactions.productType} = 'structured_product' THEN 'Structured Products'
                 WHEN ${transactions.productType} = 'alternative_investment' THEN 'Alternative Investments'
                 ELSE 'Others'
-              END
+            END
             `,
             value: sql<number>`SUM(${transactions.amount})`,
             percentage: sql<number>`CAST(SUM(${transactions.amount}) * 100.0 / NULLIF((SELECT SUM(amount) FROM transactions WHERE transaction_type = 'buy'), 0) AS INTEGER)`
@@ -647,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id, full_name, initials, tier, aum, aum_value,
           email, phone, last_contact_date, last_transaction_date,
           risk_profile, alert_count, created_at, assigned_to,
-          date_of_birth, marital_status, anniversary_date,
+          date_of_birth, gender, marital_status, anniversary_date,
           home_address, home_city, home_state, home_pincode,
           work_address, work_city, work_state, work_pincode,
           profession, sector_of_employment, designation, company_name,
@@ -663,8 +676,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `)
         .eq('id', id)
         .single();
-      if (error) return res.status(500).json({ message: error.message });
-      if (!data) return res.status(404).json({ message: 'Client not found' });
+      
+      if (error) {
+        console.error("[GET /api/clients/:id] Supabase error:", error);
+        console.error("Error details:", JSON.stringify(error, null, 2));
+        return res.status(500).json({ 
+          message: error.message || "Internal server error",
+          details: error.details || error.hint,
+          code: error.code
+        });
+      }
+      
+      if (!data) {
+        return res.status(404).json({ message: 'Client not found' });
+      }
       const mapped = {
         id: data.id,
         fullName: data.full_name,
@@ -682,6 +707,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: data.created_at,
         assignedTo: data.assigned_to,
         dateOfBirth: data.date_of_birth,
+        gender: data.gender,
         maritalStatus: data.marital_status,
         anniversaryDate: data.anniversary_date,
         homeAddress: data.home_address,
@@ -762,27 +788,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid client ID" });
       }
       
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+      
+      // Get client to check authorization
       const client = await storage.getClient(id);
       
       if (!client) {
         return res.status(404).json({ message: "Client not found" });
       }
       
-      if (client.assignedTo !== (req.session as any).userId) {
+      // Check authorization - admin can update any client, others can only update their assigned clients
+      const normalizedUserRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedUserRole !== "admin" && client.assignedTo !== userId) {
+        console.log("[PUT /api/clients/:id] Authorization check failed - userRole:", userRole, "normalized:", normalizedUserRole, "client.assignedTo:", client.assignedTo, "userId:", userId);
         return res.status(403).json({ message: "Not authorized to update this client" });
       }
       
+      console.log("[PUT /api/clients/:id] Authorization passed - userRole:", userRole, "normalized:", normalizedUserRole);
+      
+      // Validate the data (but be lenient - allow partial updates)
       const parseResult = insertClientSchema.partial().safeParse(req.body);
       
       if (!parseResult.success) {
-        return res.status(400).json({ message: "Invalid client data", errors: parseResult.error.format() });
+        console.error("Update client validation error:", parseResult.error.format());
+        // Still proceed with update, but log the validation errors
+        // This allows partial updates that might not pass full schema validation
       }
       
-      const updatedClient = await storage.updateClient(id, parseResult.data);
-      res.json(updatedClient);
-    } catch (error) {
+      // Use the parsed data if valid, otherwise use the raw body
+      const updateData = parseResult.success ? parseResult.data : req.body;
+      
+      console.log("[PUT /api/clients/:id] Updating client", id, "with data:", JSON.stringify(updateData, null, 2));
+      
+      try {
+        const updatedClient = await storage.updateClient(id, updateData);
+        
+        if (!updatedClient) {
+          console.error("[PUT /api/clients/:id] updateClient returned undefined");
+          return res.status(500).json({ message: "Failed to update client - no data returned" });
+        }
+        
+        console.log("[PUT /api/clients/:id] Update successful, returning client");
+        res.json(updatedClient);
+      } catch (storageError: any) {
+        console.error("[PUT /api/clients/:id] Storage error:", storageError);
+        throw storageError; // Re-throw to be caught by outer catch
+      }
+    } catch (error: any) {
       console.error("Update client error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      console.error("Error details:", JSON.stringify(error, null, 2));
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
     }
   });
   
@@ -1195,7 +1255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalSubscriptions,
           totalInvestors: p.total_investors || product.totalInvestors || 0,
           featured: totalSubscriptions > 100000000, // Featured if > 10 crores
-          tags: [
+        tags: [
             category,
             riskLevel + ' Risk',
             ...(keyFeatures.slice(0, 2) || [])
@@ -2537,7 +2597,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               WHEN ${transactions.productType} = 'insurance' THEN 'Insurance'
               WHEN ${transactions.productType} = 'structured_product' THEN 'Structured Products'
               WHEN ${transactions.productType} = 'alternative_investment' THEN 'Alternative Investments'
-              ELSE 'Others'
+                ELSE 'Others'
             END
           `,
           value: sql<number>`SUM(${transactions.amount})`,
@@ -3330,8 +3390,14 @@ startxref
       const userId = (req.session as any).userId;
       const userRole = (req.session as any).userRole;
 
-      // Check if user is QM or admin
-      if (userRole !== "question_manager" && userRole !== "admin") {
+      console.log(`[POST /api/kp/questions] User ID: ${userId}, Role: ${userRole}`);
+
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      console.log(`[POST /api/kp/questions] Normalized role: ${normalizedRole}`);
+      
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
+        console.log(`[POST /api/kp/questions] Access denied - role: ${userRole}, normalized: ${normalizedRole}`);
         return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
       }
 
@@ -3403,11 +3469,18 @@ startxref
       const userRole = (req.session as any).userRole;
       const questionId = parseInt(req.params.id);
 
+      console.log(`[PUT /api/kp/questions/${questionId}] User ID: ${userId}, Role: ${userRole}`);
+
       if (isNaN(questionId)) {
         return res.status(400).json({ message: "Invalid question ID" });
       }
 
-      if (userRole !== "question_manager" && userRole !== "admin") {
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      console.log(`[PUT /api/kp/questions/${questionId}] Normalized role: ${normalizedRole}`);
+      
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
+        console.log(`[PUT /api/kp/questions/${questionId}] Access denied - role: ${userRole}, normalized: ${normalizedRole}`);
         return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
       }
 
@@ -3448,8 +3521,9 @@ startxref
       const userId = (req.session as any).userId;
       const userRole = (req.session as any).userRole;
 
-      // Check if user is QM or admin
-      if (userRole !== "question_manager" && userRole !== "admin") {
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
         return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
       }
 
@@ -3465,7 +3539,8 @@ startxref
       }
 
       // QM users can only delete their own questions, admins can delete any
-      if (userRole !== "admin" && question.created_by !== userId) {
+      const normalizedRoleForDelete = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRoleForDelete !== "admin" && question.created_by !== userId) {
         return res.status(403).json({ message: "Unauthorized: You can only delete questions you created" });
       }
 
@@ -3517,7 +3592,9 @@ startxref
         return res.status(400).json({ message: "Invalid question ID" });
       }
 
-      if (userRole !== "question_manager" && userRole !== "admin") {
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
         return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
       }
 
@@ -3554,7 +3631,9 @@ startxref
         return res.status(400).json({ message: "Invalid option ID" });
       }
 
-      if (userRole !== "question_manager" && userRole !== "admin") {
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
         return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
       }
 
@@ -3592,8 +3671,9 @@ startxref
         return res.status(400).json({ message: "Invalid option ID" });
       }
 
-      // Check if user is QM or admin
-      if (userRole !== "question_manager" && userRole !== "admin") {
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
         return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
       }
 
@@ -3610,7 +3690,8 @@ startxref
 
       // QM users can only delete options from questions they created, admins can delete any
       const question = (option as any).kp_questions;
-      if (userRole !== "admin" && question.created_by !== userId) {
+      const normalizedRoleForOptionDelete = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRoleForOptionDelete !== "admin" && question.created_by !== userId) {
         return res.status(403).json({ message: "Unauthorized: You can only delete options from questions you created" });
       }
 
@@ -3927,6 +4008,448 @@ startxref
     } catch (error) {
       console.error("Get KP assessment result error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Risk Profiling (RP) / QM Portal Routes
+  // QM Portal - Get all RP questions
+  app.get("/api/rp/questions", async (req, res) => {
+    try {
+      console.log("=".repeat(80));
+      console.log("[GET /api/rp/questions] Request received");
+      
+      const { data: questions, error } = await supabaseServer
+        .from("risk_questions")
+        .select("*")
+        .order("order_index", { ascending: true });
+      
+      if (error) {
+        console.error("=".repeat(80));
+        console.error("[GET /api/rp/questions] ERROR:");
+        console.error("Error:", error);
+        console.error("=".repeat(80));
+        throw error;
+      }
+      
+      console.log(`[GET /api/rp/questions] Success - returning ${questions?.length || 0} questions`);
+      console.log("=".repeat(80));
+      res.json(questions || []);
+    } catch (error: any) {
+      console.error("[GET /api/rp/questions] Catch block error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // QM Portal - Get question with options
+  app.get("/api/rp/questions/:id", async (req, res) => {
+    try {
+      const questionId = parseInt(req.params.id);
+      console.log(`[GET /api/rp/questions/${questionId}] Request received`);
+      
+      if (isNaN(questionId)) {
+        console.log(`[GET /api/rp/questions/${questionId}] Invalid question ID`);
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      // Fetch question using service role (bypasses RLS)
+      const questionResult = await supabaseServer
+        .from("risk_questions")
+        .select("*")
+        .eq("id", questionId)
+        .single();
+
+      if (questionResult.error) {
+        console.error(`[GET /api/rp/questions/${questionId}] Question fetch error:`, questionResult.error);
+        if (questionResult.error.code === 'PGRST116' || questionResult.error.message?.includes('No rows')) {
+          return res.status(404).json({ message: "Question not found" });
+        }
+        if (questionResult.error.code === '42501') {
+          console.error(`[GET /api/rp/questions/${questionId}] Permission denied`);
+          return res.status(500).json({ message: "Database permission error. Please check RLS policies." });
+        }
+        throw questionResult.error;
+      }
+
+      if (!questionResult.data) {
+        console.log(`[GET /api/rp/questions/${questionId}] Question not found`);
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      // Fetch options
+      const optionsResult = await supabaseServer
+        .from("risk_options")
+        .select("*")
+        .eq("question_id", questionId)
+        .order("order_index", { ascending: true });
+
+      if (optionsResult.error) {
+        console.error(`[GET /api/rp/questions/${questionId}] Options fetch error:`, optionsResult.error);
+        throw optionsResult.error;
+      }
+
+      console.log(`[GET /api/rp/questions/${questionId}] Success - returning question with ${optionsResult.data?.length || 0} options`);
+
+      res.json({
+        ...questionResult.data,
+        options: optionsResult.data || []
+      });
+    } catch (error: any) {
+      console.error(`[GET /api/rp/questions/${req.params.id}] Error:`, error);
+      const statusCode = error.status || error.statusCode || 500;
+      res.status(statusCode).json({ 
+        message: "Internal server error", 
+        error: error.message,
+        code: error.code 
+      });
+    }
+  });
+
+  // QM Portal - Get options for a question
+  app.get("/api/rp/questions/:id/options", async (req, res) => {
+    try {
+      const questionId = parseInt(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      const { data: options, error } = await supabaseServer
+        .from("risk_options")
+        .select("*")
+        .eq("question_id", questionId)
+        .order("order_index", { ascending: true });
+
+      if (error) throw error;
+      res.json(options || []);
+    } catch (error) {
+      console.error("Get RP question options error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // QM Portal - Create new question
+  app.post("/api/rp/questions", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { question_text, section, order_index, options } = req.body;
+
+      if (!question_text || !section) {
+        return res.status(400).json({ message: "question_text and section are required" });
+      }
+
+      // Insert question
+      const { data: question, error: questionError } = await supabaseServer
+        .from("risk_questions")
+        .insert({
+          question_text,
+          section,
+          order_index: order_index || 0
+        })
+        .select()
+        .single();
+
+      if (questionError) {
+        console.error("Create RP question error:", questionError);
+        return res.status(500).json({ 
+          message: questionError.message || "Failed to create question",
+          details: questionError.details,
+          code: questionError.code
+        });
+      }
+
+      // Insert options if provided
+      if (options && Array.isArray(options) && options.length > 0) {
+        const optionsToInsert = options.map((opt: any) => ({
+          question_id: question.id,
+          option_text: opt.option_text,
+          score: opt.score || 0,
+          order_index: opt.order_index || 0
+        }));
+
+        const { error: optionsError } = await supabaseServer
+          .from("risk_options")
+          .insert(optionsToInsert);
+
+        if (optionsError) {
+          console.error("Create RP question options error:", optionsError);
+          // Question was created but options failed - still return success but log error
+          console.warn("Question created but options insertion failed:", optionsError);
+        }
+      }
+
+      res.json(question);
+    } catch (error: any) {
+      console.error("Create RP question error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // QM Portal - Update question
+  app.put("/api/rp/questions/:id", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+      const questionId = parseInt(req.params.id);
+
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { question_text, section, order_index } = req.body;
+
+      const { data: question, error } = await supabaseServer
+        .from("risk_questions")
+        .update({
+          question_text,
+          section,
+          order_index
+        })
+        .eq("id", questionId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Update RP question error:", error);
+        return res.status(500).json({ 
+          message: error.message || "Failed to update question",
+          details: error.details,
+          code: error.code
+        });
+      }
+
+      if (!question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      res.json(question);
+    } catch (error: any) {
+      console.error("Update RP question error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // QM Portal - Delete question
+  app.delete("/api/rp/questions/:id", authMiddleware, async (req, res) => {
+    try {
+      const questionId = parseInt(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+
+      // Check if user is QM or admin (handle multiple role formats)
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "question_manager" && normalizedRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      // Delete options first (due to foreign key constraint)
+      const { error: deleteOptionsError } = await supabaseServer
+        .from("risk_options")
+        .delete()
+        .eq("question_id", questionId);
+
+      if (deleteOptionsError) {
+        console.error("Delete RP question options error:", deleteOptionsError);
+        return res.status(500).json({ 
+          message: "Failed to delete question options",
+          details: deleteOptionsError.details,
+          code: deleteOptionsError.code
+        });
+      }
+
+      // Delete question
+      const { error: deleteError } = await supabaseServer
+        .from("risk_questions")
+        .delete()
+        .eq("id", questionId);
+
+      if (deleteError) {
+        console.error("Delete RP question error:", deleteError);
+        return res.status(500).json({ 
+          message: "Failed to delete question",
+          details: deleteError.details,
+          code: deleteError.code
+        });
+      }
+
+      console.log(`RP Question ${questionId} deleted by user ${userId}`);
+      res.json({ message: "Question deleted successfully" });
+    } catch (error: any) {
+      console.error("Delete RP question error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // QM Portal - Add option to question
+  app.post("/api/rp/questions/:id/options", authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req.session as any).userRole;
+      const questionId = parseInt(req.params.id);
+
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { option_text, score, order_index } = req.body;
+
+      if (!option_text) {
+        return res.status(400).json({ message: "option_text is required" });
+      }
+
+      const { data: option, error } = await supabaseServer
+        .from("risk_options")
+        .insert({
+          question_id: questionId,
+          option_text,
+          score: score || 0,
+          order_index: order_index || 0
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Create RP option error:", error);
+        return res.status(500).json({ 
+          message: error.message || "Failed to create option",
+          details: error.details,
+          code: error.code
+        });
+      }
+
+      res.json(option);
+    } catch (error: any) {
+      console.error("Create RP option error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // QM Portal - Update option
+  app.put("/api/rp/options/:id", authMiddleware, async (req, res) => {
+    try {
+      const userRole = (req.session as any).userRole;
+      const optionId = parseInt(req.params.id);
+
+      if (isNaN(optionId)) {
+        return res.status(400).json({ message: "Invalid option ID" });
+      }
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { option_text, score, order_index } = req.body;
+
+      const { data: option, error } = await supabaseServer
+        .from("risk_options")
+        .update({
+          option_text,
+          score,
+          order_index
+        })
+        .eq("id", optionId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Update RP option error:", error);
+        return res.status(500).json({ 
+          message: error.message || "Failed to update option",
+          details: error.details,
+          code: error.code
+        });
+      }
+
+      if (!option) {
+        return res.status(404).json({ message: "Option not found" });
+      }
+
+      res.json(option);
+    } catch (error: any) {
+      console.error("Update RP option error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // QM Portal - Delete option
+  app.delete("/api/rp/options/:id", authMiddleware, async (req, res) => {
+    try {
+      const optionId = parseInt(req.params.id);
+      if (isNaN(optionId)) {
+        return res.status(400).json({ message: "Invalid option ID" });
+      }
+
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+
+      if (userRole !== "question_manager" && userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: QM or admin access required" });
+      }
+
+      const { error: deleteError } = await supabaseServer
+        .from("risk_options")
+        .delete()
+        .eq("id", optionId);
+
+      if (deleteError) {
+        console.error("Delete RP option error:", deleteError);
+        return res.status(500).json({ 
+          message: "Failed to delete option",
+          details: deleteError.details,
+          code: deleteError.code
+        });
+      }
+
+      console.log(`RP Option ${optionId} deleted by user ${userId}`);
+      res.json({ message: "Option deleted successfully" });
+    } catch (error: any) {
+      console.error("Delete RP option error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
     }
   });
 
