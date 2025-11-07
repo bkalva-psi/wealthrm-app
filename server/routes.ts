@@ -3866,7 +3866,64 @@ startxref
 
       if (error && error.code !== "PGRST116") throw error; // PGRST116 = no rows returned
 
-      res.json(result || null);
+      if (!result) {
+        return res.json(null);
+      }
+
+      // Calculate category-wise scores
+      const { data: responses, error: responsesError } = await supabaseServer
+        .from("kp_user_responses")
+        .select("score, question_id")
+        .eq("client_id", clientId);
+
+      if (responsesError) throw responsesError;
+
+      // Get all questions with their categories
+      const { data: allQuestions } = await supabaseServer
+        .from("kp_questions")
+        .select("id, question_category")
+        .eq("is_active", true);
+
+      // Create a map of question_id to category
+      const questionCategoryMap = new Map();
+      allQuestions?.forEach((q: any) => {
+        questionCategoryMap.set(q.id, q.question_category);
+      });
+
+      // Group scores by category
+      const categoryScores: Record<string, { score: number; maxScore: number; questionCount: number }> = {};
+      
+      // Initialize categories with max scores
+      allQuestions?.forEach((q: any) => {
+        if (!categoryScores[q.question_category]) {
+          categoryScores[q.question_category] = { score: 0, maxScore: 0, questionCount: 0 };
+        }
+        categoryScores[q.question_category].maxScore += 3; // Each question max = 3 points
+        categoryScores[q.question_category].questionCount += 1;
+      });
+
+      // Sum actual scores by category
+      responses?.forEach((r: any) => {
+        const category = questionCategoryMap.get(r.question_id);
+        if (category && categoryScores[category]) {
+          categoryScores[category].score += r.score || 0;
+        }
+      });
+
+      // Format category breakdown
+      const categoryBreakdown = Object.entries(categoryScores).map(([category, data]) => ({
+        category,
+        categoryName: category.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase()),
+        score: data.score,
+        maxScore: data.maxScore,
+        percentage: data.maxScore > 0 ? (data.score / data.maxScore) * 100 : 0,
+        questionCount: data.questionCount
+      }));
+
+      res.json({
+        ...result,
+        categoryBreakdown
+      });
     } catch (error) {
       console.error("Get KP assessment result error:", error);
       res.status(500).json({ message: "Internal server error" });

@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, AlertCircle, HelpCircle, ArrowRight, ArrowLeft } from "lucide-react";
+import { CheckCircle2, AlertCircle, HelpCircle, ArrowRight, ArrowLeft, Shield, TrendingUp, BarChart3, Calendar, RefreshCw, Info } from "lucide-react";
 
 interface Question {
   id: number;
@@ -58,9 +58,13 @@ export default function KnowledgeProfiling() {
   }, []);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  // Start directly at first question (0) - no intro page
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<Record<number, Response>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [submittedResult, setSubmittedResult] = useState<any>(null);
+  const [isRetaking, setIsRetaking] = useState(false);
 
   // Fetch questionnaire
   const { data: questions = [], isLoading, error } = useQuery<Question[]>({
@@ -73,7 +77,7 @@ export default function KnowledgeProfiling() {
   });
 
   // Fetch existing results if clientId is provided
-  const { data: existingResult } = useQuery({
+  const { data: existingResult, isLoading: isLoadingResults } = useQuery({
     queryKey: ["/api/kp/results", clientId],
     queryFn: async () => {
       if (!clientId) return null;
@@ -84,6 +88,22 @@ export default function KnowledgeProfiling() {
     },
     enabled: !!clientId
   });
+
+  // Automatically show results if existing completed assessment is found
+  // For returning users: show scorecard immediately (skip intro page)
+  // For first-time users: go directly to questionnaire
+  useEffect(() => {
+    if (!isLoadingResults && existingResult?.is_complete && !isRetaking) {
+      // Returning user with completed assessment: show results immediately
+      setSubmittedResult(existingResult);
+      setShowResults(true);
+      setCurrentQuestionIndex(-1); // Keep at -1 to prevent questionnaire from showing
+    } else if (!isLoadingResults && (!existingResult || !existingResult.is_complete) && !isRetaking) {
+      // First-time user: go directly to questionnaire
+      setShowResults(false);
+      setCurrentQuestionIndex(0); // Start at first question
+    }
+  }, [existingResult, isLoadingResults, isRetaking]);
 
   // Submit responses mutation
   const submitResponsesMutation = useMutation({
@@ -99,12 +119,20 @@ export default function KnowledgeProfiling() {
       }
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/kp/results", clientId] });
-      toast({
-        title: "Assessment Completed",
-        description: `Your knowledge level: ${data.knowledgeLevel}. Score: ${data.percentageScore.toFixed(1)}%`,
-      });
+      
+      // Fetch the complete result with category breakdown
+      if (clientId) {
+        const resultResponse = await fetch(`/api/kp/results/${clientId}`);
+        if (resultResponse.ok) {
+          const fullResult = await resultResponse.json();
+          setSubmittedResult(fullResult);
+          setShowResults(true);
+          setIsRetaking(false); // Reset retaking flag so results can be displayed
+        }
+      }
+      
       setIsSubmitting(false);
     },
     onError: (error: Error) => {
@@ -113,8 +141,8 @@ export default function KnowledgeProfiling() {
     }
   });
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const currentQuestion = currentQuestionIndex >= 0 ? questions[currentQuestionIndex] : null;
+  const progress = questions.length > 0 && currentQuestionIndex >= 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
   const answeredCount = Object.keys(responses).length;
   const requiredQuestions = questions.filter(q => q.is_required);
   const requiredAnswered = requiredQuestions.every(q => responses[q.id]?.selected_option_id);
@@ -139,6 +167,7 @@ export default function KnowledgeProfiling() {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
     }
+    // No intro page - Previous button disabled at question 0
   };
 
   const handleSubmit = async () => {
@@ -180,12 +209,12 @@ export default function KnowledgeProfiling() {
     return colors[category] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingResults) {
     return (
       <div className="p-6 min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading questionnaire...</p>
+          <p className="text-muted-foreground">Loading assessment...</p>
         </div>
       </div>
     );
@@ -220,49 +249,236 @@ export default function KnowledgeProfiling() {
     );
   }
 
-  if (existingResult?.is_complete && !isSubmitting) {
+  // Get the result to display (either newly submitted or existing)
+  // Prioritize existingResult for returning users to show scorecard immediately
+  const displayResult = submittedResult || existingResult;
+
+  // Helper function to capitalize first letter
+  const capitalizeFirst = (str: string) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
+  // PRIORITY: Show results page if assessment is complete
+  // For returning users with completed assessment, show results immediately
+  // Don't show results if user is actively retaking (isRetaking = true)
+  if (!isLoadingResults && displayResult?.is_complete && !isSubmitting && !isRetaking) {
+    const getKnowledgeLevelDescription = (level: string) => {
+      const normalized = (level || "").toLowerCase();
+      switch (normalized) {
+        case "basic":
+          return "You have foundational knowledge of financial concepts. We recommend starting with basic investment products and gradually expanding your portfolio as you gain more experience.";
+        case "intermediate":
+          return "You have a good understanding of investment concepts, risk and growth. Your profile is intermediate, which means you are ready for more diversified investments with moderate risk exposure.";
+        case "advanced":
+        case "expert":
+          return "You have strong financial literacy and can handle complex investment strategies. You're eligible for sophisticated products including derivatives, alternative investments, and structured products.";
+        default:
+          return "Your knowledge assessment has been completed successfully.";
+      }
+    };
+
+    const getKnowledgeLevelColor = (level: string) => {
+      const normalized = (level || "").toLowerCase();
+      switch (normalized) {
+        case "basic":
+          return "bg-blue-600";        // Basic
+        case "intermediate":
+          return "bg-orange-500";      // Intermediate
+        case "advanced":
+        case "expert":
+          return "bg-green-600";       // Advanced/Expert
+        default:
+          return "bg-gray-600";
+      }
+    };
+
+    const knowledgeLevel = displayResult.knowledge_level || "Basic";
+    const knowledgeLevelDisplay = capitalizeFirst(knowledgeLevel);
+
+    const completedDate = new Date(displayResult.completed_at || displayResult.assessment_date);
+    const validUntil = new Date(completedDate);
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+
     return (
-      <div className="p-6 min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-6 w-6 text-green-600" />
-                Assessment Completed
-              </CardTitle>
-              <CardDescription>
-                Your knowledge profiling assessment has been completed.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">Total Score</Label>
-                  <p className="text-2xl font-bold">
-                    {existingResult.total_score} / {existingResult.max_possible_score}
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Percentage</Label>
-                  <p className="text-2xl font-bold">{existingResult.percentage_score.toFixed(1)}%</p>
-                </div>
+      <div className="p-6 min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          {/* Main Results Card */}
+          <Card className="shadow-lg border-0">
+            <CardContent className="p-8">
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-6">
+                <Shield className="h-6 w-6 text-primary" />
+                <h1 className="text-2xl font-bold text-gray-900">Knowledge Profile Result</h1>
               </div>
-              <div>
-                <Label className="text-muted-foreground">Knowledge Level</Label>
-                <Badge className="mt-2 text-lg px-4 py-2">
-                  {existingResult.knowledge_level || "N/A"}
-                </Badge>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {existingResult.knowledge_level === "Basic" && "Limited financial literacy - recommend conservative guidance"}
-                  {existingResult.knowledge_level === "Intermediate" && "Understands common products and risk/return trade-offs"}
-                  {existingResult.knowledge_level === "Advanced" && "Confident & literate - eligible for complex products"}
-                </p>
+
+              {/* Primary Result Banner */}
+              <div className={`${getKnowledgeLevelColor(knowledgeLevel)} rounded-lg px-6 py-4 mb-6`}>
+                <p className="text-white font-semibold text-lg mb-1">Your Knowledge Profile:</p>
+                <p className="text-white text-3xl font-bold">{knowledgeLevelDisplay}</p>
               </div>
-              <div>
-                <Label className="text-muted-foreground">Completed On</Label>
-                <p className="text-sm">
-                  {new Date(existingResult.completed_at || existingResult.assessment_date).toLocaleDateString()}
-                </p>
+
+              {/* Description */}
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                {getKnowledgeLevelDescription(knowledgeLevel)}
+              </p>
+
+              {/* Key Metrics Cards */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {/* Overall Score */}
+                <Card className="shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                      <Label className="text-sm font-medium text-gray-600">Overall Score</Label>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {displayResult.percentage_score.toFixed(1)}%
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {displayResult.total_score} / {displayResult.max_possible_score} points
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Knowledge Level */}
+                <Card className="shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart3 className="h-5 w-5 text-primary" />
+                      <Label className="text-sm font-medium text-gray-600">Knowledge Level</Label>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {knowledgeLevelDisplay}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Based on assessment results
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Category Breakdown */}
+              {displayResult.categoryBreakdown && displayResult.categoryBreakdown.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Category Performance</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {displayResult.categoryBreakdown.map((cat: any) => (
+                      <Card key={cat.category} className="shadow-sm">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="text-sm font-medium text-gray-700">
+                              {cat.categoryName}
+                            </Label>
+                            <div className="flex items-center gap-1">
+                              <Info className="h-3 w-3 text-gray-400" />
+                            </div>
+                          </div>
+                          <p className="text-2xl font-bold text-gray-900 mb-1">
+                            {cat.percentage.toFixed(0)}%
+                          </p>
+                          <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
+                            <div
+                              className="bg-primary h-2 rounded-full transition-all"
+                              style={{ width: `${Math.min(cat.percentage, 100)}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            {cat.score} / {cat.maxScore} points ({cat.questionCount} questions)
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Date and Validity */}
+              <div className="flex items-center gap-2 text-sm text-gray-600 mb-6 pb-6 border-b">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  Completed on {completedDate.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  })} • Next review on {validUntil.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  })}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3">
+                 {/* Retake Assessment button - always show for returning users, or Review Answers for first-time users */}
+                 {isRetaking ? (
+                   <Button
+                     variant="outline"
+                     onClick={async (e) => {
+                       e.preventDefault();
+                       e.stopPropagation();
+                       
+                       // Reset to show questionnaire again to review answers
+                       setShowResults(false);
+                       setCurrentQuestionIndex(0);
+                       // Keep responses so user can see their answers
+                       
+                       // Scroll to top
+                       setTimeout(() => {
+                         window.scrollTo({ top: 0, behavior: 'smooth' });
+                       }, 100);
+                     }}
+                     className="border-primary text-primary hover:bg-primary/10 cursor-pointer"
+                   >
+                     Review Answers
+                   </Button>
+                 ) : (
+                   <Button
+                     variant="outline"
+                     onClick={async (e) => {
+                       e.preventDefault();
+                       e.stopPropagation();
+                       
+                       // First, mark as retaking to prevent auto-show results
+                       setIsRetaking(true);
+                       
+                       // Then reset all state to allow retaking
+                       setShowResults(false);
+                       setSubmittedResult(null);
+                       setCurrentQuestionIndex(0); // Go directly to questionnaire (skip intro page)
+                       setResponses({});
+                       
+                       // Invalidate queries to fetch fresh data
+                       await queryClient.invalidateQueries({ queryKey: ["/api/kp/results", clientId] });
+                       await queryClient.invalidateQueries({ queryKey: ["/api/kp/questionnaire"] });
+                       
+                       // Use setTimeout to ensure state updates are processed
+                       setTimeout(() => {
+                         // Scroll to top to show the questionnaire
+                         window.scrollTo({ top: 0, behavior: 'smooth' });
+                       }, 100);
+                     }}
+                     className="border-primary text-primary hover:bg-primary/10 cursor-pointer"
+                   >
+                     <RefreshCw className="mr-2 h-4 w-4" />
+                     Retake Assessment
+                   </Button>
+                 )}
+                 {/* Show "Accept and Continue" for both returning users and first-time users who just completed */}
+                 <Button
+                   onClick={() => {
+                     setIsRetaking(false); // Reset retaking flag
+                     if (clientId) {
+                       window.location.hash = `/clients/${clientId}/financial-profile`;
+                     } else {
+                       window.location.hash = '/clients';
+                     }
+                   }}
+                   className="bg-primary hover:bg-primary/90"
+                 >
+                   Accept and Continue
+                 </Button>
               </div>
             </CardContent>
           </Card>
@@ -271,29 +487,31 @@ export default function KnowledgeProfiling() {
     );
   }
 
-  return (
-    <div className="p-6 min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto">
-        {/* Progress Header */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Knowledge Profiling Assessment</h1>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Question {currentQuestionIndex + 1} of {questions.length}
-                </p>
+  // Show questionnaire only if:
+  // 1. No completed assessment exists (first-time users), OR
+  // 2. User is actively retaking the assessment
+  // Don't show questionnaire for returning users with completed assessments
+  if (currentQuestionIndex >= 0 && !showResults && (!existingResult?.is_complete || isRetaking)) {
+    return (
+      <div className="p-6 min-h-screen bg-background">
+        <div className="max-w-3xl mx-auto">
+          {/* Progress Header */}
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Knowledge Profiling Assessment</h1>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {answeredCount} / {questions.length} questions
+                  </p>
+                </div>
               </div>
-              <Badge variant="outline">
-                {answeredCount} / {questions.length} answered
-              </Badge>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </CardContent>
-        </Card>
+              <Progress value={progress} className="h-2" />
+            </CardContent>
+          </Card>
 
-        {/* Current Question */}
-        {currentQuestion && (
+          {/* Current Question */}
+          {currentQuestion && (
           <Card>
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -352,30 +570,34 @@ export default function KnowledgeProfiling() {
             Previous
           </Button>
 
-          {currentQuestionIndex < questions.length - 1 ? (
-            <Button onClick={handleNext} disabled={!responses[currentQuestion.id]?.selected_option_id}>
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleSubmit}
-              disabled={!requiredAnswered || !clientId || isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "Submit Assessment"}
-            </Button>
-          )}
-        </div>
+           {currentQuestionIndex < questions.length - 1 ? (
+             <Button onClick={handleNext} disabled={!currentQuestion || !responses[currentQuestion.id]?.selected_option_id}>
+               Next
+               <ArrowRight className="ml-2 h-4 w-4" />
+             </Button>
+           ) : (
+             <Button
+               onClick={handleSubmit}
+               disabled={!requiredAnswered || !clientId || isSubmitting}
+             >
+               {isSubmitting ? "Submitting..." : "Submit Assessment"}
+             </Button>
+           )}
+         </div>
 
-        {!clientId && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Client ID is missing. Please access this page through the client profile.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-    </div>
-  );
+         {!clientId && (
+           <Alert variant="destructive" className="mt-4">
+             <AlertCircle className="h-4 w-4" />
+             <AlertDescription>
+               Client ID is missing. Please access this page through the client profile.
+             </AlertDescription>
+           </Alert>
+         )}
+       </div>
+     </div>
+   );
+  }
+
+  // Fallback: should not reach here, but return null to be safe
+  return null;
 }
