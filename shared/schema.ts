@@ -1,4 +1,5 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, date, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, date, doublePrecision, uuid } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -1105,3 +1106,120 @@ export type InsertKpAssessmentResult = z.infer<typeof insertKpAssessmentResultSc
 
 export type KpScoringConfig = typeof kpScoringConfig.$inferSelect;
 export type InsertKpScoringConfig = z.infer<typeof insertKpScoringConfigSchema>;
+
+// Risk Profiling (RP) System Tables
+// RP Questions - Stores questions for risk profiling
+export const riskQuestions = pgTable("risk_questions", {
+  id: serial("id").primaryKey(),
+  questionText: text("question_text").notNull(),
+  section: text("section").notNull(), // 'capacity', 'horizon', 'attitude'
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertRiskQuestionSchema = createInsertSchema(riskQuestions).omit({
+  id: true,
+  createdAt: true,
+});
+
+// RP Question Options - Stores answer options for each question
+export const riskOptions = pgTable("risk_options", {
+  id: serial("id").primaryKey(),
+  questionId: integer("question_id").notNull().references(() => riskQuestions.id, { onDelete: "cascade" }),
+  optionText: text("option_text").notNull(),
+  score: integer("score").notNull().default(0), // 0-4
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertRiskOptionSchema = createInsertSchema(riskOptions).omit({
+  id: true,
+  createdAt: true,
+});
+
+// RP Responses - Individual answers per client
+export const riskResponses = pgTable("risk_responses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: integer("client_id").notNull().references(() => clients.id, { onDelete: "cascade" }),
+  questionId: integer("question_id").notNull().references(() => riskQuestions.id, { onDelete: "cascade" }),
+  optionId: integer("option_id").references(() => riskOptions.id, { onDelete: "set null" }),
+  scoreObtained: integer("score_obtained").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertRiskResponseSchema = createInsertSchema(riskResponses).omit({
+  id: true,
+  createdAt: true,
+});
+
+// RP Assessment - Final summary after completion
+export const riskAssessment = pgTable("risk_assessment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: integer("client_id").notNull().unique().references(() => clients.id, { onDelete: "cascade" }),
+  totalScore: integer("total_score").notNull().default(0),
+  riskCategory: text("risk_category").notNull(), // 'Conservative', 'Moderate', 'Moderately Aggressive', 'Aggressive'
+  completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow(),
+  verifiedBy: integer("verified_by").references(() => users.id, { onDelete: "set null" }),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  overrideReason: text("override_reason"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertRiskAssessmentSchema = createInsertSchema(riskAssessment).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// RP Scoring Matrix - Editable scoring rules without code change
+export const riskScoringMatrix = pgTable("risk_scoring_matrix", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  scoreMin: integer("score_min").notNull(),
+  scoreMax: integer("score_max").notNull(),
+  riskCategory: text("risk_category").notNull(), // 'Conservative', 'Moderate', 'Moderately Aggressive', 'Aggressive'
+  guidance: text("guidance").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertRiskScoringMatrixSchema = createInsertSchema(riskScoringMatrix).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Audit Risk Changes - Tracks RM overrides (optional but recommended for compliance)
+export const auditRiskChanges = pgTable("audit_risk_changes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: integer("client_id").notNull().references(() => clients.id, { onDelete: "cascade" }),
+  oldCategory: text("old_category").notNull(),
+  newCategory: text("new_category").notNull(),
+  changedBy: integer("changed_by").notNull().references(() => users.id),
+  reason: text("reason").notNull(),
+  changedAt: timestamp("changed_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertAuditRiskChangeSchema = createInsertSchema(auditRiskChanges).omit({
+  id: true,
+  changedAt: true,
+});
+
+// Export types
+export type RiskQuestion = typeof riskQuestions.$inferSelect;
+export type InsertRiskQuestion = z.infer<typeof insertRiskQuestionSchema>;
+
+export type RiskOption = typeof riskOptions.$inferSelect;
+export type InsertRiskOption = z.infer<typeof insertRiskOptionSchema>;
+
+export type RiskResponse = typeof riskResponses.$inferSelect;
+export type InsertRiskResponse = z.infer<typeof insertRiskResponseSchema>;
+
+export type RiskAssessment = typeof riskAssessment.$inferSelect;
+export type InsertRiskAssessment = z.infer<typeof insertRiskAssessmentSchema>;
+
+export type RiskScoringMatrix = typeof riskScoringMatrix.$inferSelect;
+export type InsertRiskScoringMatrix = z.infer<typeof insertRiskScoringMatrixSchema>;
+
+export type AuditRiskChange = typeof auditRiskChanges.$inferSelect;
+export type InsertAuditRiskChange = z.infer<typeof insertAuditRiskChangeSchema>;

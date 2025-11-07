@@ -10,111 +10,98 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Save, X, HelpCircle, GraduationCap, Shield } from "lucide-react";
+import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Save, X, HelpCircle } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { RiskProfilingQuestions } from "@/components/qm/RiskProfilingQuestions";
 
-interface KpQuestion {
-  id: number;
+interface RpQuestion {
+  id: string;
   question_text: string;
-  question_category: string;
-  question_type: string;
-  display_order: number;
+  category: string;
+  type: string;
+  order: number;
   is_active: boolean;
   is_required: boolean;
-  help_text?: string;
-  created_by?: number;
   created_at?: string;
   updated_at?: string;
 }
 
-interface KpQuestionOption {
-  id: number;
-  question_id: number;
+interface RpQuestionOption {
+  id: string;
+  question_id: string;
   option_text: string;
-  option_value: string;
-  weightage: number;
-  display_order: number;
-  is_correct?: boolean;
+  score: number;
+  order: number;
+  created_at?: string;
 }
 
-interface QuestionWithOptions extends KpQuestion {
-  options?: KpQuestionOption[];
+interface QuestionWithOptions extends RpQuestion {
+  options?: RpQuestionOption[];
 }
 
 const QUESTION_CATEGORIES = [
-  "investment_basics",
-  "risk_management",
-  "tax_planning",
-  "portfolio_management",
-  "market_analysis",
-  "financial_products"
+  "personal_info",
+  "financial_capacity",
+  "investment_behaviour",
+  "risk_tolerance",
+  "investment_goals"
 ];
 
 const QUESTION_TYPES = [
-  { value: "multiple_choice", label: "Multiple Choice" },
-  { value: "single_select", label: "Single Select" },
-  { value: "rating", label: "Rating Scale" }
+  { value: "multiple_choice", label: "Multiple Choice" }
 ];
 
-export default function QMPortal() {
+export default function RiskQMPortal() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
   const [isOptionDialogOpen, setIsOptionDialogOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionWithOptions | null>(null);
-  const [expandedQuestions, setExpandedQuestions] = useState<Set<number>>(new Set());
+  const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
+  const [editingOptionId, setEditingOptionId] = useState<string | null>(null);
 
   // Form state for question
   const [questionForm, setQuestionForm] = useState({
     question_text: "",
-    question_category: "investment_basics",
-    question_type: "multiple_choice",
-    question_level: "basic", // 'basic' (Q1-Q5), 'intermediate' or 'advanced' (Q6-Q15)
-    display_order: 1,
+    category: "personal_info",
+    type: "multiple_choice",
+    order: 1,
     is_active: true,
     is_required: true,
-    help_text: ""
   });
 
   // Form state for options (multiple options when creating question)
   const [questionOptions, setQuestionOptions] = useState<Array<{
     option_text: string;
-    option_value: string;
-    weightage: number;
-    display_order: number;
-    is_correct: boolean;
+    score: number;
+    order: number;
   }>>([]);
 
   // Form state for option (single option when editing)
   const [optionForm, setOptionForm] = useState({
     option_text: "",
-    option_value: "",
-    weightage: 0,
-    display_order: 1,
-    is_correct: false
+    score: 0,
+    order: 1,
   });
 
   // Fetch questions
-  const { data: questions = [], isLoading } = useQuery<KpQuestion[]>({
-    queryKey: ["/api/kp/questions"],
+  const { data: questions = [], isLoading } = useQuery<RpQuestion[]>({
+    queryKey: ["/api/rp/questions"],
     queryFn: async () => {
-      const response = await fetch("/api/kp/questions");
+      const response = await fetch("/api/rp/questions");
       if (!response.ok) throw new Error("Failed to fetch questions");
       return response.json();
     }
   });
 
   // Fetch options for a question
-  const fetchQuestionWithOptions = async (questionId: number): Promise<QuestionWithOptions> => {
+  const fetchQuestionWithOptions = async (questionId: string): Promise<QuestionWithOptions> => {
     const [questionRes, optionsRes] = await Promise.all([
-      fetch(`/api/kp/questions/${questionId}`, {
+      fetch(`/api/rp/questions/${questionId}`, {
         credentials: "include"
       }),
-      fetch(`/api/kp/questions/${questionId}/options`, {
+      fetch(`/api/rp/questions/${questionId}/options`, {
         credentials: "include"
       })
     ]);
@@ -140,7 +127,7 @@ export default function QMPortal() {
   // Create question mutation
   const createQuestionMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch("/api/kp/questions", {
+      const response = await fetch("/api/rp/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -149,7 +136,7 @@ export default function QMPortal() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/kp/questions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rp/questions"] });
       setIsQuestionDialogOpen(false);
       resetQuestionForm();
       toast({ title: "Success", description: "Question created successfully" });
@@ -161,8 +148,8 @@ export default function QMPortal() {
 
   // Update question mutation
   const updateQuestionMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const response = await fetch(`/api/kp/questions/${id}`, {
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await fetch(`/api/rp/questions/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -171,7 +158,7 @@ export default function QMPortal() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/kp/questions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rp/questions"] });
       setIsQuestionDialogOpen(false);
       setSelectedQuestion(null);
       resetQuestionForm();
@@ -184,15 +171,15 @@ export default function QMPortal() {
 
   // Delete question mutation
   const deleteQuestionMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await fetch(`/api/kp/questions/${id}`, {
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/rp/questions/${id}`, {
         method: "DELETE"
       });
       if (!response.ok) throw new Error("Failed to delete question");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/kp/questions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rp/questions"] });
       toast({ title: "Success", description: "Question deleted successfully" });
     },
     onError: (error: Error) => {
@@ -202,8 +189,8 @@ export default function QMPortal() {
 
   // Create option mutation
   const createOptionMutation = useMutation({
-    mutationFn: async ({ questionId, data }: { questionId: number; data: any }) => {
-      const response = await fetch(`/api/kp/questions/${questionId}/options`, {
+    mutationFn: async ({ questionId, data }: { questionId: string; data: any }) => {
+      const response = await fetch(`/api/rp/questions/${questionId}/options`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -217,6 +204,7 @@ export default function QMPortal() {
       }
       setIsOptionDialogOpen(false);
       resetOptionForm();
+      setEditingOptionId(null);
       toast({ title: "Success", description: "Option added successfully" });
     },
     onError: (error: Error) => {
@@ -226,8 +214,8 @@ export default function QMPortal() {
 
   // Update option mutation
   const updateOptionMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const response = await fetch(`/api/kp/options/${id}`, {
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await fetch(`/api/rp/options/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -241,6 +229,7 @@ export default function QMPortal() {
       }
       setIsOptionDialogOpen(false);
       resetOptionForm();
+      setEditingOptionId(null);
       toast({ title: "Success", description: "Option updated successfully" });
     },
     onError: (error: Error) => {
@@ -250,8 +239,8 @@ export default function QMPortal() {
 
   // Delete option mutation
   const deleteOptionMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await fetch(`/api/kp/options/${id}`, {
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/rp/options/${id}`, {
         method: "DELETE"
       });
       if (!response.ok) throw new Error("Failed to delete option");
@@ -271,13 +260,11 @@ export default function QMPortal() {
   const resetQuestionForm = () => {
     setQuestionForm({
       question_text: "",
-      question_category: "investment_basics",
-      question_type: "multiple_choice",
-      question_level: "basic",
-      display_order: 1,
+      category: "personal_info",
+      type: "multiple_choice",
+      order: 1,
       is_active: true,
       is_required: true,
-      help_text: ""
     });
     setQuestionOptions([]);
   };
@@ -285,17 +272,15 @@ export default function QMPortal() {
   const addQuestionOption = () => {
     setQuestionOptions(prev => [...prev, {
       option_text: "",
-      option_value: "",
-      weightage: 0,
-      display_order: prev.length + 1, // Start from 1, not 0
-      is_correct: false
+      score: 0,
+      order: prev.length + 1,
     }]);
   };
 
   const removeQuestionOption = (index: number) => {
     setQuestionOptions(prev => prev.filter((_, i) => i !== index).map((opt, i) => ({
       ...opt,
-      display_order: i + 1 // Start from 1, not 0
+      order: i + 1
     })));
   };
 
@@ -308,45 +293,40 @@ export default function QMPortal() {
   const resetOptionForm = () => {
     setOptionForm({
       option_text: "",
-      option_value: "",
-      weightage: 0,
-      display_order: 1,
-      is_correct: false
+      score: 0,
+      order: 1,
     });
   };
 
-  const handleEditQuestion = async (question: KpQuestion) => {
+  const handleEditQuestion = async (question: RpQuestion) => {
     const questionWithOptions = await fetchQuestionWithOptions(question.id);
     setSelectedQuestion(questionWithOptions);
     setQuestionForm({
       question_text: question.question_text,
-      question_category: question.question_category,
-      question_type: question.question_type,
-      question_level: (question as any).question_level || "basic",
-      display_order: question.display_order,
+      category: question.category,
+      type: question.type,
+      order: question.order,
       is_active: question.is_active,
       is_required: question.is_required,
-      help_text: question.help_text || ""
     });
     setIsQuestionDialogOpen(true);
   };
 
   const handleAddOption = (question: QuestionWithOptions) => {
     setSelectedQuestion(question);
+    setEditingOptionId(null);
     resetOptionForm();
-    // Set display order to next available number (starting from 1)
-    setOptionForm(prev => ({ ...prev, display_order: (question.options?.length || 0) + 1 }));
+    setOptionForm(prev => ({ ...prev, order: (question.options?.length || 0) + 1 }));
     setIsOptionDialogOpen(true);
   };
 
-  const handleEditOption = (question: QuestionWithOptions, option: KpQuestionOption) => {
+  const handleEditOption = (question: QuestionWithOptions, option: RpQuestionOption) => {
     setSelectedQuestion(question);
+    setEditingOptionId(option.id);
     setOptionForm({
       option_text: option.option_text,
-      option_value: option.option_value,
-      weightage: option.weightage,
-      display_order: option.display_order,
-      is_correct: option.is_correct || false
+      score: option.score,
+      order: option.order,
     });
     setIsOptionDialogOpen(true);
   };
@@ -354,10 +334,8 @@ export default function QMPortal() {
   const handleSubmitQuestion = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedQuestion) {
-      // Updating existing question - no options included
       updateQuestionMutation.mutate({ id: selectedQuestion.id, data: questionForm });
     } else {
-      // Creating new question - include options if provided
       const questionData = {
         ...questionForm,
         options: questionOptions.filter(opt => opt.option_text.trim() !== "")
@@ -370,16 +348,18 @@ export default function QMPortal() {
     e.preventDefault();
     if (!selectedQuestion) return;
 
-    const optionData = {
-      ...optionForm,
-      option_value: optionForm.option_value || optionForm.option_text
-    };
+    const optionData = { ...optionForm };
 
-    // Check if editing (we'd need to track this, for now assume new)
-    createOptionMutation.mutate({ questionId: selectedQuestion.id, data: optionData });
+    if (editingOptionId) {
+      // Update existing option
+      updateOptionMutation.mutate({ id: editingOptionId, data: optionData });
+    } else {
+      // Create new option
+      createOptionMutation.mutate({ questionId: selectedQuestion.id, data: optionData });
+    }
   };
 
-  const toggleQuestionExpansion = async (questionId: number) => {
+  const toggleQuestionExpansion = async (questionId: string) => {
     const newExpanded = new Set(expandedQuestions);
     if (newExpanded.has(questionId)) {
       newExpanded.delete(questionId);
@@ -387,13 +367,12 @@ export default function QMPortal() {
     } else {
       newExpanded.add(questionId);
       setExpandedQuestions(newExpanded);
-      // Fetch options when expanding
       const questionWithOptions = await fetchQuestionWithOptions(questionId);
       setSelectedQuestion(questionWithOptions);
     }
   };
 
-  // Check if user is QM or admin (role can be "Question Manager" or "question_manager" or "admin")
+  // Check if user is QM or admin
   const isAuthorized = user?.role === "Question Manager" || 
                        user?.role === "question_manager" || 
                        user?.role === "admin" || 
@@ -415,41 +394,20 @@ export default function QMPortal() {
   return (
     <div className="p-6 bg-background">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Question Manager Portal</h1>
-          <p className="text-muted-foreground mt-1">Manage Knowledge Profiling and Risk Profiling questions and scoring</p>
-        </div>
-
-        <Tabs defaultValue="knowledge" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="knowledge" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Knowledge Profiling
-            </TabsTrigger>
-            <TabsTrigger value="risk" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Risk Profiling
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="knowledge" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Knowledge Profiling Questions</h2>
-                <p className="text-muted-foreground mt-1">Manage Knowledge Profiling questions and scoring</p>
-              </div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Risk Profiling Question Manager Portal</h1>
+            <p className="text-muted-foreground mt-1">Manage Risk Profiling questions and scoring</p>
+          </div>
           <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => { 
                 setSelectedQuestion(null); 
                 resetQuestionForm();
-                // Add one default option when creating new question
                 setQuestionOptions([{
                   option_text: "",
-                  option_value: "",
-                  weightage: 0,
-                  display_order: 1,
-                  is_correct: false
+                  score: 0,
+                  order: 1,
                 }]);
               }}>
                 <Plus className="mr-2 h-4 w-4" />
@@ -475,10 +433,10 @@ export default function QMPortal() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="question_category">Category *</Label>
+                    <Label htmlFor="category">Category *</Label>
                     <Select
-                      value={questionForm.question_category}
-                      onValueChange={(value) => setQuestionForm(prev => ({ ...prev, question_category: value }))}
+                      value={questionForm.category}
+                      onValueChange={(value) => setQuestionForm(prev => ({ ...prev, category: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -491,64 +449,14 @@ export default function QMPortal() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="question_type">Question Type *</Label>
-                    <Select
-                      value={questionForm.question_type}
-                      onValueChange={(value) => setQuestionForm(prev => ({ ...prev, question_type: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {QUESTION_TYPES.map(type => (
-                          <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="question_level">Question Level *</Label>
-                    <Select
-                      value={questionForm.question_level}
-                      onValueChange={(value) => setQuestionForm(prev => ({ ...prev, question_level: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="basic">Basic (Q1-Q5)</SelectItem>
-                        <SelectItem value="intermediate">Intermediate (Q6-Q15)</SelectItem>
-                        <SelectItem value="advanced">Advanced (Q6-Q15)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Basic: Q1-Q5, Intermediate/Advanced: Q6-Q15
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="display_order">Display Order</Label>
+                    <Label htmlFor="order">Display Order</Label>
                     <Input
-                      id="display_order"
+                      id="order"
                       type="number"
-                      value={questionForm.display_order}
-                      onChange={(e) => setQuestionForm(prev => ({ ...prev, display_order: parseInt(e.target.value) || 1 }))}
+                      value={questionForm.order}
+                      onChange={(e) => setQuestionForm(prev => ({ ...prev, order: parseInt(e.target.value) || 1 }))}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Order: 1-5 (Basic), 6-15 (Intermediate/Advanced)
-                    </p>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="help_text">Help Text (Optional)</Label>
-                  <Textarea
-                    id="help_text"
-                    value={questionForm.help_text}
-                    onChange={(e) => setQuestionForm(prev => ({ ...prev, help_text: e.target.value }))}
-                    placeholder="Additional guidance for answering this question..."
-                    rows={2}
-                  />
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
@@ -616,31 +524,33 @@ export default function QMPortal() {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-2">
-                                <Label htmlFor={`weightage_${index}`} className="text-xs">Option Score *</Label>
+                                <Label htmlFor={`score_${index}`} className="text-xs">Score *</Label>
                                 <Select
-                                  value={option.weightage.toString()}
-                                  onValueChange={(value) => updateQuestionOption(index, "weightage", parseInt(value))}
+                                  value={option.score.toString()}
+                                  onValueChange={(value) => updateQuestionOption(index, "score", parseInt(value))}
                                 >
                                   <SelectTrigger>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="0">0 points (Incorrect / Not Sure)</SelectItem>
-                                    <SelectItem value="1">1 point (Partially correct)</SelectItem>
-                                    <SelectItem value="3">3 points (Fully correct / Ideal)</SelectItem>
+                                    <SelectItem value="0">0 points</SelectItem>
+                                    <SelectItem value="1">1 point</SelectItem>
+                                    <SelectItem value="2">2 points</SelectItem>
+                                    <SelectItem value="3">3 points</SelectItem>
+                                    <SelectItem value="4">4 points</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground">
-                                  Score: 0 (wrong), 1 (partial), 3 (correct)
+                                  Score: 0-4 (higher = more risk tolerance)
                                 </p>
                               </div>
                               <div className="space-y-2">
-                                <Label htmlFor={`display_order_${index}`} className="text-xs">Display Order</Label>
+                                <Label htmlFor={`order_${index}`} className="text-xs">Display Order</Label>
                                 <Input
-                                  id={`display_order_${index}`}
+                                  id={`order_${index}`}
                                   type="number"
-                                  value={option.display_order}
-                                  onChange={(e) => updateQuestionOption(index, "display_order", parseInt(e.target.value) || (index + 1))}
+                                  value={option.order}
+                                  onChange={(e) => updateQuestionOption(index, "order", parseInt(e.target.value) || (index + 1))}
                                 />
                               </div>
                             </div>
@@ -673,18 +583,18 @@ export default function QMPortal() {
               </form>
             </DialogContent>
           </Dialog>
-            </div>
+        </div>
 
-            {isLoading ? (
-              <div className="text-center py-12">Loading questions...</div>
-            ) : questions.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground">No questions yet. Create your first question to get started.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-4">
+        {isLoading ? (
+          <div className="text-center py-12">Loading questions...</div>
+        ) : questions.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground">No questions yet. Create your first question to get started.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
             {questions.map((question) => {
               const isExpanded = expandedQuestions.has(question.id);
               const questionWithOptions = selectedQuestion?.id === question.id ? selectedQuestion : null;
@@ -700,16 +610,10 @@ export default function QMPortal() {
                           {question.is_required && <Badge variant="outline">Required</Badge>}
                         </div>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>Category: {question.question_category.replace(/_/g, " ")}</span>
-                          <span>Type: {question.question_type}</span>
-                          <span>Order: {question.display_order}</span>
+                          <span>Category: {question.category.replace(/_/g, " ")}</span>
+                          <span>Type: {question.type}</span>
+                          <span>Order: {question.order}</span>
                         </div>
-                        {question.help_text && (
-                          <div className="mt-2 text-sm text-muted-foreground flex items-start gap-1">
-                            <HelpCircle className="h-4 w-4 mt-0.5" />
-                            <span>{question.help_text}</span>
-                          </div>
-                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <Button
@@ -756,8 +660,8 @@ export default function QMPortal() {
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle>Add Option</DialogTitle>
-                              <DialogDescription>Configure the answer option and its weightage</DialogDescription>
+                              <DialogTitle>{editingOptionId ? "Edit Option" : "Add Option"}</DialogTitle>
+                              <DialogDescription>Configure the answer option and its score</DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleSubmitOption} className="space-y-4">
                               <div className="space-y-2">
@@ -769,51 +673,48 @@ export default function QMPortal() {
                                   required
                                 />
                               </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="option_value">Option Value</Label>
-                                <Input
-                                  id="option_value"
-                                  value={optionForm.option_value}
-                                  onChange={(e) => setOptionForm(prev => ({ ...prev, option_value: e.target.value }))}
-                                  placeholder="Leave empty to use option text"
-                                />
-                              </div>
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                  <Label htmlFor="weightage">Option Score *</Label>
+                                  <Label htmlFor="score">Score *</Label>
                                   <Select
-                                    value={optionForm.weightage.toString()}
-                                    onValueChange={(value) => setOptionForm(prev => ({ ...prev, weightage: parseInt(value) }))}
+                                    value={optionForm.score.toString()}
+                                    onValueChange={(value) => setOptionForm(prev => ({ ...prev, score: parseInt(value) }))}
                                   >
                                     <SelectTrigger>
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="0">0 points (Incorrect / Not Sure)</SelectItem>
-                                      <SelectItem value="1">1 point (Partially correct)</SelectItem>
-                                      <SelectItem value="3">3 points (Fully correct / Ideal)</SelectItem>
+                                      <SelectItem value="0">0 points</SelectItem>
+                                      <SelectItem value="1">1 point</SelectItem>
+                                      <SelectItem value="2">2 points</SelectItem>
+                                      <SelectItem value="3">3 points</SelectItem>
+                                      <SelectItem value="4">4 points</SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <p className="text-xs text-muted-foreground">
-                                    Score: 0 (wrong), 1 (partial), 3 (correct)
+                                    Score: 0-4 (higher = more risk tolerance)
                                   </p>
                                 </div>
                                 <div className="space-y-2">
-                                  <Label htmlFor="display_order">Display Order</Label>
+                                  <Label htmlFor="order">Display Order</Label>
                                   <Input
-                                    id="display_order"
+                                    id="order"
                                     type="number"
-                                    value={optionForm.display_order}
-                                    onChange={(e) => setOptionForm(prev => ({ ...prev, display_order: parseInt(e.target.value) || 1 }))}
+                                    value={optionForm.order}
+                                    onChange={(e) => setOptionForm(prev => ({ ...prev, order: parseInt(e.target.value) || 1 }))}
                                   />
                                 </div>
                               </div>
                               <DialogFooter>
-                                <Button type="button" variant="outline" onClick={() => setIsOptionDialogOpen(false)}>
+                                <Button type="button" variant="outline" onClick={() => {
+                                  setIsOptionDialogOpen(false);
+                                  resetOptionForm();
+                                  setEditingOptionId(null);
+                                }}>
                                   Cancel
                                 </Button>
-                                <Button type="submit" disabled={createOptionMutation.isPending}>
-                                  Add Option
+                                <Button type="submit" disabled={createOptionMutation.isPending || updateOptionMutation.isPending}>
+                                  {editingOptionId ? "Update" : "Add"} Option
                                 </Button>
                               </DialogFooter>
                             </form>
@@ -834,8 +735,8 @@ export default function QMPortal() {
                             {questionWithOptions.options.map((option) => (
                               <TableRow key={option.id}>
                                 <TableCell>{option.option_text}</TableCell>
-                                <TableCell>{option.weightage} points</TableCell>
-                                <TableCell>{option.display_order}</TableCell>
+                                <TableCell>{option.score} points</TableCell>
+                                <TableCell>{option.order}</TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-2">
                                     <Button
@@ -871,15 +772,10 @@ export default function QMPortal() {
                 </Card>
               );
             })}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="risk" className="mt-6">
-            <RiskProfilingQuestions />
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
