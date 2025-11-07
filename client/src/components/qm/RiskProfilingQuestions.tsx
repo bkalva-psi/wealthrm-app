@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
@@ -50,6 +51,10 @@ export function RiskProfilingQuestions() {
   const [selectedQuestion, setSelectedQuestion] = useState<QuestionWithOptions | null>(null);
   const [expandedQuestions, setExpandedQuestions] = useState<Set<number>>(new Set());
   const [editingOptionId, setEditingOptionId] = useState<number | null>(null);
+  const [deleteQuestionDialogOpen, setDeleteQuestionDialogOpen] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<number | null>(null);
+  const [deleteOptionDialogOpen, setDeleteOptionDialogOpen] = useState(false);
+  const [optionToDelete, setOptionToDelete] = useState<number | null>(null);
 
   // Form state for question
   const [questionForm, setQuestionForm] = useState({
@@ -76,7 +81,9 @@ export function RiskProfilingQuestions() {
   const { data: questions = [], isLoading } = useQuery<RpQuestion[]>({
     queryKey: ["/api/rp/questions"],
     queryFn: async () => {
-      const response = await fetch("/api/rp/questions");
+      const response = await fetch("/api/rp/questions", {
+        credentials: "include"
+      });
       if (!response.ok) throw new Error("Failed to fetch questions");
       return response.json();
     }
@@ -598,9 +605,8 @@ export function RiskProfilingQuestions() {
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            if (confirm("Are you sure you want to delete this question? This will also delete all associated options and cannot be undone.")) {
-                              deleteQuestionMutation.mutate(question.id);
-                            }
+                            setQuestionToDelete(question.id);
+                            setDeleteQuestionDialogOpen(true);
                           }}
                           disabled={deleteQuestionMutation.isPending}
                         >
@@ -713,9 +719,8 @@ export function RiskProfilingQuestions() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => {
-                                      if (confirm("Are you sure you want to delete this option? This action cannot be undone.")) {
-                                        deleteOptionMutation.mutate(option.id);
-                                      }
+                                      setOptionToDelete(option.id);
+                                      setDeleteOptionDialogOpen(true);
                                     }}
                                     disabled={deleteOptionMutation.isPending}
                                   >
@@ -737,6 +742,58 @@ export function RiskProfilingQuestions() {
           })}
         </div>
       )}
+
+      {/* Delete Question Confirmation Dialog */}
+      <AlertDialog open={deleteQuestionDialogOpen} onOpenChange={setDeleteQuestionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Question</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this question? This will also delete all associated options and cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (questionToDelete !== null) {
+                  deleteQuestionMutation.mutate(questionToDelete);
+                  setQuestionToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Option Confirmation Dialog */}
+      <AlertDialog open={deleteOptionDialogOpen} onOpenChange={setDeleteOptionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Option</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this option? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (optionToDelete !== null) {
+                  deleteOptionMutation.mutate(optionToDelete);
+                  setOptionToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

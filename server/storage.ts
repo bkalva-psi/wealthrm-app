@@ -1093,6 +1093,65 @@ export class DatabaseStorage implements IStorage {
 
   // Client methods
   async getClient(id: number): Promise<Client | undefined> {
+    // If db is not initialized (Supabase-only mode), use Supabase
+    if (!db || !db.select) {
+      const { data, error } = await supabaseServer
+        .from('clients')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error || !data) {
+        return undefined;
+      }
+      
+      // Map snake_case to camelCase
+      return {
+        id: data.id,
+        fullName: data.full_name,
+        initials: data.initials,
+        tier: data.tier,
+        aum: data.aum,
+        aumValue: data.aum_value,
+        email: data.email,
+        phone: data.phone,
+        lastContactDate: data.last_contact_date,
+        lastTransactionDate: data.last_transaction_date,
+        riskProfile: data.risk_profile,
+        alertCount: data.alert_count,
+        createdAt: data.created_at,
+        assignedTo: data.assigned_to,
+        dateOfBirth: data.date_of_birth,
+        gender: data.gender,
+        maritalStatus: data.marital_status,
+        anniversaryDate: data.anniversary_date,
+        homeAddress: data.home_address,
+        homeCity: data.home_city,
+        homeState: data.home_state,
+        homePincode: data.home_pincode,
+        workAddress: data.work_address,
+        workCity: data.work_city,
+        workState: data.work_state,
+        workPincode: data.work_pincode,
+        profession: data.profession,
+        sectorOfEmployment: data.sector_of_employment,
+        designation: data.designation,
+        companyName: data.company_name,
+        annualIncome: data.annual_income,
+        workExperience: data.work_experience,
+        preferredContactMethod: data.preferred_contact_method,
+        preferredContactTime: data.preferred_contact_time,
+        communicationFrequency: data.communication_frequency,
+        spouseName: data.spouse_name,
+        dependentsCount: data.dependents_count,
+        familyFinancialGoals: data.family_financial_goals,
+        kycStatus: data.kyc_status,
+        panNumber: data.pan_number,
+        taxResidencyStatus: data.tax_residency_status,
+        fatcaStatus: data.fatca_status,
+      } as Client;
+    }
+    
     const [client] = await db.select().from(clients).where(eq(clients.id, id));
     return client || undefined;
   }
@@ -1113,11 +1172,173 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateClient(id: number, clientUpdate: Partial<InsertClient>): Promise<Client | undefined> {
-    const [client] = await db.update(clients)
-      .set(clientUpdate)
-      .where(eq(clients.id, id))
-      .returning();
-    return client || undefined;
+    try {
+      console.log("[DatabaseStorage] updateClient called with id:", id, "update:", clientUpdate);
+      console.log("[DatabaseStorage] db object:", db ? "exists" : "null", "db.update:", db?.update ? "exists" : "missing");
+      
+      // If db is not initialized (Supabase-only mode), use Supabase
+      if (!db || !db.update) {
+        console.log("[DatabaseStorage] Using Supabase for updateClient");
+        
+        // Map camelCase to snake_case for Supabase
+        const camelToSnake: Record<string, string> = {
+          fullName: 'full_name',
+          dateOfBirth: 'date_of_birth',
+          gender: 'gender',
+          maritalStatus: 'marital_status',
+          anniversaryDate: 'anniversary_date',
+          preferredContactMethod: 'preferred_contact_method',
+          preferredContactTime: 'preferred_contact_time',
+          communicationFrequency: 'communication_frequency',
+          homeAddress: 'home_address',
+          homeCity: 'home_city',
+          homeState: 'home_state',
+          homePincode: 'home_pincode',
+          workAddress: 'work_address',
+          workCity: 'work_city',
+          workState: 'work_state',
+          workPincode: 'work_pincode',
+          sectorOfEmployment: 'sector_of_employment',
+          companyName: 'company_name',
+          annualIncome: 'annual_income',
+          workExperience: 'work_experience',
+          spouseName: 'spouse_name',
+          dependentsCount: 'dependents_count',
+          familyFinancialGoals: 'family_financial_goals',
+          kycStatus: 'kyc_status',
+          panNumber: 'pan_number',
+          taxResidencyStatus: 'tax_residency_status',
+          fatcaStatus: 'fatca_status',
+        };
+        
+        // Clean the update data - convert camelCase to snake_case and handle date conversions
+        const cleanUpdate: Record<string, any> = {};
+        for (const [key, value] of Object.entries(clientUpdate)) {
+          if (value !== undefined) {
+            // Convert camelCase to snake_case
+            const dbKey = camelToSnake[key] || key;
+            
+            // Handle date fields - convert to ISO string
+            if (value !== null && typeof value === 'string' && (key.includes('Date') || key.includes('date'))) {
+              try {
+                const dateValue = new Date(value);
+                if (!isNaN(dateValue.getTime())) {
+                  cleanUpdate[dbKey] = dateValue.toISOString();
+                } else {
+                  cleanUpdate[dbKey] = null;
+                }
+              } catch {
+                cleanUpdate[dbKey] = null;
+              }
+            } else if (value === null || value === '') {
+              // Set null for empty strings
+              cleanUpdate[dbKey] = null;
+            } else {
+              cleanUpdate[dbKey] = value;
+            }
+          }
+        }
+        
+        console.log("[DatabaseStorage] Updating client", id, "with cleaned data:", JSON.stringify(cleanUpdate, null, 2));
+        
+        // Check if we have any data to update
+        if (Object.keys(cleanUpdate).length === 0) {
+          console.log("[DatabaseStorage] No data to update, fetching current client");
+          return await this.getClient(id);
+        }
+        
+        const { data, error } = await supabaseServer
+          .from('clients')
+          .update(cleanUpdate)
+          .eq('id', id)
+          .select()
+          .single();
+        
+        if (error) {
+          console.error("[DatabaseStorage] Supabase updateClient error:", error);
+          console.error("[DatabaseStorage] Error code:", error.code);
+          console.error("[DatabaseStorage] Error message:", error.message);
+          console.error("[DatabaseStorage] Error details:", error.details);
+          console.error("[DatabaseStorage] Error hint:", error.hint);
+          throw error;
+        }
+        
+        console.log("[DatabaseStorage] Supabase update response - data:", data, "error:", error);
+        
+        // If no data returned, fetch the updated client
+        if (!data) {
+          console.log("[DatabaseStorage] No data returned from update, fetching client");
+          return await this.getClient(id);
+        }
+        
+        // Map snake_case back to camelCase for return
+        const mapped: any = {
+          id: data.id,
+          fullName: data.full_name,
+          initials: data.initials,
+          tier: data.tier,
+          aum: data.aum,
+          aumValue: data.aum_value,
+          email: data.email,
+          phone: data.phone,
+          lastContactDate: data.last_contact_date,
+          lastTransactionDate: data.last_transaction_date,
+          riskProfile: data.risk_profile,
+          alertCount: data.alert_count,
+          createdAt: data.created_at,
+          assignedTo: data.assigned_to,
+          dateOfBirth: data.date_of_birth,
+          gender: data.gender,
+          maritalStatus: data.marital_status,
+          anniversaryDate: data.anniversary_date,
+          homeAddress: data.home_address,
+          homeCity: data.home_city,
+          homeState: data.home_state,
+          homePincode: data.home_pincode,
+          workAddress: data.work_address,
+          workCity: data.work_city,
+          workState: data.work_state,
+          workPincode: data.work_pincode,
+          profession: data.profession,
+          sectorOfEmployment: data.sector_of_employment,
+          designation: data.designation,
+          companyName: data.company_name,
+          annualIncome: data.annual_income,
+          workExperience: data.work_experience,
+          preferredContactMethod: data.preferred_contact_method,
+          preferredContactTime: data.preferred_contact_time,
+          communicationFrequency: data.communication_frequency,
+          spouseName: data.spouse_name,
+          dependentsCount: data.dependents_count,
+          familyFinancialGoals: data.family_financial_goals,
+          kycStatus: data.kyc_status,
+          panNumber: data.pan_number,
+          taxResidencyStatus: data.tax_residency_status,
+          fatcaStatus: data.fatca_status,
+        };
+        
+        console.log("[DatabaseStorage] Returning mapped client data");
+        return mapped;
+      }
+      
+      // Use Drizzle if available
+      try {
+        const [client] = await db.update(clients)
+          .set(clientUpdate)
+          .where(eq(clients.id, id))
+          .returning();
+        return client || undefined;
+      } catch (drizzleError) {
+        console.error("[DatabaseStorage] Drizzle updateClient error:", drizzleError);
+        throw drizzleError;
+      }
+    } catch (error: any) {
+      console.error("[DatabaseStorage] updateClient error:", error);
+      console.error("[DatabaseStorage] Error stack:", error.stack);
+      console.error("[DatabaseStorage] Error name:", error.name);
+      console.error("[DatabaseStorage] Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      throw error;
+    }
   }
 
   async deleteClient(id: number): Promise<boolean> {
