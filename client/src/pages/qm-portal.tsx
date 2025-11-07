@@ -10,11 +10,9 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Save, X, HelpCircle, GraduationCap, Shield } from "lucide-react";
+import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Save, X, HelpCircle } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { RiskProfilingQuestions } from "@/components/qm/RiskProfilingQuestions";
 
 interface KpQuestion {
   id: number;
@@ -415,29 +413,11 @@ export default function QMPortal() {
   return (
     <div className="p-6 bg-background">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Question Manager Portal</h1>
-          <p className="text-muted-foreground mt-1">Manage Knowledge Profiling and Risk Profiling questions and scoring</p>
-        </div>
-
-        <Tabs defaultValue="knowledge" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="knowledge" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Knowledge Profiling
-            </TabsTrigger>
-            <TabsTrigger value="risk" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Risk Profiling
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="knowledge" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Knowledge Profiling Questions</h2>
-                <p className="text-muted-foreground mt-1">Manage Knowledge Profiling questions and scoring</p>
-              </div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Question Manager Portal</h1>
+            <p className="text-muted-foreground mt-1">Manage Knowledge Profiling questions and scoring</p>
+          </div>
           <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => { 
@@ -673,18 +653,18 @@ export default function QMPortal() {
               </form>
             </DialogContent>
           </Dialog>
-            </div>
+        </div>
 
-            {isLoading ? (
-              <div className="text-center py-12">Loading questions...</div>
-            ) : questions.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground">No questions yet. Create your first question to get started.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-4">
+        {isLoading ? (
+          <div className="text-center py-12">Loading questions...</div>
+        ) : questions.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground">No questions yet. Create your first question to get started.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
             {questions.map((question) => {
               const isExpanded = expandedQuestions.has(question.id);
               const questionWithOptions = selectedQuestion?.id === question.id ? selectedQuestion : null;
@@ -871,14 +851,8 @@ export default function QMPortal() {
                 </Card>
               );
             })}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="risk" className="mt-6">
-            <RiskProfilingQuestions />
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ChevronRight, ChevronLeft, CheckCircle2, AlertCircle, TrendingUp, BarChart3, Calendar, RefreshCw, Info, Play, Loader2 } from "lucide-react";
+import { Shield, ChevronRight, ChevronLeft, CheckCircle2, AlertCircle, TrendingUp, BarChart3, Calendar, RefreshCw, Info, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -58,31 +57,184 @@ const riskCategoryInfo = {
   },
 };
 
-// Interface for database question structure
-interface DbQuestion {
-  id: number;
-  question_text: string;
-  section: string; // 'capacity', 'horizon', 'attitude'
-  order_index: number;
-  created_at?: string;
-}
-
-interface DbOption {
-  id: number;
-  question_id: number;
-  option_text: string;
-  score: number;
-  order_index: number;
-  created_at?: string;
-}
-
-// Transformed question structure for the component
-interface Question {
-  id: number;
-  section: string;
-  question: string;
-  options: Array<{ label: string; score: number }>;
-}
+// Question definitions with options and scores
+const questions = [
+  {
+    id: 1,
+    section: "A",
+    question: "What is your age group?",
+    options: [
+      { label: "Below 30", score: 4 },
+      { label: "30–40", score: 3 },
+      { label: "40–50", score: 2 },
+      { label: "50–60", score: 1 },
+      { label: "Above 60", score: 0 },
+    ],
+  },
+  {
+    id: 2,
+    section: "A",
+    question: "What is your main income source?",
+    options: [
+      { label: "Fixed monthly salary", score: 3 },
+      { label: "Stable business income", score: 2 },
+      { label: "Business income that changes every month", score: 1 },
+      { label: "No fixed income", score: 0 },
+    ],
+  },
+  {
+    id: 3,
+    section: "A",
+    question: "How many people depend on you financially?",
+    options: [
+      { label: "None", score: 4 },
+      { label: "1–2 people", score: 3 },
+      { label: "3–4 people", score: 2 },
+      { label: "More than 4 people", score: 0 },
+    ],
+  },
+  {
+    id: 4,
+    section: "A",
+    question: "How many months of expenses have you saved for emergencies?",
+    options: [
+      { label: "More than 12 months", score: 4 },
+      { label: "6–12 months", score: 3 },
+      { label: "3–6 months", score: 2 },
+      { label: "Less than 3 months", score: 1 },
+      { label: "I don't have emergency savings", score: 0 },
+    ],
+  },
+  {
+    id: 5,
+    section: "A",
+    question: "What types of investments do you currently have?",
+    options: [
+      { label: "Mostly stocks (equity)", score: 4 },
+      { label: "Mix of stocks & fixed-income", score: 3 },
+      { label: "Mostly fixed-income (FD, bonds)", score: 2 },
+      { label: "Only bank deposits", score: 1 },
+      { label: "No investments yet", score: 0 },
+    ],
+  },
+  {
+    id: 6,
+    section: "B",
+    question: "What is your main reason for investing?",
+    options: [
+      { label: "Grow wealth faster", score: 4 },
+      { label: "Build wealth steadily", score: 3 },
+      { label: "Earn regular income", score: 2 },
+      { label: "Protect money, avoid loss", score: 0 },
+    ],
+  },
+  {
+    id: 7,
+    section: "B",
+    question: "How long do you want to stay invested?",
+    options: [
+      { label: "More than 10 years", score: 4 },
+      { label: "5–10 years", score: 3 },
+      { label: "3–5 years", score: 2 },
+      { label: "1–3 years", score: 1 },
+      { label: "Less than 1 year", score: 0 },
+    ],
+  },
+  {
+    id: 8,
+    section: "B",
+    question: "How soon might you need the money you invest?",
+    options: [
+      { label: "I won't need it soon", score: 4 },
+      { label: "Unlikely", score: 3 },
+      { label: "Maybe in some time", score: 2 },
+      { label: "I may need it anytime", score: 0 },
+    ],
+  },
+  {
+    id: 9,
+    section: "B",
+    question: "What returns do you expect from your investments?",
+    options: [
+      { label: "Above 15%", score: 4 },
+      { label: "10–15%", score: 3 },
+      { label: "8–10%", score: 2 },
+      { label: "Less than 8%", score: 0 },
+    ],
+  },
+  {
+    id: 10,
+    section: "B",
+    question: "If your investment value falls because of market changes, what will you do?",
+    options: [
+      { label: "Invest more", score: 4 },
+      { label: "Hold and wait", score: 3 },
+      { label: "Stay but feel worried", score: 2 },
+      { label: "Reduce risky investments", score: 1 },
+      { label: "Sell and exit", score: 0 },
+    ],
+  },
+  {
+    id: 11,
+    section: "C",
+    question: "If your investment falls by 20%, how will you react?",
+    options: [
+      { label: "Invest more at lower price", score: 4 },
+      { label: "Keep my investments", score: 3 },
+      { label: "Review and adjust", score: 2 },
+      { label: "Reduce risky investments", score: 1 },
+      { label: "Sell everything", score: 0 },
+    ],
+  },
+  {
+    id: 12,
+    section: "C",
+    question: "How well do you understand investments and markets?",
+    options: [
+      { label: "Expert understanding", score: 4 },
+      { label: "Good understanding", score: 3 },
+      { label: "Basic knowledge", score: 2 },
+      { label: "Very little knowledge", score: 1 },
+      { label: "No knowledge", score: 0 },
+    ],
+  },
+  {
+    id: 13,
+    section: "C",
+    question: "How comfortable are you with price ups and downs?",
+    options: [
+      { label: "Very comfortable", score: 4 },
+      { label: "Comfortable", score: 3 },
+      { label: "Manageable", score: 2 },
+      { label: "Prefer stability", score: 1 },
+      { label: "Don't want risk", score: 0 },
+    ],
+  },
+  {
+    id: 14,
+    section: "C",
+    question: "How much experience do you have in stock market investing?",
+    options: [
+      { label: "More than 5 years", score: 4 },
+      { label: "3–5 years", score: 3 },
+      { label: "Less than 3 years", score: 2 },
+      { label: "Very little", score: 1 },
+      { label: "No experience", score: 0 },
+    ],
+  },
+  {
+    id: 15,
+    section: "C",
+    question: "Which investment style suits you best?",
+    options: [
+      { label: "Mostly stocks / high growth", score: 4 },
+      { label: "Mix of growth & stability", score: 3 },
+      { label: "Mostly safe investments", score: 2 },
+      { label: "Earn income (FDs, bonds)", score: 1 },
+      { label: "Very safe, protect capital only", score: 0 },
+    ],
+  },
+];
 
 // Calculate category based on total score
 const calculateCategory = (totalScore: number): "Conservative" | "Moderate" | "Moderately Aggressive" | "Aggressive" => {
@@ -105,67 +257,6 @@ export function RiskProfilingForm({
   const [answers, setAnswers] = useState<{ [key: number]: number }>({});
   const [riskProfileResult, setRiskProfileResult] = useState<RiskProfilingData | null>(null);
   const [existingProfile, setExistingProfile] = useState<{ category: string; completedAt: Date; isValid: boolean } | null>(null);
-
-  // Fetch questions from database
-  const { data: dbQuestions = [], isLoading: isLoadingQuestions } = useQuery<DbQuestion[]>({
-    queryKey: ["/api/rp/questions"],
-    queryFn: async () => {
-      const response = await fetch("/api/rp/questions", {
-        credentials: "include"
-      });
-      if (!response.ok) throw new Error("Failed to fetch questions");
-      return response.json();
-    },
-  });
-
-  // Fetch options for all questions in parallel
-  const { data: allOptions = [], isLoading: isLoadingOptions } = useQuery<DbOption[]>({
-    queryKey: ["/api/rp/options", dbQuestions.map(q => q.id).sort().join(",")],
-    queryFn: async () => {
-      if (dbQuestions.length === 0) return [];
-      
-      // Fetch options for all questions in parallel
-      const optionsPromises = dbQuestions.map(async (q) => {
-        try {
-          const response = await fetch(`/api/rp/questions/${q.id}/options`, {
-            credentials: "include"
-          });
-          if (!response.ok) {
-            console.warn(`Failed to fetch options for question ${q.id}`);
-            return [];
-          }
-          return response.json();
-        } catch (error) {
-          console.error(`Error fetching options for question ${q.id}:`, error);
-          return [];
-        }
-      });
-      const optionsArrays = await Promise.all(optionsPromises);
-      return optionsArrays.flat();
-    },
-    enabled: dbQuestions.length > 0,
-  });
-
-  // Transform database questions and options to component format
-  const questions: Question[] = dbQuestions
-    .sort((a, b) => a.order_index - b.order_index)
-    .map((q) => {
-      const questionOptions = allOptions
-        .filter((opt) => opt.question_id === q.id)
-        .sort((a, b) => a.order_index - b.order_index)
-        .map((opt) => ({
-          label: opt.option_text,
-          score: opt.score,
-        }));
-
-      return {
-        id: q.id,
-        section: q.section,
-        question: q.question_text,
-        options: questionOptions,
-      };
-    })
-    .filter((q) => q.options.length > 0); // Only include questions that have options
 
   // Calculate total score
   const totalScore = Object.values(answers).reduce((sum, score) => sum + score, 0);
@@ -462,46 +553,6 @@ export function RiskProfilingForm({
                   {isLoading ? "Saving..." : "Accept and Continue"}
                 </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Show loading state while fetching questions
-  if (isLoadingQuestions || isLoadingOptions) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-              <p className="text-muted-foreground">Loading questionnaire...</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Show error if no questions found
-  if (questions.length === 0) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <AlertCircle className="h-8 w-8 text-destructive mb-4" />
-              <CardTitle className="text-xl font-semibold mb-2">
-                No Questions Available
-              </CardTitle>
-              <p className="text-muted-foreground mb-4">
-                The risk profiling questionnaire has not been set up yet. Please contact your advisor.
-              </p>
-              <Button onClick={onCancel} variant="outline">
-                Go Back
-              </Button>
             </div>
           </CardContent>
         </Card>
