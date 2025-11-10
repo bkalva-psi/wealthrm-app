@@ -470,7 +470,8 @@ export default function KnowledgeProfiling() {
                    onClick={() => {
                      setIsRetaking(false); // Reset retaking flag
                      if (clientId) {
-                       window.location.hash = `/clients/${clientId}/financial-profile`;
+                       // Navigate to Family Information section (Section 3) after Knowledge Profiling completion
+                       window.location.hash = `/clients/${clientId}/personal?section=family`;
                      } else {
                        window.location.hash = '/clients';
                      }

@@ -59,8 +59,9 @@ function useHashRouter() {
       return pathname;
     }
     
-    // Always default to dashboard/home page
-    return hash || '/';
+    // Strip query parameters from initial hash for route matching
+    const [routePath] = (hash || '/').split('?');
+    return routePath || '/';
   });
   
   useEffect(() => {
@@ -79,8 +80,11 @@ function useHashRouter() {
       console.log('Hash changed to:', fullHash);
       
       // Separate route path from fragment (e.g., "/clients/3/portfolio#action-items" -> "/clients/3/portfolio")
-      const [path, fragment] = fullHash.split('#');
-      const routePath = path || '/';
+      const [pathWithQuery, fragment] = fullHash.split('#');
+      
+      // Strip query parameters from path for route matching (e.g., "/clients/3/personal?section=family" -> "/clients/3/personal")
+      const [routePath] = pathWithQuery.split('?');
+      const cleanRoutePath = routePath || '/';
       
       // Scroll both window and main container only if no fragment (don't interfere with section scrolling)
       if (!fragment) {
@@ -104,7 +108,7 @@ function useHashRouter() {
         setTimeout(scrollToTop, 200);
       }
       
-      setCurrentRoute(routePath);
+      setCurrentRoute(cleanRoutePath);
     };
     
     window.addEventListener('hashchange', handleHashChange);
@@ -230,7 +234,7 @@ function AuthenticatedApp() {
         return <ClientPersonal />;
       case /^\/clients\/\d+\/actions$/.test(currentRoute):
         return <ClientActions />;
-      case /^\/clients\/\d+\/personal$/.test(currentRoute):
+      case /^\/clients\/\d+\/personal/.test(currentRoute):
         return <ClientPersonal />;
       case /^\/clients\/\d+\/portfolio$/.test(currentRoute):
         return <ClientPortfolio />;

@@ -512,31 +512,22 @@ export function RiskProfilingForm({
   // Show start screen if not started
   if (!hasStarted) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Shield className="h-16 w-16 text-primary mb-6" />
-              <CardTitle className="text-2xl font-semibold mb-6">
-                Risk Profiling Assessment
-              </CardTitle>
-              <div className="space-y-3 mb-8 max-w-lg">
-                <p className="text-base text-muted-foreground">
-                  Risk profiling helps us understand how comfortable you are with financial risk and market ups and downs.
-                </p>
-                <p className="text-base text-muted-foreground">
-                  This allows us to suggest investments that match your comfort level and goals.
-                </p>
-              </div>
-              <Button
-                onClick={() => setHasStarted(true)}
-                size="lg"
-                className="px-8"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Start Questionnaire
-              </Button>
-            </div>
+      <div className="min-h-[300px] flex items-center justify-center p-6">
+        <Card className="max-w-xl w-full">
+          <CardContent className="p-6 text-center space-y-4">
+            <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold mb-2">Risk Profiling Assessment</h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Risk profiling helps us understand how comfortable you are with financial risk and market ups and downs. This allows us to suggest investments that match your comfort level and goals.
+            </p>
+            <Button
+              onClick={() => setHasStarted(true)}
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              <Play className="h-5 w-5 mr-2" />
+              Start Questionnaire
+            </Button>
           </CardContent>
         </Card>
       </div>
