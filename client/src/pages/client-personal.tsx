@@ -38,13 +38,41 @@ export default function ClientPersonalPage() {
     document.title = "Client Information | Wealth Management System";
   }, []);
 
-  // Extract client ID from URL path
-  useEffect(() => {
+  // Extract client ID from URL path and handle section navigation
+  const checkUrlAndOpenSection = () => {
     const path = window.location.hash;
     const match = path.match(/\/clients\/(\d+)/);
     if (match) {
       setClientId(parseInt(match[1]));
     }
+    
+    // Check for section parameter in URL hash to auto-open specific sections
+    // Support both query params (?section=family) and hash fragments (#family)
+    const hashMatch = path.match(/[?#]section=(\w+)/);
+    const section = hashMatch ? hashMatch[1] : null;
+    
+    if (section === 'family') {
+      setIsFamilyOpen(true);
+      // Scroll to family section after a brief delay to ensure it's rendered
+      setTimeout(() => {
+        const familyElement = document.getElementById('family-information-section');
+        if (familyElement) {
+          familyElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 300);
+    }
+  };
+
+  useEffect(() => {
+    checkUrlAndOpenSection();
+    
+    // Listen for hash changes to handle navigation
+    const handleHashChange = () => {
+      checkUrlAndOpenSection();
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const { data: client, isLoading, error } = useQuery({
@@ -591,6 +619,7 @@ export default function ClientPersonalPage() {
 
         {/* Family Information Collapsible Card */}
         <Collapsible 
+          id="family-information-section"
           open={isFamilyOpen} 
           onOpenChange={setIsFamilyOpen}
           className="space-y-2"

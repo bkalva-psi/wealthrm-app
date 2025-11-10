@@ -1,11 +1,80 @@
 import { useState, useEffect } from "react";
 import { FinancialProfileForm } from "@/components/forms/financial-profile-form";
 import { RiskProfilingForm } from "@/components/forms/risk-profiling-form";
-import { ArrowLeft, PieChart, Shield, GraduationCap, PlayCircle } from "lucide-react";
+import { ArrowLeft, PieChart, Shield, GraduationCap, PlayCircle, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+
+// Knowledge Profiling Section Component
+function KnowledgeProfilingSection({ clientId }: { clientId: number | null }) {
+  // Fetch existing knowledge profiling results
+  const { data: existingResult, isLoading: isLoadingResults } = useQuery({
+    queryKey: ["/api/kp/results", clientId],
+    queryFn: async () => {
+      if (!clientId) return null;
+      const response = await fetch(`/api/kp/results/${clientId}`, {
+        credentials: "include"
+      });
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error("Failed to fetch results");
+      const data = await response.json();
+      // API returns null if no results found (200 status with null body)
+      return data || null;
+    },
+    enabled: !!clientId
+  });
+
+  const isCompleted = existingResult?.is_complete === true;
+
+  return (
+    <div className="min-h-[300px] flex items-center justify-center p-6">
+      <Card className="max-w-xl w-full">
+        <CardContent className="p-6 text-center space-y-4">
+          <GraduationCap className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">Knowledge Profiling Assessment</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            {isCompleted 
+              ? "View the client's completed knowledge profiling assessment results."
+              : "Assess the client's financial knowledge through a comprehensive questionnaire. This will help determine their understanding of investment concepts, risk management, and financial planning."}
+          </p>
+          {isLoadingResults ? (
+            <Button size="lg" disabled className="w-full sm:w-auto">
+              <PlayCircle className="h-5 w-5 mr-2" />
+              Loading...
+            </Button>
+          ) : clientId ? (
+            <Button 
+              size="lg" 
+              className="w-full sm:w-auto"
+              onClick={() => {
+                window.location.hash = `/knowledge-profiling?clientId=${clientId}`;
+              }}
+            >
+              {isCompleted ? (
+                <>
+                  <Eye className="h-5 w-5 mr-2" />
+                  View Knowledge Profile
+                </>
+              ) : (
+                <>
+                  <PlayCircle className="h-5 w-5 mr-2" />
+                  Start Questionnaire
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button size="lg" disabled className="w-full sm:w-auto">
+              <PlayCircle className="h-5 w-5 mr-2" />
+              Start Questionnaire
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 export default function AddFinancialProfilePage() {
   const { toast } = useToast();
@@ -279,36 +348,7 @@ export default function AddFinancialProfilePage() {
       )}
 
       {activeTab === 'knowledge' && (
-        <div className="min-h-[300px] flex items-center justify-center p-6">
-          <Card className="max-w-xl w-full">
-            <CardContent className="p-6 text-center space-y-4">
-              <GraduationCap className="h-16 w-16 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold mb-2">Knowledge Profiling Assessment</h2>
-              <p className="text-sm text-muted-foreground mb-6">
-                Assess the client's financial knowledge through a comprehensive questionnaire. 
-                This will help determine their understanding of investment concepts, risk management, 
-                and financial planning.
-              </p>
-              {clientId ? (
-                <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto"
-                  onClick={() => {
-                    window.location.hash = `/knowledge-profiling?clientId=${clientId}`;
-                  }}
-                >
-                  <PlayCircle className="h-5 w-5 mr-2" />
-                  Start Questionnaire
-                </Button>
-              ) : (
-                <Button size="lg" disabled>
-                  <PlayCircle className="h-5 w-5 mr-2" />
-                  Start Questionnaire
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        <KnowledgeProfilingSection clientId={clientId} />
       )}
     </div>
   );
