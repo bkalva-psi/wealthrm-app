@@ -8,7 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, AlertCircle, HelpCircle, ArrowRight, ArrowLeft, Shield, TrendingUp, BarChart3, Calendar, RefreshCw, Info } from "lucide-react";
+import { CheckCircle2, AlertCircle, HelpCircle, ArrowRight, ArrowLeft, Shield, TrendingUp, BarChart3, Calendar, RefreshCw, Info, Calculator } from "lucide-react";
+import { RiskMeter } from "@/components/risk-meter";
 
 interface Question {
   id: number;
@@ -65,6 +66,8 @@ export default function KnowledgeProfiling() {
   const [showResults, setShowResults] = useState(false);
   const [submittedResult, setSubmittedResult] = useState<any>(null);
   const [isRetaking, setIsRetaking] = useState(false);
+  const [showRiskMeter, setShowRiskMeter] = useState(false);
+  const [riskProfileData, setRiskProfileData] = useState<any>(null);
 
   // Fetch questionnaire
   const { data: questions = [], isLoading, error } = useQuery<Question[]>({
@@ -88,6 +91,26 @@ export default function KnowledgeProfiling() {
     },
     enabled: !!clientId
   });
+
+  // Fetch RP results to check if both assessments are completed
+  const { data: rpResult, isLoading: isLoadingRP } = useQuery({
+    queryKey: ["/api/rp/results", clientId],
+    queryFn: async () => {
+      if (!clientId) return null;
+      const response = await fetch(`/api/rp/results/${clientId}`, {
+        credentials: "include"
+      });
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error("Failed to fetch RP results");
+      return response.json();
+    },
+    enabled: !!clientId
+  });
+
+  // Check if both assessments are completed
+  const isKPCompleted = existingResult?.is_complete === true || (existingResult?.total_score !== null && existingResult?.total_score !== undefined);
+  const isRPCompleted = rpResult?.is_complete === true || (rpResult?.rp_score !== null && rpResult?.rp_score !== undefined);
+  const bothCompleted = isKPCompleted && isRPCompleted;
 
   // Automatically show results if existing completed assessment is found
   // For returning users: show scorecard immediately (skip intro page)
@@ -259,6 +282,33 @@ export default function KnowledgeProfiling() {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
+  // Show Risk Meter if button was clicked
+  if (showRiskMeter && riskProfileData) {
+    return (
+      <div className="p-6 min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowRiskMeter(false)}
+              className="mb-4"
+            >
+              ← Back to Score Card
+            </Button>
+          </div>
+          <RiskMeter
+            finalCategory={riskProfileData.final_category || riskProfileData.base_category || "Moderate"}
+            baseCategory={riskProfileData.base_category}
+            rpScore={riskProfileData.rp_score}
+            kpScore={riskProfileData.kp_score}
+            knowledgeLevel={riskProfileData.knowledge_level}
+            breakdown={riskProfileData.breakdown}
+          />
+        </div>
+      </div>
+    );
+  }
+
   // PRIORITY: Show results page if assessment is complete
   // For returning users with completed assessment, show results immediately
   // Don't show results if user is actively retaking (isRetaking = true)
@@ -411,6 +461,37 @@ export default function KnowledgeProfiling() {
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3">
+                 {/* Calculate Final Risk Score button - only show when both RP and KP are completed */}
+                 {bothCompleted && !showRiskMeter && (
+                   <Button
+                     onClick={async () => {
+                       // Fetch the combined risk profile data
+                       if (clientId) {
+                         try {
+                           const response = await fetch(`/api/rp/results/${clientId}`, {
+                             credentials: "include"
+                           });
+                           if (response.ok) {
+                             const data = await response.json();
+                             setRiskProfileData(data);
+                             setShowRiskMeter(true);
+                           }
+                         } catch (error) {
+                           console.error("Error fetching risk profile:", error);
+                           toast({
+                             title: "Error",
+                             description: "Failed to load risk profile data",
+                             variant: "destructive"
+                           });
+                         }
+                       }
+                     }}
+                     className="bg-green-600 hover:bg-green-700 text-white"
+                   >
+                     <Calculator className="mr-2 h-4 w-4" />
+                     Calculate Final Risk Score
+                   </Button>
+                 )}
                  {/* Retake Assessment button - always show for returning users, or Review Answers for first-time users */}
                  {isRetaking ? (
                    <Button

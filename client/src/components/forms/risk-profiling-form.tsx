@@ -251,18 +251,14 @@ export function RiskProfilingForm({
     setHasStarted(true);
   };
 
-  // Check for existing profile on component mount
+  // Check for existing profile on component mount and auto-start questionnaire
   useEffect(() => {
-    // TODO: Load from API/backend
-    // const checkExistingProfile = async () => {
-    //   const response = await fetch(`/api/clients/${clientId}/risk-profile`);
-    //   const data = await response.json();
-    //   if (data && data.isValid) {
-    //     setExistingProfile(data);
-    //   }
-    // };
-    // checkExistingProfile();
-  }, [clientId]);
+    // Auto-start the questionnaire if no existing profile
+    // This ensures users go directly to questions when clicking "Start Questionnaire"
+    if (!existingProfile && dbQuestions.length > 0 && !hasStarted) {
+      setHasStarted(true);
+    }
+  }, [clientId, existingProfile, dbQuestions.length, hasStarted]);
 
 
   // Show existing profile if valid (before starting questionnaire)

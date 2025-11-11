@@ -76,6 +76,7 @@ interface FinancialProfileFormProps {
   onSubmit: (data: FinancialProfileFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  onNavigateToRiskProfiling?: () => void;
 }
 
 const assetTypes = [
@@ -122,7 +123,8 @@ export function FinancialProfileForm({
   clientId, 
   onSubmit, 
   onCancel, 
-  isLoading = false 
+  isLoading = false,
+  onNavigateToRiskProfiling
 }: FinancialProfileFormProps) {
   const { toast } = useToast();
   
@@ -1768,7 +1770,27 @@ export function FinancialProfileForm({
                 Cancel
               </Button>
               <div className="flex gap-2">
-                {activeSection !== "income" && (
+                {activeSection === "summary" ? (
+                  <>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setActiveSection("liabilities")}
+                    >
+                      Previous
+                    </Button>
+                    <Button 
+                      type="button" 
+                      onClick={() => {
+                        if (onNavigateToRiskProfiling) {
+                          onNavigateToRiskProfiling();
+                        }
+                      }}
+                    >
+                      Next to Risk Profiling
+                    </Button>
+                  </>
+                ) : activeSection !== "income" && activeSection !== "summary" ? (
                   <Button 
                     type="button" 
                     variant="outline" 
@@ -1782,12 +1804,12 @@ export function FinancialProfileForm({
                   >
                     Previous
                   </Button>
-                )}
-                {activeSection !== "liabilities" ? (
+                ) : null}
+                {activeSection !== "liabilities" && activeSection !== "summary" ? (
                   <Button 
                     type="button" 
                     onClick={() => {
-                      const sections = ["income", "expenses", "assets", "liabilities"];
+                      const sections = ["income", "expenses", "assets", "liabilities", "summary"];
                       const currentIndex = sections.indexOf(activeSection);
                       if (currentIndex < sections.length - 1) {
                         setActiveSection(sections[currentIndex + 1]);
@@ -1796,11 +1818,11 @@ export function FinancialProfileForm({
                   >
                     Next Section
                   </Button>
-                ) : (
+                ) : activeSection === "liabilities" ? (
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? "Saving..." : "Save Financial Profile"}
                   </Button>
-                )}
+                ) : null}
               </div>
             </div>
           </form>

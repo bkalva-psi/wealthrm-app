@@ -1112,8 +1112,9 @@ export type InsertKpScoringConfig = z.infer<typeof insertKpScoringConfigSchema>;
 export const riskQuestions = pgTable("risk_questions", {
   id: serial("id").primaryKey(),
   questionText: text("question_text").notNull(),
-  section: text("section").notNull(), // 'capacity', 'horizon', 'attitude'
+  section: text("section").notNull(), // 'capacity', 'horizon', 'attitude', 'knowledge', 'experience'
   orderIndex: integer("order_index").notNull().default(0),
+  ceilingFlag: boolean("ceiling_flag").notNull().default(false), // Questions that can cap maximum risk
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1159,9 +1160,11 @@ export const riskAssessment = pgTable("risk_assessment", {
   totalScore: integer("total_score").notNull().default(0),
   riskCategory: text("risk_category").notNull(), // 'Conservative', 'Moderate', 'Moderately Aggressive', 'Aggressive'
   completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow(),
+  expiryDate: timestamp("expiry_date", { withTimezone: true }), // 12 months from completedAt
   verifiedBy: integer("verified_by").references(() => users.id, { onDelete: "set null" }),
   verifiedAt: timestamp("verified_at", { withTimezone: true }),
-  overrideReason: text("override_reason"),
+  overrideReason: text("override_reason"), // Reason for ceiling or override
+  ceilingApplied: boolean("ceiling_applied").notNull().default(false), // Whether ceiling logic was applied
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

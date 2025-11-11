@@ -44,10 +44,19 @@ import {
 
 // Basic auth middleware
 const authMiddleware = (req: Request, res: Response, next: Function) => {
-  if (!(req.session as any).userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+  try {
+    // Ensure JSON response
+    res.setHeader("Content-Type", "application/json");
+    
+    if (!(req.session as any).userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    next();
+  } catch (error: any) {
+    console.error("[authMiddleware] Error:", error);
+    res.setHeader("Content-Type", "application/json");
+    res.status(500).json({ message: "Authentication error", error: error.message });
   }
-  next();
 };
 
 // Database connection wrapper with retry logic
@@ -95,6 +104,224 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Health check failed:', error);
       res.status(503).json({ status: 'unhealthy', database: 'disconnected', error: String(error) });
+    }
+  });
+
+  // Register RP submit route early to ensure it's available
+  console.log("[EARLY ROUTE REGISTRATION] Registering POST /api/rp/submit route early");
+  app.post("/api/rp/submit", authMiddleware, async (req, res) => {
+    // Ensure JSON response - set immediately to prevent Vite from intercepting
+    res.setHeader("Content-Type", "application/json");
+    
+    try {
+      console.log("[POST /api/rp/submit] Request received (early route)");
+      const userId = (req.session as any).userId;
+      const { clientId, totalScore, category, answers } = req.body;
+
+      console.log("[POST /api/rp/submit] Request data:", { clientId, totalScore, category, hasAnswers: !!answers });
+
+      if (!clientId || totalScore === undefined) {
+        console.log("[POST /api/rp/submit] Validation failed: missing clientId or totalScore");
+        return res.status(400).json({ message: "clientId and totalScore are required" });
+      }
+
+      // Verify client belongs to user
+      const { data: client, error: clientError } = await supabaseServer
+        .from("clients")
+        .select("id, assigned_to")
+        .eq("id", clientId)
+        .single();
+
+      if (clientError || !client) {
+        console.error("[POST /api/rp/submit] Client not found:", clientError);
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      if (client.assigned_to !== userId && (req.session as any).userRole !== "admin") {
+        console.log("[POST /api/rp/submit] Unauthorized access attempt");
+        return res.status(403).json({ message: "Unauthorized: Client not assigned to you" });
+      }
+
+      // Get KP score for this client
+      const { data: kpResult, error: kpError } = await supabaseServer
+        .from("kp_assessment_results")
+        .select("total_score")
+        .eq("client_id", clientId)
+        .eq("is_complete", true)
+        .single();
+
+      if (kpError && kpError.code !== "PGRST116") {
+        console.error("[POST /api/rp/submit] Error fetching KP result:", kpError);
+        // Continue without KP score if error (not critical)
+      }
+
+      const kpScore = kpResult?.total_score ?? null;
+      const rpScore = totalScore;
+
+      console.log("[POST /api/rp/submit] Scores:", { kpScore, rpScore });
+
+      // Import risk category calculator
+      let calculateFinalRiskCategory: any;
+      let getRiskCategoryBreakdown: any;
+      let calculateExpiryDate: any;
+      
+      try {
+        const calculatorModule = await import("./utils/risk-category-calculator");
+        calculateFinalRiskCategory = calculatorModule.calculateFinalRiskCategory;
+        getRiskCategoryBreakdown = calculatorModule.getRiskCategoryBreakdown;
+        calculateExpiryDate = calculatorModule.calculateExpiryDate;
+        console.log("[POST /api/rp/submit] Risk calculator imported successfully");
+      } catch (importError: any) {
+        console.error("[POST /api/rp/submit] Error importing risk calculator:", importError);
+        return res.status(500).json({ 
+          message: "Failed to load risk calculator",
+          error: importError.message
+        });
+      }
+
+      // Load score ranges from database if available, otherwise use defaults
+      const { data: scoringMatrix } = await supabaseServer
+        .from("risk_scoring_matrix")
+        .select("score_min, score_max, risk_category, guidance")
+        .order("score_min", { ascending: true });
+
+      let ranges;
+      if (scoringMatrix && scoringMatrix.length > 0) {
+        ranges = scoringMatrix.map((row: any) => ({
+          min: row.score_min,
+          max: row.score_max,
+          category: row.risk_category,
+          description: row.guidance || "",
+        }));
+      }
+
+      // Extract question answers for ceiling logic
+      // Build a Map of question categories to answers
+      const questionAnswersMap = new Map<string, string | string[]>();
+      if (answers && Array.isArray(answers)) {
+        // Fetch question details to get categories
+        const questionIds = answers.map((a: any) => a.questionId).filter((id: any) => id);
+        if (questionIds.length > 0) {
+          const { data: questions } = await supabaseServer
+            .from("risk_questions")
+            .select("id, section, ceiling_flag")
+            .in("id", questionIds);
+
+          if (questions) {
+            for (const answer of answers) {
+              const question = questions.find((q: any) => q.id === answer.questionId);
+              if (question && question.ceiling_flag) {
+                // Only include ceiling questions
+                const category = question.section || "general";
+                const existing = questionAnswersMap.get(category);
+                if (existing) {
+                  questionAnswersMap.set(category, Array.isArray(existing) 
+                    ? [...existing, answer.selectedAnswer] 
+                    : [existing, answer.selectedAnswer]);
+                } else {
+                  questionAnswersMap.set(category, answer.selectedAnswer);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Calculate final risk category with ceiling logic and configurable ranges
+      const finalRiskCategory = calculateFinalRiskCategory(
+        kpScore, 
+        rpScore, 
+        questionAnswersMap.size > 0 ? questionAnswersMap : undefined,
+        ranges
+      );
+      const breakdown = getRiskCategoryBreakdown(
+        kpScore, 
+        rpScore, 
+        questionAnswersMap.size > 0 ? questionAnswersMap : undefined,
+        ranges
+      );
+
+      console.log("[POST /api/rp/submit] Calculated category:", { 
+        finalRiskCategory, 
+        baseCategory: category,
+        ceilingApplied: breakdown.ceilingApplied,
+        ceilingReason: breakdown.ceilingReason
+      });
+
+      // Calculate expiry date (12 months from now)
+      const assessmentDate = new Date();
+      const expiryDate = calculateExpiryDate(assessmentDate);
+
+      // Save RP results to clients table
+      const { error: updateError } = await supabaseServer
+        .from("clients")
+        .update({
+          risk_profile: finalRiskCategory?.toLowerCase() || category?.toLowerCase() || "moderate",
+          risk_assessment_score: rpScore,
+        })
+        .eq("id", clientId);
+
+      if (updateError) {
+        console.error("[POST /api/rp/submit] Error updating client risk profile:", updateError);
+        return res.status(500).json({ 
+          message: "Failed to update risk profile",
+          details: updateError.details,
+          code: updateError.code
+        });
+      }
+
+      // Save/update risk assessment record with expiry date and ceiling info
+      const overrideReason = breakdown.ceilingApplied 
+        ? breakdown.ceilingReason 
+        : breakdown.adjustmentReason || null;
+
+      const { error: assessmentError } = await supabaseServer
+        .from("risk_assessment")
+        .upsert({
+          client_id: clientId,
+          total_score: rpScore,
+          risk_category: finalRiskCategory || category || "Moderate",
+          completed_at: assessmentDate.toISOString(),
+          expiry_date: expiryDate.toISOString(),
+          override_reason: overrideReason,
+          ceiling_applied: breakdown.ceilingApplied || false,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: "client_id"
+        });
+
+      if (assessmentError) {
+        console.error("[POST /api/rp/submit] Error saving risk assessment:", assessmentError);
+        // Don't fail the request, just log the error
+      }
+
+      console.log("[POST /api/rp/submit] Success - returning response");
+      res.json({
+        message: "Risk profile saved successfully",
+        rpScore,
+        kpScore,
+        baseCategory: category,
+        finalCategory: finalRiskCategory,
+        breakdown: {
+          ...breakdown,
+          assessmentDate: assessmentDate.toISOString(),
+          expiryDate: expiryDate.toISOString(),
+        },
+      });
+    } catch (error: any) {
+      console.error("[POST /api/rp/submit] Unexpected error:", error);
+      console.error("[POST /api/rp/submit] Error stack:", error.stack);
+      
+      // Ensure we always return JSON, even if there's an error
+      if (!res.headersSent) {
+        res.setHeader("Content-Type", "application/json");
+        res.status(500).json({ 
+          message: error.message || "Internal server error",
+          details: error.details || error.hint,
+          code: error.code,
+          error: process.env.NODE_ENV === "development" ? error.stack : undefined
+        });
+      }
     }
   });
   
@@ -3901,12 +4128,39 @@ startxref
         if (error) throw error;
       }
 
+      // Recalculate risk category if client has RP score
+      let finalRiskCategory = null;
+      let riskBreakdown = null;
+      const { data: clientData } = await supabaseServer
+        .from("clients")
+        .select("risk_assessment_score")
+        .eq("id", client_id)
+        .single();
+
+      if (clientData?.risk_assessment_score !== null && clientData?.risk_assessment_score !== undefined) {
+        const { calculateFinalRiskCategory, getRiskCategoryBreakdown } = await import("./utils/risk-category-calculator");
+        finalRiskCategory = calculateFinalRiskCategory(totalScore, clientData.risk_assessment_score);
+        riskBreakdown = getRiskCategoryBreakdown(totalScore, clientData.risk_assessment_score);
+
+        // Update client's risk profile if we have a final category
+        if (finalRiskCategory) {
+          await supabaseServer
+            .from("clients")
+            .update({
+              risk_profile: finalRiskCategory.toLowerCase(),
+            })
+            .eq("id", client_id);
+        }
+      }
+
       res.json({ 
         message: "Responses saved successfully",
         totalScore,
         maxPossibleScore,
         percentageScore,
-        knowledgeLevel
+        knowledgeLevel,
+        finalRiskCategory,
+        riskBreakdown
       });
     } catch (error) {
       console.error("Submit KP responses error:", error);
@@ -4445,6 +4699,330 @@ startxref
       res.json({ message: "Option deleted successfully" });
     } catch (error: any) {
       console.error("Delete RP option error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // Get Risk Profiling results for a client
+  app.get("/api/rp/results/:clientId", authMiddleware, async (req, res) => {
+    // Ensure JSON response
+    res.setHeader("Content-Type", "application/json");
+    
+    try {
+      console.log("[GET /api/rp/results/:clientId] Request received for clientId:", req.params.clientId);
+      const userId = (req.session as any).userId;
+      const clientId = parseInt(req.params.clientId);
+
+      console.log("[GET /api/rp/results/:clientId] Parsed clientId:", clientId, "userId:", userId);
+
+      if (isNaN(clientId)) {
+        console.log("[GET /api/rp/results/:clientId] Invalid client ID");
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+
+      // Verify client belongs to user
+      const { data: client, error: clientError } = await supabaseServer
+        .from("clients")
+        .select("id, assigned_to, risk_profile, risk_assessment_score, created_at")
+        .eq("id", clientId)
+        .single();
+
+      console.log("[GET /api/rp/results/:clientId] Client lookup result:", { 
+        hasClient: !!client, 
+        error: clientError?.message,
+        risk_assessment_score: client?.risk_assessment_score,
+        assigned_to: client?.assigned_to
+      });
+
+      if (clientError) {
+        console.error("[GET /api/rp/results/:clientId] Client lookup error:", clientError);
+        return res.status(404).json({ message: "Client not found", error: clientError.message });
+      }
+
+      if (!client) {
+        console.log("[GET /api/rp/results/:clientId] Client not found in database");
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      if (client.assigned_to !== userId && (req.session as any).userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: Client not assigned to you" });
+      }
+
+      // Get KP score for combined calculation
+      const { data: kpResult } = await supabaseServer
+        .from("kp_assessment_results")
+        .select("total_score, knowledge_level")
+        .eq("client_id", clientId)
+        .eq("is_complete", true)
+        .single();
+
+      // Get risk assessment record for expiry date
+      const { data: riskAssessment } = await supabaseServer
+        .from("risk_assessment")
+        .select("expiry_date, completed_at, ceiling_applied, override_reason")
+        .eq("client_id", clientId)
+        .single();
+
+      const rpScore = client.risk_assessment_score;
+      const kpScore = kpResult?.total_score ?? null;
+
+      // If no RP score (null or undefined), return null (not completed)
+      // Note: rpScore of 0 is a valid score, so we check for null/undefined specifically
+      if (rpScore === null || rpScore === undefined) {
+        return res.json(null);
+      }
+
+      // Load score ranges from database if available, otherwise use defaults
+      const { data: scoringMatrix } = await supabaseServer
+        .from("risk_scoring_matrix")
+        .select("score_min, score_max, risk_category, guidance")
+        .order("score_min", { ascending: true });
+
+      let ranges;
+      if (scoringMatrix && scoringMatrix.length > 0) {
+        ranges = scoringMatrix.map((row: any) => ({
+          min: row.score_min,
+          max: row.score_max,
+          category: row.risk_category,
+          description: row.guidance || "",
+        }));
+      }
+
+      // Get final category using calculator (with configurable ranges)
+      const { calculateFinalRiskCategory, getRiskCategoryBreakdown, checkProfileValidity } = await import("./utils/risk-category-calculator");
+      
+      const finalCategory = calculateFinalRiskCategory(kpScore, rpScore, undefined, ranges) || "Moderate";
+      const breakdown = getRiskCategoryBreakdown(kpScore, rpScore, undefined, ranges);
+
+      // Check profile validity
+      const expiryDate = riskAssessment?.expiry_date;
+      const validity = expiryDate
+        ? checkProfileValidity(expiryDate)
+        : { isValid: false, isExpired: true, isExpiringSoon: false, daysRemaining: null };
+
+      // Calculate percentage score (0-75 scale)
+      const maxPossibleScore = 75;
+      const percentageScore = maxPossibleScore > 0 ? (rpScore / maxPossibleScore) * 100 : 0;
+
+      const responseData = {
+        client_id: clientId,
+        rp_score: rpScore,
+        kp_score: kpScore,
+        base_category: breakdown.baseRiskCategory || "Moderate",
+        final_category: finalCategory,
+        percentage_score: percentageScore,
+        max_possible_score: maxPossibleScore,
+        knowledge_level: kpResult?.knowledge_level || null,
+        breakdown,
+        is_complete: true, // Explicitly mark as complete when rp_score exists
+        completed_at: riskAssessment?.completed_at || client.created_at || new Date().toISOString(),
+        expiry_date: expiryDate || null,
+        validity: {
+          isValid: validity.isValid,
+          isExpired: validity.isExpired,
+          isExpiringSoon: validity.isExpiringSoon,
+          daysRemaining: validity.daysRemaining,
+        },
+        ceiling_applied: riskAssessment?.ceiling_applied || false,
+        override_reason: riskAssessment?.override_reason || null,
+      };
+
+      console.log("[GET /api/rp/results/:clientId] Returning response:", responseData);
+      res.json(responseData);
+    } catch (error: any) {
+      console.error("[GET /api/rp/results/:clientId] Error:", error);
+      res.status(500).json({ 
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code
+      });
+    }
+  });
+
+  // Check risk profile validity for a client
+  app.get("/api/rp/validity/:clientId", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const clientId = parseInt(req.params.clientId);
+
+      if (isNaN(clientId)) {
+        return res.status(400).json({ message: "Invalid client ID" });
+      }
+
+      // Verify client belongs to user
+      const { data: client, error: clientError } = await supabaseServer
+        .from("clients")
+        .select("id, assigned_to")
+        .eq("id", clientId)
+        .single();
+
+      if (clientError || !client) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      if (client.assigned_to !== userId && (req.session as any).userRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: Client not assigned to you" });
+      }
+
+      // Get risk assessment record
+      const { data: riskAssessment } = await supabaseServer
+        .from("risk_assessment")
+        .select("expiry_date, completed_at, risk_category")
+        .eq("client_id", clientId)
+        .single();
+
+      if (!riskAssessment) {
+        return res.json({
+          hasProfile: false,
+          isValid: false,
+          isExpired: true,
+          isExpiringSoon: false,
+          daysRemaining: null,
+          message: "No risk profile found. Please complete risk profiling.",
+        });
+      }
+
+      // Check validity
+      const { checkProfileValidity } = await import("./utils/risk-category-calculator");
+      const validity = checkProfileValidity(riskAssessment.expiry_date);
+
+      res.json({
+        hasProfile: true,
+        isValid: validity.isValid,
+        isExpired: validity.isExpired,
+        isExpiringSoon: validity.isExpiringSoon,
+        daysRemaining: validity.daysRemaining,
+        riskCategory: riskAssessment.risk_category,
+        completedAt: riskAssessment.completed_at,
+        expiryDate: riskAssessment.expiry_date,
+        message: validity.isExpired
+          ? "Risk profile has expired. Please complete a new risk profiling assessment."
+          : validity.isExpiringSoon
+          ? `Risk profile expires in ${validity.daysRemaining} days. Consider re-profiling soon.`
+          : "Risk profile is valid.",
+      });
+    } catch (error: any) {
+      console.error("[GET /api/rp/validity/:clientId] Error:", error);
+      res.status(500).json({
+        message: error.message || "Internal server error",
+        details: error.details || error.hint,
+        code: error.code,
+      });
+    }
+  });
+
+  // Test route to verify routing works (no auth required)
+  app.post("/api/rp/test", (req, res) => {
+    console.log("[POST /api/rp/test] Test route hit!");
+    res.setHeader("Content-Type", "application/json");
+    res.json({ message: "RP test route works", timestamp: new Date().toISOString() });
+  });
+
+  // Test route with same path pattern but no auth
+  app.post("/api/rp/submit-test", (req, res) => {
+    console.log("[POST /api/rp/submit-test] Test submit route hit!");
+    res.setHeader("Content-Type", "application/json");
+    res.json({ message: "Submit test route works", body: req.body });
+  });
+
+  // Recalculate risk categories for all clients
+  app.post("/api/risk-categories/recalculate", authMiddleware, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
+
+      // Only admin can recalculate for all clients
+      const normalizedRole = userRole?.toLowerCase().replace(/\s+/g, '_') || '';
+      if (normalizedRole !== "admin") {
+        return res.status(403).json({ message: "Unauthorized: Admin access required" });
+      }
+
+      // Import risk category calculator
+      const { calculateFinalRiskCategory, getRiskCategoryBreakdown } = await import("./utils/risk-category-calculator");
+
+      // Get all clients
+      const { data: allClients, error: clientsError } = await supabaseServer
+        .from("clients")
+        .select("id, risk_assessment_score");
+
+      if (clientsError) {
+        throw clientsError;
+      }
+
+      if (!allClients || allClients.length === 0) {
+        return res.json({ 
+          message: "No clients found",
+          updated: 0,
+          skipped: 0
+        });
+      }
+
+      let updated = 0;
+      let skipped = 0;
+      const results: Array<{ clientId: number; status: string; breakdown?: any }> = [];
+
+      // Process each client
+      for (const client of allClients) {
+        const clientId = client.id;
+        const rpScore = client.risk_assessment_score;
+
+        // Skip if no RP score
+        if (!rpScore) {
+          skipped++;
+          results.push({ clientId, status: "skipped - no RP score" });
+          continue;
+        }
+
+        // Get KP score for this client
+        const { data: kpResult } = await supabaseServer
+          .from("kp_assessment_results")
+          .select("total_score")
+          .eq("client_id", clientId)
+          .eq("is_complete", true)
+          .single();
+
+        const kpScore = kpResult?.total_score ?? null;
+
+        // Calculate final risk category
+        const finalRiskCategory = calculateFinalRiskCategory(kpScore, rpScore);
+        const breakdown = getRiskCategoryBreakdown(kpScore, rpScore);
+
+        if (!finalRiskCategory) {
+          skipped++;
+          results.push({ clientId, status: "skipped - cannot calculate category", breakdown });
+          continue;
+        }
+
+        // Update client
+        const { error: updateError } = await supabaseServer
+          .from("clients")
+          .update({
+            risk_profile: finalRiskCategory.toLowerCase(),
+          })
+          .eq("id", clientId);
+
+        if (updateError) {
+          results.push({ clientId, status: `error - ${updateError.message}` });
+          continue;
+        }
+
+        updated++;
+        results.push({ clientId, status: "updated", breakdown });
+      }
+
+      res.json({
+        message: "Risk categories recalculated",
+        total: allClients.length,
+        updated,
+        skipped,
+        results: results.slice(0, 50), // Return first 50 results to avoid huge response
+      });
+    } catch (error: any) {
+      console.error("Recalculate risk categories error:", error);
       res.status(500).json({ 
         message: error.message || "Internal server error",
         details: error.details || error.hint,

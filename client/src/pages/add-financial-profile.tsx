@@ -7,6 +7,87 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
+// Risk Profiling Section Component
+function RiskProfilingSection({ clientId }: { clientId: number | null }) {
+  const queryClient = useQueryClient();
+  
+  // Fetch existing risk profiling results
+  const { data: existingResult, isLoading: isLoadingResults, refetch: refetchRPResults } = useQuery({
+    queryKey: ["/api/rp/results", clientId],
+    queryFn: async () => {
+      if (!clientId) return null;
+      const response = await fetch(`/api/rp/results/${clientId}`, {
+        credentials: "include"
+      });
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error("Failed to fetch results");
+      const data = await response.json();
+      return data || null;
+    },
+    enabled: !!clientId,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 0, // Always consider data stale to ensure fresh fetch
+  });
+
+  // Check if assessment is completed - handle both is_complete flag and presence of rp_score
+  const isCompleted = existingResult?.is_complete === true || (existingResult?.rp_score !== null && existingResult?.rp_score !== undefined);
+
+  // Refetch when component mounts or clientId changes to ensure fresh data
+  useEffect(() => {
+    if (clientId) {
+      refetchRPResults();
+    }
+  }, [clientId, refetchRPResults]);
+
+  return (
+    <div className="min-h-[300px] flex items-center justify-center p-6">
+      <Card className="max-w-xl w-full">
+        <CardContent className="p-6 text-center space-y-4">
+          <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">Risk Profiling Assessment</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            {isCompleted 
+              ? "View the client's completed risk profiling assessment results."
+              : "Assess the client's risk tolerance through a comprehensive questionnaire. This will help determine their comfort level with investment risk and market volatility."}
+          </p>
+          {isLoadingResults ? (
+            <Button size="lg" disabled className="w-full sm:w-auto">
+              <PlayCircle className="h-5 w-5 mr-2" />
+              Loading...
+            </Button>
+          ) : clientId ? (
+            <Button 
+              size="lg" 
+              className="w-full sm:w-auto"
+              onClick={() => {
+                window.location.hash = `/risk-profiling?clientId=${clientId}`;
+              }}
+            >
+              {isCompleted ? (
+                <>
+                  <Eye className="h-5 w-5 mr-2" />
+                  View Risk Profile
+                </>
+              ) : (
+                <>
+                  <PlayCircle className="h-5 w-5 mr-2" />
+                  Start Questionnaire
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button size="lg" disabled className="w-full sm:w-auto">
+              <PlayCircle className="h-5 w-5 mr-2" />
+              Start Questionnaire
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // Knowledge Profiling Section Component
 function KnowledgeProfilingSection({ clientId }: { clientId: number | null }) {
   // Fetch existing knowledge profiling results
@@ -316,35 +397,12 @@ export default function AddFinancialProfilePage() {
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={isLoading}
+          onNavigateToRiskProfiling={() => setActiveTab('risk')}
         />
       )}
 
       {activeTab === 'risk' && (
-        <RiskProfilingForm
-          clientId={clientId}
-          onSubmit={async (data) => {
-            setIsLoading(true);
-            try {
-              // TODO: Implement API call to save risk profiling data
-              console.log("Risk Profiling Data:", data);
-              toast({
-                title: "Success!",
-                description: `Risk Profile: ${data.category} (Score: ${data.totalScore}/75)`,
-              });
-              // Navigate back or refresh data
-            } catch (error) {
-              toast({
-                title: "Error",
-                description: "Failed to save risk profile",
-                variant: "destructive",
-              });
-            } finally {
-              setIsLoading(false);
-            }
-          }}
-          onCancel={handleCancel}
-          isLoading={isLoading}
-        />
+        <RiskProfilingSection clientId={clientId} />
       )}
 
       {activeTab === 'knowledge' && (
