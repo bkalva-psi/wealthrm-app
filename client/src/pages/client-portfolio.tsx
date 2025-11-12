@@ -266,7 +266,7 @@ function AllocationChart({ data, title, color = "blue" }: { data: Record<string,
                 <span className="font-medium">{value}%</span>
               </div>
               {/* Custom progress bar with matching colors */}
-              <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div 
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
@@ -800,8 +800,8 @@ export default function ClientPortfolioPage() {
   
   if (!clientId) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Client not found</h1>
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Client not found</h1>
         <Button onClick={handleBackClick}>Back to Clients</Button>
       </div>
     );
@@ -890,7 +890,7 @@ export default function ClientPortfolioPage() {
     <ClientPageLayout client={client} isLoading={isLoading} clientId={clientId || 0}>
       {/* Page Header with Navigation */}
       <div className="bg-card border-b border-border px-1 py-3">
-        <h2 className="text-2xl font-bold text-foreground mb-3 ml-3">Portfolio</h2>
+        <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-3 ml-3">Portfolio</h2>
         
         {/* Navigation Icons */}
         <div className="grid grid-cols-8 gap-3 ml-3">

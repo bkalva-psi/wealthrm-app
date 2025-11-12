@@ -36,32 +36,32 @@ export default function AnnouncementsPage() {
     return (
       <div className="min-h-screen bg-background transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-6"></div>
+          <div className="h-8 w-48 bg-muted rounded animate-pulse mb-6"></div>
           <div className="space-y-6">
             {Array.from({ length: 4 }).map((_, index) => (
               <Card key={index} className="overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="space-y-2 flex-1">
-                      <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="h-6 w-3/4 bg-muted rounded animate-pulse"></div>
                       <div className="flex items-center gap-2">
-                        <div className="h-5 w-16 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
-                        <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+                        <div className="h-5 w-16 bg-muted rounded-full animate-pulse"></div>
+                        <div className="h-5 w-20 bg-muted rounded-full animate-pulse"></div>
                       </div>
                     </div>
-                    <div className="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-6 w-6 bg-muted rounded animate-pulse"></div>
                   </div>
                   <div className="space-y-2 mb-4">
-                    <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                    <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                    <div className="h-4 w-4/5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-4 w-full bg-muted rounded animate-pulse"></div>
+                    <div className="h-4 w-5/6 bg-muted rounded animate-pulse"></div>
+                    <div className="h-4 w-4/5 bg-muted rounded animate-pulse"></div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
+                      <div className="h-4 w-32 bg-muted rounded animate-pulse"></div>
                     </div>
-                    <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -210,7 +210,7 @@ export default function AnnouncementsPage() {
         <Card>
           <CardContent className="flex items-center justify-center py-12">
             <div className="text-center">
-              <Megaphone className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+              <Megaphone className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">No Active Announcements</h3>
               <p className="text-muted-foreground">Check back later for new updates and communications.</p>
             </div>

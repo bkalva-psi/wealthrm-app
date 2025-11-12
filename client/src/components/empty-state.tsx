@@ -18,7 +18,7 @@ export function EmptyState({ title, description, icon, action }: EmptyStateProps
       )}
       <h3 className="text-lg font-medium mb-2">{title}</h3>
       {description && (
-        <p className="text-slate-500 mb-6 max-w-md">
+        <p className="text-muted-foreground mb-6 max-w-md">
           {description}
         </p>
       )}

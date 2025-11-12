@@ -62,11 +62,11 @@ export function ComplaintsCard() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="px-4 py-3 border-b border-slate-200 bg-white">
+      <CardHeader className="px-4 py-3 border-b border-border bg-card">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <h2 className="text-sm font-medium text-slate-700">Client Complaints</h2>
+            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <h2 className="text-sm font-medium text-foreground">Client Complaints</h2>
             {!complaintsLoading && openComplaints > 0 && (
               <Badge variant="destructive" className="text-xs">
                 {openComplaints} Open
@@ -77,7 +77,7 @@ export function ComplaintsCard() {
       </CardHeader>
 
       <CardContent className="p-0">
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-border">
           {complaintsLoading ? (
             Array(3).fill(0).map((_, index) => (
               <div key={index} className="px-4 py-3">
@@ -99,18 +99,18 @@ export function ComplaintsCard() {
               const isUrgent = complaint.severity === 'critical';
               
               return (
-                <div key={complaint.id} className="px-4 py-3 transition-colors bg-white hover:bg-slate-50">
+                <div key={complaint.id} className="px-4 py-3 transition-colors bg-card hover:bg-muted">
                   <div className="flex justify-between items-start">
                     <div className="flex-1 space-y-2">
                       <div className="flex items-start gap-2">
-                        {isUrgent && <span className="inline-block w-2 h-2 bg-red-500 rounded-full mt-1.5 flex-shrink-0" />}
+                        {isUrgent && <span className="inline-block w-2 h-2 bg-destructive rounded-full mt-1.5 flex-shrink-0" />}
                         <div className="flex-1">
-                          <p className="text-sm font-medium leading-tight text-slate-900">
+                          <p className="text-sm font-medium leading-tight text-foreground">
                             {complaint.title}
                           </p>
                           <div className="flex items-center gap-1 mt-1">
-                            <User className="h-3 w-3 text-slate-400" />
-                            <span className="text-xs text-slate-500">{complaint.clientName}</span>
+                            <User className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">{complaint.clientName}</span>
                           </div>
                         </div>
                       </div>
@@ -131,7 +131,7 @@ export function ComplaintsCard() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-1 text-xs text-slate-500 ml-2">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground ml-2">
                       <Clock className="h-3 w-3" />
                       <span>{complaint.createdAt ? format(new Date(complaint.createdAt), 'MMM d') : 'N/A'}</span>
                     </div>
@@ -141,19 +141,19 @@ export function ComplaintsCard() {
             })
           ) : (
             <div className="px-4 py-8 text-center">
-              <AlertTriangle className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-sm text-slate-500">No complaints at this time</p>
+              <AlertTriangle className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No complaints at this time</p>
             </div>
           )}
         </div>
       </CardContent>
 
       {complaints && complaints.length > 3 && (
-        <CardFooter className="px-4 py-3 border-t border-slate-200 bg-slate-50">
+        <CardFooter className="px-4 py-3 border-t border-border bg-muted">
           <Button 
             variant="link" 
             size="sm" 
-            className="text-xs font-medium text-primary-600 hover:text-primary-700 w-full"
+            className="text-xs font-medium text-primary hover:text-primary/90 w-full"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? `Show Less` : `View All ${complaints.length} Complaints`}

@@ -210,7 +210,7 @@ export default function RiskProfiling() {
       case "aggressive":
         return "bg-red-600";
       default:
-        return "bg-gray-600";
+        return "bg-muted";
     }
   };
 
@@ -260,7 +260,7 @@ export default function RiskProfiling() {
   // Show loading screen during submission
   if (isSubmitting) {
     return (
-      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-lg font-medium text-foreground mb-2">Saving Risk Profile...</p>
@@ -281,14 +281,14 @@ export default function RiskProfiling() {
     };
 
     return (
-      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
             <div className="mb-6">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                 <Shield className="h-8 w-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Risk Profile Saved Successfully!</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Risk Profile Saved Successfully!</h2>
               <p className="text-muted-foreground mb-6">
                 Your risk profiling assessment has been completed and saved.
               </p>
@@ -310,7 +310,7 @@ export default function RiskProfiling() {
 
   if (isLoadingResults) {
     return (
-      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading risk profile...</p>
@@ -333,7 +333,7 @@ export default function RiskProfiling() {
     validUntil.setFullYear(validUntil.getFullYear() + 1);
 
     return (
-      <div className="p-6 min-h-screen bg-gray-50">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background">
         <div className="max-w-4xl mx-auto">
           {/* Main Results Card */}
           <Card className="shadow-lg border-0">
@@ -341,7 +341,7 @@ export default function RiskProfiling() {
               {/* Header */}
               <div className="flex items-center gap-3 mb-6">
                 <Shield className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold text-gray-900">Risk Profile Result</h1>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">Risk Profile Result</h1>
               </div>
 
               {/* Primary Result Banner */}
@@ -351,7 +351,7 @@ export default function RiskProfiling() {
               </div>
 
               {/* Description */}
-              <p className="text-gray-600 mb-8 leading-relaxed">
+              <p className="text-muted-foreground mb-8 leading-relaxed">
                 {getRiskCategoryDescription(finalCategory)}
               </p>
 
@@ -362,12 +362,12 @@ export default function RiskProfiling() {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp className="h-5 w-5 text-primary" />
-                      <Label className="text-sm font-medium text-gray-600">Risk Score</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">Risk Score</Label>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {result.rp_score} / {result.max_possible_score}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {result.percentage_score?.toFixed(1) || "0"}% of maximum
                     </p>
                   </CardContent>
@@ -378,12 +378,12 @@ export default function RiskProfiling() {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <BarChart3 className="h-5 w-5 text-primary" />
-                      <Label className="text-sm font-medium text-gray-600">Risk Category</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">Risk Category</Label>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {finalCategory}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {result.breakdown?.adjustment === "reduced" && "Adjusted down (Basic KP)"}
                       {result.breakdown?.adjustment === "increased" && "Adjusted up (Advanced KP)"}
                       {result.breakdown?.adjustment === "neutral" && "Based on assessment"}
@@ -395,44 +395,44 @@ export default function RiskProfiling() {
 
               {/* Portfolio Recommendations */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Portfolio Recommendations</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Portfolio Recommendations</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <Card className="shadow-sm">
                     <CardContent className="p-4">
-                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                         Expected Return
                       </Label>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-foreground">
                         {categoryInfo.expectedReturn}
                       </p>
                     </CardContent>
                   </Card>
                   <Card className="shadow-sm">
                     <CardContent className="p-4">
-                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                         Volatility
                       </Label>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-foreground">
                         {categoryInfo.volatility}
                       </p>
                     </CardContent>
                   </Card>
                   <Card className="shadow-sm">
                     <CardContent className="p-4">
-                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                         Equity Allocation
                       </Label>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-foreground">
                         {categoryInfo.equityAllocation}
                       </p>
                     </CardContent>
                   </Card>
                   <Card className="shadow-sm">
                     <CardContent className="p-4">
-                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                         Debt Allocation
                       </Label>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-foreground">
                         {categoryInfo.debtAllocation}
                       </p>
                     </CardContent>
@@ -455,7 +455,7 @@ export default function RiskProfiling() {
               )}
 
               {/* Date and Validity */}
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-6 pb-6 border-b">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6 pb-6 border-b">
                 <Calendar className="h-4 w-4" />
                 <span>
                   Completed on {completedDate.toLocaleDateString('en-US', { 

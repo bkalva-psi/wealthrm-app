@@ -4,8 +4,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { EmptyState } from "@/components/empty-state";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp, Mail, MessageCircle } from "lucide-react";
+import { Search, Filter, ChevronDown, Download, FileText, TrendingUp, Users, Calendar, Shield, ChevronUp, Mail, MessageCircle, AlertCircle } from "lucide-react";
 
 interface Product {
   id: number;
@@ -319,10 +321,11 @@ ABC Bank`;
 
   if (error) {
     return (
-      <div className="p-6">
-        <div className="bg-destructive/10 border border-destructive rounded-lg p-4">
-          <p className="text-destructive">Failed to load products. Please try again later.</p>
-        </div>
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Failed to load products. Please try again later.</AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -331,10 +334,10 @@ ABC Bank`;
     <div className="min-h-screen bg-background transition-colors duration-300">
       {/* Enhanced Sticky Header */}
       <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
-        <div className="p-6 animate-in slide-in-from-top-4 duration-500">
+        <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10 animate-in slide-in-from-top-4 duration-500">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tight">Investment Products</h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">Investment Products</h1>
               <p className="text-sm font-medium text-muted-foreground mt-1">
                 {filteredProducts.length} of {products.length} products available
               </p>
@@ -410,14 +413,15 @@ ABC Bank`;
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-muted-foreground mb-4">
-              <Search className="h-12 w-12 mx-auto mb-4" />
-              {searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0 
-                ? "No products match your search criteria."
-                : "No products available."}
-            </div>
-            {(searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0) && (
+          <EmptyState
+            icon={<Search className="h-12 w-12 text-muted-foreground" />}
+            title={searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0 
+              ? "No products match your search criteria"
+              : "No products available"}
+            description={searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0 
+              ? "Try adjusting your filters to find what you're looking for."
+              : "Check back later for new investment products."}
+            action={(searchTerm || selectedCategories.length > 0 || selectedRiskLevels.length > 0) && (
               <Button 
                 variant="outline" 
                 onClick={() => {
@@ -429,7 +433,7 @@ ABC Bank`;
                 Clear Filters
               </Button>
             )}
-          </div>
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredProducts.map((product) => {

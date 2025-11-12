@@ -19,7 +19,7 @@ export function FloatingAddButton({ onClick, label = "Add New Client", className
     >
       {/* Text label that appears on hover */}
       <span 
-        className={`bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 pointer-events-none whitespace-nowrap shadow-lg ${
+        className={`bg-popover text-popover-foreground text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 pointer-events-none whitespace-nowrap shadow-lg ${
           isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'
         }`}
       >
@@ -30,6 +30,7 @@ export function FloatingAddButton({ onClick, label = "Add New Client", className
       <Button
         onClick={onClick}
         size="lg"
+        aria-label={label}
         className={`h-14 w-14 rounded-full bg-primary shadow-lg transition-all duration-300 ${
           isHovered 
             ? 'bg-primary/90 hover:bg-primary/80 scale-110 shadow-xl' 
@@ -38,7 +39,7 @@ export function FloatingAddButton({ onClick, label = "Add New Client", className
         title={label}
       >
         <Plus 
-          className={`h-6 w-6 text-white transition-transform duration-300 ${
+          className={`h-6 w-6 text-primary-foreground transition-transform duration-300 ${
             isHovered ? 'rotate-90' : ''
           }`} 
         />

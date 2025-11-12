@@ -435,13 +435,14 @@ const ClientCommunications: React.FC = () => {
       )}
 
       {/* Page Title Band with Navigation */}
-      <div className="sticky top-0 z-10 bg-card border-b border-gray-200 px-1 py-4">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-1 py-4">
         <div className="flex justify-between items-center px-5 mb-3">
-          <h2 className="text-2xl font-bold text-foreground">Notes</h2>
+          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">Notes</h2>
           <Button 
             size="sm" 
             onClick={() => setIsNewNoteDialogOpen(true)}
             className="h-8 w-8 p-0 rounded-full"
+            aria-label="Add new note"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -762,7 +763,7 @@ const ClientCommunications: React.FC = () => {
                       )}
                       
                       {/* Additional Details */}
-                      <div className="pt-2 border-t border-gray-100">
+                      <div className="pt-2 border-t border-border">
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="text-muted-foreground">Direction:</span>

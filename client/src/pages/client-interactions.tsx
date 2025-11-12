@@ -35,21 +35,21 @@ export default function ClientInteractionsPage() {
   
   if (!clientId) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Client not found</h1>
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Client not found</h1>
         <Button onClick={handleBackClick}>Back to Clients</Button>
       </div>
     );
   }
   
   return (
-    <div className="p-6">
+    <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10">
       <div className="flex items-center gap-2 mb-6">
         <Button variant="ghost" size="sm" onClick={handleBackClick}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
           {isLoading ? (
             <Skeleton className="h-8 w-40" />
           ) : (
@@ -144,7 +144,7 @@ export default function ClientInteractionsPage() {
         </CardContent>
       </Card>
       
-      <div className="bg-slate-50 p-4 rounded-lg">
+      <div className="bg-muted p-4 rounded-lg">
         <h2 className="text-lg font-medium mb-4">Placeholder: Interactions Section</h2>
         <p className="text-muted-foreground mb-2">
           This is a placeholder for the Client Interactions page. In a full implementation, this would display:

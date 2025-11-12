@@ -84,10 +84,11 @@ export function PortfolioAlerts() {
   };
   
   return (
+    <>
     <Card className="overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+      <div className="px-4 py-3 border-b border-border bg-card">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-slate-700">Portfolio Alerts</h2>
+          <h2 className="text-sm font-medium text-foreground">Portfolio Alerts</h2>
           {!isLoading && alerts && alerts.some((alert: PortfolioAlert) => !alert.read) && (
             <Badge variant="destructive">
               {alerts.filter((alert: PortfolioAlert) => !alert.read).length} New
@@ -96,7 +97,7 @@ export function PortfolioAlerts() {
         </div>
       </div>
       
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-border">
         {isLoading ? (
           Array(3).fill(0).map((_, index) => (
             <div key={index} className="px-4 py-3">
@@ -125,8 +126,8 @@ export function PortfolioAlerts() {
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-sm font-medium text-slate-800">{alert.title}</p>
-                    <p className="text-xs text-slate-600 mt-1">{alert.description}</p>
+                    <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
                     <div className="mt-2 flex space-x-2">
                       <Button 
                         size="sm" 
@@ -138,7 +139,7 @@ export function PortfolioAlerts() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="inline-flex items-center px-2 py-1 border border-slate-300 text-xs font-medium bg-white text-slate-700 hover:bg-slate-50"
+                        className="inline-flex items-center px-2 py-1 border border-border text-xs font-medium bg-card text-foreground hover:bg-muted"
                         onClick={() => handleDismiss(alert)}
                       >
                         {alert.severity === "critical" ? "Dismiss" : 
@@ -146,38 +147,38 @@ export function PortfolioAlerts() {
                       </Button>
                     </div>
                   </div>
-                  <span className="text-xs text-slate-500">{formatRelativeDate(alert.createdAt)}</span>
+                  <span className="text-xs text-muted-foreground">{formatRelativeDate(alert.createdAt)}</span>
                 </div>
               </div>
             );
           })
         ) : (
           <div className="px-4 py-6 text-center">
-            <p className="text-sm text-slate-500">No portfolio alerts</p>
+            <p className="text-sm text-muted-foreground">No portfolio alerts</p>
           </div>
         )}
       </div>
       
-      <CardFooter className="px-4 py-3 bg-slate-50 flex justify-center">
-        <Button variant="link" size="sm" className="text-xs font-medium text-primary-600 hover:text-primary-700">
+      <CardFooter className="px-4 py-3 bg-muted flex justify-center">
+        <Button variant="link" size="sm" className="text-xs font-medium text-primary hover:text-primary/90">
           View All Alerts
         </Button>
       </CardFooter>
     </Card>
-
+    
     {/* Complaints Section */}
     <Card className="overflow-hidden mt-4">
-      <div className="px-4 py-3 border-b border-slate-200 bg-white">
+      <div className="px-4 py-3 border-b border-border bg-card">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-red-500" />
-          <h2 className="text-sm font-medium text-slate-700">Complaints</h2>
-          {!complaintsLoading && complaints && complaints.length > 0 && (
-            <Badge variant="destructive">{complaints.filter((c) => c.status === 'open').length} Open</Badge>
+          <h2 className="text-sm font-medium text-foreground">Complaints</h2>
+          {!complaintsLoading && (complaints?.length ?? 0) > 0 && (
+            <Badge variant="destructive">{(complaints || []).filter((c) => c.status === 'open').length} Open</Badge>
           )}
         </div>
       </div>
       
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-border">
         {complaintsLoading ? (
           Array(3).fill(0).map((_, index) => (
             <div key={index} className="px-4 py-3">
@@ -206,20 +207,20 @@ export function PortfolioAlerts() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-medium text-slate-800">{complaint.title}</p>
+                      <p className="text-sm font-medium text-foreground">{complaint.title}</p>
                       {complaint.isRegulatory && (
                         <Badge variant="outline" className="text-xs">Regulatory</Badge>
                       )}
                     </div>
                     
-                    <div className="flex items-center gap-2 text-xs text-slate-600 mb-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                       <User className="h-3 w-3" />
                       <span>{complaint.clientName}</span>
                       <span>•</span>
                       <span className="capitalize">{complaint.category.replace('_', ' ')}</span>
                     </div>
                     
-                    <p className="text-xs text-slate-600 mb-2">{complaint.description}</p>
+                    <p className="text-xs text-muted-foreground mb-2">{complaint.description}</p>
                     
                     <div className="flex items-center gap-2 mb-2">
                       <Badge 
@@ -247,7 +248,7 @@ export function PortfolioAlerts() {
                       )}
                     </div>
                     
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         <span>Reported {formatRelativeDate(complaint.reportedDate)}</span>
@@ -267,7 +268,7 @@ export function PortfolioAlerts() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="inline-flex items-center px-2 py-1 border border-slate-300 text-xs font-medium bg-white text-slate-700 hover:bg-slate-50"
+                        className="inline-flex items-center px-2 py-1 border border-border text-xs font-medium bg-card text-foreground hover:bg-muted"
                       >
                         Contact Client
                       </Button>
@@ -279,18 +280,19 @@ export function PortfolioAlerts() {
           })
         ) : (
           <div className="px-4 py-6 text-center">
-            <p className="text-sm text-slate-500">No complaints</p>
+            <p className="text-sm text-muted-foreground">No complaints</p>
           </div>
         )}
       </div>
       
-      {complaints && complaints.length > 3 && (
-        <CardFooter className="px-4 py-3 bg-slate-50 flex justify-center">
-          <Button variant="link" size="sm" className="text-xs font-medium text-primary-600 hover:text-primary-700">
-            View All {complaints.length} Complaints
+      {(complaints?.length ?? 0) > 3 && (
+        <CardFooter className="px-4 py-3 bg-muted flex justify-center">
+          <Button variant="link" size="sm" className="text-xs font-medium text-primary hover:text-primary/90">
+            View All {(complaints?.length ?? 0)} Complaints
           </Button>
         </CardFooter>
       )}
     </Card>
+    </>
   );
 }

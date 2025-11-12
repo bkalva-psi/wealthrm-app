@@ -246,7 +246,7 @@ export function ActionItemsPriorities() {
                           </div>
                         ) : (
                           config.items.map((item: any, index: number) => (
-                            <div key={item.id || index} className="bg-white/70 dark:bg-gray-800/50 rounded p-2 text-sm">
+                            <div key={item.id || index} className="bg-card/70 rounded p-2 text-sm">
                               {key === 'appointments' && (
                                 <div>
                                   <div className="font-medium">{item.title}</div>

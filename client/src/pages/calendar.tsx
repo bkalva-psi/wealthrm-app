@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { EmptyState } from "@/components/empty-state";
 
 interface Appointment {
   id: number;
@@ -105,7 +106,7 @@ export default function CalendarPage() {
       case 'video_call':
         return 'border-l-purple-500 bg-purple-50/80 dark:bg-purple-950/30';
       default:
-        return 'border-l-slate-500 bg-slate-50/80 dark:bg-slate-800/30';
+        return 'border-l-border bg-muted/80';
     }
   };
 
@@ -217,7 +218,7 @@ export default function CalendarPage() {
       case 'low':
         return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800';
       default:
-        return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700';
+        return 'bg-muted text-foreground border-border';
     }
   };
 
@@ -259,7 +260,7 @@ export default function CalendarPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-6 transition-colors duration-300">
+      <div className="min-h-screen bg-background px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="h-8 w-48 bg-muted/50 rounded-lg mb-6 animate-pulse" />
           <div className="space-y-4">
@@ -278,13 +279,14 @@ export default function CalendarPage() {
       <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border/50 px-6 py-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Calendar</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">Calendar</h1>
             
             <Dialog open={isNewAppointmentDialogOpen} onOpenChange={setIsNewAppointmentDialogOpen}>
               <DialogTrigger asChild>
                 <Button 
                   size="icon" 
                   className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full hover:scale-105 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/50"
+                  aria-label="Create new appointment"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -522,7 +524,7 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 lg:py-10">
         {/* Date Navigation for Day and Month Views */}
         {(selectedView === 'day' || selectedView === 'month') && (
           <div className="flex items-center justify-between mb-6">
@@ -668,18 +670,13 @@ export default function CalendarPage() {
                 );
               })
             ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">No appointments found</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {searchQuery || filterType !== 'all' || filterPriority !== 'all'
-                      ? 'Try adjusting your filters to see more appointments.'
-                      : 'You have no appointments. Create a new one to get started.'
-                    }
-                  </p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={<CalendarIcon className="h-12 w-12 text-muted-foreground" />}
+                title="No appointments found"
+                description={searchQuery || filterType !== 'all' || filterPriority !== 'all'
+                  ? 'Try adjusting your filters to see more appointments.'
+                  : 'You have no appointments. Create a new one to get started.'}
+              />
             )}
           </div>
         )}
@@ -726,10 +723,11 @@ export default function CalendarPage() {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-8">
-                        <CalendarIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">No appointments scheduled for this day</p>
-                      </div>
+                      <EmptyState
+                        icon={<CalendarIcon className="h-8 w-8 text-muted-foreground" />}
+                        title="No appointments scheduled for this day"
+                        description="Create a new appointment to get started."
+                      />
                     )}
                   </CardContent>
                 </Card>

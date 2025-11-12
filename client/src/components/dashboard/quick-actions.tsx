@@ -98,7 +98,7 @@ export function QuickActions() {
       <Card className="mb-4">
         <CardContent className="pt-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium text-slate-700">Quick Actions</h2>
+            <h2 className="text-sm font-medium text-foreground">Quick Actions</h2>
           </div>
           <div className="mt-3 flex items-center gap-2">
             {quickActions.map((action) => (
@@ -106,11 +106,12 @@ export function QuickActions() {
                 key={action.id}
                 variant="outline"
                 size="sm"
-                className="flex items-center justify-center p-2 bg-slate-50 hover:bg-slate-100 transition-colors"
+                aria-label={action.label}
+                className="flex items-center justify-center p-2 !bg-background !border-input hover:!bg-muted transition-colors"
                 onClick={action.action}
                 title={action.label}
               >
-                <action.icon className="h-5 w-5 text-primary-600" />
+                <action.icon className="h-5 w-5 text-primary" aria-hidden="true" />
               </Button>
             ))}
           </div>
@@ -156,8 +157,8 @@ export function QuickActions() {
               <Input id="call-client" placeholder="Type client name" />
             </div>
             <div className="flex justify-center py-4">
-              <div className="rounded-full bg-primary-600 p-4">
-                <Phone className="h-8 w-8 text-white" />
+              <div className="rounded-full bg-primary p-4">
+                <Phone className="h-8 w-8 text-primary-foreground" />
               </div>
             </div>
             <div className="flex justify-center space-x-2">

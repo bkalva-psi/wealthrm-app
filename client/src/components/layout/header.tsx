@@ -209,7 +209,7 @@ export function Header({
           <form onSubmit={handleSearch}>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-400" />
+                <Search className="h-5 w-5 text-muted-foreground" />
               </div>
               <input 
                 ref={inputRef}
@@ -227,7 +227,7 @@ export function Header({
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={clearSearch}
                 >
-                  <X className="h-4 w-4 text-slate-400 hover:text-slate-600" />
+                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                 </button>
               )}
               
@@ -286,7 +286,7 @@ export function Header({
                                     "px-1.5 py-0.5 text-xs rounded",
                                     result.tier === 'Premium' && "bg-yellow-100 text-yellow-800",
                                     result.tier === 'Gold' && "bg-amber-100 text-amber-800",
-                                    result.tier === 'Silver' && "bg-gray-100 text-gray-800"
+                                result.tier === 'Silver' && "bg-muted text-foreground"
                                   )}>
                                     {result.tier}
                                   </span>
@@ -316,7 +316,7 @@ export function Header({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center focus:outline-none">
-                    <span className="hidden md:block mr-2 text-sm font-medium text-slate-700">{user?.fullName}</span>
+                    <span className="hidden md:block mr-2 text-sm font-medium text-foreground">{user?.fullName}</span>
                     <img 
                       className="h-10 w-10 rounded-full border-2 border-primary shadow-sm" 
                       src={sravanAvatar} 
@@ -337,7 +337,7 @@ export function Header({
         )}
         {hideProfilePicture && (
           <div className="flex items-center pr-4 ml-8">
-            <span className="text-sm font-medium text-slate-700">{user?.role || 'Question Manager'}</span>
+            <span className="text-sm font-medium text-muted-foreground">{user?.role || 'Question Manager'}</span>
           </div>
         )}
       </div>

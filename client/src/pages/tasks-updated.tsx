@@ -428,7 +428,7 @@ export default function TasksUpdated() {
                                     {task.completed ? "Completed" : dueStatus.text}
                                   </span>
                                 </div>
-                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                               </div>
                               {isExpanded && task.description && (
                                 <div className="px-3 pb-3 pt-0 border-t">
@@ -530,7 +530,7 @@ export default function TasksUpdated() {
                                     {alert.client_name ? `Client: ${alert.client_name}` : ''}
                                   </span>
                                 </div>
-                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                               </div>
                               {isExpanded && (
                                 <div className="px-3 pb-3 pt-0 border-t">

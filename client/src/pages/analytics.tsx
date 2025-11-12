@@ -57,15 +57,15 @@ export default function Analytics() {
     document.title = "Analytics | Wealth RM";
   }, []);
   
-  const { data: metrics, isLoading: metricsLoading } = useQuery({
+  const { data: metrics = [], isLoading: metricsLoading } = useQuery<PerformanceMetric[]>({
     queryKey: ['/api/performance-metrics'],
   });
   
-  const { data: aumTrends, isLoading: trendsLoading } = useQuery({
+  const { data: aumTrends = [], isLoading: trendsLoading } = useQuery<AumTrend[]>({
     queryKey: ['/api/aum-trends'],
   });
   
-  const { data: pipeline, isLoading: pipelineLoading } = useQuery({
+  const { data: pipeline = [], isLoading: pipelineLoading } = useQuery<SalesPipeline[]>({
     queryKey: ['/api/sales-pipeline'],
   });
   
@@ -154,9 +154,9 @@ export default function Analytics() {
   
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
-      <div className="p-6">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16">
         <div className="mb-6 animate-in slide-in-from-top-4 duration-500">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Performance Analytics</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">Performance Analytics</h1>
           <p className="text-muted-foreground text-sm font-medium mt-1">
             Comprehensive insights and performance metrics
           </p>
@@ -233,8 +233,8 @@ export default function Analytics() {
                       <Tooltip 
                         formatter={(value: number) => [value.toFixed(0), 'Value']}
                         contentStyle={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                          border: '1px solid #e2e8f0',
+                          backgroundColor: 'hsl(var(--popover))',
+                          border: '1px solid hsl(var(--border))',
                           borderRadius: '6px',
                           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                         }}
@@ -283,8 +283,8 @@ export default function Analytics() {
                           return [formatCurrency(value), name];
                         }}
                         contentStyle={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                          border: '1px solid #e2e8f0',
+                          backgroundColor: 'hsl(var(--popover))',
+                          border: '1px solid hsl(var(--border))',
                           borderRadius: '6px',
                           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                         }}
@@ -341,8 +341,8 @@ export default function Analytics() {
                       <Tooltip 
                         formatter={(value: number) => [formatCurrency(value), 'Value']}
                         contentStyle={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                          border: '1px solid #e2e8f0',
+                          backgroundColor: 'hsl(var(--popover))',
+                          border: '1px solid hsl(var(--border))',
                           borderRadius: '6px',
                           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                         }}

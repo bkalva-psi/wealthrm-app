@@ -418,11 +418,11 @@ export default function QMPortal() {
   }
 
   return (
-      <div className="p-6 bg-background">
+      <div className="bg-background px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Question Manager Portal</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">Question Manager Portal</h1>
             <p className="text-muted-foreground mt-1">Manage Knowledge Profiling and Risk Profiling questions and scoring</p>
           </div>
           <Button
@@ -453,7 +453,7 @@ export default function QMPortal() {
           <TabsContent value="knowledge" className="mt-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">Knowledge Profiling Questions</h2>
+                <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">Knowledge Profiling Questions</h2>
                 <p className="text-muted-foreground mt-1">Manage Knowledge Profiling questions and scoring</p>
               </div>
           <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
