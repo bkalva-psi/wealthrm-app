@@ -550,7 +550,7 @@ export function FinancialProfileForm({
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -564,7 +564,7 @@ export function FinancialProfileForm({
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Section Navigation */}
-            <div className="flex gap-2 overflow-x-auto pb-4 border-b">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-4 border-b">
               {["income", "expenses", "assets", "liabilities", "summary"].map((section) => (
                 <Button
                   key={section}
@@ -572,7 +572,7 @@ export function FinancialProfileForm({
                   variant={activeSection === section ? "default" : "outline"}
                   size="sm"
                   onClick={() => setActiveSection(section)}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap h-11 px-4"
                 >
                   {section === "summary" ? "Summary" : section.charAt(0).toUpperCase() + section.slice(1)}
                 </Button>
@@ -586,7 +586,7 @@ export function FinancialProfileForm({
                   <TrendingUp className="h-5 w-5 text-green-600" />
                   Income Details (Monthly)
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="salary">Salary/Wages</Label>
                     <Input
@@ -670,7 +670,7 @@ export function FinancialProfileForm({
                   <TrendingDown className="h-5 w-5 text-red-600" />
                   Expense Details (Monthly)
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="householdExpenses">Household Expenses</Label>
                     <Input
@@ -805,7 +805,7 @@ export function FinancialProfileForm({
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                             <div className="space-y-2">
                               <Label>Category</Label>
                               <Select
@@ -937,7 +937,7 @@ export function FinancialProfileForm({
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                             <div className="space-y-2">
                               <Label>Category</Label>
                               <Select
@@ -1076,7 +1076,7 @@ export function FinancialProfileForm({
                       ) : (
                         <div>
                           {/* Pie Chart */}
-                          <div className="h-64 mb-4">
+                          <div className="h-[200px] sm:h-[300px] mb-4">
                             <ResponsiveContainer width="100%" height="100%">
                               <RechartsPieChart>
                                 <Pie
@@ -1169,7 +1169,7 @@ export function FinancialProfileForm({
                       ) : (
                         <div>
                           {/* Bar Chart */}
-                          <div className="h-64 mb-4">
+                          <div className="h-[200px] sm:h-[300px] mb-4">
                             <ResponsiveContainer width="100%" height="100%">
                               <BarChart
                                 data={[
@@ -1765,8 +1765,8 @@ export function FinancialProfileForm({
             )}
 
             {/* Form Actions */}
-            <div className="flex justify-between items-center pt-6 border-t">
-              <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+            <div className="flex justify-between items-center pt-6 border-t flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading} className="w-full sm:w-auto h-11">
                 Cancel
               </Button>
               <div className="flex gap-2">
@@ -1776,6 +1776,7 @@ export function FinancialProfileForm({
                       type="button" 
                       variant="outline" 
                       onClick={() => setActiveSection("liabilities")}
+                      className="w-full sm:w-auto h-11"
                     >
                       Previous
                     </Button>
@@ -1786,6 +1787,7 @@ export function FinancialProfileForm({
                           onNavigateToRiskProfiling();
                         }
                       }}
+                      className="w-full sm:w-auto h-11"
                     >
                       Next to Risk Profiling
                     </Button>
@@ -1801,6 +1803,7 @@ export function FinancialProfileForm({
                         setActiveSection(sections[currentIndex - 1]);
                       }
                     }}
+                    className="w-full sm:w-auto h-11"
                   >
                     Previous
                   </Button>
@@ -1815,11 +1818,12 @@ export function FinancialProfileForm({
                         setActiveSection(sections[currentIndex + 1]);
                       }
                     }}
+                    className="w-full sm:w-auto h-11"
                   >
                     Next Section
                   </Button>
                 ) : activeSection === "liabilities" ? (
-                  <Button type="submit" disabled={isLoading}>
+                  <Button type="submit" disabled={isLoading} className="w-full sm:w-auto h-11">
                     {isLoading ? "Saving..." : "Save Financial Profile"}
                   </Button>
                 ) : null}

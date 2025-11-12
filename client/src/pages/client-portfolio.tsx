@@ -48,6 +48,7 @@ import { Separator } from "@/components/ui/separator";
 import { getTierColor } from "@/lib/utils";
 import { ClientPageLayout } from "@/components/layout/ClientPageLayout";
 import { SecurityAvatar } from "@/components/ui/security-avatar";
+import { useToast } from "@/hooks/use-toast";
 
 // Import custom chart components
 import AssetAllocationChart from "../components/charts/AssetAllocationChart";
@@ -742,6 +743,7 @@ export default function ClientPortfolioPage() {
   const [clientId, setClientId] = useState<number | null>(null);
   const [holdingsSortBy, setHoldingsSortBy] = useState('value_desc');
   const [showAllHoldings, setShowAllHoldings] = useState(false);
+  const { toast } = useToast();
   
   // Set page title
   useEffect(() => {
@@ -889,11 +891,11 @@ export default function ClientPortfolioPage() {
   return (
     <ClientPageLayout client={client} isLoading={isLoading} clientId={clientId || 0}>
       {/* Page Header with Navigation */}
-      <div className="bg-card border-b border-border px-1 py-3">
+      <div className="bg-card border-b border-border px-3 py-3">
         <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-3 ml-3">Portfolio</h2>
         
         {/* Navigation Icons */}
-        <div className="grid grid-cols-8 gap-3 ml-3">
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 ml-3">
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}

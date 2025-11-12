@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, AlertCircle, TrendingUp, BarChart3, Calendar, RefreshCw, Info, Eye, PlayCircle } from "lucide-react";
+import { Shield, AlertCircle, TrendingUp, BarChart3, Calendar, RefreshCw, Info, Eye, PlayCircle, ArrowLeft } from "lucide-react";
 import { RiskProfilingForm } from "@/components/forms/risk-profiling-form";
 
 export default function RiskProfiling() {
@@ -335,6 +335,22 @@ export default function RiskProfiling() {
     return (
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background">
         <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (clientId) {
+                window.location.hash = `/clients/${clientId}/personal`;
+              } else {
+                window.location.hash = '/clients';
+              }
+            }}
+            className="mb-4 w-full sm:w-auto h-11"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Client Profile
+          </Button>
+          
           {/* Main Results Card */}
           <Card className="shadow-lg border-0">
             <CardContent className="p-8">
@@ -471,7 +487,7 @@ export default function RiskProfiling() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -480,7 +496,7 @@ export default function RiskProfiling() {
                     setShowForm(true);
                     queryClient.invalidateQueries({ queryKey: ["/api/rp/results", clientId] });
                   }}
-                  className="border-primary text-primary hover:bg-primary/10"
+                  className="w-full sm:w-auto h-11 border-primary text-primary hover:bg-primary/10"
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Retake Assessment
@@ -494,7 +510,7 @@ export default function RiskProfiling() {
                       window.location.hash = '/clients';
                     }
                   }}
-                  className="bg-primary hover:bg-primary/90"
+                  className="w-full sm:w-auto h-11 bg-primary hover:bg-primary/90"
                 >
                   Accept and Continue
                 </Button>

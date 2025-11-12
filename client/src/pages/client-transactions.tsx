@@ -464,11 +464,11 @@ export default function ClientTransactions() {
     <ClientPageLayout client={client} isLoading={isClientLoading} clientId={clientId}>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-card border-b border-border px-1 py-4">
+      <div className="bg-card border-b border-border px-3 py-4">
         <h2 className="text-2xl font-bold text-foreground px-5 mb-3">Transactions</h2>
         
         {/* Navigation Icons */}
-        <div className="grid grid-cols-7 gap-1 px-1">
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 px-1">
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg hover:bg-muted transition-colors h-12 w-full"
             onClick={() => window.location.hash = `/clients/${clientId}/personal`}

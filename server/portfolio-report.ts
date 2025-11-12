@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { db } from './db';
+import { supabaseServer } from './lib/supabase';
 import { clients, transactions } from '@shared/schema';
 import { eq, desc } from 'drizzle-orm';
 
@@ -14,23 +15,105 @@ router.get('/api/clients/:clientId/portfolio-report', async (req: Request, res: 
       return res.status(400).json({ error: 'Invalid client ID' });
     }
 
-    // Fetch client data - same as app
-    const [client] = await db.select().from(clients).where(eq(clients.id, clientId));
+    // Prefer Supabase in environments without DATABASE_URL; fallback to Drizzle if available
+    let client: any;
+    let clientTransactions: any[] = [];
+
+    if (db && typeof db.select === 'function') {
+      // Drizzle/Neon path
+      const [clientRow] = await db.select().from(clients).where(eq(clients.id, clientId));
+      client = clientRow;
+      clientTransactions = await db
+        .select()
+        .from(transactions)
+        .where(eq(transactions.clientId, clientId))
+        .orderBy(desc(transactions.transactionDate))
+        .limit(15);
+    } else {
+      // Supabase path
+      const { data: clientRow, error: clientErr } = await supabaseServer
+        .from('clients')
+        .select('*')
+        .eq('id', clientId)
+        .maybeSingle();
+      if (clientErr) throw clientErr;
+      client = clientRow;
+
+      const { data: txnRows, error: txnErr } = await supabaseServer
+        .from('transactions')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('transaction_date', { ascending: false })
+        .limit(15);
+      if (txnErr) throw txnErr;
+      clientTransactions = txnRows || [];
+    }
     
     if (!client) {
       return res.status(404).json({ error: 'Client not found' });
     }
 
-    // Fetch transactions - same as app
-    const clientTransactions = await db
-      .select()
-      .from(transactions)
-      .where(eq(transactions.clientId, clientId))
-      .orderBy(desc(transactions.transactionDate))
-      .limit(15);
+    // Normalize client object to handle both camelCase (Drizzle) and snake_case (Supabase)
+    // Helper function to safely get property value
+    const getProp = (obj: any, ...keys: string[]): any => {
+      for (const key of keys) {
+        const value = obj?.[key];
+        // Check for valid values (not undefined, null, empty string, or the string "undefined")
+        if (value !== undefined && 
+            value !== null && 
+            value !== '' && 
+            String(value).toLowerCase() !== 'undefined' &&
+            String(value).trim() !== '') {
+          return value;
+        }
+      }
+      return null;
+    };
+
+    // Try to get full name from various possible sources
+    let fullName = getProp(client, 'fullName', 'full_name');
+    
+    // If fullName is not available, try to construct it from other fields
+    if (!fullName) {
+      const firstName = getProp(client, 'firstName', 'first_name');
+      const lastName = getProp(client, 'lastName', 'last_name');
+      if (firstName || lastName) {
+        fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+      }
+    }
+    
+    // Final fallback
+    if (!fullName) {
+      fullName = getProp(client, 'email', 'username', 'name') || 'Not provided';
+    }
+
+    const normalizedClient = {
+      id: client?.id || 0,
+      fullName: fullName,
+      email: getProp(client, 'email') || 'Not provided',
+      phone: getProp(client, 'phone') || 'Not provided',
+      homeAddress: getProp(client, 'homeAddress', 'home_address') || 'Not provided',
+      homeCity: getProp(client, 'homeCity', 'home_city') || '',
+      homeState: getProp(client, 'homeState', 'home_state') || '',
+      homePincode: getProp(client, 'homePincode', 'home_pincode') || '',
+      clientSince: getProp(client, 'clientSince', 'client_since') || null,
+      tier: getProp(client, 'tier') || 'silver',
+      aum: getProp(client, 'aum') || '₹0',
+      aumValue: getProp(client, 'aumValue', 'aum_value') || 0,
+    };
+
+    // Debug logging (remove in production if needed)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Portfolio Report] Client data:', {
+        rawClient: client,
+        normalizedClient,
+        fullNameSource: getProp(client, 'fullName', 'full_name'),
+      });
+    }
 
     // Use exact app calculations
-    const aumValue = typeof client.aumValue === 'number' ? client.aumValue : parseAumString(client.aumValue);
+    const aumValueSource = normalizedClient.aumValue;
+    const aumValue = typeof aumValueSource === 'number' ? aumValueSource : parseAumString(normalizedClient.aum);
     const investment = aumValue * 0.85;
     const unrealizedGain = aumValue * 0.15;
 
@@ -96,7 +179,7 @@ router.get('/api/clients/:clientId/portfolio-report', async (req: Request, res: 
       }
     ];
 
-    const htmlContent = generateReportHTML(client, {
+    const htmlContent = generateReportHTML(normalizedClient, {
       aumValue,
       investment,
       unrealizedGain,
@@ -183,6 +266,35 @@ function calculateAllocations(transactions: any[]) {
 }
 
 function generateReportHTML(client: any, portfolioData: any, transactions: any[]) {
+  // Ensure we have normalized properties (handle both camelCase and snake_case)
+  // The client should already be normalized, but add fallback for safety
+  let clientFullName = (client?.fullName || client?.full_name || '').trim();
+  
+  // Handle edge cases where value might be the string "undefined" or actually undefined
+  if (!clientFullName || clientFullName === 'undefined' || clientFullName === 'null') {
+    // Try to construct from other fields
+    const firstName = (client?.firstName || client?.first_name || '').trim();
+    const lastName = (client?.lastName || client?.last_name || '').trim();
+    if (firstName || lastName) {
+      clientFullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+    }
+    
+    // Final fallback
+    if (!clientFullName || clientFullName === 'undefined') {
+      clientFullName = (client?.email || client?.username || client?.name || 'Not provided').toString().trim();
+    }
+  }
+  const clientEmail = (client?.email || '').trim() || 'Not provided';
+  const clientPhone = (client?.phone || '').trim() || 'Not provided';
+  const clientHomeAddress = (client?.homeAddress || client?.home_address || '').trim() || 'Not provided';
+  const clientHomeCity = (client?.homeCity || client?.home_city || '').trim();
+  const clientHomeState = (client?.homeState || client?.home_state || '').trim();
+  const clientHomePincode = (client?.homePincode || client?.home_pincode || '').trim();
+  const clientSince = client?.clientSince || client?.client_since || null;
+  const clientTier = (client?.tier || '').trim() || 'silver';
+  const clientAum = (client?.aum || '').trim() || '₹0';
+  const clientId = client?.id || 0;
+  
   const currentDate = new Date().toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'long',
@@ -206,7 +318,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Portfolio Report - ${client.fullName} | ABC Bank</title>
+  <title>Portfolio Report - ${clientFullName} | ABC Bank</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -542,7 +654,7 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
         <div class="report-meta">
           <div class="report-title">Portfolio Report</div>
           <div>Generated on: ${currentDate}</div>
-          <div>Report ID: PF-${client.id}-${new Date().getFullYear()}</div>
+          <div>Report ID: PF-${clientId}-${new Date().getFullYear()}</div>
         </div>
       </div>
 
@@ -553,35 +665,35 @@ function generateReportHTML(client: any, portfolioData: any, transactions: any[]
           <div class="customer-info">
             <div class="info-item">
               <div class="info-label">Full Name</div>
-              <div class="info-value">${client.fullName}</div>
+              <div class="info-value">${clientFullName}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Client ID</div>
-              <div class="info-value">USF-${client.id.toString().padStart(6, '0')}</div>
+              <div class="info-value">USF-${clientId.toString().padStart(6, '0')}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Email Address</div>
-              <div class="info-value">${client.email || 'Not provided'}</div>
+              <div class="info-value">${clientEmail}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Phone Number</div>
-              <div class="info-value">${client.phone || 'Not provided'}</div>
+              <div class="info-value">${clientPhone}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Home Address</div>
-              <div class="info-value">${client.homeAddress || 'Not provided'}<br>
-              ${client.homeCity || ''} ${client.homeState || ''} ${client.homePincode || ''}</div>
+              <div class="info-value">${clientHomeAddress}<br>
+              ${clientHomeCity} ${clientHomeState} ${clientHomePincode}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Client Since</div>
-              <div class="info-value">${client.clientSince ? new Date(client.clientSince).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' }) : 'Not available'}</div>
+              <div class="info-value">${clientSince ? new Date(clientSince).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' }) : 'Not available'}</div>
             </div>
           </div>
         </div>
         <div class="client-tier">
-          <div class="tier-badge tier-${client.tier || 'silver'}">${(client.tier || 'silver').toUpperCase()} CLIENT</div>
+          <div class="tier-badge tier-${clientTier}">${clientTier.toUpperCase()} CLIENT</div>
           <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">Portfolio Value</div>
-          <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${client.aum}</div>
+          <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${clientAum}</div>
           <div style="color: #64748b; font-size: 12px; margin-top: 5px;">As of ${currentDate}</div>
         </div>
       </div>

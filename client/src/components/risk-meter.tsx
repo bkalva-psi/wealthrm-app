@@ -7,8 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { ArrowLeft } from "lucide-react";
 
 interface RiskMeterProps {
   finalCategory: string;
@@ -20,6 +22,7 @@ interface RiskMeterProps {
     adjustment: "reduced" | "neutral" | "increased" | "none";
     adjustmentReason: string;
   };
+  clientId?: number | null;
 }
 
 const categoryToGaugePosition = (category: string): number => {
@@ -150,7 +153,9 @@ export function RiskMeter({
   kpScore,
   knowledgeLevel,
   breakdown,
+  clientId,
 }: RiskMeterProps) {
+  const isSm = useMediaQuery("(max-width: 640px)");
   const gaugePosition = categoryToGaugePosition(finalCategory);
   const displayName = getCategoryDisplayName(finalCategory);
   const description = getCategoryDescription(finalCategory);
@@ -226,15 +231,35 @@ export function RiskMeter({
     { name: "Aggressive", value: 45, color: "#dc2626" }, // Red
   ];
 
-  // Calculate positions - matching Recharts PieChart coordinates
-  // Recharts uses cx="50%" cy="90%" - for larger gauge
-  const chartWidth = 500;
-  const chartHeight = 320;
-  const chartCenterX = chartWidth / 2; // 250
-  const chartCenterY = chartHeight * 0.9; // 288 (90% of 320)
-  const innerRadius = 80;
-  const outerRadius = 130;
-  const indicatorRadius = (innerRadius + outerRadius) / 2; // Middle of arc thickness = 105
+  // Measure container to align SVG needle precisely across breakpoints
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState<{ width: number; height: number }>({ width: 500, height: 320 });
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const ro = new (window as any).ResizeObserver((entries: any[]) => {
+      for (const entry of entries) {
+        const cr = entry.contentRect;
+        setContainerSize({ width: cr.width, height: cr.height });
+      }
+    });
+    ro.observe(el);
+    // Initialize immediately
+    setContainerSize({ width: el.clientWidth, height: el.clientHeight });
+    return () => ro.disconnect();
+  }, []);
+
+  // Calculate positions - match Recharts Pie geometry
+  const chartWidth = containerSize.width || 500;
+  const chartHeight = containerSize.height || 320;
+  const chartCenterX = chartWidth / 2;
+  const chartCenterY = chartHeight * 0.9; // semi-circle sits near bottom
+  // Radii scale relative to the container for perfect overlay alignment
+  const base = Math.min(chartWidth, chartHeight);
+  const outerRadius = Math.max(56, Math.floor(base * 0.40));
+  const innerRadius = Math.max(36, Math.floor(base * 0.25));
+  const indicatorRadius = (innerRadius + outerRadius) / 2; // Mid of arc thickness
   
   // Convert angle to position on arc
   // Recharts: startAngle=180 (left), endAngle=0 (right) - top semi-circle
@@ -248,15 +273,15 @@ export function RiskMeter({
   const indicatorY = chartCenterY - indicatorRadius * Math.sin(angleRad);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="px-6 py-3 pb-1">
+    <Card className="w-full max-w-md sm:max-w-lg lg:max-w-2xl mx-auto">
+      <CardHeader className="px-4 sm:px-6 py-3 pb-1">
         <CardTitle className="text-center text-2xl font-bold text-primary">
           Customer Risk Profile
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2 flex flex-col items-center pt-0 px-6">
+      <CardContent className="space-y-2 flex flex-col items-center pt-0 px-4 sm:px-6">
         <div className="flex flex-col items-center justify-center w-full">
-          <div className="relative w-full max-w-lg mx-auto mb-0 flex items-center justify-center" style={{ height: "320px" }}>
+          <div ref={wrapperRef} className="relative w-full max-w-md sm:max-w-lg mx-auto mb-0 flex items-center justify-center h-[220px] sm:h-[280px] md:h-[320px]">
             {/* Recharts Gauge */}
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -266,8 +291,8 @@ export function RiskMeter({
                   cy="90%"
                   startAngle={180}
                   endAngle={0}
-                  innerRadius={80}
-                  outerRadius={130}
+                  innerRadius={innerRadius}
+                  outerRadius={outerRadius}
                   paddingAngle={1}
                   dataKey="value"
                 >
@@ -287,7 +312,7 @@ export function RiskMeter({
             {/* SVG Overlay - precisely aligned and centered */}
             <svg
               className="absolute inset-0 w-full h-full"
-              viewBox="0 0 500 320"
+              viewBox={`0 0 ${Math.max(chartWidth, 1)} ${Math.max(chartHeight, 1)}`}
               preserveAspectRatio="xMidYMid meet"
               style={{ pointerEvents: "none" }}
             >
@@ -297,10 +322,10 @@ export function RiskMeter({
                 <circle
                   cx={indicatorX}
                   cy={indicatorY}
-                  r="16"
+                  r={Math.max(10, Math.floor(base * 0.032))}
                   fill={categoryColor}
                   stroke="#ffffff"
-                  strokeWidth="4"
+                  strokeWidth={Math.max(2, Math.floor(base * 0.012))}
                   style={{ 
                     filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.4))",
                   }}
@@ -309,17 +334,17 @@ export function RiskMeter({
                 <circle
                   cx={indicatorX}
                   cy={indicatorY}
-                  r="20"
+                  r={Math.max(14, Math.floor(base * 0.04))}
                   fill="none"
                   stroke={categoryColor}
-                  strokeWidth="2"
+                  strokeWidth={Math.max(1, Math.floor(base * 0.006))}
                   opacity="0.5"
                 />
                 {/* White center dot */}
                 <circle
                   cx={indicatorX}
                   cy={indicatorY}
-                  r="7"
+                  r={Math.max(4, Math.floor(base * 0.022))}
                   fill="#ffffff"
                 />
               </g>
@@ -329,7 +354,7 @@ export function RiskMeter({
           {/* Category Label - displayed below the gauge */}
           <div className="mt-1 mb-2">
             <div className="text-center">
-              <p className="text-xl font-semibold text-foreground">
+              <p className="text-base sm:text-xl font-semibold text-foreground">
                 Your risk profile is{" "}
                 <span 
                   className="font-bold"
@@ -342,7 +367,7 @@ export function RiskMeter({
           </div>
 
           {/* Legend */}
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full max-w-sm mx-auto mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 w-full max-w-md mx-auto mt-2">
             {[
               { color: "#22c55e", label: "Conservative" },
               { color: "#eab308", label: "Moderate" },
@@ -354,7 +379,7 @@ export function RiskMeter({
                   className="w-3 h-3 rounded-sm shrink-0"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-xs text-muted-foreground font-medium">
+                <span className="text-xs sm:text-sm text-muted-foreground font-medium">
                   {item.label}
                 </span>
               </div>
@@ -382,7 +407,7 @@ export function RiskMeter({
             <Separator />
             <div>
               <h3 className="text-sm font-semibold mb-3">Assessment Details</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {rpScore !== null && (
                   <Card className="p-3">
                     <div className="text-xs text-muted-foreground mb-1">
@@ -420,8 +445,8 @@ export function RiskMeter({
               </div>
             </div>
             {breakdown && breakdown.adjustment !== "none" && (
-              <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3">
-                <p className="text-xs text-blue-900">
+              <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 p-3">
+                <p className="text-xs text-blue-900 dark:text-blue-100">
                   <strong className="font-semibold">Note:</strong>{" "}
                   {breakdown.adjustmentReason}
                 </p>
@@ -434,8 +459,9 @@ export function RiskMeter({
         <div className="flex justify-center pt-4">
           <Button
             onClick={() => setIsPortfolioModalOpen(true)}
-            className="px-6 py-2"
-            size="lg"
+            className="px-4 py-2 sm:h-11 sm:px-6 w-full sm:w-auto"
+            size="default"
+            aria-label="Show recommended portfolio"
           >
             Show Recommended Portfolio
           </Button>
@@ -444,7 +470,7 @@ export function RiskMeter({
 
       {/* Recommended Portfolio Modal */}
       <Dialog open={isPortfolioModalOpen} onOpenChange={setIsPortfolioModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-full sm:max-w-2xl w-[96vw] sm:w-auto max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Indicative Asset Allocation</DialogTitle>
           </DialogHeader>
@@ -459,14 +485,14 @@ export function RiskMeter({
             {/* Pie Chart */}
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <div className="w-full md:w-1/2">
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={isSm ? 220 : 300}>
                   <PieChart>
                     <Pie
                       data={portfolioData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={120}
+                      innerRadius={isSm ? 48 : 60}
+                      outerRadius={isSm ? 90 : 120}
                       paddingAngle={2}
                       dataKey="value"
                     >
@@ -481,6 +507,7 @@ export function RiskMeter({
                         border: "1px solid hsl(var(--border))",
                         borderRadius: "6px",
                       }}
+                      wrapperStyle={{ zIndex: 20 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -618,20 +645,21 @@ export function RiskMeter({
                     {/* Portfolio Value Over Time */}
                     <div className="rounded-lg border bg-muted/50 p-4">
                       <h4 className="text-sm font-semibold mb-3">Portfolio Value Growth (₹)</h4>
-                      <ResponsiveContainer width="100%" height={250}>
+                      <ResponsiveContainer width="100%" height={isSm ? 200 : 250}>
                         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                           <XAxis 
                             dataKey="period" 
                             stroke="hsl(var(--muted-foreground))"
-                            fontSize={11}
-                            angle={-45}
+                            fontSize={isSm ? 10 : 11}
+                            angle={isSm ? -30 : -45}
                             textAnchor="end"
-                            height={60}
+                            height={isSm ? 40 : 60}
+                            interval={isSm ? "preserveStartEnd" : 0}
                           />
                           <YAxis 
                             stroke="hsl(var(--muted-foreground))"
-                            fontSize={11}
+                            fontSize={isSm ? 10 : 11}
                             tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`}
                           />
                           <Tooltip
@@ -641,6 +669,7 @@ export function RiskMeter({
                               border: "1px solid hsl(var(--border))",
                               borderRadius: "6px",
                             }}
+                            wrapperStyle={{ zIndex: 20 }}
                           />
                           <Line 
                             type="monotone" 
@@ -658,20 +687,21 @@ export function RiskMeter({
                     {/* Cumulative Returns */}
                     <div className="rounded-lg border bg-muted/50 p-4">
                       <h4 className="text-sm font-semibold mb-3">Cumulative Returns (%)</h4>
-                      <ResponsiveContainer width="100%" height={250}>
+                      <ResponsiveContainer width="100%" height={isSm ? 200 : 250}>
                         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                           <XAxis 
                             dataKey="period" 
                             stroke="hsl(var(--muted-foreground))"
-                            fontSize={11}
-                            angle={-45}
+                            fontSize={isSm ? 10 : 11}
+                            angle={isSm ? -30 : -45}
                             textAnchor="end"
-                            height={60}
+                            height={isSm ? 40 : 60}
+                            interval={isSm ? "preserveStartEnd" : 0}
                           />
                           <YAxis 
                             stroke="hsl(var(--muted-foreground))"
-                            fontSize={11}
+                            fontSize={isSm ? 10 : 11}
                             tickFormatter={(value) => `${value}%`}
                           />
                           <Tooltip
@@ -681,6 +711,7 @@ export function RiskMeter({
                               border: "1px solid hsl(var(--border))",
                               borderRadius: "6px",
                             }}
+                            wrapperStyle={{ zIndex: 20 }}
                           />
                           <Line 
                             type="monotone" 

@@ -35,6 +35,21 @@ export function Header({
   const { user, logout } = useAuth();
   const { theme } = useTheme();
   const [, navigate] = useLocation();
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [hideSearch, setHideSearch] = useState(false);
+
+  // Hide header search on specific routes (e.g., client portfolio page)
+  useEffect(() => {
+    const evaluateRoute = () => {
+      const hash = window.location.hash.replace(/^#/, '');
+      const isClientPortfolio = /^\/clients\/\d+\/portfolio$/.test(hash);
+      const isClientsList = hash === '/clients';
+      setHideSearch(isClientPortfolio || isClientsList);
+    };
+    evaluateRoute();
+    window.addEventListener('hashchange', evaluateRoute);
+    return () => window.removeEventListener('hashchange', evaluateRoute);
+  }, []);
   
   // Helper function to get theme-specific text classes
   const getBankNameClasses = () => {
@@ -167,7 +182,7 @@ export function Header({
           {!hideSidebar && (
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground h-10 w-10">
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Open menu</span>
                 </Button>
@@ -204,7 +219,8 @@ export function Header({
           </div>
         </div>
         
-        {/* Search Bar */}
+        {/* Search Bar (hidden on Client Portfolio page) */}
+        {!hideSearch && (
         <div className="flex-1 max-w-lg mx-4 hidden sm:block" ref={searchRef}>
           <form onSubmit={handleSearch}>
             <div className="relative">
@@ -307,10 +323,59 @@ export function Header({
             </div>
           </form>
         </div>
+        )}
+        
+        {/* Mobile search icon (hidden on Client pages where page has its own search) */}
+        {!hideSearch && (
+        <div className="sm:hidden ml-auto mr-2">
+          <Sheet open={isMobileSearchOpen} onOpenChange={setIsMobileSearchOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground"
+                aria-label="Open search"
+              >
+                <Search className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="top" className="w-screen max-w-none p-4">
+              <form onSubmit={handleSearch} className="max-w-xl mx-auto">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <input
+                    autoFocus
+                    className="block w-full pl-10 pr-10 py-3 border border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-primary focus:border-primary text-base"
+                    placeholder="Search clients and prospects..."
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    autoComplete="off"
+                    aria-label="Search clients and prospects"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={clearSearch}
+                      aria-label="Clear search"
+                    >
+                      <X className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+                    </button>
+                  )}
+                </div>
+              </form>
+            </SheetContent>
+          </Sheet>
+        </div>
+        )}
         
         {/* Right Navigation Items */}
         {!hideProfilePicture && (
-          <div className="flex items-center pr-4 ml-8">
+          <div className="flex items-center pr-2 sm:pr-4 ml-2 sm:ml-8">
             {/* Profile Dropdown */}
             <div className="relative">
               <DropdownMenu>
@@ -336,7 +401,7 @@ export function Header({
           </div>
         )}
         {hideProfilePicture && (
-          <div className="flex items-center pr-4 ml-8">
+          <div className="flex items-center pr-2 sm:pr-4 ml-2 sm:ml-8">
             <span className="text-sm font-medium text-muted-foreground">{user?.role || 'Question Manager'}</span>
           </div>
         )}

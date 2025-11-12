@@ -13,7 +13,7 @@ export function FloatingAddButton({ onClick, label = "Add New Client", className
 
   return (
     <div 
-      className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 ${className}`}
+      className={`fixed bottom-24 sm:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-3 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

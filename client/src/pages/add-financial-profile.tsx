@@ -377,16 +377,34 @@ export default function AddFinancialProfilePage() {
       </div>
 
       {/* Tabs for Client Profiling */}
-      <div className="px-6 pt-6">
-        <div className="flex gap-2 mb-4">
-          <Button variant={activeTab === 'financial' ? 'default' : 'outline'} size="sm" onClick={() => setActiveTab('financial')}>
-            <PieChart className="h-4 w-4 mr-2" /> Financial Profiling
+      <div className="px-4 sm:px-6 pt-6">
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Button 
+            variant={activeTab === 'financial' ? 'default' : 'outline'} 
+            size="sm" 
+            onClick={() => setActiveTab('financial')}
+            className="flex-1 sm:flex-initial min-w-[120px] h-11"
+          >
+            <PieChart className="h-4 w-4 mr-1.5 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Financial Profiling</span>
           </Button>
-          <Button variant={activeTab === 'risk' ? 'default' : 'outline'} size="sm" onClick={() => setActiveTab('risk')}>
-            <Shield className="h-4 w-4 mr-2" /> Risk Profiling
+          <Button 
+            variant={activeTab === 'risk' ? 'default' : 'outline'} 
+            size="sm" 
+            onClick={() => setActiveTab('risk')}
+            className="flex-1 sm:flex-initial min-w-[120px] h-11"
+          >
+            <Shield className="h-4 w-4 mr-1.5 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Risk Profiling</span>
           </Button>
-          <Button variant={activeTab === 'knowledge' ? 'default' : 'outline'} size="sm" onClick={() => setActiveTab('knowledge')}>
-            <GraduationCap className="h-4 w-4 mr-2" /> Knowledge Profiling
+          <Button 
+            variant={activeTab === 'knowledge' ? 'default' : 'outline'} 
+            size="sm" 
+            onClick={() => setActiveTab('knowledge')}
+            className="flex-1 sm:flex-initial min-w-[120px] h-11"
+          >
+            <GraduationCap className="h-4 w-4 mr-1.5 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Knowledge Profiling</span>
           </Button>
         </div>
       </div>
