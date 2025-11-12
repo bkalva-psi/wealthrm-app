@@ -1,10 +1,10 @@
 Project WealthRM {
   database_type: 'PostgreSQL'
-  Note: 'Wealth Management Relationship Manager Application - Supabase Database Schema'
+  Note: 'Wealth Management Relationship Manager Application - Complete Database Schema'
 }
 
 // ============================================
-// CORE TABLES
+// CORE ENTITIES
 // ============================================
 
 Table users {
@@ -12,7 +12,7 @@ Table users {
   username text [unique, not null]
   password text [not null, note: 'Hashed password']
   full_name text [not null]
-  role text [not null, default: 'relationship_manager', note: 'relationship_manager, supervisor, admin']
+  role text [not null, default: 'relationship_manager', note: 'relationship_manager, supervisor, admin, question_manager']
   avatar_url text
   job_title text
   email text
@@ -21,14 +21,17 @@ Table users {
 
 Table clients {
   id integer [pk, increment]
+  // Personal Information
   full_name text [not null]
   initials text
   email text
   phone text
   date_of_birth timestamp
   gender text
-  marital_status text
+  marital_status text [note: 'Single, Married, Divorced, Widowed']
   anniversary_date timestamp
+  
+  // Address Information
   home_address text
   home_city text
   home_state text
@@ -37,31 +40,41 @@ Table clients {
   work_city text
   work_state text
   work_pincode text
+  
+  // Professional Information
   profession text
   sector_of_employment text
   designation text
   company_name text
   annual_income text
-  work_experience integer
+  work_experience integer [note: 'in years']
+  
+  // KYC & Compliance
   kyc_date timestamp
-  kyc_status text
-  identity_proof_type text
+  kyc_status text [note: 'Verified, Pending, Expired']
+  identity_proof_type text [note: 'Aadhaar, PAN, Passport']
   identity_proof_number text
   address_proof_type text
   pan_number text
   tax_residency_status text
   fatca_status text
   risk_assessment_score integer
+  
+  // Family Information
   spouse_name text
   dependents_count integer
-  children_details text
+  children_details text [note: 'JSON text']
   nominee_details text
   family_financial_goals text
-  tier text [not null, default: 'silver']
-  aum text [not null]
-  aum_value real [not null]
-  risk_profile text [default: 'moderate']
-  investment_horizon text
+  
+  // Investment Profile
+  tier text [not null, default: 'silver', note: 'silver, gold, platinum']
+  aum text [not null, note: 'Assets Under Management']
+  aum_value real [not null, note: 'Numeric value for sorting']
+  risk_profile text [default: 'moderate', note: 'conservative, moderate, aggressive']
+  investment_horizon text [note: 'Short-term, Medium-term, Long-term']
+  
+  // Portfolio Information
   total_invested_amount integer
   current_value integer
   unrealized_gains integer
@@ -75,40 +88,44 @@ Table clients {
   esg_score integer
   volatility double
   sharpe_ratio double
-  asset_allocation jsonb
-  sector_exposure jsonb
-  geographic_exposure jsonb
-  investment_objectives text
-  preferred_products text
+  asset_allocation jsonb [note: '{equity: 60, fixedIncome: 30, cash: 5, alternative: 5}']
+  sector_exposure jsonb [note: '{financial: 30, technology: 25, ...}']
+  geographic_exposure jsonb [note: '{india: 80, us: 15, ...}']
+  investment_objectives text [note: 'Comma-separated or JSON']
+  preferred_products text [note: 'Comma-separated or JSON']
   source_of_wealth text
+  
+  // Communication & Relationship
   last_contact_date timestamp
-  preferred_contact_method text
-  preferred_contact_time text
-  communication_frequency text
+  preferred_contact_method text [note: 'Email, Phone, In-person']
+  preferred_contact_time text [note: 'Morning, Afternoon, Evening']
+  communication_frequency text [note: 'Weekly, Monthly, Quarterly']
   client_since timestamp
   client_acquisition_source text
+  
+  // Transaction Information
   last_transaction_date timestamp
   total_transaction_count integer
   average_transaction_value real
-  recurring_investments text
+  recurring_investments text [note: 'JSON text']
+  
+  // Additional Wealth Management Fields
   tax_planning_preferences text
-  insurance_coverage text
+  insurance_coverage text [note: 'JSON text']
   retirement_goals text
-  major_life_events text
-  financial_interests text
+  major_life_events text [note: 'JSON text']
+  financial_interests text [note: 'Comma-separated']
   net_worth text
   liquidity_requirements text
   foreign_investments text
-  income_data jsonb
-  expenses_data jsonb
-  assets_data jsonb
-  liabilities_data jsonb
+  
+  // System Fields
   alert_count integer [default: 0]
   created_at timestamp [default: `now()`]
   assigned_to integer [ref: > users.id]
   profile_status text [default: 'incomplete']
   incomplete_sections text[]
-  last_accessed_at timestamptz
+  last_accessed_at timestamp
 }
 
 Table prospects {
@@ -119,9 +136,9 @@ Table prospects {
   potential_aum_value real
   email text
   phone text
-  stage text [not null, default: 'new']
+  stage text [not null, default: 'new', note: 'new, qualified, proposal, won, lost']
   last_contact_date timestamp
-  probability_score integer [default: 50]
+  probability_score integer [default: 50, note: '0-100']
   products_of_interest text[]
   notes text
   created_at timestamp [default: `now()`]
@@ -138,7 +155,7 @@ Table tasks {
   description text
   due_date timestamp
   completed boolean [default: false]
-  priority text [default: 'medium']
+  priority text [default: 'medium', note: 'low, medium, high']
   client_id integer [ref: > clients.id]
   prospect_id integer [ref: > prospects.id]
   assigned_to integer [ref: > users.id]
@@ -155,8 +172,8 @@ Table appointments {
   client_id integer [ref: > clients.id]
   prospect_id integer [ref: > prospects.id]
   assigned_to integer [ref: > users.id]
-  priority text [default: 'medium']
-  type text [not null]
+  priority text [default: 'medium', note: 'low, medium, high']
+  type text [not null, note: 'meeting, call, email, other']
   created_at timestamp [default: `now()`]
 }
 
@@ -165,36 +182,36 @@ Table portfolio_alerts {
   title text [not null]
   description text [not null]
   client_id integer [ref: > clients.id]
-  severity text [not null]
+  severity text [not null, note: 'info, warning, critical']
   read boolean [default: false]
   action_required boolean [default: true]
   created_at timestamp [default: `now()`]
 }
 
 // ============================================
-// COMMUNICATION TABLES
+// COMMUNICATION SYSTEM
 // ============================================
 
 Table communications {
   id integer [pk, increment]
   client_id integer [ref: > clients.id, not null]
-  initiated_by integer [ref: > users.id, not null]
-  communication_type text [not null]
-  direction text [not null]
+  initiated_by integer [ref: > users.id, not null, note: 'RM who initiated or received']
+  communication_type text [not null, note: 'call, email, meeting, message, note']
+  direction text [not null, note: 'inbound, outbound']
   subject text [not null]
   summary text [not null]
   details text
   start_time timestamp [not null]
   end_time timestamp
-  duration integer
-  channel text
-  sentiment text [default: 'neutral']
+  duration integer [note: 'in minutes']
+  channel text [note: 'phone, video, in-person, email, chat']
+  sentiment text [default: 'neutral', note: 'positive, neutral, negative']
   followup_required boolean [default: false]
   followup_date timestamp
   has_attachments boolean [default: false]
-  tags text[]
-  status text [default: 'completed']
-  location text
+  tags text[] [note: 'topics discussed, categorization']
+  status text [default: 'completed', note: 'scheduled, in-progress, completed, cancelled']
+  location text [note: 'for in-person meetings']
   created_at timestamp [default: `now()`]
 }
 
@@ -205,20 +222,20 @@ Table communication_action_items {
   description text
   assigned_to integer [ref: > users.id]
   due_date timestamp
-  priority text [default: 'medium']
-  status text [default: 'pending']
+  priority text [default: 'medium', note: 'low, medium, high']
+  status text [default: 'pending', note: 'pending, in-progress, completed, cancelled']
   completed_at timestamp
-  action_type text [default: 'task']
-  deal_value real
-  expected_close_date timestamp
+  action_type text [default: 'task', note: 'task, deal_closure, follow_up']
+  deal_value real [note: 'monetary value for deal_closure type']
+  expected_close_date timestamp [note: 'expected closure date for deals']
 }
 
 Table communication_attachments {
   id integer [pk, increment]
   communication_id integer [ref: > communications.id, not null]
   file_name text [not null]
-  file_type text [not null]
-  file_size integer [not null]
+  file_type text [not null, note: 'PDF, DOCX, XLSX, JPG, etc.']
+  file_size integer [not null, note: 'in bytes']
   file_path text [not null]
   uploaded_by integer [ref: > users.id, not null]
   description text
@@ -231,15 +248,579 @@ Table communication_attachments {
 Table client_communication_preferences {
   id integer [pk, increment]
   client_id integer [ref: > clients.id, unique, not null]
-  preferred_channels text[]
-  preferred_frequency text [default: 'monthly']
-  preferred_days text[]
-  preferred_time_slots text[]
+  preferred_channels text[] [note: 'ranked list: [email, phone, in-person]']
+  preferred_frequency text [default: 'monthly', note: 'daily, weekly, monthly, quarterly']
+  preferred_days text[] [note: 'Monday, Tuesday, etc.']
+  preferred_time_slots text[] [note: 'morning, afternoon, evening']
   do_not_contact_times text
   preferred_language text [default: 'English']
-  communication_style text
-  topics_of_interest text[]
-  opt_out_categories text[]
+  communication_style text [note: 'formal, informal, detailed, concise']
+  topics_of_interest text[] [note: 'market updates, tax planning, etc.']
+  opt_out_categories text[] [note: 'marketing, newsletters, etc.']
   special_instructions text
   last_updated timestamp [default: `now()`]
 }
+
+Table communication_templates {
+  id integer [pk, increment]
+  name text [not null]
+  category text [not null, note: 'market update, portfolio review, birthday wish, etc.']
+  subject text [not null]
+  content text [not null]
+  variables text[] [note: 'placeholders like {{client_name}}, {{portfolio_value}}']
+  created_by integer [ref: > users.id, not null]
+  is_global boolean [default: false, note: 'available to all RMs or just creator']
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table communication_analytics {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, note: 'optional, if null = all RMs']
+  client_id integer [ref: > clients.id, note: 'optional, if null = all clients']
+  period text [not null, note: 'daily, weekly, monthly, quarterly, yearly']
+  start_date timestamp [not null]
+  end_date timestamp [not null]
+  total_communications integer [not null]
+  communications_by_type jsonb [not null, note: '{call: 10, email: 15, meeting: 5}']
+  communications_by_direction jsonb [not null, note: '{inbound: 15, outbound: 15}']
+  average_response_time integer [note: 'in minutes']
+  average_duration integer [note: 'in minutes']
+  communications_by_channel jsonb [note: '{phone: 10, video: 5, in-person: 5, email: 10}']
+  sentiment_analysis jsonb [note: '{positive: 60, neutral: 30, negative: 10} (percentages)']
+  most_discussed_topics jsonb [note: '{portfolio_review: 5, tax_planning: 3}']
+  communication_effectiveness real [note: '0-100 score based on outcomes']
+  followup_completion real [note: 'percentage of follow-ups completed']
+  created_at timestamp [default: `now()`]
+}
+
+// ============================================
+// PRODUCTS & TRANSACTIONS
+// ============================================
+
+Table products {
+  id integer [pk, increment]
+  name text [not null]
+  product_code text [unique, not null]
+  category text [not null, note: 'mutual_funds, bonds, equity, margin_lending, deposits, insurance, structured_products']
+  sub_category text [note: 'large_cap, debt, term_plan, etc.']
+  description text [not null]
+  key_features text[] [note: 'array of key features']
+  target_audience text [note: 'HNI, retail, corporate, etc.']
+  min_investment integer [not null, note: 'in rupees']
+  max_investment integer [note: 'in rupees, null for no limit']
+  investment_multiples integer [default: 1000, note: 'minimum increment amount']
+  risk_level text [not null, note: 'Low, Moderate, High, Very High']
+  expected_returns text [note: 'e.g., "8-12% p.a."']
+  lock_in_period integer [note: 'in months, null if no lock-in']
+  tenure text [note: 'e.g., "1-5 years", "Open ended"']
+  exit_load text [note: 'e.g., "1% if redeemed within 1 year"']
+  management_fee real [note: 'annual fee as percentage']
+  regulatory_approvals text[] [note: 'SEBI, RBI, etc.']
+  tax_implications text
+  factsheet_url text [note: 'path to PDF factsheet']
+  kims_url text [note: 'Key Information Memorandum']
+  application_form_url text [note: 'application form PDF']
+  is_active boolean [default: true]
+  is_open_for_subscription boolean [default: true]
+  launch_date timestamp
+  maturity_date timestamp [note: 'for fixed tenure products']
+  total_subscriptions double [default: 0, note: 'total amount subscribed']
+  total_investors integer [default: 0]
+  created_by integer [ref: > users.id]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table transactions {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, not null]
+  transaction_date timestamp [not null]
+  settlement_date timestamp
+  transaction_type text [not null, note: 'buy, sell, dividend, interest, fee, deposit, withdrawal']
+  product_type text [not null, note: 'equity, mutual_fund, bond, fixed_deposit, insurance, etc.']
+  product_name text [not null]
+  product_category text [note: 'large_cap, mid_cap, small_cap, debt, hybrid, etc.']
+  quantity real
+  price real
+  amount real [not null]
+  fees real [default: 0]
+  taxes real [default: 0]
+  total_amount real [not null]
+  currency_code text [default: 'INR']
+  status text [not null, default: 'completed', note: 'pending, completed, failed, cancelled']
+  reference text [note: 'Reference number or ID']
+  description text
+  portfolio_impact real [note: 'Percentage change in portfolio value']
+  created_at timestamp [default: `now()`]
+}
+
+// ============================================
+// ANALYTICS & PERFORMANCE METRICS
+// ============================================
+
+Table performance_metrics {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  metric_type text [not null, note: 'new_aum, new_clients, revenue, retention']
+  current_value real [not null]
+  target_value real [not null]
+  percentage_change real
+  month integer [not null]
+  year integer [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table aum_trends {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  month integer [not null]
+  year integer [not null]
+  total_aum real [not null]
+  previous_year_aum real [not null]
+  growth_percentage real [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table sales_pipeline {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  stage text [not null, note: 'new_leads, qualified, proposal, closed']
+  count integer [not null, default: 0]
+  value real [not null, default: 0, note: 'value in the pipeline']
+  created_at timestamp [default: `now()`]
+}
+
+Table client_portfolio_breakdowns {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, not null]
+  user_id integer [ref: > users.id, not null, note: 'RM managing the client']
+  dimension text [not null, note: 'asset_class, product_type, risk_profile, customer_segment, geography']
+  category text [not null, note: 'equity, debt, mf, etc. OR platinum, gold, silver, etc.']
+  aum_amount real [not null]
+  invested_amount real [not null]
+  current_value real [not null]
+  unrealized_gains real [not null]
+  as_of_date date [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table rm_business_metrics {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  total_aum real [not null]
+  total_clients integer [not null]
+  revenue_month_to_date real [not null]
+  pipeline_value real [not null]
+  platinum_clients integer [not null, default: 0]
+  gold_clients integer [not null, default: 0]
+  silver_clients integer [not null, default: 0]
+  equity_aum real [not null, default: 0]
+  debt_aum real [not null, default: 0]
+  mutual_fund_aum real [not null, default: 0]
+  others_aum real [not null, default: 0]
+  conservative_clients integer [not null, default: 0]
+  moderate_clients integer [not null, default: 0]
+  aggressive_clients integer [not null, default: 0]
+  month integer [not null]
+  year integer [not null]
+  as_of_date date [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table product_revenue {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  product_type text [not null, note: 'mutual_fund, equity, bond, insurance, etc.']
+  product_category text [note: 'large_cap, debt, term_plan, etc.']
+  product_name text
+  gross_revenue real [not null]
+  net_revenue real [not null]
+  commission_rate real
+  trail_commission real [not null, default: 0]
+  upfront_commission real [not null, default: 0]
+  transaction_count integer [not null, default: 0]
+  client_count integer [not null, default: 0]
+  total_volume real [not null, default: 0]
+  month integer [not null]
+  year integer [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table customer_segment_analysis {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  segment_type text [not null, note: 'tier, age_group, profession, geography, aum_band']
+  segment_value text [not null, note: 'platinum, 25-35, corporate, mumbai, 1cr-5cr']
+  client_count integer [not null]
+  total_aum real [not null]
+  average_aum real [not null]
+  revenue_contribution real [not null]
+  average_transaction_size real
+  transaction_frequency real [note: 'transactions per month']
+  retention_rate real
+  new_clients_this_month integer [not null, default: 0]
+  aum_growth_rate real
+  month integer [not null]
+  year integer [not null]
+  as_of_date date [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table pipeline_analysis {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  stage text [not null, note: 'new, qualified, proposal, negotiation, won, lost']
+  prospect_count integer [not null]
+  total_value real [not null]
+  average_value real [not null]
+  average_probability real
+  average_stage_time integer [note: 'days in this stage']
+  conversion_rate real [note: 'to next stage']
+  lead_source text [note: 'referral, digital, events, cold_calling']
+  source_prospect_count integer
+  source_conversion_rate real
+  month integer [not null]
+  year integer [not null]
+  as_of_date date [not null]
+  created_at timestamp [default: `now()`]
+}
+
+// ============================================
+// PERFORMANCE MANAGEMENT
+// ============================================
+
+Table performance_targets {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id, not null]
+  period text [not null, note: 'M, Q, HY, Y']
+  year integer [not null]
+  quarter integer [note: '1-4 for quarterly, null for others']
+  month integer [note: '1-12 for monthly, null for others']
+  new_clients_target integer [default: 0]
+  net_new_money_target double [default: 0, note: 'in lakhs']
+  client_meetings_target integer [default: 0]
+  prospect_pipeline_target double [default: 0, note: 'in lakhs']
+  revenue_target double [default: 0, note: 'in lakhs']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table performance_actuals {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id, not null]
+  period text [not null, note: 'M, Q, HY, Y']
+  year integer [not null]
+  quarter integer [note: '1-4 for quarterly, null for others']
+  month integer [note: '1-12 for monthly, null for others']
+  new_clients_actual integer [default: 0]
+  net_new_money_actual double [default: 0, note: 'in lakhs']
+  client_meetings_actual integer [default: 0]
+  prospect_pipeline_actual double [default: 0, note: 'in lakhs']
+  revenue_actual double [default: 0, note: 'in lakhs']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table performance_peer_rankings {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id, not null]
+  period text [not null, note: 'M, Q, HY, Y']
+  year integer [not null]
+  quarter integer [note: '1-4 for quarterly, null for others']
+  month integer [note: '1-12 for monthly, null for others']
+  new_clients_rank integer [note: '1 = best performer']
+  net_new_money_rank integer
+  client_meetings_rank integer
+  prospect_pipeline_rank integer
+  revenue_rank integer
+  overall_rank integer
+  new_clients_percentile integer [note: '0-100, higher is better']
+  net_new_money_percentile integer
+  client_meetings_percentile integer
+  prospect_pipeline_percentile integer
+  revenue_percentile integer
+  overall_percentile integer
+  total_rms integer [not null, note: 'total number of RMs for context']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table performance_incentives {
+  id integer [pk, increment]
+  rm_id integer [ref: > users.id, not null]
+  period text [not null, note: 'M, Q, HY, Y']
+  year integer [not null]
+  quarter integer [note: '1-4 for quarterly, null for others']
+  month integer [note: '1-12 for monthly, null for others']
+  earned_amount double [default: 0, note: 'Already earned, in rupees']
+  projected_amount double [default: 0, note: 'Projected for full period, in rupees']
+  possible_amount double [default: 0, note: 'Maximum possible, in rupees']
+  target_achievement_percent double [default: 0]
+  base_incentive double [default: 0]
+  performance_bonus double [default: 0]
+  team_bonus double [default: 0]
+  special_incentives double [default: 0]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+// ============================================
+// KNOWLEDGE PROFILING (KP) SYSTEM
+// ============================================
+
+Table kp_questions {
+  id integer [pk, increment]
+  question_text text [not null]
+  question_category text [not null, note: 'investment_basics, risk_management, tax_planning, portfolio_management']
+  question_type text [not null, default: 'multiple_choice', note: 'multiple_choice, single_select, rating']
+  question_level text [default: 'basic', note: 'basic (Q1-Q5), intermediate or advanced (Q6-Q15)']
+  display_order integer [not null, default: 0]
+  is_active boolean [not null, default: true]
+  is_required boolean [not null, default: true]
+  help_text text
+  created_by integer [ref: > users.id]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table kp_question_options {
+  id integer [pk, increment]
+  question_id integer [ref: > kp_questions.id, not null, note: 'onDelete: cascade']
+  option_text text [not null]
+  option_value text [not null]
+  weightage integer [not null, default: 0, note: '0-100']
+  display_order integer [not null, default: 0]
+  is_correct boolean [default: false]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table kp_user_responses {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, not null, note: 'onDelete: cascade']
+  question_id integer [ref: > kp_questions.id, not null, note: 'onDelete: cascade']
+  selected_option_id integer [ref: > kp_question_options.id, note: 'onDelete: set null']
+  response_text text
+  score integer [default: 0]
+  submitted_by integer [ref: > users.id]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table kp_assessment_results {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, unique, not null, note: 'onDelete: cascade']
+  total_score integer [not null, default: 0]
+  max_possible_score integer [not null, default: 0]
+  percentage_score real [not null, default: 0]
+  knowledge_level text [note: 'beginner, intermediate, advanced, expert']
+  assessment_date timestamp [not null, default: `now()`]
+  completed_at timestamp
+  is_complete boolean [not null, default: false]
+  submitted_by integer [ref: > users.id]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table kp_scoring_config {
+  id integer [pk, increment]
+  config_key text [unique, not null]
+  config_value jsonb [not null]
+  description text
+  created_by integer [ref: > users.id]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+// ============================================
+// RISK PROFILING (RP) SYSTEM
+// ============================================
+
+Table risk_questions {
+  id integer [pk, increment]
+  question_text text [not null]
+  section text [not null, note: 'capacity, horizon, attitude, knowledge, experience']
+  order_index integer [not null, default: 0]
+  ceiling_flag boolean [not null, default: false, note: 'Questions that can cap maximum risk']
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table risk_options {
+  id integer [pk, increment]
+  question_id integer [ref: > risk_questions.id, not null, note: 'onDelete: cascade']
+  option_text text [not null]
+  score integer [not null, default: 0, note: '0-4']
+  order_index integer [not null, default: 0]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table risk_responses {
+  id uuid [pk, default: `gen_random_uuid()`]
+  client_id integer [ref: > clients.id, not null, note: 'onDelete: cascade']
+  question_id integer [ref: > risk_questions.id, not null, note: 'onDelete: cascade']
+  option_id integer [ref: > risk_options.id, note: 'onDelete: set null']
+  score_obtained integer [not null, default: 0]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table risk_assessment {
+  id uuid [pk, default: `gen_random_uuid()`]
+  client_id integer [ref: > clients.id, unique, not null, note: 'onDelete: cascade']
+  total_score integer [not null, default: 0]
+  risk_category text [not null, note: 'Conservative, Moderate, Moderately Aggressive, Aggressive']
+  completed_at timestamptz [not null, default: `now()`]
+  expiry_date timestamptz [note: '12 months from completedAt']
+  verified_by integer [ref: > users.id, note: 'onDelete: set null']
+  verified_at timestamptz
+  override_reason text [note: 'Reason for ceiling or override']
+  ceiling_applied boolean [not null, default: false, note: 'Whether ceiling logic was applied']
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+}
+
+Table risk_scoring_matrix {
+  id uuid [pk, default: `gen_random_uuid()`]
+  score_min integer [not null]
+  score_max integer [not null]
+  risk_category text [not null, note: 'Conservative, Moderate, Moderately Aggressive, Aggressive']
+  guidance text [not null]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+}
+
+Table audit_risk_changes {
+  id uuid [pk, default: `gen_random_uuid()`]
+  client_id integer [ref: > clients.id, not null, note: 'onDelete: cascade']
+  old_category text [not null]
+  new_category text [not null]
+  changed_by integer [ref: > users.id, not null]
+  reason text [not null]
+  changed_at timestamptz [not null, default: `now()`]
+}
+
+// ============================================
+// COMPLIANCE & COMPLAINTS
+// ============================================
+
+Table client_complaints {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, not null]
+  assigned_to integer [ref: > users.id, not null]
+  title text [not null]
+  description text [not null]
+  category text [not null, note: 'service_quality, transaction_issue, product_complaint, documentation, fees_charges, others']
+  subcategory text [note: 'delayed_execution, wrong_advice, mis_selling, etc.']
+  severity text [not null, note: 'critical, high, medium, low']
+  status text [not null, default: 'open', note: 'open, in_progress, resolved, closed']
+  priority text [not null, note: 'urgent, high, normal, low']
+  resolution_details text
+  resolution_date timestamp
+  resolution_by integer [ref: > users.id]
+  is_regulatory boolean [not null, default: false, note: 'SEBI/RBI reportable']
+  regulatory_ref_number text
+  reported_date timestamp [not null, default: `now()`]
+  acknowledgment_date timestamp
+  target_resolution_date timestamp
+  reported_via text [note: 'phone, email, branch, online, mobile_app']
+  escalation_level integer [not null, default: 1, note: '1=L1, 2=L2, etc.']
+  resolution_rating integer [note: '1-5 scale']
+  customer_feedback text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+// ============================================
+// CONTENT & ANNOUNCEMENTS
+// ============================================
+
+Table talking_points {
+  id integer [pk, increment]
+  title text [not null]
+  category text [not null, note: 'quarterly_results, market_analysis, regulatory_update, product_launch, etc.']
+  summary text [not null]
+  detailed_content text [not null]
+  source text [note: 'Research team, Market analysis, News, etc.']
+  relevance_score integer [default: 5, note: '1-10 scale']
+  valid_until timestamp
+  tags text[]
+  created_at timestamp [default: `now()`]
+  is_active boolean [default: true]
+}
+
+Table announcements {
+  id integer [pk, increment]
+  title text [not null]
+  content text [not null]
+  type text [not null, note: 'campaign, compliance, incentive, product_update, regulation']
+  priority text [default: 'medium', note: 'high, medium, low']
+  target_audience text [default: 'all_rms', note: 'all_rms, senior_rms, new_rms']
+  valid_from timestamp [default: `now()`]
+  valid_until timestamp
+  author text [not null, note: 'Product Team, CIO, Compliance, etc.']
+  action_required boolean [default: false]
+  action_deadline timestamp
+  tags text[]
+  created_at timestamp [default: `now()`]
+  is_active boolean [default: true]
+}
+
+// ============================================
+// RELATIONSHIPS SUMMARY
+// ============================================
+
+Ref: clients.assigned_to > users.id
+Ref: prospects.assigned_to > users.id
+Ref: tasks.assigned_to > users.id
+Ref: tasks.client_id > clients.id
+Ref: tasks.prospect_id > prospects.id
+Ref: appointments.assigned_to > users.id
+Ref: appointments.client_id > clients.id
+Ref: appointments.prospect_id > prospects.id
+Ref: portfolio_alerts.client_id > clients.id
+Ref: communications.client_id > clients.id
+Ref: communications.initiated_by > users.id
+Ref: communication_action_items.communication_id > communications.id
+Ref: communication_action_items.assigned_to > users.id
+Ref: communication_attachments.communication_id > communications.id
+Ref: communication_attachments.uploaded_by > users.id
+Ref: client_communication_preferences.client_id > clients.id
+Ref: communication_templates.created_by > users.id
+Ref: communication_analytics.user_id > users.id
+Ref: communication_analytics.client_id > clients.id
+Ref: products.created_by > users.id
+Ref: transactions.client_id > clients.id
+Ref: performance_metrics.user_id > users.id
+Ref: aum_trends.user_id > users.id
+Ref: sales_pipeline.user_id > users.id
+Ref: client_portfolio_breakdowns.client_id > clients.id
+Ref: client_portfolio_breakdowns.user_id > users.id
+Ref: rm_business_metrics.user_id > users.id
+Ref: product_revenue.user_id > users.id
+Ref: customer_segment_analysis.user_id > users.id
+Ref: pipeline_analysis.user_id > users.id
+Ref: performance_targets.rm_id > users.id
+Ref: performance_actuals.rm_id > users.id
+Ref: performance_peer_rankings.rm_id > users.id
+Ref: performance_incentives.rm_id > users.id
+Ref: kp_questions.created_by > users.id
+Ref: kp_question_options.question_id > kp_questions.id
+Ref: kp_user_responses.client_id > clients.id
+Ref: kp_user_responses.question_id > kp_questions.id
+Ref: kp_user_responses.selected_option_id > kp_question_options.id
+Ref: kp_user_responses.submitted_by > users.id
+Ref: kp_assessment_results.client_id > clients.id
+Ref: kp_assessment_results.submitted_by > users.id
+Ref: kp_scoring_config.created_by > users.id
+Ref: risk_options.question_id > risk_questions.id
+Ref: risk_responses.client_id > clients.id
+Ref: risk_responses.question_id > risk_questions.id
+Ref: risk_responses.option_id > risk_options.id
+Ref: risk_assessment.client_id > clients.id
+Ref: risk_assessment.verified_by > users.id
+Ref: audit_risk_changes.client_id > clients.id
+Ref: audit_risk_changes.changed_by > users.id
+Ref: client_complaints.client_id > clients.id
+Ref: client_complaints.assigned_to > users.id
+Ref: client_complaints.resolution_by > users.id
