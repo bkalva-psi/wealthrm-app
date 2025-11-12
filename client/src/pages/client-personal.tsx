@@ -171,12 +171,12 @@ export default function ClientPersonalPage() {
     <ClientPageLayout client={client} isLoading={isLoading} clientId={clientId || 0}>
 
       {/* Page Title Band with Navigation */}
-      <div className="bg-card border-b border-border px-1 py-4">
-        <div className="flex justify-between items-center px-5 mb-3">
+      <div className="bg-card border-b border-border px-3 py-4">
+        <div className="flex justify-between items-center px-3 sm:px-5 mb-3">
           <h2 className="text-2xl font-bold text-foreground tracking-tight">Personal Details</h2>
         </div>
         
-        <div className="grid grid-cols-7 gap-1 px-1">
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 px-1">
           <button 
             className="flex items-center justify-center px-1 py-2 rounded-lg bg-primary/10 border border-primary/20 h-12 w-full"
             title="Personal Profile"
@@ -239,13 +239,13 @@ export default function ClientPersonalPage() {
         {/* Incomplete profile banner */}
         {((client as any).profile_status === 'incomplete' || (client as any).aumValue === 0 || !(client as any).investmentHorizon || !(client as any).netWorth) && (
           <Card className="border-primary/30">
-            <CardContent className="p-4 flex items-center justify-between gap-4">
+            <CardContent className="p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
               <div>
                 <p className="font-medium text-foreground">This client profile is incomplete.</p>
                 <p className="text-sm text-muted-foreground">Complete the remaining sections to finish onboarding.</p>
               </div>
               <div className="flex gap-2">
-                <Button onClick={() => window.location.hash = `/clients/${clientId}/financial-profile`}>Complete Financial Profile</Button>
+                <Button className="w-full sm:w-auto h-11" onClick={() => window.location.hash = `/clients/${clientId}/financial-profile`}>Complete Financial Profile</Button>
               </div>
             </CardContent>
           </Card>

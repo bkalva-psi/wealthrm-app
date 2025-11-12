@@ -601,12 +601,13 @@ export function RiskProfilingForm({
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between items-center pt-4">
+      <div className="flex justify-between items-center pt-4 gap-2 flex-wrap">
         <Button
           type="button"
           variant="outline"
           onClick={isFirstQuestion ? onCancel : handlePrevious}
           disabled={isLoading}
+          className="w-full sm:w-auto h-11"
         >
           <ChevronLeft className="h-4 w-4 mr-2" />
           {isFirstQuestion ? "Cancel" : "Previous"}
@@ -617,12 +618,13 @@ export function RiskProfilingForm({
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || Object.keys(answers).length !== questions.length}
+            className="w-full sm:w-auto h-11"
           >
             <CheckCircle2 className="h-4 w-4 mr-2" />
             {isLoading ? "Submitting..." : "Submit Risk Profile"}
           </Button>
         ) : (
-          <Button type="button" onClick={handleNext} disabled={!currentAnswer && currentAnswer !== 0}>
+          <Button type="button" onClick={handleNext} disabled={!currentAnswer && currentAnswer !== 0} className="w-full sm:w-auto h-11">
             Next
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>

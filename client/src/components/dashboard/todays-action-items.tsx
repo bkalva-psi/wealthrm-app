@@ -196,14 +196,14 @@ export function ActionItemsPriorities() {
   return (
     <Collapsible open={isMainCardExpanded} onOpenChange={setIsMainCardExpanded}>
       <Card>
-        <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-gray-50">
-            <div className="flex items-center justify-between">
+        <CardHeader className="hover:bg-gray-50">
+          <CollapsibleTrigger asChild>
+            <button type="button" className="w-full flex items-center justify-between text-left">
               <CardTitle className="text-lg">Action Items & Priorities</CardTitle>
               {isMainCardExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-            </div>
-          </CardHeader>
-        </CollapsibleTrigger>
+            </button>
+          </CollapsibleTrigger>
+        </CardHeader>
         
         <CollapsibleContent>
           <CardContent className="space-y-3 pt-0">

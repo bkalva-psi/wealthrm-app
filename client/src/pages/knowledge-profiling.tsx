@@ -303,6 +303,7 @@ export default function KnowledgeProfiling() {
             kpScore={riskProfileData.kp_score}
             knowledgeLevel={riskProfileData.knowledge_level}
             breakdown={riskProfileData.breakdown}
+            clientId={clientId}
           />
         </div>
       </div>
@@ -353,6 +354,22 @@ export default function KnowledgeProfiling() {
     return (
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background">
         <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (clientId) {
+                window.location.hash = `/clients/${clientId}/personal`;
+              } else {
+                window.location.hash = '/clients';
+              }
+            }}
+            className="mb-4 w-full sm:w-auto h-11"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Client Profile
+          </Button>
+          
           {/* Main Results Card */}
           <Card className="shadow-lg border-0">
             <CardContent className="p-8">
@@ -460,7 +477,7 @@ export default function KnowledgeProfiling() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
                  {/* Calculate Final Risk Score button - only show when both RP and KP are completed */}
                  {bothCompleted && !showRiskMeter && (
                    <Button
@@ -487,6 +504,7 @@ export default function KnowledgeProfiling() {
                        }
                      }}
                      variant="default"
+                     className="w-full sm:w-auto h-11"
                    >
                      <Calculator className="mr-2 h-4 w-4" />
                      Calculate Final Risk Score
@@ -510,7 +528,7 @@ export default function KnowledgeProfiling() {
                          window.scrollTo({ top: 0, behavior: 'smooth' });
                        }, 100);
                      }}
-                     className="border-primary text-primary hover:bg-primary/10 cursor-pointer"
+                     className="w-full sm:w-auto h-11 border-primary text-primary hover:bg-primary/10 cursor-pointer"
                    >
                      Review Answers
                    </Button>
@@ -540,7 +558,7 @@ export default function KnowledgeProfiling() {
                          window.scrollTo({ top: 0, behavior: 'smooth' });
                        }, 100);
                      }}
-                     className="border-primary text-primary hover:bg-primary/10 cursor-pointer"
+                     className="w-full sm:w-auto h-11 border-primary text-primary hover:bg-primary/10 cursor-pointer"
                    >
                      <RefreshCw className="mr-2 h-4 w-4" />
                      Retake Assessment
@@ -557,7 +575,7 @@ export default function KnowledgeProfiling() {
                        window.location.hash = '/clients';
                      }
                    }}
-                   className="bg-primary hover:bg-primary/90"
+                   className="w-full sm:w-auto h-11 bg-primary hover:bg-primary/90"
                  >
                    Accept and Continue
                  </Button>

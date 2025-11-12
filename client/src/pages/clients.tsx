@@ -673,7 +673,7 @@ export default function Clients() {
   };
   
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
+    <div className="min-h-screen bg-background transition-colors duration-300 overflow-x-hidden">
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 lg:mb-10 animate-in slide-in-from-top-4 duration-500">
           <div>
@@ -710,7 +710,7 @@ export default function Clients() {
                     <ChevronDown className="h-4 w-4 ml-1" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-4 !bg-card !border-border" align="end">
+                <PopoverContent className="w-[90vw] sm:w-80 p-4 !bg-card !border-border" align="end">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold">Filter Clients</h3>
                     <Button variant="ghost" size="sm" onClick={() => { resetFilters(); setRecentOnly(false); }} className="text-xs h-8 px-2">Reset</Button>
@@ -825,7 +825,7 @@ export default function Clients() {
       </Card>
       
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array(6).fill(0).map((_, index) => (
             <Card key={index} className="overflow-hidden">
               <CardContent className="p-4">
@@ -863,7 +863,7 @@ export default function Clients() {
           ))}
         </div>
       ) : filteredClients && filteredClients.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredClients.map((client: Client) => (
             <ClientCard 
               key={client.id} 
