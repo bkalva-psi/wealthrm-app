@@ -893,7 +893,7 @@ export default function ClientTransactions() {
                   </div>
                   
                   {/* Details Row - Two Column Layout */}
-                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
                     <div>
                       <p className="text-sm text-muted-foreground">Type</p>
                       <p className="font-medium">{transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</p>

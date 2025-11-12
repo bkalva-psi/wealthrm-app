@@ -303,14 +303,14 @@ function ClientTasks({ clientId }: ClientTasksProps) {
             </Button>
           )}
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
               {isAllTasks ? 'Tasks' : `Tasks - ${currentClient?.fullName || 'Client'}`}
             </h1>
           </div>
         </div>
         <Dialog open={isNewTaskDialogOpen} onOpenChange={setIsNewTaskDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="icon" className="rounded-full">
+            <Button size="icon" className="rounded-full" aria-label="Create new task">
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>

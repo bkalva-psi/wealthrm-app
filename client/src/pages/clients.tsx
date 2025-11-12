@@ -35,6 +35,7 @@ import { Client } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { generateAvatar } from "@/lib/avatarGenerator";
 import { FloatingAddButton } from "@/components/ui/floating-add-button";
+import { EmptyState } from "@/components/empty-state";
 
 // Filter options type definition
 interface FilterOptions {
@@ -63,27 +64,27 @@ const getTierBadgeColors = (tier: string) => {
   switch (tier?.toLowerCase()) {
     case 'platinum':
       return {
-        bg: 'bg-gradient-to-r from-slate-400 to-slate-600',
-        text: 'text-white',
-        border: 'border-slate-400'
+        bg: 'bg-gradient-to-r from-muted/50 to-muted/80',
+        text: 'text-foreground',
+        border: 'border-border'
       };
     case 'gold':
       return {
-        bg: 'bg-gradient-to-r from-yellow-400 to-yellow-600',
-        text: 'text-white',
-        border: 'border-yellow-400'
+        bg: 'bg-gradient-to-r from-primary/20 to-primary/40',
+        text: 'text-foreground',
+        border: 'border-primary/40'
       };
     case 'silver':
       return {
-        bg: 'bg-gradient-to-r from-gray-300 to-gray-500',
-        text: 'text-white',
-        border: 'border-gray-400'
+        bg: 'bg-gradient-to-r from-muted to-muted/70',
+        text: 'text-foreground',
+        border: 'border-border'
       };
     default:
       return {
-        bg: 'bg-gradient-to-r from-gray-300 to-gray-500',
-        text: 'text-white',
-        border: 'border-gray-400'
+        bg: 'bg-gradient-to-r from-muted to-muted/70',
+        text: 'text-foreground',
+        border: 'border-border'
       };
   }
 };
@@ -169,7 +170,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
       case 'aggressive':
         return 'bg-red-400';
       default:
-        return 'bg-gray-400';
+      return 'bg-muted';
     }
   };
 
@@ -322,7 +323,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                   onClick={(e) => handleSectionClick(e, 'personal')}
                   title="View client personal information"
                 >
-                  <h3 className="text-sm font-semibold text-foreground truncate hover:text-blue-600 transition-colors">{client.fullName}</h3>
+                  <h3 className="text-sm font-semibold text-foreground truncate hover:text-primary transition-colors">{client.fullName}</h3>
                 </div>
                 
                 {/* Pending badge */}
@@ -375,10 +376,10 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
                   onClick={(e) => handleSectionClick(e, 'actions')}
                   title="View client alerts and actions"
                 >
-                  <div className="h-7 w-7 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm">
-                    <Bell className="h-3 w-3 text-white" />
+                  <div className="h-7 w-7 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/90 transition-colors shadow-sm" aria-label="Client alerts">
+                    <Bell className="h-3 w-3" aria-hidden="true" />
                   </div>
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold shadow-sm">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-semibold shadow-sm">
                     {client.alertCount}
                   </span>
                 </div>
@@ -435,7 +436,7 @@ function ClientCard({ client, onClick, tasks = [], appointments = [], alerts = [
         </div>
 
         {/* Secondary Metrics Section */}
-        <div className="p-4 bg-gradient-to-r from-slate-50/30 to-transparent dark:from-slate-900/20 border-b border-border/30">
+        <div className="p-4 bg-gradient-to-r from-muted/30 to-transparent dark:from-muted/20 border-b border-border/30">
           <div className="grid grid-cols-2 gap-3">
             {/* Risk Profile with visual indicator - moved to bottom row */}
             <div className="p-3 bg-card/60 rounded-lg hover:bg-card transition-all duration-200 shadow-sm hover:shadow-md border border-border/20">
@@ -673,10 +674,10 @@ export default function Clients() {
   
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 animate-in slide-in-from-top-4 duration-500">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 lg:mb-10 animate-in slide-in-from-top-4 duration-500">
           <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1">Client Portfolio</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-1">Client Portfolio</h1>
             <p className="text-muted-foreground text-sm font-medium">
               {filteredClients.length} of {clients?.length || 0} clients
             </p>
@@ -702,7 +703,7 @@ export default function Clients() {
                     <FilterIcon className="h-4 w-4" />
                     Filter
                     {activeFilters > 0 && (
-                      <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-white text-xs flex items-center justify-center">
+                      <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center" aria-label={`${activeFilters} active filters`}>
                         {activeFilters}
                       </span>
                     )}
@@ -875,21 +876,13 @@ export default function Clients() {
           ))}
         </div>
       ) : (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <div className="py-8">
-              <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                <X className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-medium text-foreground mb-1">No clients found</h3>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                {searchQuery || activeFilters > 0 
-                  ? "Try adjusting your search or filters to find what you're looking for."
-                  : "Add new clients by converting prospects."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<X className="h-12 w-12 text-muted-foreground" />}
+          title="No clients found"
+          description={searchQuery || activeFilters > 0 
+            ? "Try adjusting your search or filters to find what you're looking for."
+            : "Add new clients by converting prospects."}
+        />
       )}
       </div>
       

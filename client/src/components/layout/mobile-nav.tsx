@@ -38,7 +38,7 @@ export function MobileNav() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-10 safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-10 safe-area-bottom">
       <div className="grid grid-cols-5 h-16">
         {navigationItems.map((item) => {
           const isActive = item.href === "#" ? false : currentPath === item.href;
@@ -49,12 +49,12 @@ export function MobileNav() {
               onClick={handleMoreClick}
               className={cn(
                 "flex flex-col items-center justify-center space-y-1 p-1",
-                isActive ? "text-primary-600" : "text-slate-500"
+                isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
               <item.icon className={cn(
                 "h-5 w-5 sm:h-6 sm:w-6",
-                isActive ? "text-primary-600" : "text-slate-500"
+                isActive ? "text-primary" : "text-muted-foreground"
               )} />
               <span className="text-[10px] sm:text-xs">{item.name}</span>
             </button>
@@ -68,12 +68,12 @@ export function MobileNav() {
               }}
               className={cn(
                 "flex flex-col items-center justify-center space-y-1 p-1",
-                isActive ? "text-primary-600" : "text-slate-500"
+                isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
               <item.icon className={cn(
                 "h-5 w-5 sm:h-6 sm:w-6",
-                isActive ? "text-primary-600" : "text-slate-500"
+                isActive ? "text-primary" : "text-muted-foreground"
               )} />
               <span className="text-[10px] sm:text-xs">{item.name}</span>
             </a>

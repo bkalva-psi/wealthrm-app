@@ -229,12 +229,12 @@ export default function KnowledgeProfiling() {
       market_analysis: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
       financial_products: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200"
     };
-    return colors[category] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
+    return colors[category] || "bg-muted text-foreground";
   };
 
   if (isLoading || isLoadingResults) {
     return (
-      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading assessment...</p>
@@ -245,7 +245,7 @@ export default function KnowledgeProfiling() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -258,7 +258,7 @@ export default function KnowledgeProfiling() {
 
   if (questions.length === 0) {
     return (
-      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>No Questions Available</CardTitle>
@@ -285,7 +285,7 @@ export default function KnowledgeProfiling() {
   // Show Risk Meter if button was clicked
   if (showRiskMeter && riskProfileData) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <Button
@@ -339,7 +339,7 @@ export default function KnowledgeProfiling() {
         case "expert":
           return "bg-green-600";       // Advanced/Expert
         default:
-          return "bg-gray-600";
+          return "bg-muted";
       }
     };
 
@@ -351,7 +351,7 @@ export default function KnowledgeProfiling() {
     validUntil.setFullYear(validUntil.getFullYear() + 1);
 
     return (
-      <div className="p-6 min-h-screen bg-gray-50">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background">
         <div className="max-w-4xl mx-auto">
           {/* Main Results Card */}
           <Card className="shadow-lg border-0">
@@ -359,7 +359,7 @@ export default function KnowledgeProfiling() {
               {/* Header */}
               <div className="flex items-center gap-3 mb-6">
                 <Shield className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold text-gray-900">Knowledge Profile Result</h1>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">Knowledge Profile Result</h1>
               </div>
 
               {/* Primary Result Banner */}
@@ -369,7 +369,7 @@ export default function KnowledgeProfiling() {
               </div>
 
               {/* Description */}
-              <p className="text-gray-600 mb-8 leading-relaxed">
+              <p className="text-muted-foreground mb-8 leading-relaxed">
                 {getKnowledgeLevelDescription(knowledgeLevel)}
               </p>
 
@@ -380,12 +380,12 @@ export default function KnowledgeProfiling() {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp className="h-5 w-5 text-primary" />
-                      <Label className="text-sm font-medium text-gray-600">Overall Score</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">Overall Score</Label>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {displayResult.percentage_score.toFixed(1)}%
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {displayResult.total_score} / {displayResult.max_possible_score} points
                     </p>
                   </CardContent>
@@ -396,12 +396,12 @@ export default function KnowledgeProfiling() {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <BarChart3 className="h-5 w-5 text-primary" />
-                      <Label className="text-sm font-medium text-gray-600">Knowledge Level</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">Knowledge Level</Label>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {knowledgeLevelDisplay}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Based on assessment results
                     </p>
                   </CardContent>
@@ -411,29 +411,29 @@ export default function KnowledgeProfiling() {
               {/* Category Breakdown */}
               {displayResult.categoryBreakdown && displayResult.categoryBreakdown.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Category Performance</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Category Performance</h3>
                   <div className="grid grid-cols-2 gap-4">
                     {displayResult.categoryBreakdown.map((cat: any) => (
                       <Card key={cat.category} className="shadow-sm">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <Label className="text-sm font-medium text-gray-700">
+                            <Label className="text-sm font-medium text-muted-foreground">
                               {cat.categoryName}
                             </Label>
                             <div className="flex items-center gap-1">
-                              <Info className="h-3 w-3 text-gray-400" />
+                              <Info className="h-3 w-3 text-muted-foreground" />
                             </div>
                           </div>
-                          <p className="text-2xl font-bold text-gray-900 mb-1">
+                          <p className="text-2xl font-bold text-foreground mb-1">
                             {cat.percentage.toFixed(0)}%
                           </p>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
+                          <div className="w-full bg-muted rounded-full h-2 mb-1">
                             <div
                               className="bg-primary h-2 rounded-full transition-all"
                               style={{ width: `${Math.min(cat.percentage, 100)}%` }}
                             />
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             {cat.score} / {cat.maxScore} points ({cat.questionCount} questions)
                           </p>
                         </CardContent>
@@ -444,7 +444,7 @@ export default function KnowledgeProfiling() {
               )}
 
               {/* Date and Validity */}
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-6 pb-6 border-b">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6 pb-6 border-b">
                 <Calendar className="h-4 w-4" />
                 <span>
                   Completed on {completedDate.toLocaleDateString('en-US', { 
@@ -486,7 +486,7 @@ export default function KnowledgeProfiling() {
                          }
                        }
                      }}
-                     className="bg-green-600 hover:bg-green-700 text-white"
+                     variant="default"
                    >
                      <Calculator className="mr-2 h-4 w-4" />
                      Calculate Final Risk Score

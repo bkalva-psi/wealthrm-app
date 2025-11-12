@@ -49,7 +49,7 @@ export function ActionItemsSkeleton() {
               </div>
               <div className="space-y-2">
                 {Array.from({ length: 2 }).map((_, j) => (
-                  <div key={j} className="bg-gray-50 dark:bg-gray-800 rounded p-2">
+                  <div key={j} className="bg-muted rounded p-2">
                     <Skeleton className="h-4 w-full mb-1" />
                     <Skeleton className="h-3 w-3/4" />
                   </div>
@@ -72,7 +72,7 @@ export function TalkingPointsSkeleton() {
       <CardContent>
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded p-3 space-y-2">
+            <div key={i} className="bg-muted rounded p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-36" />
                 <Skeleton className="h-3 w-16 rounded-full" />
@@ -96,7 +96,7 @@ export function AnnouncementsSkeleton() {
       <CardContent>
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded p-3 space-y-2">
+            <div key={i} className="bg-muted rounded p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-3 w-12 rounded-full" />

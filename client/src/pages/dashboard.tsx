@@ -57,10 +57,10 @@ export default function Dashboard() {
         <div className="max-w-8xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8 space-y-6 sm:space-y-8 lg:space-y-10">
           {/* Page Header Skeleton */}
           <div className="space-y-2">
-            <div className="h-8 w-80 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-8 w-80 bg-muted rounded animate-pulse"></div>
             <div className="flex items-center justify-between">
-              <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-              <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              <div className="h-5 w-48 bg-muted rounded animate-pulse"></div>
+              <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
             </div>
           </div>
           

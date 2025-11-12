@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
 
 export function SimpleComplaints() {
-  const { data: complaints, isLoading } = useQuery({
+  const { data: complaints = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/complaints'],
   });
 
@@ -15,7 +15,7 @@ export function SimpleComplaints() {
           <h3 className="text-sm font-medium">Client Complaints</h3>
         </CardHeader>
         <CardContent className="px-4 py-3">
-          <p className="text-sm text-slate-500">Loading...</p>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </CardContent>
       </Card>
     );
@@ -28,7 +28,7 @@ export function SimpleComplaints() {
           <h3 className="text-sm font-medium">Client Complaints</h3>
         </CardHeader>
         <CardContent className="px-4 py-3">
-          <p className="text-sm text-slate-500">No complaints</p>
+          <p className="text-sm text-muted-foreground">No complaints</p>
         </CardContent>
       </Card>
     );
@@ -48,8 +48,8 @@ export function SimpleComplaints() {
       <CardContent className="p-0">
         {complaints.slice(0, 3).map((complaint: any) => (
           <div key={complaint.id} className="px-4 py-3 border-b last:border-b-0">
-            <p className="text-sm font-medium text-slate-900">{complaint.title}</p>
-            <p className="text-xs text-slate-500 mt-1">{complaint.clientName}</p>
+            <p className="text-sm font-medium text-foreground">{complaint.title}</p>
+            <p className="text-xs text-muted-foreground mt-1">{complaint.clientName}</p>
             <div className="flex gap-2 mt-2">
               <Badge variant="outline" className="text-xs">
                 {complaint.severity}

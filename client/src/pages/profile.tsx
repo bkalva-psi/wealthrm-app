@@ -265,15 +265,15 @@ export default function Profile() {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-gradient-to-r from-muted to-muted/70 dark:from-muted/20 dark:to-muted/30 p-4 rounded-lg border border-border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                      <div className="text-2xl font-bold text-foreground">
                         {businessMetrics?.goldClients || '0'}
                       </div>
-                      <div className="text-sm text-gray-700 dark:text-gray-300">Gold Clients</div>
+                      <div className="text-sm text-muted-foreground">Gold Clients</div>
                     </div>
-                    <Award className="h-8 w-8 text-gray-600 dark:text-gray-400" />
+                    <Award className="h-8 w-8 text-muted-foreground" />
                   </div>
                 </div>
                 

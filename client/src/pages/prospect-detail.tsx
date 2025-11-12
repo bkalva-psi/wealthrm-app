@@ -188,7 +188,7 @@ export default function ProspectDetail() {
 
           <div className="mt-6">
             <h3 className="font-medium text-sm text-muted-foreground mb-2">Notes</h3>
-            <div className="bg-slate-50 p-3 rounded-md">
+            <div className="bg-muted p-3 rounded-md">
               <p className="text-sm">{prospect.notes || "No notes added yet."}</p>
             </div>
           </div>

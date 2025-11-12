@@ -313,7 +313,7 @@ function AuthenticatedApp() {
         
         {/* Offline indicator */}
         {isOffline && (
-          <div className="bg-amber-500 text-white p-2 text-center text-sm font-medium">
+          <div className="bg-accent text-accent-foreground p-2 text-center text-sm font-medium">
             You are currently offline. Some features may be limited.
           </div>
         )}
@@ -338,10 +338,10 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary-600" />
-          <p className="mt-4 text-slate-600">Loading application...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <p className="mt-4 text-muted-foreground">Loading application...</p>
         </div>
       </div>
     );
