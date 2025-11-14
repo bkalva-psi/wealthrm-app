@@ -70,7 +70,7 @@ export default function KnowledgeProfiling() {
   const [riskProfileData, setRiskProfileData] = useState<any>(null);
 
   // Fetch questionnaire
-  const { data: questions = [], isLoading, error } = useQuery<Question[]>({
+  const { data: questionsData, isLoading, error } = useQuery<Question[]>({
     queryKey: ["/api/kp/questionnaire"],
     queryFn: async () => {
       const response = await fetch("/api/kp/questionnaire");
@@ -78,6 +78,8 @@ export default function KnowledgeProfiling() {
       return response.json();
     }
   });
+  
+  const questions = Array.isArray(questionsData) ? questionsData : [];
 
   // Fetch existing results if clientId is provided
   const { data: existingResult, isLoading: isLoadingResults } = useQuery({
@@ -164,10 +166,10 @@ export default function KnowledgeProfiling() {
     }
   });
 
-  const currentQuestion = currentQuestionIndex >= 0 ? questions[currentQuestionIndex] : null;
-  const progress = questions.length > 0 && currentQuestionIndex >= 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
+  const currentQuestion = currentQuestionIndex >= 0 && Array.isArray(questions) && questions.length > 0 ? questions[currentQuestionIndex] : null;
+  const progress = Array.isArray(questions) && questions.length > 0 && currentQuestionIndex >= 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
   const answeredCount = Object.keys(responses).length;
-  const requiredQuestions = questions.filter(q => q.is_required);
+  const requiredQuestions = Array.isArray(questions) ? questions.filter(q => q.is_required) : [];
   const requiredAnswered = requiredQuestions.every(q => responses[q.id]?.selected_option_id);
 
   const handleOptionSelect = (questionId: number, optionId: number) => {
@@ -181,7 +183,7 @@ export default function KnowledgeProfiling() {
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (Array.isArray(questions) && currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
@@ -256,7 +258,7 @@ export default function KnowledgeProfiling() {
     );
   }
 
-  if (questions.length === 0) {
+  if (!Array.isArray(questions) || questions.length === 0) {
     return (
       <div className="px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-12 lg:pb-16 min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md">
@@ -400,7 +402,7 @@ export default function KnowledgeProfiling() {
                       <Label className="text-sm font-medium text-muted-foreground">Overall Score</Label>
                     </div>
                     <p className="text-2xl font-bold text-foreground">
-                      {displayResult.percentage_score.toFixed(1)}%
+                      {displayResult.percentage_score?.toFixed(1) ?? '0.0'}%
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {displayResult.total_score} / {displayResult.max_possible_score} points
@@ -602,7 +604,7 @@ export default function KnowledgeProfiling() {
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Knowledge Profiling Assessment</h1>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {answeredCount} / {questions.length} questions
+                    {answeredCount} / {Array.isArray(questions) ? questions.length : 0} questions
                   </p>
                 </div>
               </div>
@@ -670,7 +672,7 @@ export default function KnowledgeProfiling() {
             Previous
           </Button>
 
-           {currentQuestionIndex < questions.length - 1 ? (
+           {Array.isArray(questions) && currentQuestionIndex < questions.length - 1 ? (
              <Button onClick={handleNext} disabled={!currentQuestion || !responses[currentQuestion.id]?.selected_option_id}>
                Next
                <ArrowRight className="ml-2 h-4 w-4" />

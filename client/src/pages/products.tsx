@@ -47,7 +47,7 @@ export default function Products() {
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 
   // Fetch products from database
-  const { data: products = [], isLoading, error } = useQuery<Product[]>({
+  const { data: productsData, isLoading, error } = useQuery<Product[]>({
     queryKey: ['/api/products'],
     queryFn: async () => {
       const response = await fetch('/api/products');
@@ -57,9 +57,11 @@ export default function Products() {
       return response.json();
     }
   });
+  
+  const products = Array.isArray(productsData) ? productsData : [];
 
   // Filter products based on search and filters
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = Array.isArray(products) ? products.filter(product => {
     const matchesSearch = searchTerm === "" || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,11 +74,11 @@ export default function Products() {
       selectedRiskLevels.includes(product.riskLevel);
     
     return matchesSearch && matchesCategory && matchesRisk;
-  });
+  }) : [];
 
   // Get unique categories and risk levels for filters
-  const categories = Array.from(new Set(products.map(p => p.category)));
-  const riskLevels = Array.from(new Set(products.map(p => p.riskLevel)));
+  const categories = Array.isArray(products) ? Array.from(new Set(products.map(p => p.category))) : [];
+  const riskLevels = Array.isArray(products) ? Array.from(new Set(products.map(p => p.riskLevel))) : [];
 
   const toggleCardExpansion = (productId: number) => {
     const newExpandedCards = new Set(expandedCards);

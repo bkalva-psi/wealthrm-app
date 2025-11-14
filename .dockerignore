@@ -1,0 +1,74 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+dist
+build
+.cache
+.vite
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# Test files
+coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+__tests__
+vitest.config.ts
+vitest.setup.ts
+vitest.d.ts
+
+# Development files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation (optional - uncomment if you don't want docs in image)
+# docs/
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Attached assets (development only)
+attached_assets/
+
+# Screenshots
+Screenshots/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# TypeScript build info
+*.tsbuildinfo
+
