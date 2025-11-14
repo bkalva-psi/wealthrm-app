@@ -30,8 +30,8 @@ export default function LoginPage() {
       }
     } else {
       // Auto-populate for testing during development
-      setUsername("sravan.suggala@intellectdesign.com");
-      setPassword("Welcome@01");
+      setUsername("rm1@primesoft.net");
+      setPassword("password@123");
       setRememberMe(true);
     }
   }, []);
@@ -99,7 +99,7 @@ export default function LoginPage() {
               <Input
                 id="username"
                 type="email"
-                placeholder="sravan.suggala@intellectdesign.com"
+                placeholder="rm1@primesoft.net"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required

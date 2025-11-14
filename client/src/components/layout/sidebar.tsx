@@ -12,6 +12,7 @@ import {
   FileText,
   Lightbulb,
   Bell,
+  ShoppingCart,
 } from "lucide-react";
 import primesoftLogo from "../../assets/primesoft-logo.svg";
 import { useEffect, useState } from "react";
@@ -27,6 +28,7 @@ const navigationItems = [
   { name: "Insights", href: "/talking-points", icon: Lightbulb },
   { name: "Updates", href: "/announcements", icon: Bell },
   { name: "Products", href: "/products", icon: Package },
+  { name: "Order Management", href: "/order-management", icon: ShoppingCart },
 ];
 
 export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
@@ -117,7 +119,10 @@ export function Sidebar({ mobile = false, onNavigate }: { mobile?: boolean; onNa
       {/* Navigation Links */}
       <nav className="flex-1 px-2 py-4 bg-background space-y-1 overflow-y-auto transition-colors duration-300">
         {navigationItems.map((item) => {
-          const isActive = currentPath === item.href;
+          // Handle order-management routes: both /order-management and /orders should be active
+          const isActive = item.href === '/order-management' 
+            ? (currentPath === '/order-management' || currentPath === '/orders')
+            : currentPath === item.href;
           const hasNotification = getNotificationStatus(item.href);
           
           return (

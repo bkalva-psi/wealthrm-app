@@ -45,6 +45,7 @@ import Calendar from "@/pages/calendar";
 import QMPortal from "@/pages/qm-portal";
 import KnowledgeProfiling from "@/pages/knowledge-profiling";
 import RiskProfiling from "@/pages/risk-profiling";
+import OrderManagement from "@/pages/order-management";
 import { Loader2 } from "lucide-react";
 
 // Custom router implementation using hash-based routing
@@ -282,6 +283,9 @@ function AuthenticatedApp() {
         return <Analytics />;
       case currentRoute === '/products':
         return <Products />;
+      case currentRoute === '/order-management':
+      case currentRoute === '/orders':
+        return <OrderManagement />;
       case currentRoute === '/qm-portal':
         return <QMPortal />;
       case /^\/knowledge-profiling(\?.*)?$/.test(currentRoute):

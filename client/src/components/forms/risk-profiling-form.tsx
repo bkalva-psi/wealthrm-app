@@ -107,7 +107,7 @@ export function RiskProfilingForm({
   const [existingProfile, setExistingProfile] = useState<{ category: string; completedAt: Date; isValid: boolean } | null>(null);
 
   // Fetch questions from database
-  const { data: dbQuestions = [], isLoading: isLoadingQuestions } = useQuery<DbQuestion[]>({
+  const { data: dbQuestionsData, isLoading: isLoadingQuestions } = useQuery<DbQuestion[]>({
     queryKey: ["/api/rp/questions"],
     queryFn: async () => {
       const response = await fetch("/api/rp/questions", {
@@ -117,10 +117,15 @@ export function RiskProfilingForm({
       return response.json();
     },
   });
+  
+  const dbQuestions = Array.isArray(dbQuestionsData) ? dbQuestionsData : [];
 
   // Fetch options for all questions in parallel
+  const questionIds = Array.isArray(dbQuestions) && dbQuestions.length > 0 
+    ? dbQuestions.map(q => q.id).sort().join(",") 
+    : "";
   const { data: allOptions = [], isLoading: isLoadingOptions } = useQuery<DbOption[]>({
-    queryKey: ["/api/rp/options", dbQuestions.map(q => q.id).sort().join(",")],
+    queryKey: ["/api/rp/options", questionIds],
     queryFn: async () => {
       if (dbQuestions.length === 0) return [];
       

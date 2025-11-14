@@ -745,12 +745,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (req.session as any).userRole = "admin";
       }
       
-      const assignedTo = (req.session as any).userId;
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
       
-      const { data, error } = await supabaseServer
+      // Build query - admins and supervisors see all clients, RMs see only their assigned clients
+      const baseQuery = supabaseServer
         .from('clients')
-        .select('id, full_name, initials, tier, aum, aum_value, email, phone, last_contact_date, last_transaction_date, risk_profile, alert_count, created_at, assigned_to')
-        .eq('assigned_to', assignedTo);
+        .select('id, full_name, initials, tier, aum, aum_value, email, phone, last_contact_date, last_transaction_date, risk_profile, alert_count, created_at, assigned_to, profile_status, incomplete_sections, investment_horizon, net_worth');
+      
+      // Only filter by assigned_to if user is not admin or supervisor
+      const { data, error } = (userRole === 'admin' || userRole === 'supervisor')
+        ? await baseQuery
+        : await baseQuery.eq('assigned_to', userId);
       if (error) return res.status(500).json({ message: error.message });
       const mapped = (data || []).map((r: any) => ({
         id: r.id,
@@ -767,7 +773,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         yearlyPerformance: r.yearly_performance,
         alertCount: r.alert_count,
         createdAt: r.created_at,
-        assignedTo: r.assigned_to
+        assignedTo: r.assigned_to,
+        profileStatus: r.profile_status,
+        incompleteSections: r.incomplete_sections,
+        investmentHorizon: r.investment_horizon,
+        netWorth: r.net_worth
       }));
       res.json(mapped);
     } catch (error) {
@@ -832,15 +842,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       (req.session as any).userRole = "admin";
     }
     try {
-      const assignedTo = (req.session as any).userId;
+      const userId = (req.session as any).userId;
+      const userRole = (req.session as any).userRole;
       const limit = Number(req.query.limit) || 4;
       
-      const { data, error } = await supabaseServer
+      // Build query - admins and supervisors see all clients, RMs see only their assigned clients
+      const baseQuery = supabaseServer
         .from('clients')
-        .select('id, full_name, initials, tier, aum, aum_value, email, phone, last_contact_date, last_transaction_date, risk_profile, alert_count, created_at, assigned_to')
-        .eq('assigned_to', assignedTo)
+        .select('id, full_name, initials, tier, aum, aum_value, email, phone, last_contact_date, last_transaction_date, risk_profile, alert_count, created_at, assigned_to, profile_status, incomplete_sections, investment_horizon, net_worth')
         .order('created_at', { ascending: false })
         .limit(limit);
+      
+      // Only filter by assigned_to if user is not admin or supervisor
+      const { data, error } = (userRole === 'admin' || userRole === 'supervisor')
+        ? await baseQuery
+        : await baseQuery.eq('assigned_to', userId);
       if (error) return res.status(500).json({ message: error.message });
       const mapped = (data || []).map((r: any) => ({
         id: r.id,
@@ -857,7 +873,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         yearlyPerformance: r.yearly_performance,
         alertCount: r.alert_count,
         createdAt: r.created_at,
-        assignedTo: r.assigned_to
+        assignedTo: r.assigned_to,
+        profileStatus: r.profile_status,
+        incompleteSections: r.incomplete_sections,
+        investmentHorizon: r.investment_horizon,
+        netWorth: r.net_worth
       }));
       res.json(mapped);
     } catch (error) {
@@ -899,7 +919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           total_transaction_count, average_transaction_value, recurring_investments,
           tax_planning_preferences, insurance_coverage, retirement_goals, major_life_events,
           financial_interests, net_worth, liquidity_requirements, foreign_investments,
-          income_data, expenses_data, assets_data, liabilities_data, profile_status
+          income_data, expenses_data, assets_data, liabilities_data, profile_status, incomplete_sections
         `)
         .eq('id', id)
         .single();
@@ -989,7 +1009,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expensesData: data.expenses_data,
         assetsData: data.assets_data,
         liabilitiesData: data.liabilities_data,
-        profileStatus: data.profile_status
+        profileStatus: data.profile_status,
+        incompleteSections: data.incomplete_sections
       };
       res.json(mapped);
     } catch (error) {
@@ -5031,8 +5052,841 @@ startxref
     }
   });
 
+  // Order Management Mock API Endpoints (Phase 1)
+  // Import Order Management services
+  const { getProducts, getBranches, getSchemeById, getDocuments } = await import('./services/masters-service');
+  const { createOrder, getOrderById, getOrders, updateOrderStatus, claimOrder, releaseOrder } = await import('./services/order-service');
+  const { validateOrderBackend } = await import('./services/validation-engine');
+  
+  // Get products/schemes list
+  app.get('/api/order-management/products', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      // Mock product data - replace with actual query later
+      const mockProducts = [
+        {
+          id: 1,
+          schemeName: 'HDFC Equity Fund',
+          schemeCode: 'HDFC001',
+          category: 'Equity',
+          subCategory: 'Large Cap',
+          nav: 45.25,
+          minInvestment: 1000,
+          maxInvestment: 1000000,
+          rta: 'CAMS',
+          riskLevel: 'Moderate',
+          amc: 'HDFC Mutual Fund',
+          launchDate: '2020-01-15',
+          aum: 5000000000,
+          expenseRatio: 1.5,
+          fundManager: 'John Doe',
+          isWhitelisted: true,
+          cutOffTime: '15:00',
+        },
+        {
+          id: 2,
+          schemeName: 'ICICI Balanced Fund',
+          schemeCode: 'ICICI002',
+          category: 'Hybrid',
+          subCategory: 'Balanced',
+          nav: 32.10,
+          minInvestment: 5000,
+          maxInvestment: 5000000,
+          rta: 'KFintech',
+          riskLevel: 'Moderate',
+          amc: 'ICICI Prudential Mutual Fund',
+          launchDate: '2019-06-20',
+          aum: 3000000000,
+          expenseRatio: 1.8,
+          fundManager: 'Jane Smith',
+          isWhitelisted: true,
+          cutOffTime: '15:00',
+        },
+        {
+          id: 3,
+          schemeName: 'SBI Debt Fund',
+          schemeCode: 'SBI003',
+          category: 'Debt',
+          subCategory: 'Short Term',
+          nav: 18.75,
+          minInvestment: 1000,
+          maxInvestment: null,
+          rta: 'CAMS',
+          riskLevel: 'Low',
+          amc: 'SBI Mutual Fund',
+          launchDate: '2018-03-10',
+          aum: 2000000000,
+          expenseRatio: 1.2,
+          fundManager: 'Robert Johnson',
+          isWhitelisted: true,
+          cutOffTime: '15:00',
+        },
+      ];
+
+      // Try to get products from database
+      const products = await getProducts();
+      
+      // If no products from database, return mock data
+      if (!products || products.length === 0) {
+        res.json(mockProducts);
+      } else {
+        res.json(products);
+      }
+    } catch (error: any) {
+      console.error('Get products error:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to fetch products', 
+        error: error.message 
+      });
+    }
+  });
+
+  // Get branch codes
+  app.get('/api/order-management/branches', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      // Use real Masters Service
+      const branches = await getBranches();
+
+      // If no branches from database, return mock data for development
+      if (branches.length === 0) {
+        const mockBranches = [
+        {
+          id: 1,
+          code: 'BR001',
+          name: 'Mumbai Main Branch',
+          address: '123 Main Street',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400001',
+        },
+        {
+          id: 2,
+          code: 'BR002',
+          name: 'Delhi Main Branch',
+          address: '456 Connaught Place',
+          city: 'Delhi',
+          state: 'Delhi',
+          pincode: '110001',
+        },
+        {
+          id: 3,
+          code: 'BR003',
+          name: 'Bangalore Branch',
+          address: '789 MG Road',
+          city: 'Bangalore',
+          state: 'Karnataka',
+          pincode: '560001',
+        },
+      ];
+
+        res.json(mockBranches);
+      } else {
+        res.json(branches);
+      }
+    } catch (error: any) {
+      console.error('Get branches error:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to fetch branches', 
+        error: error.message 
+      });
+    }
+  });
+
+  // Get scheme details
+  app.get('/api/order-management/schemes/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const schemeId = parseInt(req.params.id);
+      
+      // Use real Masters Service
+      const scheme = await getSchemeById(schemeId);
+
+      if (scheme) {
+        res.json(scheme);
+        return;
+      }
+
+      // Fallback to mock data for development
+      const mockScheme = {
+        id: schemeId,
+        schemeName: 'HDFC Equity Fund',
+        schemeCode: 'HDFC001',
+        amc: 'HDFC Mutual Fund',
+        category: 'Equity',
+        rta: 'CAMS',
+        launchDate: '2020-01-15',
+        aum: 5000000000,
+        expenseRatio: 1.5,
+        fundManager: 'John Doe',
+        riskLevel: 'Moderate',
+        minInvestment: 1000,
+        maxInvestment: 1000000,
+        cutOffTime: '15:00',
+      };
+
+      res.json(mockScheme);
+    } catch (error: any) {
+      console.error('Get scheme details error:', error);
+      res.status(500).json({ message: 'Failed to fetch scheme details', error: error.message });
+    }
+  });
+
+  // Get documents for a scheme
+  app.get('/api/order-management/documents/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const schemeId = parseInt(req.params.id);
+      
+      // Use real Masters Service
+      const documents = await getDocuments(schemeId);
+
+      if (documents.length > 0) {
+        res.json(documents);
+        return;
+      }
+
+      // Fallback to mock data for development
+      const mockDocuments = [
+        {
+          id: 1,
+          type: 'Factsheet',
+          name: 'HDFC Equity Fund - Factsheet',
+          url: '/documents/factsheet.pdf',
+          uploadedAt: '2024-01-15T10:00:00Z',
+        },
+        {
+          id: 2,
+          type: 'KIM',
+          name: 'HDFC Equity Fund - KIM',
+          url: '/documents/kim.pdf',
+          uploadedAt: '2024-01-15T10:00:00Z',
+        },
+        {
+          id: 3,
+          type: 'SID',
+          name: 'HDFC Equity Fund - SID',
+          url: '/documents/sid.pdf',
+          uploadedAt: '2024-01-15T10:00:00Z',
+        },
+      ];
+
+      res.json(mockDocuments);
+    } catch (error: any) {
+      console.error('Get documents error:', error);
+      res.status(500).json({ message: 'Failed to fetch documents', error: error.message });
+    }
+  });
+
+  // Get order details by ID (for Full Switch/Redemption viewing)
+  app.get('/api/order-management/orders/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const orderId = parseInt(req.params.id);
+      
+      // Use real Order Service
+      const order = await getOrderById(orderId, userId);
+
+      if (order) {
+        res.json(order);
+        return;
+      }
+
+      // Fallback to mock data for development
+      const mockOrder = {
+        id: orderId,
+        modelOrderId: `MO-20241215-${orderId.toString().padStart(5, '0')}`,
+        clientId: userId || 1,
+        orderFormData: {
+          cartItems: [
+            {
+              id: '1',
+              productId: 1,
+              schemeName: 'HDFC Equity Fund',
+              transactionType: 'Full Switch', // or 'Full Redemption'
+              amount: 100000,
+              nav: 25.50,
+              units: 3921.5686,
+              closeAc: true, // Special flag
+            },
+          ],
+          transactionMode: { mode: 'Physical' },
+          nominees: [],
+          optOutOfNomination: false,
+          fullSwitchData: {
+            sourceScheme: 'HDFC Equity Fund',
+            targetScheme: 'HDFC Balanced Fund',
+            units: 3921.5686,
+            closeAc: true,
+          },
+          fullRedemptionData: null,
+        },
+        status: 'Pending Approval',
+        submittedAt: new Date().toISOString(),
+        ipAddress: req.ip || 'unknown',
+        traceId: `TRACE-${Date.now()}`,
+      };
+
+      res.json(mockOrder);
+    } catch (error: any) {
+      console.error('Get order details error:', error);
+      res.status(500).json({ message: 'Failed to fetch order details', error: error.message });
+    }
+  });
+
+  // Get orders (Order Book)
+  app.get('/api/order-management/orders', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const status = req.query.status as string | undefined;
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
+      
+      // Use real Order Service
+      const orders = await getOrders(userId, { status, startDate, endDate });
+
+      if (orders.length > 0) {
+        res.json(orders);
+        return;
+      }
+
+      // Fallback to mock data for development
+      const mockOrders = [
+        {
+          id: 1,
+          modelOrderId: 'MO-20241215-ABC12',
+          clientId: userId || 1,
+          orderFormData: {
+            cartItems: [
+              {
+                id: '1',
+                productId: 1,
+                schemeName: 'HDFC Equity Fund',
+                transactionType: 'Purchase',
+                amount: 10000,
+                nav: 25.50,
+              },
+            ],
+            transactionMode: { mode: 'Physical' },
+            nominees: [],
+            optOutOfNomination: false,
+          },
+          status: 'Pending Approval',
+          submittedAt: new Date().toISOString(),
+          ipAddress: req.ip || 'unknown',
+          traceId: `TRACE-${Date.now()}`,
+        },
+      ];
+
+      res.json(mockOrders);
+    } catch (error: any) {
+      console.error('Get orders error:', error);
+      res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
+    }
+  });
+
+  // Submit order (main endpoint)
+  app.post('/api/order-management/orders/submit', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const orderData = req.body;
+
+      // Basic validation
+      if (!orderData.cartItems || !Array.isArray(orderData.cartItems) || orderData.cartItems.length === 0) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Cart items are required',
+          errors: ['Cart cannot be empty']
+        });
+      }
+
+      if (!orderData.transactionMode || !orderData.transactionMode.mode) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Transaction mode is required',
+          errors: ['Transaction mode must be selected']
+        });
+      }
+
+      // Backend validation using Validation Engine
+      // Fetch product data for validation
+      const products = await getProducts();
+      
+      // Prepare validation request
+      const validationRequest = {
+        cartItems: orderData.cartItems.map((item: any) => ({
+          productId: item.productId,
+          amount: item.amount,
+          transactionType: item.transactionType,
+        })),
+        nominees: orderData.nominees || [],
+        optOutOfNomination: orderData.optOutOfNomination || false,
+        euin: orderData.transactionMode?.euin,
+        productData: products.map(p => ({
+          id: p.id,
+          minInvestment: p.minInvestment,
+          maxInvestment: p.maxInvestment,
+        })),
+        // TODO: Fetch real market values from holdings API
+        marketValues: new Map<number, number>(),
+      };
+
+      // Run backend validation
+      const validation = await validateOrderBackend(validationRequest);
+
+      if (!validation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: validation.errors,
+          warnings: validation.warnings,
+        });
+      }
+
+      // Additional validation for nominees if not opted out
+      if (!orderData.optOutOfNomination) {
+        if (!orderData.nominees || orderData.nominees.length === 0) {
+          return res.status(400).json({ 
+            success: false,
+            message: 'Nominee information is required',
+            errors: ['Please add nominee information or opt out of nomination']
+          });
+        }
+
+        const totalPercentage = orderData.nominees.reduce((sum: number, n: any) => sum + (n.percentage || 0), 0);
+        if (Math.abs(totalPercentage - 100) > 0.01) {
+          return res.status(400).json({ 
+            success: false,
+            message: 'Nominee percentage validation failed',
+            errors: [`Nominee percentages must total 100%. Current total: ${totalPercentage}%`]
+          });
+        }
+      }
+
+      // Generate Model Order ID (format: MO-YYYYMMDD-XXXXX)
+      const date = new Date();
+      const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+      const randomStr = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const modelOrderId = `MO-${dateStr}-${randomStr}`;
+
+      // Get client IP address
+      const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+      const traceId = `TRACE-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+      // Use real Order Service to create order
+      const order = await createOrder({
+        modelOrderId,
+        clientId: orderData.clientId || userId,
+        orderFormData: orderData,
+        status: 'Pending Approval',
+        ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : ipAddress,
+        traceId,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Order submitted successfully',
+        data: order
+      });
+    } catch (error: any) {
+      console.error('Submit order error:', error);
+      res.status(500).json({ message: 'Failed to submit order', error: error.message });
+    }
+  });
+
+  // Claim order for authorization
+  app.post('/api/order-management/orders/:id/claim', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const userId = (req.session as any).userId;
+
+      // Use real Order Service
+      const order = await claimOrder(orderId, userId);
+
+      res.json({ 
+        success: true, 
+        message: 'Order claimed successfully',
+        data: order,
+      });
+    } catch (error: any) {
+      console.error('Claim order error:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to claim order', 
+        error: error.message 
+      });
+    }
+  });
+
+  // Release order
+  app.post('/api/order-management/orders/:id/release', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const userId = (req.session as any).userId;
+
+      // Use real Order Service
+      const order = await releaseOrder(orderId, userId);
+
+      res.json({ 
+        success: true, 
+        message: 'Order released successfully',
+        data: order,
+      });
+    } catch (error: any) {
+      console.error('Release order error:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to release order', 
+        error: error.message 
+      });
+    }
+  });
+
+  // Authorize order
+  app.post('/api/order-management/orders/:id/authorize', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const userId = (req.session as any).userId;
+
+      // Use real Order Service
+      const order = await updateOrderStatus(orderId, 'In Progress', userId);
+
+      res.json({ 
+        success: true, 
+        message: 'Order authorized successfully',
+        data: order,
+      });
+    } catch (error: any) {
+      console.error('Authorize order error:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to authorize order', 
+        error: error.message 
+      });
+    }
+  });
+
+  // Reject order
+  app.post('/api/order-management/orders/:id/reject', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const userId = (req.session as any).userId;
+      const { reason } = req.body;
+
+      if (!reason || !reason.trim()) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Rejection reason is required',
+          errors: ['Please provide a reason for rejecting this order']
+        });
+      }
+
+      // Use real Order Service
+      const order = await updateOrderStatus(orderId, 'Failed', userId, reason);
+
+      res.json({ 
+        success: true, 
+        message: 'Order rejected successfully',
+        data: order,
+      });
+    } catch (error: any) {
+      console.error('Reject order error:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to reject order', 
+        error: error.message 
+      });
+    }
+  });
+
   app.use(communicationsRouter);
   app.use(portfolioReportRouter);
+
+  // ============================================
+  // SYSTEMATIC PLANS API ENDPOINTS (Phase 3)
+  // ============================================
+  
+  const {
+    createSIPPlan,
+    createSTPPlan,
+    createSWPPlan,
+    getPlanById,
+    getPlansByStatus,
+    getPlansByClient,
+    modifyPlan,
+    cancelPlan,
+    getPlansScheduledForDate,
+  } = await import('./services/systematic-plans-service');
+
+  // Create SIP Plan
+  app.post('/api/systematic-plans/sip', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const clientId = req.body.clientId || userId; // Use session userId as fallback
+      const planData = req.body;
+
+      // Validate required fields
+      if (!planData.schemeId || !planData.amount || !planData.startDate || !planData.frequency || !planData.installments) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields',
+          errors: ['schemeId, amount, startDate, frequency, and installments are required'],
+        });
+      }
+
+      // Validate minimum amount (example: ₹1,000)
+      if (planData.amount < 1000) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: ['SIP amount must be at least ₹1,000'],
+        });
+      }
+
+      const plan = await createSIPPlan(clientId, planData);
+
+      res.status(201).json({
+        success: true,
+        message: 'SIP plan created successfully',
+        data: plan,
+      });
+    } catch (error: any) {
+      console.error('Create SIP plan error:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to create SIP plan',
+        errors: [error.message],
+      });
+    }
+  });
+
+  // Create STP Plan
+  app.post('/api/systematic-plans/stp', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const clientId = req.body.clientId || userId;
+      const planData = req.body;
+
+      if (!planData.sourceSchemeId || !planData.targetSchemeId || !planData.amount || 
+          !planData.startDate || !planData.frequency || !planData.installments) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields',
+          errors: ['sourceSchemeId, targetSchemeId, amount, startDate, frequency, and installments are required'],
+        });
+      }
+
+      const plan = await createSTPPlan(clientId, planData);
+
+      res.status(201).json({
+        success: true,
+        message: 'STP plan created successfully',
+        data: plan,
+      });
+    } catch (error: any) {
+      console.error('Create STP plan error:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to create STP plan',
+        errors: [error.message],
+      });
+    }
+  });
+
+  // Create SWP Plan
+  app.post('/api/systematic-plans/swp', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.session as any).userId;
+      const clientId = req.body.clientId || userId;
+      const planData = req.body;
+
+      if (!planData.schemeId || !planData.amount || !planData.startDate || 
+          !planData.frequency || !planData.installments) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields',
+          errors: ['schemeId, amount, startDate, frequency, and installments are required'],
+        });
+      }
+
+      // Validate minimum amount
+      if (planData.amount < 1000) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: ['SWP amount must be at least ₹1,000'],
+        });
+      }
+
+      const plan = await createSWPPlan(clientId, planData);
+
+      res.status(201).json({
+        success: true,
+        message: 'SWP plan created successfully',
+        data: plan,
+      });
+    } catch (error: any) {
+      console.error('Create SWP plan error:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to create SWP plan',
+        errors: [error.message],
+      });
+    }
+  });
+
+  // Get plan by ID
+  app.get('/api/systematic-plans/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const planId = req.params.id;
+      const plan = await getPlanById(planId);
+
+      if (!plan) {
+        return res.status(404).json({
+          success: false,
+          message: 'Plan not found',
+        });
+      }
+
+      res.json({
+        success: true,
+        data: plan,
+      });
+    } catch (error: any) {
+      console.error('Get plan error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch plan',
+        error: error.message,
+      });
+    }
+  });
+
+  // List plans (with optional status filter)
+  app.get('/api/systematic-plans', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const status = req.query.status as string | undefined;
+      const clientId = req.query.clientId ? parseInt(req.query.clientId as string) : undefined;
+
+      let plans;
+      if (clientId) {
+        plans = await getPlansByClient(clientId);
+      } else {
+        plans = await getPlansByStatus(status as any);
+      }
+
+      res.json({
+        success: true,
+        data: plans,
+        count: plans.length,
+      });
+    } catch (error: any) {
+      console.error('List plans error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch plans',
+        error: error.message,
+      });
+    }
+  });
+
+  // Modify plan
+  app.put('/api/systematic-plans/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const planId = req.params.id;
+      const updates = req.body;
+
+      const plan = await modifyPlan(planId, updates);
+
+      res.json({
+        success: true,
+        message: 'Plan modified successfully',
+        data: plan,
+      });
+    } catch (error: any) {
+      console.error('Modify plan error:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to modify plan',
+        errors: [error.message],
+      });
+    }
+  });
+
+  // Cancel plan
+  app.post('/api/systematic-plans/:id/cancel', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const planId = req.params.id;
+      const { reason } = req.body;
+
+      const plan = await cancelPlan(planId, reason);
+
+      res.json({
+        success: true,
+        message: 'Plan cancelled successfully',
+        data: plan,
+      });
+    } catch (error: any) {
+      console.error('Cancel plan error:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to cancel plan',
+        errors: [error.message],
+      });
+    }
+  });
+
+  // Operations Console - Get plans by status
+  app.get('/api/operations/systematic-plans', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const status = req.query.status as string | undefined;
+      const planType = req.query.planType as string | undefined;
+      const schemeId = req.query.schemeId ? parseInt(req.query.schemeId as string) : undefined;
+
+      let plans = await getPlansByStatus(status as any);
+
+      // Apply additional filters
+      if (planType) {
+        plans = plans.filter(p => p.planType === planType);
+      }
+      if (schemeId) {
+        plans = plans.filter(p => p.schemeId === schemeId || p.sourceSchemeId === schemeId);
+      }
+
+      res.json({
+        success: true,
+        data: plans,
+        count: plans.length,
+      });
+    } catch (error: any) {
+      console.error('Operations console - list plans error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch plans',
+        error: error.message,
+      });
+    }
+  });
+
+  // Scheduler - Get plans scheduled for execution
+  app.get('/api/operations/scheduler/plans', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const date = req.query.date as string || new Date().toISOString().slice(0, 10);
+      const plans = await getPlansScheduledForDate(date);
+
+      res.json({
+        success: true,
+        data: plans,
+        count: plans.length,
+        date,
+      });
+    } catch (error: any) {
+      console.error('Scheduler - get plans error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch scheduled plans',
+        error: error.message,
+      });
+    }
+  });
 
   const httpServer = createServer(app);
 
